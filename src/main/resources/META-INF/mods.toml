@@ -1,0 +1,17 @@
+modLoader="javafml" #mandatory
+loaderVersion="[32,)"
+[[mods]]
+modId="controlengineering"
+# TODO
+version="v"
+displayName="Control Engineering"
+authors="malte0811"
+description='''
+An addon for Imersive Engineering providing control panels and "logic boxes"
+'''
+[[dependencies.controlengineering]]
+    modId="immersiveengineering"
+    mandatory=true
+    versionRange="[0.16,)"
+    ordering="AFTER"
+    side="BOTH"
