@@ -10,6 +10,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 
+import javax.annotation.Nonnull;
+
 //TODO baked model? At least partially?
 public class PanelRenderer extends TileEntityRenderer<PanelTileEntity> {
     public PanelRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
@@ -18,22 +20,21 @@ public class PanelRenderer extends TileEntityRenderer<PanelTileEntity> {
 
     @Override
     public void render(
-            PanelTileEntity tileEntityIn,
+            PanelTileEntity tile,
             float partialTicks,
-            MatrixStack transform,
-            IRenderTypeBuffer bufferIn,
-            int combinedLightIn,
-            int combinedOverlayIn
+            @Nonnull MatrixStack transform,
+            IRenderTypeBuffer buffer,
+            int combinedLight,
+            int combinedOverlay
     ) {
-        transform.push();
-        transform.translate(0, 0.125, 0);
+        tile.getTransform().getPanelTopToWorld().push(transform);
         final float baseScale = 1/16f;
         transform.scale(baseScale, baseScale, baseScale);
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getSolid());
-        for (PlacedComponent comp : tileEntityIn.getComponents()) {
+        IVertexBuilder builder = buffer.getBuffer(RenderType.getSolid());
+        for (PlacedComponent comp : tile.getComponents()) {
             transform.push();
             transform.translate(comp.getPos().x, 0, comp.getPos().y);
-            ComponentRenderers.render(builder, comp.getComponent(), transform);
+            ComponentRenderers.render(builder, comp.getComponent(), transform, combinedLight, combinedOverlay);
             transform.pop();
         }
         transform.pop();

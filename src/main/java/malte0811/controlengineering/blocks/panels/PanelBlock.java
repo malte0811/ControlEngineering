@@ -13,7 +13,11 @@ import javax.annotation.Nullable;
 
 public class PanelBlock extends Block {
     public PanelBlock() {
-        super(AbstractBlock.Properties.create(Material.IRON).notSolid());
+        super(
+                AbstractBlock.Properties.create(Material.IRON)
+                .notSolid()
+                .hardnessAndResistance(2, 6)
+        );
     }
 
     @Override

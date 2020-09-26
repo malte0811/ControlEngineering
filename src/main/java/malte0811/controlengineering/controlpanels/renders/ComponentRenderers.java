@@ -28,7 +28,13 @@ public class ComponentRenderers {
         return (ComponentRenderer<? super T>) RENDERS.get(instance.getType());
     }
 
-    public static <T extends PanelComponent<?>> void render(IVertexBuilder builder, T instance, MatrixStack transform) {
-        getRenderer(instance).render(builder, instance, transform);
+    public static <T extends PanelComponent<?>> void render(
+            IVertexBuilder builder,
+            T instance,
+            MatrixStack transform,
+            int light,
+            int overlay
+    ) {
+        getRenderer(instance).render(builder, instance, transform, light, overlay);
     }
 }

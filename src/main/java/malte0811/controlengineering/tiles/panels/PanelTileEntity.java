@@ -2,6 +2,7 @@ package malte0811.controlengineering.tiles.panels;
 
 import com.mojang.serialization.Codec;
 import malte0811.controlengineering.controlpanels.PanelComponents;
+import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.components.Button;
 import malte0811.controlengineering.tiles.CETileEntities;
@@ -11,12 +12,16 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PanelTileEntity extends TileEntity {
     private List<PlacedComponent> components = new ArrayList<>();
+    private PanelTransform transform = new PanelTransform(0.25F, (float) Math.toDegrees(Math.atan(0.5)), Direction.DOWN);
+
     public PanelTileEntity() {
         super(CETileEntities.CONTROL_PANEL.get());
         Button b = PanelComponents.BUTTON.empty();
@@ -32,25 +37,43 @@ public class PanelTileEntity extends TileEntity {
 
     //TODO client sync
     @Override
-    public void read(BlockState state, CompoundNBT nbt) {
+    public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
         super.read(state, nbt);
-        this.components = Codec.list(PlacedComponent.CODEC)
-                .decode(NBTDynamicOps.INSTANCE, nbt)
-                .getOrThrow(false, s -> {})
-                .getFirst();
+        this.components = read(Codec.list(PlacedComponent.CODEC), nbt, "components");
+        this.transform = read(PanelTransform.CODEC, nbt, "transform");
+    }
+
+    @Nonnull
+    @Override
+    public CompoundNBT write(@Nonnull CompoundNBT compound) {
+        CompoundNBT encoded = super.write(compound);
+        add(Codec.list(PlacedComponent.CODEC), components, encoded, "components");
+        add(PanelTransform.CODEC, transform, encoded, "transform");
+        return encoded;
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
-        CompoundNBT encoded = super.write(compound);
-        INBT componentNBT = Codec.list(PlacedComponent.CODEC)
-                .encodeStart(NBTDynamicOps.INSTANCE, components)
-                .getOrThrow(false, s -> {});
-        encoded.put("components", componentNBT);
-        return encoded;
+    public CompoundNBT getUpdateTag() {
+        return write(new CompoundNBT());
     }
 
     public List<PlacedComponent> getComponents() {
         return components;
+    }
+
+    public PanelTransform getTransform() {
+        return transform;
+    }
+
+    private static <T> T read(Codec<T> codec, CompoundNBT in, String subName) {
+        return codec.decode(NBTDynamicOps.INSTANCE, in.get(subName))
+                .getOrThrow(false, s -> {})
+                .getFirst();
+    }
+
+    private static <T> void add(Codec<T> codec, T value, CompoundNBT out, String subName) {
+        INBT componentNBT = codec.encodeStart(NBTDynamicOps.INSTANCE, value)
+                .getOrThrow(false, s -> {});
+        out.put(subName, componentNBT);
     }
 }
