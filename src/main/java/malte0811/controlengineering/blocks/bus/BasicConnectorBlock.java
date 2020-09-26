@@ -1,4 +1,4 @@
-package malte0811.controlengineering.blocks;
+package malte0811.controlengineering.blocks.bus;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

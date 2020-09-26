@@ -1,5 +1,6 @@
-package malte0811.controlengineering.blocks;
+package malte0811.controlengineering.blocks.bus;
 
+import malte0811.controlengineering.blocks.CEBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.client.renderer.RenderType;

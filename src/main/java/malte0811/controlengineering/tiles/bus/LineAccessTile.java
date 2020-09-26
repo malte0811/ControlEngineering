@@ -1,4 +1,4 @@
-package malte0811.controlengineering.tiles;
+package malte0811.controlengineering.tiles.bus;
 
 import blusunrize.immersiveengineering.api.TargetingInfo;
 import blusunrize.immersiveengineering.api.wires.*;
@@ -8,6 +8,8 @@ import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusConnector;
 import malte0811.controlengineering.bus.LocalBusHandler;
+import malte0811.controlengineering.tiles.CETileEntities;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3i;
@@ -38,6 +40,18 @@ public class LineAccessTile extends ImmersiveConnectableTileEntity implements IB
     public void setPos(@Nonnull BlockPos posIn) {
         super.setPos(posIn);
         reinitConnectionPoints();
+    }
+
+    @Override
+    public void readCustomNBT(@Nonnull CompoundNBT nbt, boolean descPacket) {
+        super.readCustomNBT(nbt, descPacket);
+        selectedLine = nbt.getInt("selectedLine");
+    }
+
+    @Override
+    public void writeCustomNBT(@Nonnull CompoundNBT nbt, boolean descPacket) {
+        super.writeCustomNBT(nbt, descPacket);
+        nbt.putInt("selectedLine", selectedLine);
     }
 
     /*BUS*/

@@ -24,6 +24,7 @@ public class CEItems {
     private static final List<RegistryObject<BusCoilItem>> BUS_WIRE_COILS;
     private static final RegistryObject<BlockItem> BUS_RELAY = blockItem(CEBlocks.BUS_RELAY);
     private static final RegistryObject<BlockItem> LINE_ACCESS = blockItem(CEBlocks.LINE_ACCESS);
+    private static final RegistryObject<BlockItem> CONTROL_PANEL = blockItem(CEBlocks.CONTROL_PANEL);
 
     @Nonnull
     public static BusCoilItem getBusCoil(int width) {

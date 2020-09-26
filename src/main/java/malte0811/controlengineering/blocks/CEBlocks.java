@@ -2,9 +2,11 @@ package malte0811.controlengineering.blocks;
 
 import blusunrize.immersiveengineering.api.wires.IImmersiveConnectable;
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.tiles.BusRelayTile;
+import malte0811.controlengineering.blocks.bus.BasicConnectorBlock;
+import malte0811.controlengineering.blocks.panels.PanelBlock;
+import malte0811.controlengineering.tiles.bus.BusRelayTile;
 import malte0811.controlengineering.tiles.CETileEntities;
-import malte0811.controlengineering.tiles.LineAccessTile;
+import malte0811.controlengineering.tiles.bus.LineAccessTile;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -29,8 +31,9 @@ public class CEBlocks {
 
     public static final RegistryObject<BasicConnectorBlock<LineAccessTile>> LINE_ACCESS = REGISTER.register(
             "line_access",
-                    createConnector(() -> CETileEntities.LINE_ACCESS.get())
+            createConnector(() -> CETileEntities.LINE_ACCESS.get())
     );
+    public static final RegistryObject<PanelBlock> CONTROL_PANEL = REGISTER.register("control_panel", PanelBlock::new);
 
     private static <T extends TileEntity & IImmersiveConnectable>
     Supplier<BasicConnectorBlock<T>> createConnector(Supplier<TileEntityType<T>> tile) {

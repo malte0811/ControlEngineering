@@ -4,7 +4,7 @@ package malte0811.controlengineering;
 import blusunrize.immersiveengineering.api.wires.WireType;
 import blusunrize.immersiveengineering.api.wires.localhandlers.LocalNetworkHandler;
 import blusunrize.immersiveengineering.common.items.IEItems;
-import malte0811.controlengineering.blocks.BlockRenderLayers;
+import malte0811.controlengineering.blocks.bus.BlockRenderLayers;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.items.CEItems;

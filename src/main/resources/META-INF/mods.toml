@@ -1,5 +1,7 @@
 modLoader="javafml" #mandatory
 loaderVersion="[32,)"
+# TODO decide whether I want MIT or something else
+license="MIT"
 [[mods]]
 modId="controlengineering"
 # TODO
