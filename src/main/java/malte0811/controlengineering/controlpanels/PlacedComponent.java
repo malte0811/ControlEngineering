@@ -3,6 +3,7 @@ package malte0811.controlengineering.controlpanels;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.util.Vec2d;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraftforge.common.util.Lazy;
@@ -42,6 +43,10 @@ public class PlacedComponent {
 
     public AxisAlignedBB getSelectionShape() {
         return shape.get();
+    }
+
+    public ActionResultType onClick() {
+        return component.onClick();
     }
 
     private static AxisAlignedBB scale(AxisAlignedBB in, double scale) {

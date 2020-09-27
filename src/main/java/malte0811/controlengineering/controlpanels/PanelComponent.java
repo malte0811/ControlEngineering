@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.util.Codecs;
 import net.minecraft.nbt.INBT;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.common.util.Lazy;
@@ -57,4 +58,6 @@ public abstract class PanelComponent<Self extends PanelComponent<Self>> {
     public final AxisAlignedBB getSelectionBox() {
         return shape.get();
     }
+
+    public abstract ActionResultType onClick();
 }

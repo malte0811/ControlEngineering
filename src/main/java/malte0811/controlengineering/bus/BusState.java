@@ -30,8 +30,12 @@ public class BusState {
     }
 
     public BusState with(int index, int color, int value) {
-        BusLine newLine = getLine(index).with(color, value);
-        return withLine(index, newLine);
+        return with(new BusSignalRef(index, color), value);
+    }
+
+    public BusState with(BusSignalRef signal, int value) {
+        BusLine newLine = getLine(signal.line).with(signal.color, value);
+        return withLine(signal.line, newLine);
     }
 
     public BusState merge(BusState other) {

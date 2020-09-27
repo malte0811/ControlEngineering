@@ -4,10 +4,12 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.controlpanels.components.Button;
+import malte0811.controlengineering.util.ColorUtils;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.EnumMap;
+import java.util.Map;
 
 public class ButtonRender extends ComponentRenderer<Button> {
     private static final Vector3d BOX_MIN = Vector3d.ZERO;
@@ -26,7 +28,14 @@ public class ButtonRender extends ComponentRenderer<Button> {
         for (Direction d : Direction.BY_HORIZONTAL_INDEX) {
             colors.put(d, -1);
         }
-        colors.put(Direction.UP, instance.color);
-        helper.renderColoredBox(transform, BOX_MIN, BOX_MAX, colors, ImmutableMap.of(Direction.UP, FULLBRIGHT));
+        final Map<Direction, Integer> lightOverrides;
+        if (instance.active) {
+            lightOverrides = ImmutableMap.of(Direction.UP, FULLBRIGHT);
+            colors.put(Direction.UP, instance.color);
+        } else {
+            lightOverrides = ImmutableMap.of();
+            colors.put(Direction.UP, ColorUtils.halfColor(instance.color));
+        }
+        helper.renderColoredBox(transform, BOX_MIN, BOX_MAX, colors, lightOverrides);
     }
 }
