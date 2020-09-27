@@ -1,27 +1,28 @@
 package malte0811.controlengineering.controlpanels;
 
-import blusunrize.immersiveengineering.client.utils.TransformingVertexBuilder;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.blocks.CEBlocks;
-import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.panels.PanelTileEntity;
 import malte0811.controlengineering.util.MatrixUtils;
-import malte0811.modelsplitter.math.Vec3d;
-import net.minecraft.block.BlockState;
+import malte0811.controlengineering.util.RaytraceUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.DrawHighlightEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+
+import java.util.Optional;
 
 @Mod.EventBusSubscriber(modid = ControlEngineering.MODID, value = Dist.CLIENT)
 public class ControlPanelClientEvents {
@@ -32,23 +33,37 @@ public class ControlPanelClientEvents {
         TileEntity tile = Minecraft.getInstance().world.getTileEntity(highlighted);
         if (tile instanceof PanelTileEntity) {
             PanelTileEntity panel = (PanelTileEntity) tile;
-            Vector3d[] bottomVertices = layerVertices(1);
-            Vector3d[] topVertices = layerVertices(panel.getTransform().getTopFaceHeight());
-            for (int i = 0; i < 4; ++i) {
-                bottomVertices[i] = MatrixUtils.transform(bottomVertices[i], panel.getTransform().getPanelBottomToWorld());
-                topVertices[i] = MatrixUtils.transform(topVertices[i], panel.getTransform().getPanelTopToWorld());
-            }
             ev.getMatrix().push();
             Vector3d projectedView = Vector3d.copy(highlighted).subtract(ev.getInfo().getProjectedView());
             ev.getMatrix().translate(projectedView.x, projectedView.y, projectedView.z);
-            Matrix4f transform = ev.getMatrix().getLast().getMatrix();
             IVertexBuilder builder = ev.getBuffers().getBuffer(RenderType.getLines());
-            renderCircuit(bottomVertices, builder, transform);
-            renderCircuit(topVertices, builder, transform);
-            renderConnections(bottomVertices, topVertices, builder, transform);
+            renderPanelOutline(panel, ev.getMatrix(), builder);
+            Minecraft mc = Minecraft.getInstance();
+            RayTraceContext raytraceCtx = RaytraceUtils.create(mc.player, mc.getRenderPartialTicks());
+            Optional<PlacedComponent> selected = panel.getTargetedComponent(raytraceCtx);
+            if (selected.isPresent()) {
+                panel.getTransform().getPanelTopToWorld().push(ev.getMatrix());
+                AxisAlignedBB aabb = selected.get().getSelectionShape();
+                WorldRenderer.drawBoundingBox(ev.getMatrix(), builder, aabb, 0, 0, 0, 0.4F);
+                ev.getMatrix().pop();
+            }
             ev.getMatrix().pop();
+
             ev.setCanceled(true);
         }
+    }
+
+    private static void renderPanelOutline(PanelTileEntity panel, MatrixStack matrix, IVertexBuilder builder) {
+        Vector3d[] bottomVertices = layerVertices(1);
+        Vector3d[] topVertices = layerVertices(panel.getTransform().getTopFaceHeight());
+        for (int i = 0; i < 4; ++i) {
+            bottomVertices[i] = MatrixUtils.transform(bottomVertices[i], panel.getTransform().getPanelBottomToWorld());
+            topVertices[i] = MatrixUtils.transform(topVertices[i], panel.getTransform().getPanelTopToWorld());
+        }
+        Matrix4f transform = matrix.getLast().getMatrix();
+        renderCircuit(bottomVertices, builder, transform);
+        renderCircuit(topVertices, builder, transform);
+        renderConnections(bottomVertices, topVertices, builder, transform);
     }
 
     private static void renderCircuit(Vector3d[] vertices, IVertexBuilder builder, Matrix4f transform) {

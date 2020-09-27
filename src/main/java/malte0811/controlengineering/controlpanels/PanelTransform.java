@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.util.Codecs;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.*;
 
@@ -41,10 +42,11 @@ public class PanelTransform {
         panelBottomToWorld = new TransformationMatrix(null, null, null, null);
     }
 
-    public RayTraceContext toPanelRay(Vector3d start, Vector3d end) {
+    public RayTraceContext toPanelRay(Vector3d start, Vector3d end, BlockPos panelPos) {
+        Vector3d offset = Vector3d.copy(panelPos);
         return new RayTraceContext(
-                transform(start, worldToPanelTop),
-                transform(end, worldToPanelTop),
+                transform(start.subtract(offset), worldToPanelTop),
+                transform(end.subtract(offset), worldToPanelTop),
                 RayTraceContext.BlockMode.VISUAL,
                 RayTraceContext.FluidMode.NONE,
                 null

@@ -13,10 +13,15 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class PanelTileEntity extends TileEntity {
     private List<PlacedComponent> components = new ArrayList<>();
@@ -35,7 +40,7 @@ public class PanelTileEntity extends TileEntity {
         components.add(new PlacedComponent(b, new Vec2d(6, 6)));
     }
 
-    //TODO client sync
+    //TODO client update sync
     @Override
     public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
         super.read(state, nbt);
@@ -55,6 +60,24 @@ public class PanelTileEntity extends TileEntity {
     @Override
     public CompoundNBT getUpdateTag() {
         return write(new CompoundNBT());
+    }
+
+    public Optional<PlacedComponent> getTargetedComponent(RayTraceContext ctx) {
+        RayTraceContext topCtx = getTransform().toPanelRay(ctx.getStartVec(), ctx.getEndVec(), pos);
+        Optional<PlacedComponent> closest = Optional.empty();
+        double minDistanceSq = Double.POSITIVE_INFINITY;
+        for (PlacedComponent comp : getComponents()) {
+            final AxisAlignedBB selectionShape = comp.getSelectionShape();
+            final Optional<Vector3d> result = selectionShape.rayTrace(topCtx.getStartVec(), topCtx.getEndVec());
+            if (result.isPresent()) {
+                final double distanceSq = result.get().squareDistanceTo(topCtx.getStartVec());
+                if (distanceSq < minDistanceSq) {
+                    minDistanceSq = distanceSq;
+                    closest = Optional.of(comp);
+                }
+            }
+        }
+        return closest;
     }
 
     public List<PlacedComponent> getComponents() {

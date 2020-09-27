@@ -6,6 +6,10 @@ import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.util.Codecs;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.common.util.Lazy;
+
+import javax.annotation.Nullable;
 
 public abstract class PanelComponent<Self extends PanelComponent<Self>> {
     public static Codec<PanelComponent<?>> CODEC = RecordCodecBuilder.create(
@@ -43,4 +47,14 @@ public abstract class PanelComponent<Self extends PanelComponent<Self>> {
     public abstract BusState getEmittedState();
 
     public abstract void updateTotalState(BusState state);
+
+    @Nullable
+    protected abstract AxisAlignedBB createSelectionShape();
+
+    private final Lazy<AxisAlignedBB> shape = Lazy.of(this::createSelectionShape);
+
+    @Nullable
+    public final AxisAlignedBB getSelectionBox() {
+        return shape.get();
+    }
 }

@@ -4,6 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponent;
+import net.minecraft.util.math.AxisAlignedBB;
+
+import javax.annotation.Nullable;
 
 public class Button extends PanelComponent<Button> {
     public int color;
@@ -30,6 +33,12 @@ public class Button extends PanelComponent<Button> {
                         Codec.INT.fieldOf("color").forGetter(b -> b.color)
                 ).apply(inst, Button::new)
         );
+    }
+
+    @Nullable
+    @Override
+    protected AxisAlignedBB createSelectionShape() {
+        return new AxisAlignedBB(0, 0, 0, 1, 0.5, 1);
     }
 
     public void setColor(int color) {
