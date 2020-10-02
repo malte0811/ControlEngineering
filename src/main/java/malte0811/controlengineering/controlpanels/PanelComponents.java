@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.controlpanels.components.Button;
+import malte0811.controlengineering.controlpanels.components.Indicator;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import java.util.function.Supplier;
 public class PanelComponents {
     private static final Map<ResourceLocation, PanelComponentType<?>> REGISTRY = new HashMap<>();
     public static PanelComponentType<Button> BUTTON = register("button", Button.createCodec(), Button::new);
+    public static PanelComponentType<Indicator> INDICATOR = register("indicator", Indicator.createCodec(), Indicator::new);
 
     private static <T extends PanelComponent<T>> PanelComponentType<T> register(
             String path,

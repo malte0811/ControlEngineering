@@ -2,6 +2,7 @@ package malte0811.controlengineering.controlpanels.components;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponent;
@@ -28,7 +29,7 @@ public class Button extends PanelComponent<Button> {
     @Override
     public BusState getEmittedState() {
         if (active) {
-            return outputSignal.singleSignalState(15);
+            return outputSignal.singleSignalState(BusLine.MAX_VALID_VALUE);
         } else {
             return new BusState(1);
         }
@@ -61,5 +62,9 @@ public class Button extends PanelComponent<Button> {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    public void setOutputSignal(BusSignalRef outputSignal) {
+        this.outputSignal = outputSignal;
     }
 }

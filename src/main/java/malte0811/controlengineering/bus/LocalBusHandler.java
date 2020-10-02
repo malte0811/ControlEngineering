@@ -3,31 +3,37 @@ package malte0811.controlengineering.bus;
 import blusunrize.immersiveengineering.api.wires.*;
 import blusunrize.immersiveengineering.api.wires.localhandlers.IWorldTickable;
 import blusunrize.immersiveengineering.api.wires.localhandlers.LocalNetworkHandler;
-import blusunrize.immersiveengineering.api.wires.redstone.RedstoneNetworkHandler;
-import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.ControlEngineering;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.*;
-
 public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickable {
     public static final ResourceLocation NAME = new ResourceLocation(ControlEngineering.MODID, "bus");
-    private Map<ConnectionPoint, BusState> outputByBlock = new HashMap<>();
-    private BusState state;
     private boolean updateNextTick = true;
+    private final BusEmitterCombiner<Pair<ConnectionPoint, IBusConnector>> stateHandler = new BusEmitterCombiner<>(
+            pair -> pair.getSecond().getEmittedState(pair.getFirst()),
+            pair -> pair.getSecond().onBusUpdated(pair.getFirst())
+    );
 
     public LocalBusHandler(LocalWireNetwork local, GlobalWireNetwork global) {
         super(local, global);
+        for (ConnectionPoint cp : local.getConnectionPoints()) {
+            IImmersiveConnectable iic = local.getConnector(cp);
+            if (iic instanceof IBusConnector) {
+                stateHandler.addEmitter(Pair.of(cp, (IBusConnector) iic));
+            }
+        }
     }
 
     @Override
     public LocalNetworkHandler merge(LocalNetworkHandler other) {
         if (!(other instanceof LocalBusHandler))
             return new LocalBusHandler(localNet, globalNet);
-        state = state.merge(((LocalBusHandler) other).state);
+        for (Pair<ConnectionPoint, IBusConnector> pair : ((LocalBusHandler) other).stateHandler.getEmitters()) {
+                stateHandler.addEmitter(pair);
+        }
         requestUpdate();
         return this;
     }
@@ -35,16 +41,26 @@ public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickab
     @Override
     public void onConnectorLoaded(ConnectionPoint p, IImmersiveConnectable iic) {
         requestUpdate();
+        if (iic instanceof IBusConnector) {
+            stateHandler.addEmitter(Pair.of(p, (IBusConnector) iic));
+        }
     }
 
     @Override
     public void onConnectorUnloaded(BlockPos p, IImmersiveConnectable iic) {
-        requestUpdate();
+        onConnectorRemoved(p, iic);
     }
 
     @Override
     public void onConnectorRemoved(BlockPos p, IImmersiveConnectable iic) {
         requestUpdate();
+        if (iic instanceof IBusConnector) {
+            for (ConnectionPoint cp : localNet.getConnectionPoints()) {
+                if (cp.getPosition().equals(p)) {
+                    stateHandler.removeEmitter(Pair.of(cp, (IBusConnector) iic));
+                }
+            }
+        }
     }
 
     @Override
@@ -58,7 +74,7 @@ public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickab
     }
 
     public BusState getState() {
-        return state;
+        return stateHandler.getTotalState();
     }
 
     public void requestUpdate() {
@@ -68,29 +84,7 @@ public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickab
     @Override
     public void update(World w) {
         if (updateNextTick) {
-            outputByBlock.clear();
-            final BusState oldState = state;
-            state = null;
-            List<Pair<ConnectionPoint, IBusConnector>> busConnections = new ArrayList<>();
-            for (ConnectionPoint cp : localNet.getConnectionPoints()) {
-                IImmersiveConnectable iic = localNet.getConnector(cp);
-                if (iic instanceof IBusConnector) {
-                    busConnections.add(Pair.of(cp, (IBusConnector) iic));
-                    final BusState emittedState = ((IBusConnector) iic).getEmittedState(cp);
-                    outputByBlock.put(cp, emittedState);
-                    if (state == null) {
-                        state = emittedState;
-                    } else {
-                        state = state.merge(emittedState);
-                    }
-                }
-            }
-            if (!oldState.equals(Objects.requireNonNull(state))) {
-                for (Pair<ConnectionPoint, IBusConnector> entry : busConnections) {
-                    entry.getSecond().onBusUpdated(entry.getFirst());
-                }
-            }
-            this.updateNextTick = false;
+            stateHandler.updateState(new BusState());
         }
     }
 }

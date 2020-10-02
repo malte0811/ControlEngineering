@@ -14,6 +14,7 @@ public class ComponentRenderers {
 
     public static void init() {
         register(PanelComponents.BUTTON, new ButtonRender());
+        register(PanelComponents.INDICATOR, new IndicatorRender());
     }
 
     public static <T extends PanelComponent<T>> void register(

@@ -61,10 +61,9 @@ public class PanelBlock extends Block {
     ) {
         TileEntity te = worldIn.getTileEntity(pos);
         if (te instanceof PanelTileEntity) {
-            RayTraceContext raytraceCtx = RaytraceUtils.create(player, 0);
-            Optional<PlacedComponent> targeted = ((PanelTileEntity) te).getTargetedComponent(raytraceCtx);
-            return targeted.map(PlacedComponent::onClick).orElse(ActionResultType.PASS);
+            return ((PanelTileEntity)te).onRightClick(player, state);
+        } else {
+            return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
         }
-        return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
     }
 }

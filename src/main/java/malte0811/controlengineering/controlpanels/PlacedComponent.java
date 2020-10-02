@@ -8,6 +8,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraftforge.common.util.Lazy;
 
+import javax.annotation.Nullable;
+
 public class PlacedComponent {
     public static final Codec<PlacedComponent> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
@@ -41,6 +43,7 @@ public class PlacedComponent {
         return pos;
     }
 
+    @Nullable
     public AxisAlignedBB getSelectionShape() {
         return shape.get();
     }
