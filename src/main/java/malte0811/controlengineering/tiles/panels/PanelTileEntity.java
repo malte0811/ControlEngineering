@@ -2,6 +2,7 @@ package malte0811.controlengineering.tiles.panels;
 
 import com.mojang.serialization.Codec;
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.bus.BusEmitterCombiner;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
@@ -11,6 +12,7 @@ import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.components.Button;
 import malte0811.controlengineering.controlpanels.components.Indicator;
 import malte0811.controlengineering.tiles.CETileEntities;
+import malte0811.controlengineering.util.Codecs;
 import malte0811.controlengineering.util.RaytraceUtils;
 import malte0811.controlengineering.util.Vec2d;
 import net.minecraft.block.BlockState;
@@ -36,7 +38,11 @@ import java.util.Optional;
 
 public class PanelTileEntity extends TileEntity {
     private List<PlacedComponent> components = new ArrayList<>();
-    private PanelTransform transform = new PanelTransform(0.25F, (float) Math.toDegrees(Math.atan(0.5)), Direction.DOWN);
+    private PanelTransform transform = new PanelTransform(
+            0.25F,
+            (float) Math.toDegrees(Math.atan(0.5)),
+            PanelOrientation.DOWN_NORTH
+    );
     private final BusEmitterCombiner<Integer> stateHandler = new BusEmitterCombiner<>(
             i -> components.get(i).getComponent().getEmittedState(),
             i -> components.get(i).getComponent().updateTotalState(getTotalState())
@@ -78,12 +84,11 @@ public class PanelTileEntity extends TileEntity {
         }
     }
 
-    //TODO client update sync
     @Override
     public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
         super.read(state, nbt);
-        this.components = read(Codec.list(PlacedComponent.CODEC), nbt, "components");
-        this.transform = read(PanelTransform.CODEC, nbt, "transform");
+        this.components = Codecs.read(Codec.list(PlacedComponent.CODEC), nbt, "components");
+        this.transform = PanelTransform.from(nbt, state.get(PanelOrientation.PROPERTY));
         if (world != null && !world.isRemote) {
             resetStateHandler();
         }
@@ -101,8 +106,8 @@ public class PanelTileEntity extends TileEntity {
     @Override
     public CompoundNBT write(@Nonnull CompoundNBT compound) {
         CompoundNBT encoded = super.write(compound);
-        add(Codec.list(PlacedComponent.CODEC), components, encoded, "components");
-        add(PanelTransform.CODEC, transform, encoded, "transform");
+        Codecs.add(Codec.list(PlacedComponent.CODEC), components, encoded, "components");
+        transform.addTo(compound);
         return encoded;
     }
 
@@ -123,7 +128,8 @@ public class PanelTileEntity extends TileEntity {
     }
 
     public Optional<PlacedComponent> getTargetedComponent(RayTraceContext ctx) {
-        RayTraceContext topCtx = getTransform().toPanelRay(ctx.getStartVec(), ctx.getEndVec(), pos);
+        BlockPos topPos = pos.offset(getBlockState().get(PanelOrientation.PROPERTY).top);
+        RayTraceContext topCtx = getTransform().toPanelRay(ctx.getStartVec(), ctx.getEndVec(), topPos);
         Optional<PlacedComponent> closest = Optional.empty();
         double minDistanceSq = Double.POSITIVE_INFINITY;
         for (PlacedComponent comp : getComponents()) {
@@ -148,18 +154,6 @@ public class PanelTileEntity extends TileEntity {
 
     public PanelTransform getTransform() {
         return transform;
-    }
-
-    private static <T> T read(Codec<T> codec, CompoundNBT in, String subName) {
-        return codec.decode(NBTDynamicOps.INSTANCE, in.get(subName))
-                .getOrThrow(false, s -> {})
-                .getFirst();
-    }
-
-    private static <T> void add(Codec<T> codec, T value, CompoundNBT out, String subName) {
-        INBT componentNBT = codec.encodeStart(NBTDynamicOps.INSTANCE, value)
-                .getOrThrow(false, s -> {});
-        out.put(subName, componentNBT);
     }
 
     private BusState getTotalState() {

@@ -1,35 +1,59 @@
 package malte0811.controlengineering.blocks.panels;
 
-import malte0811.controlengineering.controlpanels.PlacedComponent;
+import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.panels.PanelTileEntity;
-import malte0811.controlengineering.util.RaytraceUtils;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Optional;
 
-public class PanelBlock extends Block {
+public class PanelBlock extends CEBlock<PanelOrientation> {
+    public static final BooleanProperty IS_BASE = BooleanProperty.create("base");
+
     public PanelBlock() {
         super(
                 AbstractBlock.Properties.create(Material.IRON)
                         .notSolid()
-                        .hardnessAndResistance(2, 6)
+                        .hardnessAndResistance(2, 6),
+                new PanelPlacementBehavior()
         );
+    }
+
+    public static PanelTileEntity getBase(World world, BlockState state, BlockPos pos) {
+        BlockPos masterPos;
+        if (state.get(IS_BASE)) {
+            masterPos = pos;
+        } else {
+            PanelOrientation po = state.get(PanelOrientation.PROPERTY);
+            masterPos = pos.offset(po.top, -1);
+        }
+        TileEntity te = world.getTileEntity(masterPos);
+        if (te instanceof PanelTileEntity) {
+            return (PanelTileEntity) te;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        super.fillStateContainer(builder);
+        builder.add(IS_BASE, PanelOrientation.PROPERTY);
     }
 
     @Nonnull
@@ -59,9 +83,9 @@ public class PanelBlock extends Block {
             @Nonnull Hand handIn,
             @Nonnull BlockRayTraceResult hit
     ) {
-        TileEntity te = worldIn.getTileEntity(pos);
-        if (te instanceof PanelTileEntity) {
-            return ((PanelTileEntity)te).onRightClick(player, state);
+        PanelTileEntity te = getBase(worldIn, state, pos);
+        if (te != null) {
+            return te.onRightClick(player, state);
         } else {
             return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
         }
