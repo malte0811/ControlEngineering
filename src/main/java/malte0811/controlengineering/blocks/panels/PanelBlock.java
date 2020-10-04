@@ -56,12 +56,6 @@ public class PanelBlock extends CEBlock<PanelOrientation> {
         builder.add(IS_BASE, PanelOrientation.PROPERTY);
     }
 
-    @Nonnull
-    @Override
-    public BlockRenderType getRenderType(@Nonnull BlockState state) {
-        return BlockRenderType.ENTITYBLOCK_ANIMATED;
-    }
-
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {

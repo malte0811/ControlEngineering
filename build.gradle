@@ -1,5 +1,4 @@
 import net.minecraftforge.gradle.common.task.SignJar
-import groovy.json.JsonOutput
 
 buildscript {
     repositories {
@@ -24,22 +23,29 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 
 sourceSets {
     main {
-        resources {
-            srcDirs = [
-                    "$rootDir/src/main/resources",
-                    "$rootDir/src/generated/resources"
-            ]
-        }
+        setupSourceSet(sourceSets.main, "main")
     }
     datagen {
-        compileClasspath += sourceSets.main.runtimeClasspath
-        runtimeClasspath += sourceSets.main.runtimeClasspath
-        resources {
-            srcDirs = [
-                    "$rootDir/src/main/resources",
-            ]
-        }
+        setupDataGenSourceSet(sourceSets.datagen)
     }
+}
+
+def setupSourceSet(SourceSet sourceSet, String name) {
+    sourceSet.java {
+        srcDir 'src/' + name + '/java'
+    }
+    sourceSet.resources {
+        //Add the generated module resources
+        srcDirs += 'src/generated/resources'
+        //But exclude the cache of the generated data from what gets built
+        exclude '.cache'
+    }
+}
+
+def setupDataGenSourceSet(SourceSet datagenSourceSet) {
+    datagenSourceSet.java.srcDirs = ['src/datagen/java']
+    datagenSourceSet.resources.srcDirs = ['src/datagen/resources']
+    datagenSourceSet.compileClasspath += project.sourceSets.main.output
 }
 
 processResources {
@@ -106,6 +112,7 @@ minecraft {
         }
         data {
             workingDirectory project.file('run')
+            environment 'target', 'fmluserdevdata'
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', ''
@@ -119,12 +126,15 @@ minecraft {
 
             mods {
                 controlengineering {
-                    source sourceSets.datagen
-                    source sourceSets.main
+                    sources(sourceSets.main, sourceSets.datagen)
                 }
             }
         }
     }
+}
+
+configurations {
+    datagenCompile.extendsFrom(compile)
 }
 
 repositories {

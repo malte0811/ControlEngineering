@@ -1,0 +1,9 @@
+{
+  "loader": "immersiveengineering:connector",
+  "base_model": {
+    "parent": "minecraft:block/dirt"
+  },
+  "layers": [
+    "solid"
+  ]
+}

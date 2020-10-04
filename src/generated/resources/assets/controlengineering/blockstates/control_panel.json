@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "base=false": {
+      "model": "immersiveengineering:block/ie_empty"
+    },
+    "base=true": {
+      "model": "controlengineering:panel/base"
+    }
+  }
+}
