@@ -1,7 +1,7 @@
 package malte0811.controlengineering.tiles.panels;
 
+import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.mojang.serialization.Codec;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.bus.BusEmitterCombiner;
 import malte0811.controlengineering.bus.BusSignalRef;
@@ -14,20 +14,19 @@ import malte0811.controlengineering.controlpanels.components.Indicator;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.Codecs;
 import malte0811.controlengineering.util.RaytraceUtils;
+import malte0811.controlengineering.util.ShapeUtils;
 import malte0811.controlengineering.util.Vec2d;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -42,6 +41,18 @@ public class PanelTileEntity extends TileEntity {
             0.25F,
             (float) Math.toDegrees(Math.atan(0.5)),
             PanelOrientation.DOWN_NORTH
+    );
+    private final ResettableLazy<VoxelShape> shape = new ResettableLazy<>(
+            () -> {
+                List<AxisAlignedBB> parts = new ArrayList<>();
+                final double frontHeight = Math.max(transform.getCenterHeight(), transform.getFrontHeight());
+                final double backHeight = Math.max(transform.getCenterHeight(), transform.getBackHeight());
+                parts.add(new AxisAlignedBB(0, 0, 0, 0.5, frontHeight, 1));
+                parts.add(new AxisAlignedBB(0.5, 0, 0, 1, backHeight, 1));
+                return ShapeUtils.or(
+                        parts.stream().map(ShapeUtils.transformFunc(transform.getPanelBottomToWorld()))
+                );
+            }
     );
     private final BusEmitterCombiner<Integer> stateHandler = new BusEmitterCombiner<>(
             i -> components.get(i).getComponent().getEmittedState(),
@@ -92,6 +103,7 @@ public class PanelTileEntity extends TileEntity {
         if (world != null && !world.isRemote) {
             resetStateHandler();
         }
+        shape.reset();
     }
 
     @Override
@@ -168,5 +180,9 @@ public class PanelTileEntity extends TileEntity {
         markDirty();
         world.notifyBlockUpdate(pos, state, state, 0);
         return result;
+    }
+
+    public VoxelShape getShape() {
+        return shape.get();
     }
 }

@@ -47,7 +47,7 @@ public class PanelTransform {
         panelBottomToWorld.rotate(-Math.PI / 2, 0, 1, 0);
         panelBottomToWorld.translate(-0.5, -0.5, -0.5);
         final double radians = Math.toRadians(tileData.degrees);
-        float borderHeight = tileData.centerHeight - (float) (Math.tan(radians) / 2);
+        double borderHeight = getFrontHeight();
 
         panelTopToWorld = new Matrix4();
         panelTopToWorld.multiply(getPanelBottomToWorld());
@@ -101,9 +101,23 @@ public class PanelTransform {
         Codecs.add(CODEC, tileData, out, "transform");
     }
 
+    public double getFrontHeight() {
+        final double radians = Math.toRadians(tileData.degrees);
+        return tileData.centerHeight - (Math.tan(radians) / 2);
+    }
+
+    public double getBackHeight() {
+        final double radians = Math.toRadians(tileData.degrees);
+        return tileData.centerHeight + (Math.tan(radians) / 2);
+    }
+
     public static PanelTransform from(CompoundNBT nbt, PanelOrientation orientation) {
         TileTransformData tile = Codecs.read(CODEC, nbt, "transform");
         return new PanelTransform(tile, orientation);
+    }
+
+    public double getCenterHeight() {
+        return tileData.centerHeight;
     }
 
     private static class TileTransformData {

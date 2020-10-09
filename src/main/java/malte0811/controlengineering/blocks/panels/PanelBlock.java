@@ -16,6 +16,8 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -34,7 +36,7 @@ public class PanelBlock extends CEBlock<PanelOrientation> {
         );
     }
 
-    public static PanelTileEntity getBase(World world, BlockState state, BlockPos pos) {
+    public static PanelTileEntity getBase(IBlockReader world, BlockState state, BlockPos pos) {
         BlockPos masterPos;
         if (state.get(IS_BASE)) {
             masterPos = pos;
@@ -51,7 +53,7 @@ public class PanelBlock extends CEBlock<PanelOrientation> {
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
         builder.add(IS_BASE, PanelOrientation.PROPERTY);
     }
@@ -83,5 +85,20 @@ public class PanelBlock extends CEBlock<PanelOrientation> {
         } else {
             return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
         }
+    }
+
+    @Nonnull
+    @Override
+    public VoxelShape getShape(
+            @Nonnull BlockState state,
+            @Nonnull IBlockReader worldIn,
+            @Nonnull BlockPos pos,
+            @Nonnull ISelectionContext context
+    ) {
+        PanelTileEntity panel = getBase(worldIn, state, pos);
+        if (panel != null) {
+            return panel.getShape();
+        }
+        return super.getShape(state, worldIn, pos, context);
     }
 }

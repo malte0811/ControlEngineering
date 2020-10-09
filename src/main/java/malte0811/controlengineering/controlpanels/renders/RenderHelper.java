@@ -50,8 +50,7 @@ public class RenderHelper {
         TextureAtlasSprite texture = Minecraft.getInstance()
                 .getModelManager()
                 .getAtlasTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE)
-                .getSprite(
-                loc);
+                .getSprite(loc);
         for (Pair<Vector3d, Vec2d> vec : ImmutableList.of(
                 Pair.of(vec1, new Vec2d(texture.getMinU(), texture.getMinV())),
                 Pair.of(vec2, new Vec2d(texture.getMinU(), texture.getMaxV())),
