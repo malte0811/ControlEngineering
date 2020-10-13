@@ -4,8 +4,9 @@ import blusunrize.immersiveengineering.api.wires.IImmersiveConnectable;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.bus.BasicConnectorBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
-import malte0811.controlengineering.tiles.bus.BusRelayTile;
 import malte0811.controlengineering.tiles.CETileEntities;
+import malte0811.controlengineering.tiles.bus.BusInterfaceTile;
+import malte0811.controlengineering.tiles.bus.BusRelayTile;
 import malte0811.controlengineering.tiles.bus.LineAccessTile;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -24,6 +25,11 @@ public class CEBlocks {
             ControlEngineering.MODID
     );
 
+    public static final RegistryObject<BasicConnectorBlock<BusInterfaceTile>> BUS_INTERFACE = REGISTER.register(
+            "bus_interface",
+            createConnector(() -> CETileEntities.BUS_INTERFACE.get())
+    );
+
     public static final RegistryObject<BasicConnectorBlock<BusRelayTile>> BUS_RELAY = REGISTER.register(
             "bus_relay",
             createConnector(() -> CETileEntities.BUS_RELAY.get())
@@ -33,6 +39,7 @@ public class CEBlocks {
             "line_access",
             createConnector(() -> CETileEntities.LINE_ACCESS.get())
     );
+
     public static final RegistryObject<PanelBlock> CONTROL_PANEL = REGISTER.register("control_panel", PanelBlock::new);
 
     private static <T extends TileEntity & IImmersiveConnectable>

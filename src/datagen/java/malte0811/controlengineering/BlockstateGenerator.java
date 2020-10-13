@@ -4,14 +4,16 @@ import blusunrize.immersiveengineering.api.Lib;
 import blusunrize.immersiveengineering.client.models.connection.ConnectionLoader;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
-import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.generators.*;
+import net.minecraftforge.client.model.generators.BlockModelBuilder;
+import net.minecraftforge.client.model.generators.BlockStateProvider;
+import net.minecraftforge.client.model.generators.ConfiguredModel;
+import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class BlockstateGenerator extends BlockStateProvider {
@@ -32,6 +34,8 @@ public class BlockstateGenerator extends BlockStateProvider {
     @Override
     protected void registerStatesAndModels() {
         dummyIIC(CEBlocks.BUS_RELAY.get());
+        dummyIIC(CEBlocks.LINE_ACCESS.get());
+        dummyIIC(CEBlocks.BUS_INTERFACE.get());
         panelModel();
 
         loadedModels.backupModels();

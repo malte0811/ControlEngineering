@@ -3,15 +3,19 @@ package malte0811.controlengineering.blocks.placement;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.datafixers.util.Unit;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.util.Lazy;
+import net.minecraftforge.fml.RegistryObject;
 
 import java.util.Collection;
 
 public interface PlacementBehavior<T> {
-    static PlacementBehavior<Unit> simple(BlockState state) {
+    static PlacementBehavior<Unit> simple(RegistryObject<Block> block) {
+        Lazy<BlockState> state = Lazy.of(() -> block.get().getDefaultState());
         return new PlacementBehavior<Unit>() {
             @Override
             public Unit getPlacementData(BlockItemUseContext ctx) {
@@ -30,7 +34,7 @@ public interface PlacementBehavior<T> {
 
             @Override
             public BlockState getStateForOffset(BlockPos offset, Unit data) {
-                return state;
+                return state.get();
             }
 
             @Override
@@ -40,7 +44,7 @@ public interface PlacementBehavior<T> {
                     TileEntity te,
                     Unit data
             ) {
-                return BlockPos.ZERO.equals(offset) && actualState == state;
+                return BlockPos.ZERO.equals(offset) && actualState == state.get();
             }
         };
     }

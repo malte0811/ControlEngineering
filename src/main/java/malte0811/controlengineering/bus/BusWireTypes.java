@@ -1,6 +1,7 @@
 package malte0811.controlengineering.bus;
 
 import blusunrize.immersiveengineering.api.wires.Connection;
+import blusunrize.immersiveengineering.api.wires.WireApi;
 import blusunrize.immersiveengineering.api.wires.WireType;
 import com.google.common.base.Preconditions;
 import malte0811.controlengineering.ControlEngineering;
@@ -17,9 +18,11 @@ public class BusWireTypes {
     public static final int MAX_BUS_WIDTH = 4;
     public static final int MIN_BUS_WIDTH = 1;
     private static final WireType[] WIRE_TYPES = new WireType[MAX_BUS_WIDTH + 1 - MIN_BUS_WIDTH];
-    static {
+
+    public static void init() {
         for (int w = MIN_BUS_WIDTH; w <= MAX_BUS_WIDTH; ++w) {
             WIRE_TYPES[w - MIN_BUS_WIDTH] = new BusWireType(w);
+            WireApi.registerWireType(WIRE_TYPES[w - MIN_BUS_WIDTH]);
         }
     }
 

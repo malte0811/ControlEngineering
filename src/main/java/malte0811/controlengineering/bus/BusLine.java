@@ -2,6 +2,7 @@ package malte0811.controlengineering.bus;
 
 import blusunrize.immersiveengineering.api.wires.redstone.RedstoneNetworkHandler;
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 
 import java.util.Arrays;
 
@@ -10,6 +11,7 @@ public class BusLine {
     public static final int MAX_VALID_VALUE = 255;
     public static final int MIN_VALID_VALUE = 0;
     public static final int RS_SCALE_FACTOR = 16;
+    public static final BusLine EMPTY = new BusLine();
 
     private final int[] values;
 
@@ -18,9 +20,13 @@ public class BusLine {
     }
 
     public BusLine(RedstoneNetworkHandler rsHandler) {
+        this(rsHandler::getValue);
+    }
+
+    private BusLine(Int2IntFunction rsValues) {
         int[] values = new int[LINE_SIZE];
         for (int i = 0; i < LINE_SIZE; ++i) {
-            values[i] = rsHandler.getValue(i) * RS_SCALE_FACTOR;
+            values[i] = rsValues.applyAsInt(i) * RS_SCALE_FACTOR;
         }
         this.values = values;
     }
@@ -31,6 +37,11 @@ public class BusLine {
             Preconditions.checkArgument(val >= MIN_VALID_VALUE && val <= MAX_VALID_VALUE);
         }
         this.values = values;
+    }
+
+    public static BusLine fromRSState(byte[] in) {
+        Preconditions.checkArgument(in.length == LINE_SIZE);
+        return new BusLine(i -> in[i]);
     }
 
     public int getValue(int color) {

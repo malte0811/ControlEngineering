@@ -4,10 +4,8 @@ import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
 import blusunrize.immersiveengineering.api.wires.IImmersiveConnectable;
 import blusunrize.immersiveengineering.api.wires.LocalWireNetwork;
 import blusunrize.immersiveengineering.api.wires.WireType;
-import com.google.common.base.Preconditions;
-import malte0811.controlengineering.bus.BusWireTypes;
+import malte0811.controlengineering.ControlEngineering;
 import net.minecraft.util.math.vector.Vector3i;
-import org.apache.http.pool.ConnPool;
 
 import java.util.Optional;
 
@@ -21,10 +19,8 @@ public interface IBusConnector extends IImmersiveConnectable {
     LocalWireNetwork getLocalNet(int cpIndex);
 
     @Override
-    default boolean canConnectCable(
-            WireType wireType, ConnectionPoint connectionPoint, Vector3i offset
-    ) {
-        if (!(wireType instanceof BusWireTypes.BusWireType))
+    default boolean canConnectCable(WireType wireType, ConnectionPoint connectionPoint, Vector3i offset) {
+        if (!(wireType instanceof BusWireTypes.BusWireType) || !isBusPoint(connectionPoint))
             return false;
         else {
             int width = ((BusWireTypes.BusWireType) wireType).getWidth();
@@ -37,9 +33,16 @@ public interface IBusConnector extends IImmersiveConnectable {
     }
 
     default Optional<Integer> getCurrentBusWidth(ConnectionPoint cp) {
+        if (!isBusPoint(cp)) {
+            return Optional.empty();
+        }
         return getLocalNet(cp.getIndex()).getConnections(cp).stream().findAny().map(c -> {
-            Preconditions.checkArgument(c.type instanceof BusWireTypes.BusWireType, "Unexpected wire type: %s", c.type);
-            return ((BusWireTypes.BusWireType) c.type).getWidth();
+            if (c.type instanceof BusWireTypes.BusWireType)
+                return ((BusWireTypes.BusWireType) c.type).getWidth();
+            else {
+                ControlEngineering.LOGGER.warn("Expected bus wire type, got {} ({})", c.type, c.type.getUniqueName());
+                return 0;
+            }
         });
     }
 
@@ -51,5 +54,9 @@ public interface IBusConnector extends IImmersiveConnectable {
     default LocalBusHandler getBusHandler(ConnectionPoint cp) {
         return getLocalNet(cp.getIndex())
                 .getHandler(LocalBusHandler.NAME, LocalBusHandler.class);
+    }
+
+    default boolean isBusPoint(ConnectionPoint cp) {
+        return true;
     }
 }

@@ -1,6 +1,8 @@
 package malte0811.controlengineering.bus;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -8,7 +10,7 @@ public class BusEmitterCombiner<T> {
     private final Function<T, BusState> getEmittedState;
     private final Consumer<T> updateTotalState;
 
-    private Map<T, BusState> outputByBlock = new HashMap<>();
+    private final Map<T, BusState> outputByBlock = new HashMap<>();
     private BusState totalState = new BusState();
     private BusState totalEmittedState = new BusState();
 
@@ -50,6 +52,16 @@ public class BusEmitterCombiner<T> {
 
     public BusState getTotalEmittedState() {
         return totalEmittedState;
+    }
+
+    public BusState getStateWithout(T excluded) {
+        BusState merged = new BusState();
+        for (Map.Entry<T, BusState> entry : outputByBlock.entrySet()) {
+            if (!excluded.equals(entry.getKey())) {
+                merged = merged.merge(entry.getValue());
+            }
+        }
+        return merged;
     }
 
     public Iterable<T> getEmitters() {

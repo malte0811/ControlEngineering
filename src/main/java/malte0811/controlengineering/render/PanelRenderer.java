@@ -10,7 +10,7 @@ import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.render.utils.DelegatingVertexBuilder;
 import malte0811.controlengineering.render.utils.TransformingVertexBuilder;
-import malte0811.controlengineering.tiles.panels.PanelTileEntity;
+import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -21,13 +21,12 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nonnull;
 
 //TODO baked model? VBO? At least partially?
-public class PanelRenderer extends TileEntityRenderer<PanelTileEntity> {
+public class PanelRenderer extends TileEntityRenderer<ControlPanelTile> {
     //TODO reset
     private static final ResettableLazy<TextureAtlasSprite> texture = new ResettableLazy<>(
             () -> {
@@ -45,7 +44,7 @@ public class PanelRenderer extends TileEntityRenderer<PanelTileEntity> {
 
     @Override
     public void render(
-            PanelTileEntity tile,
+            ControlPanelTile tile,
             float partialTicks,
             @Nonnull MatrixStack transform,
             @Nonnull IRenderTypeBuffer buffer,
@@ -76,7 +75,7 @@ public class PanelRenderer extends TileEntityRenderer<PanelTileEntity> {
     }
 
     private static void renderPanel(
-            PanelTileEntity panel,
+            ControlPanelTile panel,
             MatrixStack matrix,
             IVertexBuilder builder,
             TextureAtlasSprite texture,

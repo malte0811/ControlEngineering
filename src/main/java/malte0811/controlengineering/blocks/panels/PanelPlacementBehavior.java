@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.placement.PlacementBehavior;
-import malte0811.controlengineering.tiles.panels.PanelTileEntity;
+import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
@@ -75,7 +75,7 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
 
     @Override
     public void fillTileData(BlockPos offset, TileEntity te, PanelOrientation data) {
-        if (BlockPos.ZERO.equals(offset) && te instanceof PanelTileEntity) {
+        if (BlockPos.ZERO.equals(offset) && te instanceof ControlPanelTile) {
             //TODO read from item stack
             CompoundNBT nbt = te.write(new CompoundNBT());
             te.read(getStateForOffset(offset, data), nbt);

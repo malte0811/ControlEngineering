@@ -28,7 +28,7 @@ public class BusRelayTile extends ImmersiveConnectableTileEntity implements IBus
 
     @Override
     public BusState getEmittedState(ConnectionPoint checkedPoint) {
-        return new BusState(getCurrentBusWidth(checkedPoint).orElse(getMinBusWidthForConfig(checkedPoint)));
+        return new BusState();
     }
 
     @Override

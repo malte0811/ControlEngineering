@@ -1,7 +1,5 @@
 package malte0811.controlengineering.bus;
 
-import com.google.common.base.Preconditions;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +22,11 @@ public class BusState {
     }
 
     public BusLine getLine(int index) {
-        return lines.get(index);
+        if (index < lines.size()) {
+            return lines.get(index);
+        } else {
+            return BusLine.EMPTY;
+        }
     }
 
     public BusState withLine(int index, BusLine line) {

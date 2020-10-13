@@ -3,19 +3,14 @@ package malte0811.controlengineering.tiles.panels;
 import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.mojang.serialization.Codec;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
-import malte0811.controlengineering.bus.BusEmitterCombiner;
-import malte0811.controlengineering.bus.BusSignalRef;
-import malte0811.controlengineering.bus.BusState;
+import malte0811.controlengineering.bus.*;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.components.Button;
 import malte0811.controlengineering.controlpanels.components.Indicator;
 import malte0811.controlengineering.tiles.CETileEntities;
-import malte0811.controlengineering.util.Codecs;
-import malte0811.controlengineering.util.RaytraceUtils;
-import malte0811.controlengineering.util.ShapeUtils;
-import malte0811.controlengineering.util.Vec2d;
+import malte0811.controlengineering.util.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -23,6 +18,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext;
@@ -35,13 +31,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class PanelTileEntity extends TileEntity {
+public class ControlPanelTile extends TileEntity implements IBusInterface {
+    private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private List<PlacedComponent> components = new ArrayList<>();
     private PanelTransform transform = new PanelTransform(
             0.25F,
             (float) Math.toDegrees(Math.atan(0.5)),
             PanelOrientation.DOWN_NORTH
     );
+    private BusState inputState = new BusState();
     private final ResettableLazy<VoxelShape> shape = new ResettableLazy<>(
             () -> {
                 List<AxisAlignedBB> parts = new ArrayList<>();
@@ -59,7 +57,7 @@ public class PanelTileEntity extends TileEntity {
             i -> components.get(i).getComponent().updateTotalState(getTotalState())
     );
 
-    public PanelTileEntity() {
+    public ControlPanelTile() {
         super(CETileEntities.CONTROL_PANEL.get());
         Button b = PanelComponents.BUTTON.empty();
         b.setColor(0xff0000);
@@ -83,15 +81,19 @@ public class PanelTileEntity extends TileEntity {
         for (int i = 0; i < components.size(); ++i) {
             stateHandler.addEmitter(i);
         }
-        updateBusState();
+        updateBusState(SyncType.NEVER);
     }
 
-    private void updateBusState() {
+    private void updateBusState(SyncType sync) {
         BusState oldState = stateHandler.getTotalEmittedState();
-        //TODO include input state
-        stateHandler.updateState(new BusState());
-        if (!oldState.equals(stateHandler.getTotalEmittedState())) {
-            //TODO update output state
+        stateHandler.updateState(this.inputState);
+        boolean changed = !oldState.equals(stateHandler.getTotalEmittedState());
+        if (changed) {
+            markBusDirty.run();
+        }
+        if (sync.shouldSync(changed) && world != null) {
+            BlockState state = getBlockState();
+            world.notifyBlockUpdate(pos, state, state, 0);
         }
     }
 
@@ -175,14 +177,63 @@ public class PanelTileEntity extends TileEntity {
     public ActionResultType onRightClick(PlayerEntity player, BlockState state) {
         RayTraceContext raytraceCtx = RaytraceUtils.create(player, 0);
         Optional<PlacedComponent> targeted = getTargetedComponent(raytraceCtx);
-        ActionResultType result = targeted.map(PlacedComponent::onClick).orElse(ActionResultType.PASS);
-        updateBusState();
-        markDirty();
-        world.notifyBlockUpdate(pos, state, state, 0);
-        return result;
+        if (targeted.isPresent()) {
+            if (world.isRemote) {
+                //TODO return correct type?
+                return ActionResultType.SUCCESS;
+            } else {
+                ActionResultType result = targeted.get().onClick();
+                updateBusState(SyncType.ALWAYS);
+                markDirty();
+                return result;
+            }
+        }
+        return ActionResultType.PASS;
     }
 
     public VoxelShape getShape() {
         return shape.get();
+    }
+
+    @Override
+    public void onBusUpdated(BusState newState) {
+        if (!newState.equals(inputState)) {
+            this.inputState = newState;
+            this.updateBusState(SyncType.IF_CHANGED);
+        }
+    }
+
+    @Override
+    public BusState getEmittedState() {
+        return this.stateHandler.getTotalEmittedState();
+    }
+
+    @Override
+    public boolean canConnect(Direction fromSide) {
+        //TODO? At least forbid for panel top?
+        return true;
+    }
+
+    @Override
+    public void addMarkDirtyCallback(Clearable<Runnable> markDirty) {
+        this.markBusDirty.addCallback(markDirty);
+    }
+
+    private enum SyncType {
+        NEVER,
+        IF_CHANGED,
+        ALWAYS;
+
+        public boolean shouldSync(boolean changed) {
+            switch (this) {
+                case NEVER:
+                    return false;
+                case IF_CHANGED:
+                    return changed;
+                case ALWAYS:
+                    return true;
+            }
+            throw new UnsupportedOperationException("Unknown sync type " + name());
+        }
     }
 }

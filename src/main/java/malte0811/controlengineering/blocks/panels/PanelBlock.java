@@ -2,10 +2,9 @@ package malte0811.controlengineering.blocks.panels;
 
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.tiles.CETileEntities;
-import malte0811.controlengineering.tiles.panels.PanelTileEntity;
+import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,7 +35,7 @@ public class PanelBlock extends CEBlock<PanelOrientation> {
         );
     }
 
-    public static PanelTileEntity getBase(IBlockReader world, BlockState state, BlockPos pos) {
+    public static ControlPanelTile getBase(IBlockReader world, BlockState state, BlockPos pos) {
         BlockPos masterPos;
         if (state.get(IS_BASE)) {
             masterPos = pos;
@@ -45,8 +44,8 @@ public class PanelBlock extends CEBlock<PanelOrientation> {
             masterPos = pos.offset(po.top, -1);
         }
         TileEntity te = world.getTileEntity(masterPos);
-        if (te instanceof PanelTileEntity) {
-            return (PanelTileEntity) te;
+        if (te instanceof ControlPanelTile) {
+            return (ControlPanelTile) te;
         } else {
             return null;
         }
@@ -79,7 +78,7 @@ public class PanelBlock extends CEBlock<PanelOrientation> {
             @Nonnull Hand handIn,
             @Nonnull BlockRayTraceResult hit
     ) {
-        PanelTileEntity te = getBase(worldIn, state, pos);
+        ControlPanelTile te = getBase(worldIn, state, pos);
         if (te != null) {
             return te.onRightClick(player, state);
         } else {
@@ -95,9 +94,11 @@ public class PanelBlock extends CEBlock<PanelOrientation> {
             @Nonnull BlockPos pos,
             @Nonnull ISelectionContext context
     ) {
-        PanelTileEntity panel = getBase(worldIn, state, pos);
-        if (panel != null) {
-            return panel.getShape();
+        if (!state.get(IS_BASE)) {
+            ControlPanelTile panel = getBase(worldIn, state, pos);
+            if (panel != null) {
+                return panel.getShape();
+            }
         }
         return super.getShape(state, worldIn, pos, context);
     }

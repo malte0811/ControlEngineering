@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "controlengineering:block/dummy_iic"
+    }
+  }
+}

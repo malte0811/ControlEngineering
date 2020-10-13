@@ -6,14 +6,12 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
-import malte0811.controlengineering.tiles.panels.PanelTileEntity;
-import malte0811.controlengineering.util.MatrixUtils;
+import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import malte0811.controlengineering.util.RaytraceUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -42,7 +40,7 @@ public class ControlPanelClientEvents {
         if (state.getBlock() != CEBlocks.CONTROL_PANEL.get() || state.get(PanelBlock.IS_BASE)) {
             return;
         }
-        PanelTileEntity panel = PanelBlock.getBase(world, state, highlighted);
+        ControlPanelTile panel = PanelBlock.getBase(world, state, highlighted);
         if (panel != null) {
             ev.getMatrix().push();
             Vector3d projectedView = Vector3d.copy(highlighted).subtract(ev.getInfo().getProjectedView());
@@ -65,7 +63,7 @@ public class ControlPanelClientEvents {
         }
     }
 
-    private static void renderPanelOutline(PanelTileEntity panel, MatrixStack matrix, IVertexBuilder builder) {
+    private static void renderPanelOutline(ControlPanelTile panel, MatrixStack matrix, IVertexBuilder builder) {
         Vector3d[] bottomVertices = layerVertices(1);
         Vector3d[] topVertices = layerVertices(panel.getTransform().getTopFaceHeight());
         for (int i = 0; i < 4; ++i) {

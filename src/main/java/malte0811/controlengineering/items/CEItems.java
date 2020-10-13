@@ -25,6 +25,7 @@ public class CEItems {
 
     private static final List<RegistryObject<BusCoilItem>> BUS_WIRE_COILS;
     private static final RegistryObject<BlockItem> BUS_RELAY = blockItem(CEBlocks.BUS_RELAY);
+    private static final RegistryObject<BlockItem> BUS_INTERFACE = blockItem(CEBlocks.BUS_INTERFACE);
     private static final RegistryObject<BlockItem> LINE_ACCESS = blockItem(CEBlocks.LINE_ACCESS);
     private static final RegistryObject<CEBlockItem<PanelOrientation>> CONTROL_PANEL = blockItemCE(CEBlocks.CONTROL_PANEL);
 
