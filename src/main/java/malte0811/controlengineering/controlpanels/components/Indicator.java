@@ -1,6 +1,5 @@
 package malte0811.controlengineering.controlpanels.components;
 
-import blusunrize.immersiveengineering.common.util.IELogger;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.bus.BusSignalRef;
@@ -28,7 +27,7 @@ public class Indicator extends PanelComponent<Indicator> {
 
     @Override
     public BusState getEmittedState() {
-        return new BusState();
+        return BusState.EMPTY;
     }
 
     @Override

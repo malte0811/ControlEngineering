@@ -57,9 +57,9 @@ public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickab
     public void onConnectorRemoved(BlockPos p, IImmersiveConnectable iic) {
         if (iic instanceof IBusConnector) {
             IBusConnector busConnector = (IBusConnector) iic;
-            for (ConnectionPoint cp : localNet.getConnectionPoints()) {
-                if (cp.getPosition().equals(p) && busConnector.isBusPoint(cp)) {
-                    stateHandler.removeEmitter(Pair.of(cp, busConnector));
+            for (ConnectionPoint cp : busConnector.getConnectionPoints()) {
+                if (busConnector.isBusPoint(cp)) {
+                    stateHandler.removeEmitterIfPresent(Pair.of(cp, busConnector));
                 }
             }
             requestUpdate();
@@ -87,7 +87,7 @@ public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickab
     @Override
     public void update(World w) {
         if (updateNextTick) {
-            stateHandler.updateState(new BusState());
+            stateHandler.updateState(BusState.EMPTY);
             updateNextTick = false;
         }
     }

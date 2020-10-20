@@ -46,7 +46,7 @@ public class BusInterfaceTile extends ImmersiveConnectableTileEntity implements 
     public BusState getEmittedState(ConnectionPoint checkedPoint) {
         return getConnectedTile()
                 .map(IBusInterface::getEmittedState)
-                .orElseGet(BusState::new);
+                .orElse(BusState.EMPTY);
     }
 
     @Override

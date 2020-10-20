@@ -11,8 +11,8 @@ public class BusEmitterCombiner<T> {
     private final Consumer<T> updateTotalState;
 
     private final Map<T, BusState> outputByBlock = new HashMap<>();
-    private BusState totalState = new BusState();
-    private BusState totalEmittedState = new BusState();
+    private BusState totalState = BusState.EMPTY;
+    private BusState totalEmittedState = BusState.EMPTY;
 
     public BusEmitterCombiner(
             Function<T, BusState> getEmittedState,
@@ -26,13 +26,13 @@ public class BusEmitterCombiner<T> {
         outputByBlock.put(emitter, getEmittedState.apply(emitter));
     }
 
-    public void removeEmitter(T emitter) {
+    public void removeEmitterIfPresent(T emitter) {
         outputByBlock.remove(emitter);
     }
 
     public void updateState(BusState initialState) {
         final BusState oldState = totalState;
-        totalEmittedState = new BusState();
+        totalEmittedState = BusState.EMPTY;
         for (T key : outputByBlock.keySet()) {
             final BusState emittedState = getEmittedState.apply(key);
             outputByBlock.put(key, emittedState);
@@ -55,7 +55,7 @@ public class BusEmitterCombiner<T> {
     }
 
     public BusState getStateWithout(T excluded) {
-        BusState merged = new BusState();
+        BusState merged = BusState.EMPTY;
         for (Map.Entry<T, BusState> entry : outputByBlock.entrySet()) {
             if (!excluded.equals(entry.getKey())) {
                 merged = merged.merge(entry.getValue());

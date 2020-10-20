@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BusState {
+    public static final BusState EMPTY = new BusState();
+
     private final List<BusLine> lines;
 
-    public BusState() {
+    private BusState() {
         this(0);
     }
 

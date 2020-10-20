@@ -39,7 +39,7 @@ public class ControlPanelTile extends TileEntity implements IBusInterface {
             (float) Math.toDegrees(Math.atan(0.5)),
             PanelOrientation.DOWN_NORTH
     );
-    private BusState inputState = new BusState();
+    private BusState inputState = BusState.EMPTY;
     private final ResettableLazy<VoxelShape> shape = new ResettableLazy<>(
             () -> {
                 List<AxisAlignedBB> parts = new ArrayList<>();
@@ -178,15 +178,12 @@ public class ControlPanelTile extends TileEntity implements IBusInterface {
         RayTraceContext raytraceCtx = RaytraceUtils.create(player, 0);
         Optional<PlacedComponent> targeted = getTargetedComponent(raytraceCtx);
         if (targeted.isPresent()) {
-            if (world.isRemote) {
-                //TODO return correct type?
-                return ActionResultType.SUCCESS;
-            } else {
-                ActionResultType result = targeted.get().onClick();
+            ActionResultType result = targeted.get().onClick();
+            if (!world.isRemote) {
                 updateBusState(SyncType.ALWAYS);
                 markDirty();
-                return result;
             }
+            return result;
         }
         return ActionResultType.PASS;
     }
@@ -217,6 +214,18 @@ public class ControlPanelTile extends TileEntity implements IBusInterface {
     @Override
     public void addMarkDirtyCallback(Clearable<Runnable> markDirty) {
         this.markBusDirty.addCallback(markDirty);
+    }
+
+    @Override
+    public void remove() {
+        super.remove();
+        this.markBusDirty.run();
+    }
+
+    @Override
+    public void onChunkUnloaded() {
+        super.onChunkUnloaded();
+        this.markBusDirty.run();
     }
 
     private enum SyncType {
