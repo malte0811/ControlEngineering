@@ -1,17 +1,8 @@
-#### Bus wires (features and code structure)
- - Combine a fixed number of RS wires into a single wire
-   - Different wire types
-   - width: number of wires
-   - bus line: index of wire
-   - Width in range [1, MAX_WIDTH]
- - Connectors/relays do not have an inherent width
- - Wires of different width cannot be mixed on one connector
- - For connectors that can be configured depending on width
-   - `getMinimumWidthForCurrentConfiguration` 
-     - used to determine whether a wire can be attached, generally `max(used bus line)`
-   - `getMaximumWidthForCurrentWires`
-     - used to determine whether a bus line can be addressed, generally  
-     `if wire attached: attached width else: MAX_WIDTH`
+Working title: Control engineering 
+ - This is an [existing term](https://en.wikipedia.org/wiki/Control_engineering) for something that roughly matches the goals of the addon
+#### Bus wires
+ - Combine 4 RS wires into one
+   - Having only 16 signals has been a limiting factor in 1.12
  - Local net handler analogous to RS local handler
    - Possibly with deterministic delay (updating values in handler tick)?  
    => Logic Boxes
@@ -24,7 +15,7 @@
    - Bus remapper?
      - Takes two bus wires, possibly of different width, allow arbitrary lines to be connected
  
-#### Control panels (features)
+#### Control panels
  - Components
    - Mostly as in 1.12
  - Ideally get rid of panel connector blocks
@@ -35,9 +26,11 @@
  - Creation: Using text-based format on paper tape
    - Concept: `BUTTON X 5 Y 3 COLOR FF00FF LATCHING YES\n`
    - CNC mill with integrated pick+place for actual creation
+   - Solves the problem of creating multiple of the same panel (hard to impossible in 1.12)
+   - Probably will need to implement a nice UI for it later on...
  
-#### Logic Boxes (features)
- - Mostly as described in gist from 2018
+#### Logic Boxes
+ - Mostly as described in [gist from 2018](https://gist.github.com/malte0811/c1ad8a86764bd3216b253200cedee7af)
  - Circuit creation GUI ideas:
    - Traditional circuit layout UI
      - Complex to implement
@@ -53,17 +46,16 @@
      - Only allow connections to cells placed further to the right
      - Automatically enforces some degree of organization in layouts
 
-### 5 hole paper tape (features)
+### ~~5~~ 8 hole paper tape
  - Two items with variable length: Punched paper tape and new paper tape (TODO names)
  - Punched tape can be read without machines
-   - Concept: Left spool, right spool, tape with visible holes in between, desc above (color+on/off or char)
+   - Concept: Left spool, right spool, tape with visible holes in between, desc above (color+intensity or char)
  - Can be glued together and cut
  - All holes: ignored in text mode
  - Creation:
    - Typewriter
      - Manual
      - Text based
-     - automatically handles letter/number switches
      - Limited to 3? chars/second
      - On-screen keyboard, but still supports physical kb
      - Maybe: Also usable as TTY?
@@ -72,11 +64,11 @@
    - Manual puncher
      - Used to create "binary" tapes
      - Item with UI
-     - Either direct binary or color+on/off
+     - Either direct binary or color+intensity
  - Sequencer
    - Accepts an RS interface connector
    - Reads tape one char at a time
-   - 4 bits color, one bit on/off
+   - 4 bits color, 4 bits intensity
    - Clock module (also used for logic boxes)
      - Determines when the tape advances/the LB steps
      - Swapped in-world, has its own UI as necessary
@@ -86,5 +78,4 @@
        - External
        - Gated: Every `x` ticks while RS input is high
    - Ideas:
-     - Fast mode: three/four tapes, set every channel at once
-     - Analog mode: two tapes, one for channel, one for strength
+     - Fast mode: two tapes, set every channel to binary value at once
