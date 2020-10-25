@@ -15,6 +15,7 @@ public class CEDataGen {
                 loadedModels
         );
         ev.getGenerator().addProvider(blockstates);
+        ev.getGenerator().addProvider(new ItemModels(ev));
         ev.getGenerator().addProvider(loadedModels);
     }
 }

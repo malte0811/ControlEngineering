@@ -23,7 +23,15 @@ public class CEItems {
             ControlEngineering.MODID
     );
 
+    //Items
     private static final List<RegistryObject<BusCoilItem>> BUS_WIRE_COILS;
+    public static final RegistryObject<PunchedTapeItem> PUNCHED_TAPE = REGISTER.register(
+            "punched_tape",
+            PunchedTapeItem::new
+    );
+    public static final RegistryObject<EmptyTapeItem> EMPTY_TAPE = REGISTER.register("empty_tape", EmptyTapeItem::new);
+
+    //Blocks
     private static final RegistryObject<BlockItem> BUS_RELAY = blockItem(CEBlocks.BUS_RELAY);
     private static final RegistryObject<BlockItem> BUS_INTERFACE = blockItem(CEBlocks.BUS_INTERFACE);
     private static final RegistryObject<BlockItem> LINE_ACCESS = blockItem(CEBlocks.LINE_ACCESS);
