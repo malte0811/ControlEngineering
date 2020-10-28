@@ -14,4 +14,12 @@ public class ColorUtils {
         }
         return out;
     }
+
+    public static float[] unpackColorNoAlpha(int color) {
+        return new float[]{
+                BitUtils.getBits(color, 24, 8) / 255F,
+                BitUtils.getBits(color, 16, 8) / 255F,
+                BitUtils.getBits(color, 8, 8) / 255F,
+        };
+    }
 }

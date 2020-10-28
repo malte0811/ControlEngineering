@@ -1,13 +1,19 @@
 package malte0811.controlengineering.items;
 
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.gui.ViewTapeScreen;
+import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.ItemNBTUtil;
 import malte0811.controlengineering.util.TextUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -20,8 +26,6 @@ import java.util.List;
 public class PunchedTapeItem extends Item {
     // Main tag
     private static final String BYTES_KEY = "bytes";
-    // Share tag
-    private static final String BYTE_COUNT_KEY = "byteCount";
 
     public PunchedTapeItem() {
         super(
@@ -34,8 +38,9 @@ public class PunchedTapeItem extends Item {
     @Override
     public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
         if (isInGroup(group)) {
-            items.add(setBytes(new ItemStack(this), "Test1".getBytes()));
-            items.add(setBytes(new ItemStack(this), "Another test".getBytes()));
+            //TODO remove? replace with more sensible values?
+            items.add(setBytes(new ItemStack(this), BitUtils.toBytesWithParity("Test1")));
+            items.add(setBytes(new ItemStack(this), BitUtils.toBytesWithParity("Another test")));
         }
     }
 
@@ -54,22 +59,17 @@ public class PunchedTapeItem extends Item {
         );
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public CompoundNBT getShareTag(ItemStack stack) {
-        CompoundNBT nbt = ItemNBTUtil.getTag(stack)
-                .map(CompoundNBT::copy)
-                .orElseGet(CompoundNBT::new);
-        nbt.remove(BYTES_KEY);
-        nbt.putInt(BYTE_COUNT_KEY, getBytes(stack).length);
-        return nbt;
-    }
-
-    @Override
-    public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt) {
-        if (nbt != null) {
-            setBytes(stack, new byte[nbt.getInt(BYTE_COUNT_KEY)]);
+    public ActionResult<ItemStack> onItemRightClick(
+            @Nonnull World worldIn, @Nonnull PlayerEntity playerIn, @Nonnull Hand handIn
+    ) {
+        ItemStack stack = playerIn.getHeldItem(handIn);
+        if (worldIn.isRemote) {
+            //TODO name tapes?
+            Minecraft.getInstance().displayGuiScreen(new ViewTapeScreen("Tape", getBytes(stack)));
         }
+        return new ActionResult<>(ActionResultType.SUCCESS, stack);
     }
 
     public static byte[] getBytes(ItemStack tape) {

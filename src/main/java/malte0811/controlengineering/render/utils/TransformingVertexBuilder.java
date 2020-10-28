@@ -3,6 +3,7 @@ package malte0811.controlengineering.render.utils;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import malte0811.controlengineering.util.BitUtils;
 import net.minecraft.util.math.vector.Vector2f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
@@ -117,6 +118,15 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
     @Override
     protected TransformingVertexBuilder getThis() {
         return this;
+    }
+
+    public void setColor(int color) {
+        setColor(
+                BitUtils.getBits(color, 16, 8) / 255f,
+                BitUtils.getBits(color, 8, 8) / 255f,
+                BitUtils.getBits(color, 0, 8) / 255f,
+                BitUtils.getBits(color, 24, 8) / 255f
+        );
     }
 
     private static class Vec2i {

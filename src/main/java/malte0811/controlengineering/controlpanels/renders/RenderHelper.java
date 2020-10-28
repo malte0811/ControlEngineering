@@ -1,28 +1,18 @@
 package malte0811.controlengineering.controlpanels.renders;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.mojang.datafixers.util.Pair;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.util.Vec2d;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.texture.*;
-import net.minecraft.client.resources.data.AnimationFrame;
-import net.minecraft.client.resources.data.AnimationMetadataSection;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
-import net.minecraft.util.LazyValue;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.util.Lazy;
 
-import javax.annotation.Nullable;
-import java.util.EnumMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.OptionalInt;
 
 public class RenderHelper {
@@ -46,11 +36,7 @@ public class RenderHelper {
             int color,
             OptionalInt lightOverride
     ) {
-        ResourceLocation loc = new ResourceLocation("block/white_wool");
-        TextureAtlasSprite texture = Minecraft.getInstance()
-                .getModelManager()
-                .getAtlasTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE)
-                .getSprite(loc);
+        TextureAtlasSprite texture = getWhiteTexture();
         for (Pair<Vector3d, Vec2d> vec : ImmutableList.of(
                 Pair.of(vec1, new Vec2d(texture.getMinU(), texture.getMinV())),
                 Pair.of(vec2, new Vec2d(texture.getMinU(), texture.getMaxV())),
@@ -150,5 +136,14 @@ public class RenderHelper {
 
     private static float extract8BitFloat(int value, int offset) {
         return ((value >> offset) & 255) / 255f;
+    }
+
+    public static TextureAtlasSprite getWhiteTexture() {
+        //TODO Forge PR to fix "real" white texture
+        ResourceLocation loc = new ResourceLocation("block/white_wool");
+        return Minecraft.getInstance()
+                .getModelManager()
+                .getAtlasTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE)
+                .getSprite(loc);
     }
 }
