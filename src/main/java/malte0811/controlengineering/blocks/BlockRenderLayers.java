@@ -1,17 +1,13 @@
-package malte0811.controlengineering.blocks.bus;
+package malte0811.controlengineering.blocks;
 
-import malte0811.controlengineering.blocks.CEBlocks;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 
-import java.util.List;
-import java.util.Set;
-
 public class BlockRenderLayers {
     public static void init() {
-        setLayers(CEBlocks.BUS_RELAY.get(), RenderType.getSolid(), RenderType.getTranslucent());
+        setLayers(CEBlocks.BUS_RELAY.get(), RenderType.getSolid());
+        setLayers(CEBlocks.TELETYPE.get(), RenderType.getCutout());
     }
 
     private static void setLayers(Block b, RenderType... types) {

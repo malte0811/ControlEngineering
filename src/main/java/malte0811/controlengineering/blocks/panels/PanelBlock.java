@@ -15,8 +15,6 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -31,7 +29,8 @@ public class PanelBlock extends CEBlock<PanelOrientation> {
                 AbstractBlock.Properties.create(Material.IRON)
                         .notSolid()
                         .hardnessAndResistance(2, 6),
-                new PanelPlacementBehavior()
+                new PanelPlacementBehavior(),
+                CachedPanelShape.create()
         );
     }
 
@@ -84,22 +83,5 @@ public class PanelBlock extends CEBlock<PanelOrientation> {
         } else {
             return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
         }
-    }
-
-    @Nonnull
-    @Override
-    public VoxelShape getShape(
-            @Nonnull BlockState state,
-            @Nonnull IBlockReader worldIn,
-            @Nonnull BlockPos pos,
-            @Nonnull ISelectionContext context
-    ) {
-        if (!state.get(IS_BASE)) {
-            ControlPanelTile panel = getBase(worldIn, state, pos);
-            if (panel != null) {
-                return panel.getShape();
-            }
-        }
-        return super.getShape(state, worldIn, pos, context);
     }
 }

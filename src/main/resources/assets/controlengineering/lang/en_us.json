@@ -2,5 +2,6 @@
   "controlengineering.tooltip.written_tape_bytes": "Characters: %d",
   "controlengineering.tooltip.empty_tape_bytes": "Length: %d characters",
   "item.controlengineering.punched_tape": "Punched tape",
-  "item.controlengineering.empty_tape": "Empty tape"
+  "item.controlengineering.empty_tape": "Empty tape",
+  "screen.controlengineering.teletype": "Teletype"
 }

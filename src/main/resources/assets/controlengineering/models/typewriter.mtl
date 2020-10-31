@@ -1,0 +1,5 @@
+# Blender MTL File: 'typewriter.blend'
+# Material Count: 2
+
+newmtl tty
+map_Kd controlengineering:block/typewriter

@@ -33,7 +33,7 @@ public interface PlacementBehavior<T> {
             }
 
             @Override
-            public BlockState getStateForOffset(BlockPos offset, Unit data) {
+            public BlockState getStateForOffset(Block owner, BlockPos offset, Unit data) {
                 return state.get();
             }
 
@@ -55,7 +55,7 @@ public interface PlacementBehavior<T> {
 
     Collection<BlockPos> getPlacementOffsets(T data);
 
-    BlockState getStateForOffset(BlockPos offset, T data);
+    BlockState getStateForOffset(Block owner, BlockPos offset, T data);
 
     default void fillTileData(BlockPos offset, TileEntity te, T data) {}
 

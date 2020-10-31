@@ -35,7 +35,7 @@ public class CEBlockItem<PlacementData> extends BlockItem {
         }
         for (BlockPos offset : offsets) {
             BlockPos pos = context.getPos().add(offset);
-            BlockState stateToPlace = placementBehavior.getStateForOffset(offset, data);
+            BlockState stateToPlace = placementBehavior.getStateForOffset(getBlock(), offset, data);
             context.getWorld().setBlockState(pos, stateToPlace);
             placementBehavior.fillTileData(offset, context.getWorld().getTileEntity(pos), data);
         }

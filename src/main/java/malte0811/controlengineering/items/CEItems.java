@@ -10,6 +10,7 @@ import malte0811.controlengineering.bus.BusWireTypes;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.util.Direction;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -36,6 +37,7 @@ public class CEItems {
     private static final RegistryObject<BlockItem> BUS_INTERFACE = blockItem(CEBlocks.BUS_INTERFACE);
     private static final RegistryObject<BlockItem> LINE_ACCESS = blockItem(CEBlocks.LINE_ACCESS);
     private static final RegistryObject<CEBlockItem<PanelOrientation>> CONTROL_PANEL = blockItemCE(CEBlocks.CONTROL_PANEL);
+    private static final RegistryObject<CEBlockItem<Direction>> TELETYPE = blockItemCE(CEBlocks.TELETYPE);
 
     @Nonnull
     public static BusCoilItem getBusCoil(int width) {

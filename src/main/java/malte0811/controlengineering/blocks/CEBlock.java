@@ -2,21 +2,31 @@ package malte0811.controlengineering.blocks;
 
 import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.blocks.placement.PlacementBehavior;
+import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
 public abstract class CEBlock<PlacementData> extends Block {
     public final PlacementBehavior<PlacementData> placementBehavior;
+    private final FromBlockFunction<VoxelShape> getShape;
 
-    public CEBlock(Properties properties, PlacementBehavior<PlacementData> placement) {
+    public CEBlock(
+            Properties properties,
+            PlacementBehavior<PlacementData> placement,
+            FromBlockFunction<VoxelShape> getShape
+    ) {
         super(properties);
         this.placementBehavior = placement;
+        this.getShape = getShape;
     }
 
     @Override
@@ -42,5 +52,16 @@ public abstract class CEBlock<PlacementData> extends Block {
                 }
             }
         }
+    }
+
+    @Nonnull
+    @Override
+    public VoxelShape getShape(
+            @Nonnull BlockState state,
+            @Nonnull IBlockReader worldIn,
+            @Nonnull BlockPos pos,
+            @Nonnull ISelectionContext context
+    ) {
+        return getShape.apply(state, worldIn, pos);
     }
 }

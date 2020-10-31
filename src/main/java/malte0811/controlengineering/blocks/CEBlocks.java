@@ -3,6 +3,7 @@ package malte0811.controlengineering.blocks;
 import blusunrize.immersiveengineering.api.wires.IImmersiveConnectable;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
+import malte0811.controlengineering.blocks.tape.TeletypeBlock;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.bus.BusInterfaceTile;
 import malte0811.controlengineering.tiles.bus.BusRelayTile;
@@ -40,6 +41,8 @@ public class CEBlocks {
     );
 
     public static final RegistryObject<PanelBlock> CONTROL_PANEL = REGISTER.register("control_panel", PanelBlock::new);
+
+    public static final RegistryObject<TeletypeBlock> TELETYPE = REGISTER.register("teletype", TeletypeBlock::new);
 
     private static <T extends TileEntity & IImmersiveConnectable>
     Supplier<BasicTileBlock<T>> createConnector(Supplier<TileEntityType<T>> tile) {

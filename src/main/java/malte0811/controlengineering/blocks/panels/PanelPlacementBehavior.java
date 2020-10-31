@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.placement.PlacementBehavior;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
@@ -49,7 +50,7 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
     }
 
     @Override
-    public BlockState getStateForOffset(BlockPos offset, PanelOrientation data) {
+    public BlockState getStateForOffset(Block owner, BlockPos offset, PanelOrientation data) {
         return CEBlocks.CONTROL_PANEL.get().getDefaultState()
                 .with(PanelOrientation.PROPERTY, data)
                 .with(PanelBlock.IS_BASE, offset.equals(BlockPos.ZERO));
@@ -78,7 +79,7 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
         if (BlockPos.ZERO.equals(offset) && te instanceof ControlPanelTile) {
             //TODO read from item stack
             CompoundNBT nbt = te.write(new CompoundNBT());
-            te.read(getStateForOffset(offset, data), nbt);
+            te.read(getStateForOffset(CEBlocks.CONTROL_PANEL.get(), offset, data), nbt);
         }
     }
 }

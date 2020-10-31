@@ -9,9 +9,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.vector.*;
+import net.minecraft.util.math.vector.Vector3d;
 
-import static malte0811.controlengineering.util.MatrixUtils.transform;
+import java.util.Objects;
 
 //All transforms are for the "top" block of the control panel
 public class PanelTransform {
@@ -118,6 +118,22 @@ public class PanelTransform {
 
     public double getCenterHeight() {
         return tileData.centerHeight;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PanelTransform that = (PanelTransform) o;
+        return tileData.equals(that.tileData) &&
+                panelTopToWorld.equals(that.panelTopToWorld) &&
+                panelBottomToWorld.equals(that.panelBottomToWorld) &&
+                worldToPanelTop.equals(that.worldToPanelTop);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tileData, panelTopToWorld, panelBottomToWorld, worldToPanelTop);
     }
 
     private static class TileTransformData {

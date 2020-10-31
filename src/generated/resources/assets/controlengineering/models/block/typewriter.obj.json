@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/block",
+  "loader": "forge:obj",
+  "detectCullableFaces": false,
+  "model": "controlengineering:models/typewriter.obj",
+  "flip-v": true
+}

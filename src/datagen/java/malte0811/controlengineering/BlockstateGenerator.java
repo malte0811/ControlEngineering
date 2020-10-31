@@ -6,9 +6,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
+import malte0811.controlengineering.blocks.tape.TeletypeBlock;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.state.Property;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
@@ -37,8 +40,21 @@ public class BlockstateGenerator extends BlockStateProvider {
         dummyIIC(CEBlocks.LINE_ACCESS.get());
         dummyIIC(CEBlocks.BUS_INTERFACE.get());
         panelModel();
+        horizontalRotated(CEBlocks.TELETYPE.get(), TeletypeBlock.FACING, obj("typewriter.obj"));
 
         loadedModels.backupModels();
+    }
+
+    private ModelFile obj(String objFile) {
+        return loadedModels.withExistingParent(objFile, mcLoc("block"))
+                .loader(forgeLoc("obj"))
+                .additional("detectCullableFaces", false)
+                .additional("model", addModelsPrefix(modLoc(objFile)))
+                .additional("flip-v", true);
+    }
+
+    private ResourceLocation forgeLoc(String path) {
+        return new ResourceLocation("forge", path);
     }
 
     private void dummyIIC(Block b) {
@@ -62,4 +78,21 @@ public class BlockstateGenerator extends BlockStateProvider {
                 //TODO replace TER with model? Or maybe VBOs?
                 .setModels(EMPTY_MODEL);
     }
+
+    private void horizontalRotated(Block b, Property<Direction> facing, ModelFile model) {
+        for (Direction d : Direction.BY_HORIZONTAL_INDEX) {
+            getVariantBuilder(b)
+                    .partialState()
+                    .with(facing, d)
+                    .modelForState()
+                    .rotationY((int) d.getHorizontalAngle())
+                    .modelFile(model)
+                    .addModel();
+        }
+    }
+
+    private ResourceLocation addModelsPrefix(ResourceLocation in) {
+        return new ResourceLocation(in.getNamespace(), "models/" + in.getPath());
+    }
+
 }
