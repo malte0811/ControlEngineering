@@ -4,13 +4,14 @@ import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.HorizontalPlacement;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.HorizontalShapeProvider;
-import malte0811.controlengineering.gui.TeletypeScreen;
+import malte0811.controlengineering.gui.TeletypeContainer;
 import malte0811.controlengineering.tiles.tape.TeletypeTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.state.Property;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -18,10 +19,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -60,13 +63,28 @@ public class TeletypeBlock extends CEBlock<Direction> {
         return new TeletypeTile();
     }
 
+    @Nonnull
     @Override
     public ActionResultType onBlockActivated(
-            BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit
+            @Nonnull BlockState state,
+            @Nonnull World worldIn,
+            @Nonnull BlockPos pos,
+            @Nonnull PlayerEntity player,
+            @Nonnull Hand handIn,
+            @Nonnull BlockRayTraceResult hit
     ) {
-        if (worldIn.isRemote) {
-            Minecraft.getInstance().displayGuiScreen(new TeletypeScreen());
-        }
+        openContainer(player, state, worldIn, pos);
         return ActionResultType.SUCCESS;
+    }
+
+    @Nullable
+    @Override
+    public INamedContainerProvider getContainer(
+            @Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos
+    ) {
+        return new SimpleNamedContainerProvider(
+                (id, inv, player) -> new TeletypeContainer(id, IWorldPosCallable.of(worldIn, pos)),
+                new TranslationTextComponent("screen.controlengineering.teletype")
+        );
     }
 }
