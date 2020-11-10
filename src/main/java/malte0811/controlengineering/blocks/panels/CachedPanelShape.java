@@ -26,6 +26,10 @@ public class CachedPanelShape extends CachedShape<PanelTransform> {
 
     @Override
     protected VoxelShape compute(PanelTransform transform) {
+        return getPanelShape(transform);
+    }
+
+    public static VoxelShape getPanelShape(PanelTransform transform) {
         List<AxisAlignedBB> parts = new ArrayList<>();
         final double frontHeight = Math.max(transform.getCenterHeight(), transform.getFrontHeight());
         final double backHeight = Math.max(transform.getCenterHeight(), transform.getBackHeight());

@@ -1,16 +1,23 @@
 package malte0811.controlengineering.controlpanels;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import malte0811.controlengineering.blocks.shapes.SelectionShapes;
+import malte0811.controlengineering.util.Matrix4;
 import malte0811.controlengineering.util.Vec2d;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector2f;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraftforge.common.util.Lazy;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
-public class PlacedComponent {
+public class PlacedComponent extends SelectionShapes {
     public static final Codec<PlacedComponent> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
                     PanelComponent.CODEC.fieldOf("component").forGetter(pc -> pc.component),
@@ -61,5 +68,33 @@ public class PlacedComponent {
                 in.maxY * scale,
                 in.maxZ * scale
         );
+    }
+
+    @Override
+    public @Nullable
+    VoxelShape mainShape() {
+        AxisAlignedBB selectionShape = getSelectionShape();
+        if (selectionShape != null) {
+            return VoxelShapes.create(selectionShape);
+        } else {
+            return null;
+        }
+    }
+
+    @Nonnull
+    @Override
+    public Matrix4 outerToInnerPosition() {
+        return Matrix4.IDENTITY;
+    }
+
+    @Nonnull
+    @Override
+    public List<? extends SelectionShapes> innerShapes() {
+        return ImmutableList.of();
+    }
+
+    @Override
+    public ActionResultType onUse(ItemUseContext ctx, ActionResultType defaultType) {
+        return component.onClick();
     }
 }

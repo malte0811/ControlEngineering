@@ -1,9 +1,14 @@
 package malte0811.controlengineering.tiles.panels;
 
 import com.mojang.serialization.Codec;
+import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
+import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
+import malte0811.controlengineering.blocks.shapes.SelectionShapes;
+import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.bus.*;
 import malte0811.controlengineering.controlpanels.PanelComponents;
+import malte0811.controlengineering.controlpanels.PanelSelectionShapes;
 import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.components.Button;
@@ -32,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ControlPanelTile extends TileEntity implements IBusInterface {
+public class ControlPanelTile extends TileEntity implements IBusInterface, SelectionShapeOwner {
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private List<PlacedComponent> components = new ArrayList<>();
     private PanelTransform transform = new PanelTransform(
@@ -73,7 +78,7 @@ public class ControlPanelTile extends TileEntity implements IBusInterface {
         updateBusState(SyncType.NEVER);
     }
 
-    private void updateBusState(SyncType sync) {
+    public void updateBusState(SyncType sync) {
         BusState oldState = stateHandler.getTotalEmittedState();
         stateHandler.updateState(this.inputState);
         boolean changed = !oldState.equals(stateHandler.getTotalEmittedState());
@@ -168,8 +173,6 @@ public class ControlPanelTile extends TileEntity implements IBusInterface {
         if (targeted.isPresent()) {
             ActionResultType result = targeted.get().onClick();
             if (!world.isRemote) {
-                updateBusState(SyncType.ALWAYS);
-                markDirty();
             }
             return result;
         }
@@ -212,7 +215,16 @@ public class ControlPanelTile extends TileEntity implements IBusInterface {
         this.markBusDirty.run();
     }
 
-    private enum SyncType {
+    @Override
+    public SelectionShapes getShape() {
+        if (getBlockState().get(PanelBlock.IS_BASE)) {
+            return SingleShape.FULL_BLOCK;
+        } else {
+            return new PanelSelectionShapes(PanelBlock.getBase(world, getBlockState(), pos));
+        }
+    }
+
+    public enum SyncType {
         NEVER,
         IF_CHANGED,
         ALWAYS;

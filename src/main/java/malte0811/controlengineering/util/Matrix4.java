@@ -2,6 +2,7 @@ package malte0811.controlengineering.util;
 
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraft.util.math.vector.Vector3d;
@@ -488,5 +489,15 @@ public class Matrix4 {
                 return v3;
         }
         throw new IllegalArgumentException("No such element: " + sel);
+    }
+
+    public RayTraceContext transformRay(Vector3d start, Vector3d end) {
+        return new RayTraceContext(
+                apply(start),
+                apply(end),
+                RayTraceContext.BlockMode.VISUAL,
+                RayTraceContext.FluidMode.NONE,
+                null
+        );
     }
 }
