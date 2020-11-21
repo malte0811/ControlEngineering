@@ -1,6 +1,6 @@
 package malte0811.controlengineering.blocks.shapes;
 
-import blusunrize.immersiveengineering.common.util.chickenbones.Matrix4;
+import malte0811.controlengineering.util.Matrix4;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.shapes.IBooleanFunction;
@@ -22,8 +22,8 @@ public class HorizontalShapeProvider extends CachedShape<Direction> {
     protected VoxelShape compute(Direction k) {
         List<AxisAlignedBB> boxesIn = baseShape.toBoundingBoxList();
         VoxelShape rotated = VoxelShapes.empty();
+        Matrix4 mat = new Matrix4(k);
         for (AxisAlignedBB original : boxesIn) {
-            Matrix4 mat = new Matrix4(k);
             Vector3d minOld = new Vector3d(original.minX, original.minY, original.minZ);
             Vector3d maxOld = new Vector3d(original.maxX, original.maxY, original.maxZ);
             Vector3d firstNew = mat.apply(minOld);

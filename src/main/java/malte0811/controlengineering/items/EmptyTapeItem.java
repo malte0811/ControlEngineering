@@ -51,8 +51,18 @@ public class EmptyTapeItem extends Item {
         );
     }
 
+    public static ItemStack withLength(int length) {
+        ItemStack result = new ItemStack(CEItems.EMPTY_TAPE.get());
+        setLength(result, length);
+        return result;
+    }
+
     public static int getLength(ItemStack tape) {
-        return ItemNBTUtil.getTag(tape).map(c -> c.getInt(LENGTH_KEY)).orElse(0);
+        if (tape.getItem() != CEItems.EMPTY_TAPE.get()) {
+            return 0;
+        } else {
+            return ItemNBTUtil.getTag(tape).map(c -> c.getInt(LENGTH_KEY)).orElse(0);
+        }
     }
 
     public static ItemStack setLength(ItemStack tape, int newLength) {

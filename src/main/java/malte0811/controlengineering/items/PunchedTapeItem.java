@@ -35,6 +35,12 @@ public class PunchedTapeItem extends Item {
         );
     }
 
+    public static ItemStack withBytes(byte[] bytes) {
+        ItemStack result = new ItemStack(CEItems.PUNCHED_TAPE.get());
+        setBytes(result, bytes);
+        return result;
+    }
+
     @Override
     public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
         if (isInGroup(group)) {

@@ -39,22 +39,12 @@ public class ViewTapeScreen extends Screen {
         addButton(new Button(
                 leftButtonX + 1, buttonY, buttonWidth, 20,
                 new StringTextComponent("<"),
-                btn -> {
-                    if (offset < Math.max(fullData.length - NUM_VISIBLE_CHARS / 2, 0)) {
-                        ++offset;
-                    }
-                    tapeRender.setData(getShownBytes());
-                }
+                btn -> incOffset()
         ));
         addButton(new Button(
                 width - leftButtonX - buttonWidth + 1, buttonY, buttonWidth, 20,
                 new StringTextComponent(">"),
-                btn -> {
-                    if (offset > -NUM_VISIBLE_CHARS / 2) {
-                        --offset;
-                    }
-                    tapeRender.setData(getShownBytes());
-                }
+                btn -> decOffset()
         ));
     }
 
@@ -76,6 +66,16 @@ public class ViewTapeScreen extends Screen {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        if (delta < 0) {
+            incOffset();
+        } else {
+            decOffset();
+        }
+        return true;
+    }
+
     private byte[] getShownBytes() {
         byte[] result = new byte[NUM_VISIBLE_CHARS];
         for (int i = 0; i < NUM_VISIBLE_CHARS; ++i) {
@@ -92,5 +92,19 @@ public class ViewTapeScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    private void incOffset() {
+        if (offset < Math.max(fullData.length - NUM_VISIBLE_CHARS / 2, 0)) {
+            ++offset;
+        }
+        tapeRender.setData(getShownBytes());
+    }
+
+    private void decOffset() {
+        if (offset > -NUM_VISIBLE_CHARS / 2) {
+            --offset;
+        }
+        tapeRender.setData(getShownBytes());
     }
 }

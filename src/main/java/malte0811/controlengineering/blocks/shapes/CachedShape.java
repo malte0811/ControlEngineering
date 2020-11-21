@@ -7,7 +7,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 
-public abstract class CachedShape<Key> implements FromBlockFunction<VoxelShape> {
+import java.util.function.Function;
+
+public abstract class CachedShape<Key> implements FromBlockFunction<VoxelShape>, Function<Key, VoxelShape> {
     private final Cache<Key, VoxelShape> shapeCache = CacheBuilder.newBuilder()
             .maximumSize(100)
             .build();
@@ -20,6 +22,11 @@ public abstract class CachedShape<Key> implements FromBlockFunction<VoxelShape> 
     @Override
     public VoxelShape apply(BlockState state, IBlockReader world, BlockPos pos) {
         Key k = getKey.apply(state, world, pos);
+        return apply(k);
+    }
+
+    @Override
+    public VoxelShape apply(Key k) {
         VoxelShape present = shapeCache.getIfPresent(k);
         if (present == null) {
             present = compute(k);

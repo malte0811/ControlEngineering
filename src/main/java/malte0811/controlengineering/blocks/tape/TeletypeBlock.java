@@ -2,6 +2,7 @@ package malte0811.controlengineering.blocks.tape;
 
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.HorizontalPlacement;
+import malte0811.controlengineering.blocks.shapes.CachedShape;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.HorizontalShapeProvider;
 import malte0811.controlengineering.gui.TeletypeContainer;
@@ -9,19 +10,15 @@ import malte0811.controlengineering.tiles.tape.TeletypeTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.state.Property;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -37,13 +34,12 @@ public class TeletypeBlock extends CEBlock<Direction> {
             makeCuboidShape(0, 0, 0, 16, 10, 8),
             makeCuboidShape(0, 0, 8, 16, 4, 16)
     );
+    public static final CachedShape<Direction> SHAPE_PROVIDER = new HorizontalShapeProvider(
+            FromBlockFunction.getProperty(FACING), BASE_SHAPE
+    );
 
     public TeletypeBlock() {
-        super(
-                Properties.create(Material.IRON).notSolid(),
-                new HorizontalPlacement(FACING),
-                new HorizontalShapeProvider(FromBlockFunction.getProperty(FACING), BASE_SHAPE)
-        );
+        super(Properties.create(Material.IRON).notSolid(), new HorizontalPlacement(FACING), SHAPE_PROVIDER);
     }
 
     @Override
@@ -61,20 +57,6 @@ public class TeletypeBlock extends CEBlock<Direction> {
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new TeletypeTile();
-    }
-
-    @Nonnull
-    @Override
-    public ActionResultType onBlockActivated(
-            @Nonnull BlockState state,
-            @Nonnull World worldIn,
-            @Nonnull BlockPos pos,
-            @Nonnull PlayerEntity player,
-            @Nonnull Hand handIn,
-            @Nonnull BlockRayTraceResult hit
-    ) {
-        openContainer(player, state, worldIn, pos);
-        return ActionResultType.SUCCESS;
     }
 
     @Nullable

@@ -41,7 +41,7 @@ public class ClientEvents {
             Vector3d projectedView = Vector3d.copy(highlighted).subtract(ev.getInfo().getProjectedView());
             transform.translate(projectedView.x, projectedView.y, projectedView.z);
             IVertexBuilder builder = ev.getBuffers().getBuffer(RenderType.getLines());
-            List<SelectionShapes> selectedStack = ((SelectionShapeOwner) te).getShape()
+            List<? extends SelectionShapes> selectedStack = ((SelectionShapeOwner) te).getShape()
                     .getTargeted(RaytraceUtils.create(player, ev.getPartialTicks(), Vector3d.copy(highlighted)));
             for (SelectionShapes shape : selectedStack) {
                 Matrix4f currentMatrix = transform.getLast().getMatrix();

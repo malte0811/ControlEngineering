@@ -120,7 +120,7 @@ public abstract class CEBlock<PlacementData> extends Block {
         return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
     }
 
-    protected void openContainer(PlayerEntity player, BlockState state, World worldIn, BlockPos pos) {
+    public void openContainer(PlayerEntity player, BlockState state, World worldIn, BlockPos pos) {
         if (player instanceof ServerPlayerEntity) {
             NetworkHooks.openGui((ServerPlayerEntity) player, state.getContainer(worldIn, pos), pos);
         }
