@@ -34,4 +34,12 @@ public class Vec2d {
     public int hashCode() {
         return Objects.hash(x, y);
     }
+
+    public Vec2d scale(double scale) {
+        return new Vec2d(x * scale, y * scale);
+    }
+
+    public Vec2d subtract(Vec2d rhs) {
+        return new Vec2d(x - rhs.x, y - rhs.y);
+    }
 }

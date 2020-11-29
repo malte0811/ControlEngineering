@@ -7,6 +7,7 @@ import malte0811.controlengineering.tiles.bus.BusInterfaceTile;
 import malte0811.controlengineering.tiles.bus.BusRelayTile;
 import malte0811.controlengineering.tiles.bus.LineAccessTile;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
+import malte0811.controlengineering.tiles.panels.PanelCNCTile;
 import malte0811.controlengineering.tiles.tape.TeletypeTile;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
@@ -41,6 +42,11 @@ public class CETileEntities {
     public static RegistryObject<TileEntityType<ControlPanelTile>> CONTROL_PANEL = REGISTER.register(
             "control_panel",
             createTileType(ControlPanelTile::new, CEBlocks.CONTROL_PANEL)
+    );
+
+    public static RegistryObject<TileEntityType<PanelCNCTile>> PANEL_CNC = REGISTER.register(
+            "panel_cnc",
+            createTileType(PanelCNCTile::new, CEBlocks.PANEL_CNC)
     );
 
     public static RegistryObject<TileEntityType<TeletypeTile>> TELETYPE = REGISTER.register(

@@ -38,6 +38,7 @@ public class CEItems {
     private static final RegistryObject<BlockItem> LINE_ACCESS = blockItem(CEBlocks.LINE_ACCESS);
     private static final RegistryObject<CEBlockItem<PanelOrientation>> CONTROL_PANEL = blockItemCE(CEBlocks.CONTROL_PANEL);
     private static final RegistryObject<CEBlockItem<Direction>> TELETYPE = blockItemCE(CEBlocks.TELETYPE);
+    private static final RegistryObject<CEBlockItem<Direction>> PANEL_CNC = blockItemCE(CEBlocks.PANEL_CNC);
 
     @Nonnull
     public static BusCoilItem getBusCoil(int width) {

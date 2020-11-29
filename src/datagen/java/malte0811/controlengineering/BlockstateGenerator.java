@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
+import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.tape.TeletypeBlock;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderType;
@@ -17,6 +18,7 @@ import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
+import net.minecraftforge.client.model.generators.loaders.OBJLoaderBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class BlockstateGenerator extends BlockStateProvider {
@@ -41,16 +43,19 @@ public class BlockstateGenerator extends BlockStateProvider {
         dummyIIC(CEBlocks.BUS_INTERFACE.get());
         panelModel();
         horizontalRotated(CEBlocks.TELETYPE.get(), TeletypeBlock.FACING, obj("typewriter.obj"));
+        horizontalRotated(CEBlocks.PANEL_CNC.get(), PanelCNCBlock.FACING, obj("panel_cnc.obj"));
 
         loadedModels.backupModels();
     }
 
     private ModelFile obj(String objFile) {
-        return loadedModels.withExistingParent(objFile, mcLoc("block"))
-                .loader(forgeLoc("obj"))
-                .additional("detectCullableFaces", false)
-                .additional("model", addModelsPrefix(modLoc(objFile)))
-                .additional("flip-v", true);
+        return models()
+                .withExistingParent(objFile, mcLoc("block"))
+                .customLoader(OBJLoaderBuilder::begin)
+                .modelLocation(addModelsPrefix(modLoc(objFile)))
+                .flipV(true)
+                .detectCullableFaces(false)
+                .end();
     }
 
     private ResourceLocation forgeLoc(String path) {
