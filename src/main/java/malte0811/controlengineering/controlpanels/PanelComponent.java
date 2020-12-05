@@ -3,8 +3,8 @@ package malte0811.controlengineering.controlpanels;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.bus.BusState;
-import malte0811.controlengineering.util.Codecs;
-import net.minecraft.nbt.INBT;
+import malte0811.controlengineering.util.Vec2d;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -16,7 +16,7 @@ public abstract class PanelComponent<Self extends PanelComponent<Self>> {
     public static Codec<PanelComponent<?>> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
                     // TODO skip NBT intermediate?
-                    Codecs.INBT_CODEC.fieldOf("data")
+                    CompoundNBT.CODEC.fieldOf("data")
                             .forGetter(PanelComponent::toNBT),
                     ResourceLocation.CODEC.fieldOf("type")
                             .forGetter(t -> t.getType().getName())
@@ -27,6 +27,12 @@ public abstract class PanelComponent<Self extends PanelComponent<Self>> {
     );
 
     private PanelComponentType<Self> type;
+    // Pixel-relative
+    private final Vec2d size;
+
+    protected PanelComponent(Vec2d size) {
+        this.size = size;
+    }
 
     void setType(PanelComponentType<Self> type) {
         this.type = type;
@@ -41,7 +47,7 @@ public abstract class PanelComponent<Self extends PanelComponent<Self>> {
         return (Self) this;
     }
 
-    private INBT toNBT() {
+    private CompoundNBT toNBT() {
         return getType().toNBT(asSelf());
     }
 
@@ -57,6 +63,10 @@ public abstract class PanelComponent<Self extends PanelComponent<Self>> {
     @Nullable
     public final AxisAlignedBB getSelectionBox() {
         return shape.get();
+    }
+
+    public Vec2d getSize() {
+        return size;
     }
 
     public abstract ActionResultType onClick();

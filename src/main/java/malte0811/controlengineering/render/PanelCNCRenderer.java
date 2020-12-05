@@ -46,9 +46,9 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
         matrixStackIn.pop();
     }
 
-    private void rotateAroundCenter(double angleDegress, MatrixStack stack) {
+    private void rotateAroundCenter(double angleDegrees, MatrixStack stack) {
         stack.translate(.5, .5, .5);
-        stack.rotate(new Quaternion(0, (float) angleDegress, 0, true));
+        stack.rotate(new Quaternion(0, (float) angleDegrees, 0, true));
         stack.translate(-.5, -.5, -.5);
     }
 }

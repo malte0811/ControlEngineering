@@ -67,7 +67,7 @@ public class PanelRenderer extends TileEntityRenderer<ControlPanelTile> {
         transform.scale(baseScale, baseScale, baseScale);
         for (PlacedComponent comp : tile.getComponents()) {
             transform.push();
-            transform.translate(comp.getPos().x, 0, comp.getPos().y);
+            transform.translate(comp.getPosMin().x, 0, comp.getPosMin().y);
             ComponentRenderers.render(builder, comp.getComponent(), transform, combinedLight, combinedOverlay);
             transform.pop();
         }

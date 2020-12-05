@@ -2,6 +2,7 @@ package malte0811.controlengineering.bus;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import malte0811.controlengineering.util.serialization.StringSerializableCodec;
 
 import java.util.Objects;
 
@@ -11,6 +12,11 @@ public class BusSignalRef {
                     Codec.INT.fieldOf("line").forGetter(ref -> ref.line),
                     Codec.INT.fieldOf("color").forGetter(ref -> ref.color)
             ).apply(inst, BusSignalRef::new)
+    );
+
+    public static final StringSerializableCodec<BusSignalRef> STRINGY_CODEC = StringSerializableCodec.fromCodec(
+            BusSignalRef.CODEC,
+            (line, color) -> new BusSignalRef(Integer.parseInt(line), Integer.parseInt(color))
     );
 
     public final int line;

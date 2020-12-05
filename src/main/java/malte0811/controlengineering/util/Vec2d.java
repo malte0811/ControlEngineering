@@ -42,4 +42,12 @@ public class Vec2d {
     public Vec2d subtract(Vec2d rhs) {
         return new Vec2d(x - rhs.x, y - rhs.y);
     }
+
+    public Vec2d add(Vec2d size) {
+        return new Vec2d(x + size.x, y + size.y);
+    }
+
+    public double get(int coord) {
+        return coord == 1 ? y : x;
+    }
 }

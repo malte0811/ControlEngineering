@@ -16,6 +16,7 @@ import net.minecraftforge.common.util.Lazy;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 public class PlacedComponent extends SelectionShapes {
     public static final Codec<PlacedComponent> CODEC = RecordCodecBuilder.create(
@@ -25,11 +26,13 @@ public class PlacedComponent extends SelectionShapes {
             ).apply(inst, PlacedComponent::new)
     );
 
+    @Nonnull
     private final PanelComponent<?> component;
+    @Nonnull
     private final Vec2d pos;
     private final Lazy<AxisAlignedBB> shape;
 
-    public PlacedComponent(PanelComponent<?> component, Vec2d pos) {
+    public PlacedComponent(@Nonnull PanelComponent<?> component, @Nonnull Vec2d pos) {
         this.component = component;
         this.pos = pos;
         shape = Lazy.of(() -> {
@@ -37,17 +40,24 @@ public class PlacedComponent extends SelectionShapes {
             if (compShape == null) {
                 return null;
             } else {
-                return scale(compShape.offset(pos.x, 0, pos.y), 1/16d);
+                return scale(compShape.offset(pos.x, 0, pos.y), 1 / 16d);
             }
         });
     }
 
+    @Nonnull
     public PanelComponent<?> getComponent() {
         return component;
     }
 
-    public Vec2d getPos() {
+    @Nonnull
+    public Vec2d getPosMin() {
         return pos;
+    }
+
+    @Nonnull
+    public Vec2d getPosMax() {
+        return pos.add(component.getSize());
     }
 
     @Nullable
@@ -96,5 +106,41 @@ public class PlacedComponent extends SelectionShapes {
     @Override
     public ActionResultType onUse(ItemUseContext ctx, ActionResultType defaultType) {
         return component.onClick();
+    }
+
+    public boolean disjoint(PlacedComponent other) {
+        final Vec2d max = getPosMax();
+        final Vec2d min = getPosMin();
+        final Vec2d otherMax = other.getPosMax();
+        final Vec2d otherMin = other.getPosMin();
+        for (int axis = 0; axis < 2; ++axis) {
+            if (max.get(axis) <= otherMin.get(axis) || otherMax.get(axis) <= min.get(axis)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isWithinPanel() {
+        final Vec2d max = getPosMax();
+        for (int axis = 0; axis < 2; ++axis) {
+            if (pos.get(axis) < 0 || max.get(axis) > 16) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PlacedComponent that = (PlacedComponent) o;
+        return component.equals(that.component) && pos.equals(that.pos);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(component, pos);
     }
 }

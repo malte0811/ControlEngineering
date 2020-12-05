@@ -152,6 +152,7 @@ repositories {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.4-35.1.3'
 	compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:1.16.4-+")
+    testImplementation('junit:junit:4.13')
 }
 
 def customGradle = rootProject.file('custom.gradle');

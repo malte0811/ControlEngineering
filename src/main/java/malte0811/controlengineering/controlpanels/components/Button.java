@@ -1,15 +1,19 @@
 package malte0811.controlengineering.controlpanels.components;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponent;
+import malte0811.controlengineering.util.ReflectionUtils;
+import malte0811.controlengineering.util.Vec2d;
+import malte0811.controlengineering.util.serialization.StringSerializableCodecs;
+import malte0811.controlengineering.util.serialization.StringSerializableField;
+import malte0811.controlengineering.util.serialization.StringSerializer;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.AxisAlignedBB;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class Button extends PanelComponent<Button> {
     public int color;
@@ -17,6 +21,7 @@ public class Button extends PanelComponent<Button> {
     private BusSignalRef outputSignal;
 
     public Button(int color, boolean active, BusSignalRef outputSignal) {
+        super(new Vec2d(1, 1));
         this.color = color;
         this.active = active;
         this.outputSignal = outputSignal;
@@ -38,13 +43,16 @@ public class Button extends PanelComponent<Button> {
     @Override
     public void updateTotalState(BusState state) {}
 
-    public static Codec<Button> createCodec() {
-        return RecordCodecBuilder.create(
-                inst -> inst.group(
-                        Codec.INT.fieldOf("color").forGetter(b -> b.color),
-                        Codec.BOOL.fieldOf("active").forGetter(b -> b.active),
-                        BusSignalRef.CODEC.fieldOf("output").forGetter(b -> b.outputSignal)
-                ).apply(inst, Button::new)
+    public static StringSerializer<Button> createCodec() {
+        return new StringSerializer<>(
+                ReflectionUtils.findConstructor(Button.class, int.class, boolean.class, BusSignalRef.class),
+                new StringSerializableField<>("color", StringSerializableCodecs.HEX_INT, s -> s.color),
+                new StringSerializableField<>(
+                        "active",
+                        StringSerializableCodecs.BOOLEAN.constant(false),
+                        s -> s.active
+                ),
+                new StringSerializableField<>("input", BusSignalRef.STRINGY_CODEC, s -> s.outputSignal)
         );
     }
 
@@ -66,5 +74,18 @@ public class Button extends PanelComponent<Button> {
 
     public void setOutputSignal(BusSignalRef outputSignal) {
         this.outputSignal = outputSignal;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Button button = (Button) o;
+        return color == button.color && active == button.active && outputSignal.equals(button.outputSignal);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(color, active, outputSignal);
     }
 }
