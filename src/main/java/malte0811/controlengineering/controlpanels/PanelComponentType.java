@@ -4,6 +4,7 @@ import malte0811.controlengineering.util.serialization.StringSerializer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 public final class PanelComponentType<T extends PanelComponent<T>> {
@@ -39,5 +40,13 @@ public final class PanelComponentType<T extends PanelComponent<T>> {
 
     public ResourceLocation getName() {
         return name;
+    }
+
+    public T fromString(List<String> subList) {
+        T result = getCodec().fromString(subList);
+        if (result != null) {
+            result.setType(this);
+        }
+        return result;
     }
 }

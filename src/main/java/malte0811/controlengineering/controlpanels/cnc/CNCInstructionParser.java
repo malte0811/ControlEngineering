@@ -3,6 +3,9 @@ package malte0811.controlengineering.controlpanels.cnc;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 import malte0811.controlengineering.controlpanels.PanelComponent;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
@@ -23,6 +26,7 @@ public class CNCInstructionParser {
         int pos = 0;
         boolean error = false;
         List<PlacedComponent> components = new ArrayList<>();
+        IntList componentEnds = new IntArrayList();
         while (pos < input.length()) {
             String componentString;
             {
@@ -45,17 +49,17 @@ public class CNCInstructionParser {
                 }
                 if (!error) {
                     components.add(next.get());
+                    componentEnds.add(pos);
                 }
             } else {
                 error = true;
                 break;
             }
         }
-        ImmutableList<PlacedComponent> immutableComponents = ImmutableList.copyOf(components);
         if (error) {
-            return ParserResult.failure(immutableComponents, pos);
+            return ParserResult.failure(components, componentEnds, pos);
         } else {
-            return ParserResult.success(immutableComponents);
+            return ParserResult.success(components, componentEnds);
         }
     }
 
@@ -67,7 +71,7 @@ public class CNCInstructionParser {
         if (type == null) {
             return Optional.empty();
         }
-        PanelComponent<?> component = type.getCodec().fromString(tokens.subList(3, tokens.size()));
+        PanelComponent<?> component = type.fromString(tokens.subList(3, tokens.size()));
         if (component == null) {
             return Optional.empty();
         }
@@ -167,20 +171,26 @@ public class CNCInstructionParser {
 
     public static class ParserResult {
         private final ImmutableList<PlacedComponent> components;
+        private final IntList componentEnds;
         private final int errorAt;
 
-        private ParserResult(ImmutableList<PlacedComponent> components, int errorAt) {
-            this.components = components;
+        private ParserResult(
+                List<PlacedComponent> components,
+                IntList componentEnds,
+                int errorAt
+        ) {
+            this.components = ImmutableList.copyOf(components);
+            this.componentEnds = IntLists.unmodifiable(componentEnds);
             this.errorAt = errorAt;
         }
 
-        public static ParserResult success(ImmutableList<PlacedComponent> components) {
-            return new ParserResult(components, -1);
+        public static ParserResult success(List<PlacedComponent> components, IntList componentEnds) {
+            return new ParserResult(components, componentEnds, -1);
         }
 
-        public static ParserResult failure(ImmutableList<PlacedComponent> components, int errorAt) {
+        public static ParserResult failure(List<PlacedComponent> components, IntList componentEnds, int errorAt) {
             Preconditions.checkArgument(errorAt >= 0);
-            return new ParserResult(components, errorAt);
+            return new ParserResult(components, componentEnds, errorAt);
         }
 
         public boolean isError() {
@@ -190,6 +200,10 @@ public class CNCInstructionParser {
         public int getErrorPosition() {
             Preconditions.checkState(isError());
             return errorAt;
+        }
+
+        public IntList getComponentEnds() {
+            return componentEnds;
         }
 
         public ImmutableList<PlacedComponent> getComponents() {

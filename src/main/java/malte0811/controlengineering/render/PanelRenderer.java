@@ -66,11 +66,17 @@ public class PanelRenderer extends TileEntityRenderer<ControlPanelTile> {
         transform.translate(0, 1e-3, 0);
         transform.scale(baseScale, baseScale, baseScale);
         for (PlacedComponent comp : tile.getComponents()) {
-            transform.push();
-            transform.translate(comp.getPosMin().x, 0, comp.getPosMin().y);
-            ComponentRenderers.render(builder, comp.getComponent(), transform, combinedLight, combinedOverlay);
-            transform.pop();
+            renderComponent(transform, comp, builder, combinedLight, combinedOverlay);
         }
+        transform.pop();
+    }
+
+    public static void renderComponent(
+            MatrixStack transform, PlacedComponent component, IVertexBuilder builder, int light, int overlay
+    ) {
+        transform.push();
+        transform.translate(component.getPosMin().x, 0, component.getPosMin().y);
+        ComponentRenderers.render(builder, component.getComponent(), transform, light, overlay);
         transform.pop();
     }
 

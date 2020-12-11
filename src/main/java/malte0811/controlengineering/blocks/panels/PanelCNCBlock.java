@@ -22,9 +22,11 @@ import javax.annotation.Nullable;
 public class PanelCNCBlock extends CEBlock<Direction> {
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
+    public static final VoxelShape BASE = VoxelShapes.create(0, 0, 0, 1, 2 / 16., 1);
+    public static final VoxelShape TOP = VoxelShapes.create(0, 12 / 16., 0, 1, 1, 1);
     public static final VoxelShape SHAPE = VoxelShapes.or(
-            VoxelShapes.create(0, 0, 0, 1, 2 / 16., 1),
-            VoxelShapes.create(0, 12 / 16., 0, 1, 1, 1),
+            BASE,
+            TOP,
 
             VoxelShapes.create(0, 0, 0, 1 / 16., 1, 1 / 16.),
             VoxelShapes.create(15 / 16., 0, 0, 1, 1, 1 / 16.),

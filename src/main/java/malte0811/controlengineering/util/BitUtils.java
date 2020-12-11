@@ -60,4 +60,12 @@ public class BitUtils {
     public static boolean isASCIICharacter(int in) {
         return noBitsAbove(in, 6);
     }
+
+    public static String toString(byte[] withParity) {
+        byte[] copyWithoutParity = new byte[withParity.length];
+        for (int i = 0; i < withParity.length; ++i) {
+            copyWithoutParity[i] = clearParity(withParity[i]);
+        }
+        return new String(copyWithoutParity);
+    }
 }

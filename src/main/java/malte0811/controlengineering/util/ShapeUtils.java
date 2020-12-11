@@ -24,4 +24,8 @@ public class ShapeUtils {
                 transform.apply(new Vector3d(aabb.maxX, aabb.maxY, aabb.maxZ))
         );
     }
+
+    public static VoxelShape createPixelRelative(int x1, int y1, int z1, int x2, int y2, int z2) {
+        return VoxelShapes.create(x1 / 16., y1 / 16., z1 / 16., x2 / 16., y2 / 16., z2 / 16.);
+    }
 }

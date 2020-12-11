@@ -31,4 +31,9 @@ public class CachedValue<Key, Value> implements Supplier<Value> {
         }
         return this.lastValue;
     }
+
+    public void reset() {
+        lastKey = null;
+        lastValue = null;
+    }
 }
