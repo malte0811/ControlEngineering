@@ -137,7 +137,15 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
         }
 
         public double getComponentProgress(double tick) {
-            return interpolate(tick, i -> i);
+            return interpolate(tick, i -> i + 1) % 1;
+        }
+
+        public ImmutableList<PlacedComponent> getComponents() {
+            return components;
+        }
+
+        public IntList getTickPlacingComponent() {
+            return tickPlacingComponent;
         }
 
         @Nullable
@@ -158,6 +166,16 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
             return totalTicks;
         }
 
+        @Nullable
+        public PlacedComponent getLastComponent(double ticks) {
+            final int alreadyPlaced = getNumComponentsAt(ticks);
+            if (alreadyPlaced > 0) {
+                return components.get(alreadyPlaced - 1);
+            } else {
+                return null;
+            }
+        }
+
         private double interpolate(double tick, Int2IntFunction getValue) {
             if (components.isEmpty()) {
                 return 0;
@@ -169,7 +187,7 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
             final int nextValue = getValue.applyAsInt(nextToPlace);
             final int nextTick = tickPlacingComponent.getInt(nextToPlace);
             final int lastValue;
-            final double lastTick;
+            final int lastTick;
             if (nextToPlace > 0) {
                 lastValue = getValue.applyAsInt(nextToPlace - 1);
                 lastTick = tickPlacingComponent.getInt(nextToPlace - 1);

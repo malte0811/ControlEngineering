@@ -5,18 +5,30 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
+import malte0811.controlengineering.controlpanels.renders.RenderHelper;
 import malte0811.controlengineering.render.tape.TapeDrive;
+import malte0811.controlengineering.render.utils.PiecewiseAffinePath;
+import malte0811.controlengineering.render.utils.PiecewiseAffinePath.Node;
 import malte0811.controlengineering.tiles.panels.PanelCNCTile;
 import malte0811.controlengineering.util.Vec2d;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.OptionalInt;
 
 public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
+    private static final double HEAD_SIZE = 0.5;
+    private static final double HEAD_TRAVERSAL_HEIGHT = 3;
+    private static final double HEAD_WORK_HEIGHT = 1;
+    private static final Vector3d HEAD_IDLE = new Vector3d(8 - HEAD_SIZE / 2, 5, 8 - HEAD_SIZE / 2);
 
     public PanelCNCRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
@@ -39,7 +51,12 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
         transform.translate(0, 14, 0);
         renderTape(tile, buffers, transform, light, overlay, tick);
         transform.pop();
+        transform.push();
+        transform.translate(1, 2, 1);
+        transform.scale(14f / 16, 14f / 16, 14f / 16);
         renderCurrentPanelState(tile, buffers, transform, light, overlay, tick);
+        renderHead(tile, buffers, transform, light, overlay, tick);
+        transform.pop();
         transform.pop();
     }
 
@@ -54,14 +71,10 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
     ) {
         PanelCNCTile.CNCJob job = tile.getCurrentJob();
         if (job != null) {
-            transform.push();
-            transform.translate(1, 2, 1);
-            transform.scale(14f / 16, 14f / 16, 14f / 16);
             IVertexBuilder builder = buffers.getBuffer(RenderType.getSolid());
             for (PlacedComponent placed : job.getComponentsAtTime(ticks)) {
                 PanelRenderer.renderComponent(transform, placed, builder, light, overlay);
             }
-            transform.pop();
         }
     }
 
@@ -81,5 +94,65 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
             testWheel.updateTapeProgress(currentJob.getTapeProgressAtTime(ticks));
             testWheel.render(buffer.getBuffer(RenderType.getSolid()), transform, light, overlay);
         }
+    }
+
+    private void renderHead(
+            PanelCNCTile tile, IRenderTypeBuffer buffer, MatrixStack transform, int light, int overlay, double ticks
+    ) {
+        Vector3d currentPos;
+        if (tile.getCurrentJob() != null) {
+            //TODO cache path!
+            currentPos = createPathFor(tile.getCurrentJob()).getPosAt(ticks);
+        } else {
+            currentPos = HEAD_IDLE;
+        }
+        transform.push();
+        transform.translate(currentPos.x, currentPos.y, currentPos.z);
+        new RenderHelper(buffer.getBuffer(RenderType.getSolid()), light, overlay)
+                .renderColoredQuad(
+                        transform,
+                        Vector3d.ZERO,
+                        new Vector3d(0, 0, HEAD_SIZE),
+                        new Vector3d(HEAD_SIZE, 0, HEAD_SIZE),
+                        new Vector3d(HEAD_SIZE, 0, 0),
+                        new Vector3d(0, 1, 0),
+                        0xff00ff00,
+                        OptionalInt.empty()
+                );
+        transform.pop();
+    }
+
+    private PiecewiseAffinePath<Vector3d> createPathFor(PanelCNCTile.CNCJob job) {
+        final double arrival = 0.5;
+        final double down = arrival + 1 / 16.;
+        final double done = 15 / 16.;
+        final double up = 1;
+        List<Node<Vector3d>> nodes = new ArrayList<>();
+        int lastComponentTime = 0;
+        nodes.add(new Node<>(HEAD_IDLE, lastComponentTime));
+        for (int i = 0; i < job.getTotalComponents(); ++i) {
+            final PlacedComponent nextComponent = job.getComponents().get(i);
+            final Vec2d min = nextComponent.getPosMin();
+            final Vec2d max = nextComponent.getPosMax().subtract(new Vec2d(HEAD_SIZE, HEAD_SIZE));
+            final int nextComponentTime = job.getTickPlacingComponent().getInt(i);
+            final double arrivalAtComponent = MathHelper.lerp(arrival, lastComponentTime, nextComponentTime);
+            nodes.add(new Node<>(new Vector3d(min.x, HEAD_TRAVERSAL_HEIGHT, min.y), arrivalAtComponent));
+            final double downAtComp = MathHelper.lerp(down, lastComponentTime, nextComponentTime);
+            final double doneAtComp = MathHelper.lerp(done, lastComponentTime, nextComponentTime);
+            Vec2d[] corners = {min, new Vec2d(min.x, max.y), max, new Vec2d(max.x, min.y), min};
+            for (int point = 0; point < corners.length; point++) {
+                final double cornerTime = MathHelper.lerp(
+                        point / (double) (corners.length - 1), downAtComp, doneAtComp
+                );
+                nodes.add(new Node<>(
+                        new Vector3d(corners[point].x, HEAD_WORK_HEIGHT, corners[point].y), cornerTime
+                ));
+            }
+            final double upAtComp = MathHelper.lerp(up, lastComponentTime, nextComponentTime);
+            nodes.add(new Node<>(new Vector3d(min.x, HEAD_TRAVERSAL_HEIGHT, min.y), upAtComp));
+            lastComponentTime = nextComponentTime;
+        }
+        nodes.add(new Node<>(HEAD_IDLE, job.getTotalTicks()));
+        return new PiecewiseAffinePath<>(nodes, Vector3d::scale, Vector3d::add);
     }
 }

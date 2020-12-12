@@ -2,6 +2,7 @@ package malte0811.controlengineering.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.Objects;
 
@@ -19,6 +20,10 @@ public class Vec2d {
     public Vec2d(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+
+    public static Vec2d lerp(Vec2d start, Vec2d end, double time) {
+        return new Vec2d(MathHelper.lerp(time, start.x, end.x), MathHelper.lerp(time, start.y, end.y));
     }
 
     @Override
