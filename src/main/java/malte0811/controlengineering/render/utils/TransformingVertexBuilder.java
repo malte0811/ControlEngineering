@@ -90,29 +90,33 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
         delegate.endVertex();
     }
 
-    public void setLight(int light) {
+    public TransformingVertexBuilder setLight(int light) {
         lightmap.setGlobal(new Vec2i(light & 255, light >> 16));
+        return getThis();
     }
 
-    public void setColor(float r, float g, float b, float a) {
+    public TransformingVertexBuilder setColor(float r, float g, float b, float a) {
         color.setGlobal(new Vector4f(r, g, b, a));
+        return getThis();
     }
 
-    public void setNormal(float x, float y, float z) {
+    public TransformingVertexBuilder setNormal(float x, float y, float z) {
         Vector3f vec = new Vector3f(x, y, z);
         vec.normalize();
         normal.setGlobal(vec);
+        return getThis();
     }
 
-    public void setOverlay(int packedOverlayIn) {
+    public TransformingVertexBuilder setOverlay(int packedOverlayIn) {
         overlay.setGlobal(new Vec2i(
                 packedOverlayIn & 0xffff,
                 packedOverlayIn >> 16
         ));
+        return getThis();
     }
 
-    public void setNormal(Vector3d normal) {
-        setNormal((float) normal.x, (float) normal.y, (float) normal.z);
+    public TransformingVertexBuilder setNormal(Vector3d normal) {
+        return setNormal((float) normal.x, (float) normal.y, (float) normal.z);
     }
 
     @Override
@@ -120,8 +124,8 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
         return this;
     }
 
-    public void setColor(int color) {
-        setColor(
+    public TransformingVertexBuilder setColor(int color) {
+        return setColor(
                 BitUtils.getBits(color, 16, 8) / 255f,
                 BitUtils.getBits(color, 8, 8) / 255f,
                 BitUtils.getBits(color, 0, 8) / 255f,

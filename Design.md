@@ -28,6 +28,7 @@ Working title: Control engineering
    - CNC mill with integrated pick+place for actual creation
    - Solves the problem of creating multiple of the same panel (hard to impossible in 1.12)
    - Probably will need to implement a nice UI for it later on...
+   - CNC creates panel "surface", panel chassis is created separately
  
 #### Logic Boxes
  - Mostly as described in [gist from 2018](https://gist.github.com/malte0811/c1ad8a86764bd3216b253200cedee7af)

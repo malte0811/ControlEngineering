@@ -23,6 +23,8 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
@@ -32,8 +34,14 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
     private byte[] insertedTape = BitUtils.toBytesWithParity(
             "button 0 0 ff 0 0;button 15 0 ff00 0 0;button 15 15 ff0000 0 0;button 0 15 ffff 0 0"
     );
-    private CNCJob currentJob = CNCJob.createFor(CNCInstructionParser.parse(BitUtils.toString(insertedTape)));
+    private final CachedValue<byte[], CNCJob> currentJob = new CachedValue<>(
+            () -> insertedTape,
+            tape -> CNCJob.createFor(CNCInstructionParser.parse(BitUtils.toString(tape))),
+            Arrays::equals
+    );
     private int currentTicksInJob;
+    private boolean hasPanel;
+    private final List<PlacedComponent> currentPlacedComponents = new ArrayList<>();
 
     public PanelCNCTile() {
         super(CETileEntities.PANEL_CNC.get());
@@ -59,7 +67,15 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
     );
 
     private ActionResultType bottomClick(ItemUseContext ctx) {
-        return ActionResultType.PASS;
+        //TODO fully implement
+        if (hasPanel()) {
+            hasPanel = false;
+            currentPlacedComponents.clear();
+            currentTicksInJob = 0;
+        } else {
+            hasPanel = true;
+        }
+        return ActionResultType.SUCCESS;
     }
 
     private ActionResultType topClick(ItemUseContext ctx) {
@@ -68,8 +84,16 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
 
     @Override
     public void tick() {
-        ++currentTicksInJob;
-        currentTicksInJob %= currentJob.totalTicks;
+        CNCJob job = currentJob.get();
+        if (hasPanel && job != null && currentTicksInJob < job.totalTicks) {
+            ++currentTicksInJob;
+            int nextComponent = currentPlacedComponents.size();
+            if (nextComponent < job.getTotalComponents()) {
+                if (currentTicksInJob >= job.getTickPlacingComponent().getInt(nextComponent)) {
+                    currentPlacedComponents.add(job.getComponents().get(nextComponent));
+                }
+            }
+        }
     }
 
     @Override
@@ -79,7 +103,7 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
 
     @Nullable
     public CNCJob getCurrentJob() {
-        return currentJob;
+        return currentJob.get();
     }
 
     public int getTapeLength() {
@@ -92,6 +116,14 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
 
     public int getCurrentTicksInJob() {
         return currentTicksInJob;
+    }
+
+    public List<PlacedComponent> getCurrentPlacedComponents() {
+        return currentPlacedComponents;
+    }
+
+    public boolean hasPanel() {
+        return hasPanel;
     }
 
     public static class CNCJob {
@@ -128,16 +160,8 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
             this.totalTicks = totalTicks;
         }
 
-        public List<PlacedComponent> getComponentsAtTime(double tick) {
-            return components.subList(0, getNumComponentsAt(tick));
-        }
-
         public double getTapeProgressAtTime(double tick) {
             return interpolate(tick, tapeProgressAfterComponent::getInt);
-        }
-
-        public double getComponentProgress(double tick) {
-            return interpolate(tick, i -> i + 1) % 1;
         }
 
         public ImmutableList<PlacedComponent> getComponents() {
@@ -148,32 +172,12 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
             return tickPlacingComponent;
         }
 
-        @Nullable
-        public PlacedComponent getNextComponent(double tick) {
-            final int alreadyPlaced = getNumComponentsAt(tick);
-            if (alreadyPlaced == getTotalComponents()) {
-                return null;
-            } else {
-                return components.get(alreadyPlaced);
-            }
-        }
-
         public int getTotalComponents() {
             return components.size();
         }
 
         public int getTotalTicks() {
             return totalTicks;
-        }
-
-        @Nullable
-        public PlacedComponent getLastComponent(double ticks) {
-            final int alreadyPlaced = getNumComponentsAt(ticks);
-            if (alreadyPlaced > 0) {
-                return components.get(alreadyPlaced - 1);
-            } else {
-                return null;
-            }
         }
 
         private double interpolate(double tick, Int2IntFunction getValue) {

@@ -1,20 +1,28 @@
 package malte0811.controlengineering.render;
 
+import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.renders.RenderHelper;
 import malte0811.controlengineering.render.tape.TapeDrive;
 import malte0811.controlengineering.render.utils.PiecewiseAffinePath;
 import malte0811.controlengineering.render.utils.PiecewiseAffinePath.Node;
+import malte0811.controlengineering.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.tiles.panels.PanelCNCTile;
 import malte0811.controlengineering.util.Vec2d;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.inventory.container.PlayerContainer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3d;
@@ -25,6 +33,16 @@ import java.util.List;
 import java.util.OptionalInt;
 
 public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
+    //TODO reset?
+    private static final ResettableLazy<TextureAtlasSprite> MODEL_TEXTURE = new ResettableLazy<>(
+            () -> {
+                AtlasTexture atlas = Minecraft.getInstance().getModelManager().getAtlasTexture(
+                        PlayerContainer.LOCATION_BLOCKS_TEXTURE
+                );
+                return atlas.getSprite(new ResourceLocation(ControlEngineering.MODID, "block/panel_cnc"));
+            }
+    );
+
     private static final double HEAD_SIZE = 0.5;
     private static final double HEAD_TRAVERSAL_HEIGHT = 3;
     private static final double HEAD_WORK_HEIGHT = 1;
@@ -46,7 +64,8 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
         transform.push();
         rotateAroundCenter(-PanelCNCBlock.getDirection(tile).getHorizontalAngle(), transform);
         transform.scale(1 / 16f, 1 / 16f, 1 / 16f);
-        final double tick = tile.getCurrentTicksInJob() + partialTicks;
+        //TODO hasPanel => isActive
+        final double tick = tile.getCurrentTicksInJob() + (tile.hasPanel() ? partialTicks : 0);
         transform.push();
         transform.translate(0, 14, 0);
         renderTape(tile, buffers, transform, light, overlay, tick);
@@ -54,7 +73,7 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
         transform.push();
         transform.translate(1, 2, 1);
         transform.scale(14f / 16, 14f / 16, 14f / 16);
-        renderCurrentPanelState(tile, buffers, transform, light, overlay, tick);
+        renderCurrentPanelState(tile, buffers, transform, light, overlay);
         renderHead(tile, buffers, transform, light, overlay, tick);
         transform.pop();
         transform.pop();
@@ -67,14 +86,24 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
     }
 
     private void renderCurrentPanelState(
-            PanelCNCTile tile, IRenderTypeBuffer buffers, MatrixStack transform, int light, int overlay, double ticks
+            PanelCNCTile tile, IRenderTypeBuffer buffers, MatrixStack transform, int light, int overlay
     ) {
-        PanelCNCTile.CNCJob job = tile.getCurrentJob();
-        if (job != null) {
-            IVertexBuilder builder = buffers.getBuffer(RenderType.getSolid());
-            for (PlacedComponent placed : job.getComponentsAtTime(ticks)) {
-                PanelRenderer.renderComponent(transform, placed, builder, light, overlay);
-            }
+        IVertexBuilder builder = buffers.getBuffer(RenderType.getSolid());
+        if (tile.hasPanel()) {
+            IVertexBuilder forTexture = MODEL_TEXTURE.get().wrapBuffer(builder);
+            TransformingVertexBuilder finalWrapped = new TransformingVertexBuilder(forTexture, transform);
+            finalWrapped.setColor(-1).setLight(light).setNormal(0, 1, 0).setOverlay(overlay);
+            final float minU = 17 / 64f;
+            final float maxU = 31 / 64f;
+            final float minV = 1 - 1 / 32f;
+            final float maxV = 1 - 15 / 32f;
+            finalWrapped.pos(0, 0, 0).tex(minU, minV).endVertex();
+            finalWrapped.pos(0, 0, 16).tex(minU, maxV).endVertex();
+            finalWrapped.pos(16, 0, 16).tex(maxU, maxV).endVertex();
+            finalWrapped.pos(16, 0, 0).tex(maxU, minV).endVertex();
+        }
+        for (PlacedComponent placed : tile.getCurrentPlacedComponents()) {
+            PanelRenderer.renderComponent(transform, placed, builder, light, overlay);
         }
     }
 
