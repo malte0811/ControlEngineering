@@ -12,6 +12,7 @@ import malte0811.controlengineering.render.tape.TapeDrive;
 import malte0811.controlengineering.render.utils.PiecewiseAffinePath;
 import malte0811.controlengineering.render.utils.PiecewiseAffinePath.Node;
 import malte0811.controlengineering.render.utils.TransformingVertexBuilder;
+import malte0811.controlengineering.tiles.panels.CNCJob;
 import malte0811.controlengineering.tiles.panels.PanelCNCTile;
 import malte0811.controlengineering.util.Vec2d;
 import net.minecraft.client.Minecraft;
@@ -112,7 +113,7 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
     ) {
         final long totLength = tile.getTapeLength();
         if (totLength > 0) {
-            PanelCNCTile.CNCJob currentJob = tile.getCurrentJob();
+            CNCJob currentJob = tile.getCurrentJob();
             Preconditions.checkNotNull(currentJob);
             //TODO put into TE in some way? Or make static(ish)?
             TapeDrive testWheel = new TapeDrive(
@@ -151,7 +152,7 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
         transform.pop();
     }
 
-    private PiecewiseAffinePath<Vector3d> createPathFor(PanelCNCTile.CNCJob job) {
+    private PiecewiseAffinePath<Vector3d> createPathFor(CNCJob job) {
         final double arrival = 0.5;
         final double down = arrival + 1 / 16.;
         final double done = 15 / 16.;
