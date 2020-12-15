@@ -7,8 +7,8 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
-import malte0811.controlengineering.controlpanels.renders.RenderHelper;
 import malte0811.controlengineering.render.tape.TapeDrive;
+import malte0811.controlengineering.render.utils.ModelRenderUtils;
 import malte0811.controlengineering.render.utils.PiecewiseAffinePath;
 import malte0811.controlengineering.render.utils.PiecewiseAffinePath.Node;
 import malte0811.controlengineering.render.utils.TransformingVertexBuilder;
@@ -31,7 +31,6 @@ import net.minecraft.util.math.vector.Vector3d;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.OptionalInt;
 
 public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
     //TODO reset?
@@ -46,7 +45,7 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
 
     private static final double HEAD_SIZE = 0.5;
     private static final double HEAD_TRAVERSAL_HEIGHT = 3;
-    private static final double HEAD_WORK_HEIGHT = 1;
+    private static final double HEAD_WORK_HEIGHT = -1;
     private static final Vector3d HEAD_IDLE = new Vector3d(8 - HEAD_SIZE / 2, 5, 8 - HEAD_SIZE / 2);
 
     public PanelCNCRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
@@ -96,8 +95,8 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
             finalWrapped.setColor(-1).setLight(light).setNormal(0, 1, 0).setOverlay(overlay);
             final float minU = 17 / 64f;
             final float maxU = 31 / 64f;
-            final float minV = 1 - 1 / 32f;
-            final float maxV = 1 - 15 / 32f;
+            final float minV = 31 / 32f;
+            final float maxV = 17 / 32f;
             finalWrapped.pos(0, 0, 0).tex(minU, minV).endVertex();
             finalWrapped.pos(0, 0, 16).tex(minU, maxV).endVertex();
             finalWrapped.pos(16, 0, 16).tex(maxU, maxV).endVertex();
@@ -137,19 +136,28 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
             currentPos = HEAD_IDLE;
         }
         transform.push();
-        transform.translate(currentPos.x, currentPos.y, currentPos.z);
-        new RenderHelper(buffer.getBuffer(RenderType.getSolid()), light, overlay)
-                .renderColoredQuad(
-                        transform,
-                        Vector3d.ZERO,
-                        new Vector3d(0, 0, HEAD_SIZE),
-                        new Vector3d(HEAD_SIZE, 0, HEAD_SIZE),
-                        new Vector3d(HEAD_SIZE, 0, 0),
-                        new Vector3d(0, 1, 0),
-                        0xff00ff00,
-                        OptionalInt.empty()
-                );
+        transform.translate(currentPos.x, 0, currentPos.z);
+        //TODO pull out
+        IVertexBuilder solidBuffer = buffer.getBuffer(RenderType.getSolid());
+        IVertexBuilder forTexture = MODEL_TEXTURE.get().wrapBuffer(solidBuffer);
+        TransformingVertexBuilder innerBuilder = new TransformingVertexBuilder(forTexture, transform);
+        innerBuilder.setOverlay(overlay)
+                .setLight(light)
+                .setColor(1, 1, 1, 1);
+        renderHeadModel(innerBuilder, (float) currentPos.y);
         transform.pop();
+    }
+
+    private void renderHeadModel(TransformingVertexBuilder builder, float yMin) {
+        final float yMax = 12;
+        final float headHeight = 1;
+        final ModelRenderUtils.UVCoord tipMin = new ModelRenderUtils.UVCoord(36 / 64f, 12 / 32f);
+        final ModelRenderUtils.UVCoord tipMax = new ModelRenderUtils.UVCoord(40 / 64f, 14 / 32f);
+        ModelRenderUtils.renderTube(builder, 0, HEAD_SIZE, yMin, yMin + headHeight, tipMin, tipMax);
+        final ModelRenderUtils.UVCoord shaftMin = new ModelRenderUtils.UVCoord(36 / 64f, 12 / 32f);
+        final float shaftLength = yMax - yMin - headHeight;
+        final ModelRenderUtils.UVCoord shaftMax = new ModelRenderUtils.UVCoord(40 / 64f, (12 - shaftLength) / 32f);
+        ModelRenderUtils.renderTube(builder, HEAD_SIZE, HEAD_SIZE, yMin + headHeight, yMax, shaftMin, shaftMax);
     }
 
     private PiecewiseAffinePath<Vector3d> createPathFor(CNCJob job) {

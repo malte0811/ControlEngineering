@@ -15,7 +15,7 @@ public class CNCJob {
     private final int totalTicks;
 
     public static CNCJob createFor(CNCInstructionParser.ParserResult parserData) {
-        final int timePerComponent = 40;
+        final int timePerComponent = 60;
         IntList tickEnds = new IntArrayList(parserData.getComponents().size());
         for (int i = 0; i < parserData.getComponentEnds().size(); ++i) {
             tickEnds.add(timePerComponent * (i + 1));
