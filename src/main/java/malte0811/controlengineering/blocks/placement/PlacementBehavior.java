@@ -6,6 +6,7 @@ import com.mojang.datafixers.util.Unit;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Lazy;
@@ -57,7 +58,7 @@ public interface PlacementBehavior<T> {
 
     BlockState getStateForOffset(Block owner, BlockPos offset, T data);
 
-    default void fillTileData(BlockPos offset, TileEntity te, T data) {}
+    default void fillTileData(BlockPos offset, TileEntity te, T data, ItemStack item) {}
 
     boolean isValidAtOffset(BlockPos offset, BlockState state, TileEntity te, T data);
 }

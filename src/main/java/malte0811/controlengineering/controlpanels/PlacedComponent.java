@@ -4,9 +4,11 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
+import malte0811.controlengineering.util.Codecs;
 import malte0811.controlengineering.util.Matrix4;
 import malte0811.controlengineering.util.Vec2d;
 import net.minecraft.item.ItemUseContext;
+import net.minecraft.nbt.INBT;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -142,5 +144,21 @@ public class PlacedComponent extends SelectionShapes {
     @Override
     public int hashCode() {
         return Objects.hash(component, pos);
+    }
+
+    public static PlacedComponent fromNBT(INBT nbt) {
+        return Codecs.read(CODEC, nbt);
+    }
+
+    public INBT toNBT() {
+        return Codecs.encode(CODEC, this);
+    }
+
+    public static List<PlacedComponent> readListFromNBT(INBT list) {
+        return Codecs.read(Codec.list(CODEC), list);
+    }
+
+    public static INBT writeListToNBT(List<PlacedComponent> components) {
+        return Codecs.encode(Codec.list(CODEC), components);
     }
 }

@@ -8,6 +8,7 @@ import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -75,11 +76,13 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
     }
 
     @Override
-    public void fillTileData(BlockPos offset, TileEntity te, PanelOrientation data) {
+    public void fillTileData(BlockPos offset, TileEntity te, PanelOrientation data, ItemStack item) {
         if (BlockPos.ZERO.equals(offset) && te instanceof ControlPanelTile) {
-            //TODO read from item stack
-            CompoundNBT nbt = te.write(new CompoundNBT());
-            te.read(getStateForOffset(CEBlocks.CONTROL_PANEL.get(), offset, data), nbt);
+            CompoundNBT nbt = item.getTag();
+            if (nbt == null || nbt.isEmpty()) {
+                nbt = te.write(new CompoundNBT());
+            }
+            ((ControlPanelTile) te).readComponentsAndTransform(nbt, data);
         }
     }
 }

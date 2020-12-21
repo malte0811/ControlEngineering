@@ -31,6 +31,7 @@ public class CEItems {
             PunchedTapeItem::new
     );
     public static final RegistryObject<EmptyTapeItem> EMPTY_TAPE = REGISTER.register("empty_tape", EmptyTapeItem::new);
+    public static final RegistryObject<PanelTopItem> PANEL_TOP = REGISTER.register("panel_top", PanelTopItem::new);
 
     //Blocks
     private static final RegistryObject<BlockItem> BUS_RELAY = blockItem(CEBlocks.BUS_RELAY);

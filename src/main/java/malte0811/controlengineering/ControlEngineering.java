@@ -8,6 +8,7 @@ import blusunrize.immersiveengineering.common.items.IEItems;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.bus.BusWireTypes;
 import malte0811.controlengineering.bus.LocalBusHandler;
+import malte0811.controlengineering.crafting.CERecipeSerializers;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.network.AddTTYData;
@@ -57,6 +58,7 @@ public class ControlEngineering {
         CETileEntities.REGISTER.register(modBus);
         CEItems.REGISTER.register(modBus);
         CEContainers.REGISTER.register(modBus);
+        CERecipeSerializers.REGISTER.register(modBus);
         modBus.addListener(this::setup);
         modBus.addListener(this::loadComplete);
     }

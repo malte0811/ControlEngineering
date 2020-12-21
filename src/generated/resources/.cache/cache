@@ -10,3 +10,4 @@ cf8121bc13a2c927ab2c4c574696d4357ded062b assets/controlengineering/blockstates/t
 b4b3d9fdc92af7dc626e2435e21e26cd4c48735d assets/controlengineering/models/item/empty_tape.json
 545f8bd4b029f4ca26b725a0ee6689e839e3ca13 assets/controlengineering/models/item/punched_tape.json
 7be4e8be30dc6e309ace0c8d4a0d782dad49379d assets/controlengineering/models/panel/base.json
+db267408367491e91e63bedb8dd0972d5264abae data/controlengineering/recipes/panel.json

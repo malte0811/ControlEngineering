@@ -8,18 +8,22 @@ import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.cnc.CNCInstructionParser;
+import malte0811.controlengineering.items.PanelTopItem;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.Matrix4;
 import malte0811.controlengineering.util.serialization.NBTIO;
 import net.minecraft.block.BlockState;
+import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -67,15 +71,31 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
     );
 
     private ActionResultType bottomClick(ItemUseContext ctx) {
-        //TODO fully implement
+        if (world == null) {
+            return ActionResultType.PASS;
+        }
         if (hasPanel()) {
+            if (!world.isRemote) {
+                ItemStack result = PanelTopItem.createWithComponents(currentPlacedComponents);
+                Vector3d dropPos = Vector3d.copyCentered(pos);
+                InventoryHelper.spawnItemStack(world, dropPos.x, dropPos.y, dropPos.z, result);
+            }
             hasPanel = false;
             currentPlacedComponents.clear();
             currentTicksInJob = 0;
+            return ActionResultType.SUCCESS;
         } else {
-            hasPanel = true;
+            ItemStack heldItem = ctx.getItem();
+            if (PanelTopItem.isEmptyPanelTop(heldItem)) {
+                hasPanel = true;
+                if (!world.isRemote) {
+                    heldItem.shrink(1);
+                }
+                return ActionResultType.SUCCESS;
+            } else {
+                return ActionResultType.FAIL;
+            }
         }
-        return ActionResultType.SUCCESS;
     }
 
     private ActionResultType topClick(ItemUseContext ctx) {
