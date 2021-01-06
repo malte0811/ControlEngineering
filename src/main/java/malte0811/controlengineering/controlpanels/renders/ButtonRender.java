@@ -5,6 +5,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.controlpanels.components.Button;
 import malte0811.controlengineering.util.ColorUtils;
+import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.vector.Vector3d;
 
@@ -25,7 +26,7 @@ public class ButtonRender extends ComponentRenderer<Button> {
     ) {
         RenderHelper helper = new RenderHelper(builder, packedLightIn, packedOverlayIn);
         EnumMap<Direction, Integer> colors = new EnumMap<>(Direction.class);
-        for (Direction d : Direction.BY_HORIZONTAL_INDEX) {
+        for (Direction d : DirectionUtils.BY_HORIZONTAL_INDEX) {
             colors.put(d, -1);
         }
         final Map<Direction, Integer> lightOverrides;

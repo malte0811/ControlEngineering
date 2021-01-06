@@ -13,6 +13,7 @@ import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.Clearable;
+import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -65,7 +66,7 @@ public class BusInterfaceTile extends ImmersiveConnectableTileEntity implements 
     private Collection<IBusInterface> getConnectedTile() {
         //TODO facing
         Collection<IBusInterface> ret = new ArrayList<>();
-        for (Direction d : Direction.VALUES) {
+        for (Direction d : DirectionUtils.VALUES) {
             TileEntity neighbor = world.getTileEntity(pos.offset(d));
             if (neighbor instanceof IBusInterface) {
                 IBusInterface i = (IBusInterface) neighbor;

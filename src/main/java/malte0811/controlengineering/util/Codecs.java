@@ -14,7 +14,10 @@ public class Codecs {
             inbt -> DataResult.success(new Dynamic<>(NBTDynamicOps.INSTANCE, inbt))
     );
 
-    public static final Codec<Direction> DIRECTION_CODEC = Codec.INT.xmap(i -> Direction.VALUES[i], Direction::ordinal);
+    public static final Codec<Direction> DIRECTION_CODEC = Codec.INT.xmap(
+            i -> DirectionUtils.VALUES[i],
+            Direction::ordinal
+    );
 
     public static <T> T read(Codec<T> codec, CompoundNBT in, String subName) {
         return read(codec, in.get(subName));

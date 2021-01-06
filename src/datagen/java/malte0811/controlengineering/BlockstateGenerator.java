@@ -8,7 +8,9 @@ import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.tape.TeletypeBlock;
+import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderState;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.state.Property;
@@ -20,6 +22,8 @@ import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.loaders.OBJLoaderBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
+
+import java.lang.reflect.Field;
 
 public class BlockstateGenerator extends BlockStateProvider {
     private final LoadedModels loadedModels;
@@ -68,8 +72,18 @@ public class BlockstateGenerator extends BlockStateProvider {
         ModelFile busRelayModel = loadedModels.getBuilder("dummy_iic")
                 .loader(ConnectionLoader.LOADER_NAME)
                 .additional("base_model", baseJson)
-                .additional("layers", ImmutableList.of(RenderType.getSolid().name));
+                .additional("layers", ImmutableList.of(getName(RenderType.getSolid())));
         simpleBlock(b, busRelayModel);
+    }
+
+    private String getName(RenderState state) {
+        try {
+            Field f = RenderState.class.getDeclaredField("name");
+            f.setAccessible(true);
+            return (String) f.get(state);
+        } catch (Exception var3) {
+            throw new RuntimeException(var3);
+        }
     }
 
     private void panelModel() {
@@ -85,7 +99,7 @@ public class BlockstateGenerator extends BlockStateProvider {
     }
 
     private void horizontalRotated(Block b, Property<Direction> facing, ModelFile model) {
-        for (Direction d : Direction.BY_HORIZONTAL_INDEX) {
+        for (Direction d : DirectionUtils.BY_HORIZONTAL_INDEX) {
             getVariantBuilder(b)
                     .partialState()
                     .with(facing, d)
