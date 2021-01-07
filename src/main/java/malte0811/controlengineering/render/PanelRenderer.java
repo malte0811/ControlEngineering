@@ -6,8 +6,9 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
-import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
+import malte0811.controlengineering.controlpanels.renders.target.DynamicRenderTarget;
+import malte0811.controlengineering.controlpanels.renders.target.TargetType;
 import malte0811.controlengineering.render.utils.DelegatingVertexBuilder;
 import malte0811.controlengineering.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
@@ -16,26 +17,28 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.SpriteAwareVertexBuilder;
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nonnull;
+import java.util.function.Predicate;
 
 //TODO baked model? VBO? At least partially?
 public class PanelRenderer extends TileEntityRenderer<ControlPanelTile> {
+    public static final ResourceLocation PANEL_TEXTURE_LOC = new ResourceLocation(
+            ControlEngineering.MODID,
+            "block/control_panel"
+    );
     //TODO reset
-    private static final ResettableLazy<TextureAtlasSprite> texture = new ResettableLazy<>(
-            () -> {
-                ResourceLocation loc = new ResourceLocation(ControlEngineering.MODID, "block/control_panel");
-                return Minecraft.getInstance()
-                        .getModelManager()
-                        .getAtlasTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE)
-                        .getSprite(loc);
-            }
+    public static final ResettableLazy<TextureAtlasSprite> PANEL_TEXTURE = new ResettableLazy<>(
+            () -> Minecraft.getInstance()
+                    .getModelManager()
+                    .getAtlasTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE)
+                    .getSprite(PANEL_TEXTURE_LOC)
     );
 
     public PanelRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
@@ -60,23 +63,14 @@ public class PanelRenderer extends TileEntityRenderer<ControlPanelTile> {
             return;
         }
         IVertexBuilder builder = buffer.getBuffer(RenderType.getSolid());
-        renderPanel(tile, transform, builder, texture.get(), combinedLight, combinedOverlay);
+        renderPanel(tile, transform, builder, PANEL_TEXTURE.get(), combinedLight, combinedOverlay);
         tile.getTransform().getPanelTopToWorld().toTransformationMatrix().push(transform);
         final float baseScale = 1 / 16f;
         transform.translate(0, 1e-3, 0);
         transform.scale(baseScale, baseScale, baseScale);
-        for (PlacedComponent comp : tile.getComponents()) {
-            renderComponent(transform, comp, builder, combinedLight, combinedOverlay);
-        }
-        transform.pop();
-    }
-
-    public static void renderComponent(
-            MatrixStack transform, PlacedComponent component, IVertexBuilder builder, int light, int overlay
-    ) {
-        transform.push();
-        transform.translate(component.getPosMin().x, 0, component.getPosMin().y);
-        ComponentRenderers.render(builder, component.getComponent(), transform, light, overlay);
+        ComponentRenderers.renderAll(new DynamicRenderTarget(
+                builder, combinedLight, combinedOverlay, Predicate.isEqual(TargetType.DYNAMIC)
+        ), tile.getComponents(), transform);
         transform.pop();
     }
 

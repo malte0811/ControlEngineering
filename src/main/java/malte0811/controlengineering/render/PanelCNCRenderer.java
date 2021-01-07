@@ -7,6 +7,9 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
+import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
+import malte0811.controlengineering.controlpanels.renders.target.DynamicRenderTarget;
+import malte0811.controlengineering.controlpanels.renders.target.TargetType;
 import malte0811.controlengineering.render.tape.TapeDrive;
 import malte0811.controlengineering.render.utils.ModelRenderUtils;
 import malte0811.controlengineering.render.utils.PiecewiseAffinePath;
@@ -31,6 +34,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
     //TODO reset?
@@ -102,9 +106,9 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
             finalWrapped.pos(16, 0, 16).tex(maxU, maxV).endVertex();
             finalWrapped.pos(16, 0, 0).tex(maxU, minV).endVertex();
         }
-        for (PlacedComponent placed : tile.getCurrentPlacedComponents()) {
-            PanelRenderer.renderComponent(transform, placed, builder, light, overlay);
-        }
+        ComponentRenderers.renderAll(new DynamicRenderTarget(
+                builder, light, overlay, Predicate.isEqual(TargetType.DYNAMIC)
+        ), tile.getCurrentPlacedComponents(), transform);
     }
 
     private void renderTape(

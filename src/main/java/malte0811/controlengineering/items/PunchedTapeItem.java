@@ -3,6 +3,7 @@ package malte0811.controlengineering.items;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.ViewTapeScreen;
 import malte0811.controlengineering.util.BitUtils;
+import malte0811.controlengineering.util.Constants;
 import malte0811.controlengineering.util.ItemNBTUtil;
 import malte0811.controlengineering.util.TextUtil;
 import net.minecraft.client.Minecraft;
@@ -61,7 +62,7 @@ public class PunchedTapeItem extends Item {
         byte[] data = getBytes(stack);
         TextUtil.addTooltipLine(
                 tooltip,
-                new TranslationTextComponent("controlengineering.tooltip.written_tape_bytes", data.length)
+                new TranslationTextComponent(Constants.PUNCHED_TAPE_BYTES, data.length)
         );
     }
 

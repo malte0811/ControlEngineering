@@ -1,6 +1,7 @@
 package malte0811.controlengineering.items;
 
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.util.Constants;
 import malte0811.controlengineering.util.ItemNBTUtil;
 import malte0811.controlengineering.util.TextUtil;
 import net.minecraft.client.util.ITooltipFlag;
@@ -47,7 +48,7 @@ public class EmptyTapeItem extends Item {
         int length = getLength(stack);
         TextUtil.addTooltipLine(
                 tooltip,
-                new TranslationTextComponent("controlengineering.tooltip.empty_tape_bytes", length)
+                new TranslationTextComponent(Constants.EMPTY_TAPE_BYTES, length)
         );
     }
 

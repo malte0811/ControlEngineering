@@ -1,12 +1,14 @@
 package malte0811.controlengineering.controlpanels.renders;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.controlpanels.PanelComponent;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
+import malte0811.controlengineering.controlpanels.PlacedComponent;
+import malte0811.controlengineering.controlpanels.renders.target.RenderTarget;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ComponentRenderers {
@@ -29,13 +31,20 @@ public class ComponentRenderers {
         return (ComponentRenderer<? super T>) RENDERS.get(instance.getType());
     }
 
+    public static void renderAll(RenderTarget target, List<PlacedComponent> components, MatrixStack transform) {
+        for (PlacedComponent component : components) {
+            transform.push();
+            transform.translate(component.getPosMin().x, 0, component.getPosMin().y);
+            ComponentRenderers.render(target, component.getComponent(), transform);
+            transform.pop();
+        }
+    }
+
     public static <T extends PanelComponent<?>> void render(
-            IVertexBuilder builder,
+            RenderTarget builder,
             T instance,
-            MatrixStack transform,
-            int light,
-            int overlay
+            MatrixStack transform
     ) {
-        getRenderer(instance).render(builder, instance, transform, light, overlay);
+        getRenderer(instance).render(builder, instance, transform);
     }
 }

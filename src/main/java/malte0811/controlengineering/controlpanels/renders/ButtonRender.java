@@ -2,8 +2,9 @@ package malte0811.controlengineering.controlpanels.renders;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.controlpanels.components.Button;
+import malte0811.controlengineering.controlpanels.renders.target.RenderTarget;
+import malte0811.controlengineering.controlpanels.renders.target.TargetType;
 import malte0811.controlengineering.util.ColorUtils;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.util.Direction;
@@ -15,16 +16,16 @@ import java.util.Map;
 public class ButtonRender extends ComponentRenderer<Button> {
     private static final Vector3d BOX_MIN = Vector3d.ZERO;
     private static final Vector3d BOX_MAX = new Vector3d(1, 0.5, 1);
+    private static final Map<Direction, TargetType> TARGETS = ImmutableMap.<Direction, TargetType>builder()
+            .put(Direction.NORTH, TargetType.STATIC)
+            .put(Direction.EAST, TargetType.STATIC)
+            .put(Direction.SOUTH, TargetType.STATIC)
+            .put(Direction.WEST, TargetType.STATIC)
+            .put(Direction.UP, TargetType.DYNAMIC)
+            .build();
 
     @Override
-    public void render(
-            IVertexBuilder builder,
-            Button instance,
-            MatrixStack transform,
-            int packedLightIn,
-            int packedOverlayIn
-    ) {
-        RenderHelper helper = new RenderHelper(builder, packedLightIn, packedOverlayIn);
+    public void render(RenderTarget output, Button instance, MatrixStack transform) {
         EnumMap<Direction, Integer> colors = new EnumMap<>(Direction.class);
         for (Direction d : DirectionUtils.BY_HORIZONTAL_INDEX) {
             colors.put(d, -1);
@@ -37,6 +38,6 @@ public class ButtonRender extends ComponentRenderer<Button> {
             lightOverrides = ImmutableMap.of();
             colors.put(Direction.UP, ColorUtils.halfColor(instance.color));
         }
-        helper.renderColoredBox(transform, BOX_MIN, BOX_MAX, colors, lightOverrides);
+        output.renderColoredBox(transform, BOX_MIN, BOX_MAX, colors, lightOverrides, TARGETS);
     }
 }

@@ -1,6 +1,8 @@
 package malte0811.controlengineering;
 
+import malte0811.controlengineering.controlpanels.model.TopItemModelLoader;
 import malte0811.controlengineering.items.CEItems;
+import malte0811.controlengineering.modelbuilder.DynamicModelBuilder;
 import net.minecraft.item.Item;
 import net.minecraft.util.IItemProvider;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
@@ -15,6 +17,9 @@ public class ItemModels extends ItemModelProvider {
     protected void registerModels() {
         addItemModel("tty_tape_clean", CEItems.EMPTY_TAPE.get());
         addItemModel("tty_tape_punched", CEItems.PUNCHED_TAPE.get());
+        getBuilder(name(CEItems.PANEL_TOP.get()))
+                .customLoader(DynamicModelBuilder.customLoader(TopItemModelLoader.ID))
+                .end();
     }
 
     private String name(IItemProvider item) {

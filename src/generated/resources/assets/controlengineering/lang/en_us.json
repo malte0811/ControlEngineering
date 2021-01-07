@@ -1,0 +1,13 @@
+{
+  "block.controlengineering.bus_interface": "Bus interface",
+  "block.controlengineering.bus_relay": "Bus relay",
+  "block.controlengineering.control_panel": "Control panel",
+  "block.controlengineering.line_access": "Line access",
+  "block.controlengineering.panel_cnc": "Control panel CNC",
+  "block.controlengineering.teletype": "Teletype",
+  "controlengineering.tooltip.empty_tape_bytes": "Length: %d characters",
+  "controlengineering.tooltip.written_tape_bytes": "Characters: %d",
+  "item.controlengineering.empty_tape": "Empty tape",
+  "item.controlengineering.panel_top": "Panel top",
+  "item.controlengineering.punched_tape": "Punched tape"
+}
