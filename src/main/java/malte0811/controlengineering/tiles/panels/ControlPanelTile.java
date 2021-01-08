@@ -6,10 +6,7 @@ import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.bus.*;
-import malte0811.controlengineering.controlpanels.PanelComponents;
-import malte0811.controlengineering.controlpanels.PanelSelectionShapes;
-import malte0811.controlengineering.controlpanels.PanelTransform;
-import malte0811.controlengineering.controlpanels.PlacedComponent;
+import malte0811.controlengineering.controlpanels.*;
 import malte0811.controlengineering.controlpanels.components.Button;
 import malte0811.controlengineering.controlpanels.components.Indicator;
 import malte0811.controlengineering.tiles.CETileEntities;
@@ -29,7 +26,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -97,8 +93,9 @@ public class ControlPanelTile extends TileEntity implements IBusInterface, Selec
     }
 
     public void readComponentsAndTransform(CompoundNBT nbt, PanelOrientation orientation) {
-        this.components = PlacedComponent.readListFromNBT(nbt.getList("components", Constants.NBT.TAG_COMPOUND));
-        this.transform = PanelTransform.from(nbt, orientation);
+        final PanelData data = new PanelData(nbt, orientation);
+        this.transform = data.getTransform();
+        this.components = data.getComponents();
         if (world != null && !world.isRemote) {
             resetStateHandler();
         }
@@ -116,8 +113,7 @@ public class ControlPanelTile extends TileEntity implements IBusInterface, Selec
     @Override
     public CompoundNBT write(@Nonnull CompoundNBT compound) {
         CompoundNBT encoded = super.write(compound);
-        encoded.put("components", PlacedComponent.writeListToNBT(components));
-        transform.addTo(compound);
+        encoded.merge(new PanelData(this).toNBT());
         return encoded;
     }
 

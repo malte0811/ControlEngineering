@@ -144,5 +144,21 @@ public class PanelTransform {
             this.centerHeight = centerHeight;
             this.degrees = degrees;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            TileTransformData that = (TileTransformData) o;
+            return Float.compare(that.centerHeight, centerHeight) == 0 && Float.compare(
+                    that.degrees,
+                    degrees
+            ) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(centerHeight, degrees);
+        }
     }
 }

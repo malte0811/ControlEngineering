@@ -8,6 +8,8 @@ import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.tape.TeletypeBlock;
+import malte0811.controlengineering.client.ModelLoaders;
+import malte0811.controlengineering.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderState;
@@ -88,14 +90,17 @@ public class BlockstateGenerator extends BlockStateProvider {
 
     private void panelModel() {
         BlockModelBuilder baseModel = models().cubeAll("panel/base", modLoc("block/control_panel"));
+        BlockModelBuilder topModel = models().getBuilder("panel/top")
+                .customLoader(DynamicModelBuilder.customLoader(ModelLoaders.PANEL_MODEL))
+                .end();
         getVariantBuilder(CEBlocks.CONTROL_PANEL.get())
                 .partialState()
                 .with(PanelBlock.IS_BASE, true)
                 .setModels(new ConfiguredModel(baseModel))
                 .partialState()
                 .with(PanelBlock.IS_BASE, false)
-                //TODO replace TER with model? Or maybe VBOs?
-                .setModels(EMPTY_MODEL);
+                .setModels(new ConfiguredModel(topModel));
+        itemModels().getBuilder(ItemModels.name(CEBlocks.CONTROL_PANEL)).parent(topModel);
     }
 
     private void horizontalRotated(Block b, Property<Direction> facing, ModelFile model) {

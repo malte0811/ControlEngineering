@@ -1,7 +1,7 @@
 {
   "variants": {
     "base=false": {
-      "model": "immersiveengineering:block/ie_empty"
+      "model": "controlengineering:panel/top"
     },
     "base=true": {
       "model": "controlengineering:panel/base"

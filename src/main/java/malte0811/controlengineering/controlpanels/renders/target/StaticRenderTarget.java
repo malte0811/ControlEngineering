@@ -1,5 +1,7 @@
 package malte0811.controlengineering.controlpanels.renders.target;
 
+import com.google.common.collect.ImmutableList;
+import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
@@ -10,10 +12,21 @@ import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.client.model.pipeline.IVertexConsumer;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 public class StaticRenderTarget extends RenderTarget {
+    public static final Map<Direction, List<BakedQuad>> EMPTY_LISTS_ON_ALL_SIDES;
+
+    static {
+        EMPTY_LISTS_ON_ALL_SIDES = new EnumMap<>(Direction.class);
+        for (Direction d : DirectionUtils.VALUES) {
+            EMPTY_LISTS_ON_ALL_SIDES.put(d, ImmutableList.of());
+        }
+    }
+
     // Existing quads
     private final List<BakedQuad> quads = new ArrayList<>();
     // Current quad

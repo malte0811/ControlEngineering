@@ -3,7 +3,6 @@ package malte0811.controlengineering.controlpanels.model;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
@@ -11,7 +10,6 @@ import malte0811.controlengineering.controlpanels.renders.target.StaticRenderTar
 import malte0811.controlengineering.controlpanels.renders.target.TargetType;
 import malte0811.controlengineering.items.PanelTopItem;
 import malte0811.controlengineering.render.PanelRenderer;
-import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -24,7 +22,9 @@ import net.minecraft.util.math.vector.Vector3f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.List;
+import java.util.OptionalInt;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -148,12 +148,8 @@ public class PanelTopItemModel implements IBakedModel {
             ComponentRenderers.renderAll(target, components, transform);
             transform.pop();
 
-            Map<Direction, List<BakedQuad>> emptySideQuads = new EnumMap<>(Direction.class);
-            for (Direction d : DirectionUtils.VALUES) {
-                emptySideQuads.put(d, ImmutableList.of());
-            }
             return new SimpleBakedModel(
-                    target.getQuads(), emptySideQuads, true, true, true,
+                    target.getQuads(), StaticRenderTarget.EMPTY_LISTS_ON_ALL_SIDES, true, true, true,
                     panelTexture, TRANSFORMS, ItemOverrideList.EMPTY
             );
         }

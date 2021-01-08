@@ -4,7 +4,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
-import malte0811.controlengineering.controlpanels.model.TopItemModelLoader;
 import malte0811.controlengineering.util.RaytraceUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -17,8 +16,6 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.DrawHighlightEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -69,13 +66,5 @@ public class ClientEvents {
         builder.pos(transform, (float) pos.x, (float) pos.y, (float) pos.z)
                 .color(0, 0, 0, 0.4F)
                 .endVertex();
-    }
-
-    @Mod.EventBusSubscriber(modid = ControlEngineering.MODID, value = Dist.CLIENT, bus = Bus.MOD)
-    public static class ClientModeEvents {
-        @SubscribeEvent
-        public static void registerModelLoaders(ModelRegistryEvent ev) {
-            ModelLoaderRegistry.registerLoader(TopItemModelLoader.ID, new TopItemModelLoader());
-        }
     }
 }
