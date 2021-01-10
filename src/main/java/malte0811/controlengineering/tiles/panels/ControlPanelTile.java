@@ -219,9 +219,12 @@ public class ControlPanelTile extends TileEntity implements IBusInterface, Selec
         BlockState state = getBlockState();
         if (!state.hasProperty(PanelBlock.IS_BASE) || state.get(PanelBlock.IS_BASE)) {
             return SingleShape.FULL_BLOCK;
-        } else {
-            return new PanelSelectionShapes(PanelBlock.getBase(world, state, pos));
         }
+        ControlPanelTile base = PanelBlock.getBase(world, state, pos);
+        if (base == null) {
+            return SingleShape.FULL_BLOCK;
+        }
+        return new PanelSelectionShapes(base);
     }
 
     public enum SyncType {

@@ -19,9 +19,7 @@ public class PanelData {
     }
 
     public PanelData() {
-        this(ImmutableList.of(), new PanelTransform(
-                0.25F, (float) Math.toDegrees(Math.atan(0.5)), PanelOrientation.DOWN_NORTH
-        ));
+        this(ImmutableList.of(), new PanelTransform());
     }
 
     public PanelData(CompoundNBT nbt, PanelOrientation orientation) {

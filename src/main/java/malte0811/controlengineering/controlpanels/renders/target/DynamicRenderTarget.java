@@ -2,6 +2,7 @@ package malte0811.controlengineering.controlpanels.renders.target;
 
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.vector.Vector4f;
 
 import java.util.function.Predicate;
 
@@ -15,7 +16,7 @@ public class DynamicRenderTarget extends RenderTarget {
 
     @Override
     protected void addVertex(
-            Vector3f pos, Vector3f normal,
+            Vector4f pos, Vector3f normal,
             float red, float green, float blue, float alpha,
             float texU, float texV, int overlayUV, int lightmapUV
     ) {

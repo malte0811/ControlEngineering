@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public final class PanelComponentType<T extends PanelComponent<T>> {
@@ -22,9 +23,9 @@ public final class PanelComponentType<T extends PanelComponent<T>> {
         return codec.toNBT(instance);
     }
 
-    public T fromNBT(CompoundNBT data) {
-        T result = codec.fromNBT(data);
-        result.setType(this);
+    public Optional<T> fromNBT(CompoundNBT data) {
+        Optional<T> result = codec.fromNBT(data);
+        result.ifPresent(r -> r.setType(this));
         return result;
     }
 

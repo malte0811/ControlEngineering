@@ -14,7 +14,7 @@ public class BusSignalRef {
             ).apply(inst, BusSignalRef::new)
     );
 
-    public static final StringSerializableCodec<BusSignalRef> STRINGY_CODEC = StringSerializableCodec.fromCodec(
+    public static final StringSerializableCodec<BusSignalRef> STRINGY_CODEC = StringSerializableCodec.fromCodecXcpError(
             BusSignalRef.CODEC,
             (line, color) -> new BusSignalRef(Integer.parseInt(line), Integer.parseInt(color))
     );

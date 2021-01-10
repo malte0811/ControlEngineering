@@ -39,7 +39,7 @@ public class StaticRenderTarget extends RenderTarget {
 
     @Override
     protected void addVertex(
-            Vector3f pos, Vector3f normal,
+            Vector4f pos, Vector3f normal,
             float red, float green, float blue, float alpha,
             float texU, float texV, int overlayUV, int lightmapUV
     ) {
@@ -47,7 +47,7 @@ public class StaticRenderTarget extends RenderTarget {
             builder = new BakedQuadBuilder(getTexture());
             builder.setQuadTint(0);
             builder.setQuadOrientation(Direction.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
-            builder.setApplyDiffuseLighting(false);
+            builder.setApplyDiffuseLighting(true);
         }
         putVertex(builder, normal, pos, new Vector4f(red, green, blue, alpha), texU, texV);
         ++nextVertex;
@@ -63,7 +63,7 @@ public class StaticRenderTarget extends RenderTarget {
     }
 
     private static void putVertex(
-            IVertexConsumer consumer, Vector3f normal, Vector3f pos, Vector4f color,
+            IVertexConsumer consumer, Vector3f normal, Vector4f pos, Vector4f color,
             float u, float v
     ) {
         VertexFormat format = consumer.getVertexFormat();

@@ -3,7 +3,7 @@ package malte0811.controlengineering.gui;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import malte0811.controlengineering.controlpanels.renders.target.DynamicRenderTarget;
+import malte0811.controlengineering.controlpanels.renders.target.QuadBuilder;
 import malte0811.controlengineering.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.RedstoneTapeUtils;
@@ -111,7 +111,7 @@ public class TapeRender {
             blitWithColor(transform, sideSpace, 16, 16, sprite, color);
         });
 
-        TextureAtlasSprite white = DynamicRenderTarget.getWhiteTexture();
+        TextureAtlasSprite white = QuadBuilder.getWhiteTexture();
         forEachRow(matrixStack, shownBytes, 1, vOffset + CHAR_DISTANCE + 2, (transform, currentByte) -> {
             final DyeColor color = RedstoneTapeUtils.getColor(currentByte);
             blitWithColor(transform, 0, 1, 1, white, color.getColorValue());

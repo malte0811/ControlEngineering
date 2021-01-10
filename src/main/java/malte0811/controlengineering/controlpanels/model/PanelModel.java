@@ -13,6 +13,7 @@ import malte0811.controlengineering.controlpanels.PanelData;
 import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
+import malte0811.controlengineering.controlpanels.renders.target.QuadBuilder;
 import malte0811.controlengineering.controlpanels.renders.target.RenderTarget;
 import malte0811.controlengineering.controlpanels.renders.target.StaticRenderTarget;
 import malte0811.controlengineering.controlpanels.renders.target.TargetType;
@@ -37,7 +38,6 @@ import net.minecraftforge.client.model.data.ModelProperty;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.OptionalInt;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -218,20 +218,13 @@ public class PanelModel implements IBakedModel {
                 bottomVertices[i] = transform.getPanelBottomToWorld().apply(bottomVertices[i]);
                 topVertices[i] = transform.getPanelTopToWorld().apply(topVertices[i]);
             }
-            builder.renderTexturedQuad(
-                    matrix, texture,
-                    topVertices[3], topVertices[2], topVertices[1], topVertices[0],
-                    //TODO
-                    new Vector3d(0, 1, 0),
-                    -1, OptionalInt.empty(), TargetType.STATIC
-            );
-            builder.renderTexturedQuad(
-                    matrix, texture,
-                    bottomVertices[0], bottomVertices[1], bottomVertices[2], bottomVertices[3],
-                    //TODO
-                    new Vector3d(0, -1, 0),
-                    -1, OptionalInt.empty(), TargetType.SPECIAL
-            );
+            new QuadBuilder(topVertices[3], topVertices[2], topVertices[1], topVertices[0])
+                    .setSprite(texture)
+                    .writeTo(matrix, builder, TargetType.STATIC);
+            new QuadBuilder(bottomVertices[0], bottomVertices[1], bottomVertices[2], bottomVertices[3])
+                    .setSprite(texture)
+                    .setNormal(new Vector3d(0, -1, 0))
+                    .writeTo(matrix, builder, TargetType.SPECIAL);
             final double frontHeight = transform.getFrontHeight();
             final double backHeight = transform.getBackHeight();
             renderConnections(builder, matrix, texture, bottomVertices, topVertices, new double[]{
@@ -244,14 +237,12 @@ public class PanelModel implements IBakedModel {
                 Vector3d[] first, Vector3d[] second, double[] height
         ) {
             Preconditions.checkArgument(first.length == second.length);
-            //TODO fix UVs using height parameter
             for (int i = 0; i < first.length; ++i) {
                 int next = (i + 1) % first.length;
-                builder.renderTexturedQuad(
-                        transform, texture, first[i], second[i], second[next], first[next],
-                        //TODO
-                        new Vector3d(0, 1, 0), -1, OptionalInt.empty(), TargetType.STATIC
-                );
+                new QuadBuilder(first[i], second[i], second[next], first[next])
+                        .setSprite(texture)
+                        .setVCoords(0, (float) height[i], (float) height[next], 0)
+                        .writeTo(transform, builder, TargetType.STATIC);
             }
         }
 

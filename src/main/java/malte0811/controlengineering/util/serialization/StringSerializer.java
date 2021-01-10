@@ -8,6 +8,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class StringSerializer<T> {
     private final MethodHandle constructor;
@@ -21,28 +22,36 @@ public class StringSerializer<T> {
 
     @Nullable
     public T fromString(List<String> input) {
-        try {
-            List<Object> arguments = new ArrayList<>(fields.size());
-            int inputIndex = 0;
-            for (StringSerializableField<T, ?> field : fields) {
-                int length = field.getCodec().numTokens();
-                List<String> subArray = input.subList(inputIndex, inputIndex + length);
-                arguments.add(field.getCodec().fromString(subArray));
-                inputIndex += length;
+        List<Object> arguments = new ArrayList<>(fields.size());
+        int inputIndex = 0;
+        for (StringSerializableField<T, ?> field : fields) {
+            int length = field.getCodec().numTokens();
+            if (inputIndex + length > input.size()) {
+                return null;
             }
-            Preconditions.checkState(inputIndex == input.size());
-            return construct(arguments);
-        } catch (Exception e) {
-            return null;
+            List<String> subArray = input.subList(inputIndex, inputIndex + length);
+            Optional<?> nextOpt = field.getCodec().fromString(subArray);
+            if (!nextOpt.isPresent()) {
+                return null;
+            }
+            arguments.add(nextOpt.get());
+            inputIndex += length;
         }
+        Preconditions.checkState(inputIndex == input.size());
+        return construct(arguments);
     }
 
-    public T fromNBT(CompoundNBT nbt) {
+    public Optional<T> fromNBT(CompoundNBT nbt) {
         List<Object> arguments = new ArrayList<>(fields.size());
         for (StringSerializableField<T, ?> field : fields) {
-            arguments.add(field.getCodec().fromNBT(nbt.get(field.getName())));
+            Optional<?> fieldValue = field.getCodec().fromNBT(nbt.get(field.getName()));
+            if (fieldValue.isPresent()) {
+                arguments.add(fieldValue.get());
+            } else {
+                return Optional.empty();
+            }
         }
-        return construct(arguments);
+        return Optional.ofNullable(construct(arguments));
     }
 
     public CompoundNBT toNBT(T input) {
@@ -57,6 +66,8 @@ public class StringSerializer<T> {
         try {
             return (T) constructor.invokeWithArguments(args);
         } catch (Exception x) {
+            //TODO is this exception ever good?
+            x.printStackTrace();
             return null;
         } catch (Error x) {
             throw x;

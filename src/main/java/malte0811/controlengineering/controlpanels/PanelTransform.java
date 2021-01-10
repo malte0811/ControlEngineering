@@ -3,8 +3,8 @@ package malte0811.controlengineering.controlpanels;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
-import malte0811.controlengineering.util.Codecs;
 import malte0811.controlengineering.util.Matrix4;
+import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -70,6 +70,10 @@ public class PanelTransform {
         worldToPanelTop.translate(-0.5, -0.5, -0.5);
     }
 
+    public PanelTransform() {
+        this(0.25F, (float) Math.toDegrees(Math.atan(0.5)), PanelOrientation.DOWN_NORTH);
+    }
+
     public RayTraceContext toPanelRay(Vector3d start, Vector3d end, BlockPos panelPos) {
         Vector3d offset = Vector3d.copy(panelPos);
         return new RayTraceContext(
@@ -112,7 +116,8 @@ public class PanelTransform {
     }
 
     public static PanelTransform from(CompoundNBT nbt, PanelOrientation orientation) {
-        TileTransformData tile = Codecs.read(CODEC, nbt, "transform");
+        TileTransformData tile = Codecs.read(CODEC, nbt, "transform")
+                .orElseGet(TileTransformData::new);
         return new PanelTransform(tile, orientation);
     }
 
@@ -143,6 +148,10 @@ public class PanelTransform {
         private TileTransformData(float centerHeight, float degrees) {
             this.centerHeight = centerHeight;
             this.degrees = degrees;
+        }
+
+        private TileTransformData() {
+            this(0.25F, (float) Math.toDegrees(Math.atan(0.5)));
         }
 
         @Override

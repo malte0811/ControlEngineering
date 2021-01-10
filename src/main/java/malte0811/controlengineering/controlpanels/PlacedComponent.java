@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
-import malte0811.controlengineering.util.Codecs;
 import malte0811.controlengineering.util.Matrix4;
 import malte0811.controlengineering.util.Vec2d;
+import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.ActionResultType;
@@ -19,6 +19,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class PlacedComponent extends SelectionShapes {
     public static final Codec<PlacedComponent> CODEC = RecordCodecBuilder.create(
@@ -146,7 +147,7 @@ public class PlacedComponent extends SelectionShapes {
         return Objects.hash(component, pos);
     }
 
-    public static PlacedComponent fromNBT(INBT nbt) {
+    public static Optional<PlacedComponent> fromNBT(INBT nbt) {
         return Codecs.read(CODEC, nbt);
     }
 
@@ -155,7 +156,7 @@ public class PlacedComponent extends SelectionShapes {
     }
 
     public static List<PlacedComponent> readListFromNBT(INBT list) {
-        return Codecs.read(Codec.list(CODEC), list);
+        return Codecs.read(Codec.list(CODEC), list).orElseGet(ImmutableList::of);
     }
 
     public static INBT writeListToNBT(List<PlacedComponent> components) {

@@ -6,6 +6,7 @@ import com.google.common.cache.LoadingCache;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
+import malte0811.controlengineering.controlpanels.renders.target.QuadBuilder;
 import malte0811.controlengineering.controlpanels.renders.target.StaticRenderTarget;
 import malte0811.controlengineering.controlpanels.renders.target.TargetType;
 import malte0811.controlengineering.items.PanelTopItem;
@@ -23,7 +24,6 @@ import net.minecraft.util.math.vector.Vector3f;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.OptionalInt;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -125,24 +125,16 @@ public class PanelTopItemModel implements IBakedModel {
             MatrixStack transform = new MatrixStack();
             StaticRenderTarget target = new StaticRenderTarget($ -> true);
             TextureAtlasSprite panelTexture = PanelRenderer.PANEL_TEXTURE.get();
-            target.renderTexturedQuad(
-                    transform, panelTexture,
-                    new Vector3d(0, 0, 0),
-                    new Vector3d(0, 0, 1),
-                    new Vector3d(1, 0, 1),
-                    new Vector3d(1, 0, 0),
-                    new Vector3d(0, 1, 0),
-                    -1, OptionalInt.empty(), TargetType.STATIC
-            );
-            target.renderTexturedQuad(
-                    transform, panelTexture,
-                    new Vector3d(0, 0, 0),
-                    new Vector3d(1, 0, 0),
-                    new Vector3d(1, 0, 1),
-                    new Vector3d(0, 0, 1),
-                    new Vector3d(0, -1, 0),
-                    -1, OptionalInt.empty(), TargetType.STATIC
-            );
+            new QuadBuilder(
+                    new Vector3d(0, 0, 0), new Vector3d(0, 0, 1), new Vector3d(1, 0, 1), new Vector3d(1, 0, 0)
+            ).setNormal(new Vector3d(0, 1, 0))
+                    .setSprite(panelTexture)
+                    .writeTo(transform, target, TargetType.STATIC);
+            new QuadBuilder(
+                    new Vector3d(0, 0, 0), new Vector3d(1, 0, 0), new Vector3d(1, 0, 1), new Vector3d(0, 0, 1)
+            ).setNormal(new Vector3d(0, -1, 0))
+                    .setSprite(panelTexture)
+                    .writeTo(transform, target, TargetType.STATIC);
             transform.push();
             transform.scale(1 / 16f, 1 / 16f, 1 / 16f);
             ComponentRenderers.renderAll(target, components, transform);
