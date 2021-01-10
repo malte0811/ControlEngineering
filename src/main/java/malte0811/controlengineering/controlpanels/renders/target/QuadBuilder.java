@@ -20,7 +20,8 @@ public class QuadBuilder {
     private TextureAtlasSprite sprite;
     @Nullable
     private Vector3d normal;
-    private OptionalInt lightOverride = OptionalInt.empty();
+    // Range: [0, 15]
+    private OptionalInt blockLightOverride = OptionalInt.empty();
     private float red = 1;
     private float green = 1;
     private float blue = 1;
@@ -80,8 +81,8 @@ public class QuadBuilder {
         return BitUtils.getBits(value, offset, 8) / 255f;
     }
 
-    public QuadBuilder setLightOverride(int lightOverride) {
-        this.lightOverride = OptionalInt.of(lightOverride);
+    public QuadBuilder setBlockLightOverride(int blockLightOverride) {
+        this.blockLightOverride = OptionalInt.of(blockLightOverride);
         return this;
     }
 
@@ -102,7 +103,7 @@ public class QuadBuilder {
             target.addVertex(
                     posF, normal, red, green, blue, alpha,
                     sprite.getInterpolatedU(16 * v.spriteU), sprite.getInterpolatedV(16 * v.spriteV),
-                    lightOverride
+                    blockLightOverride
             );
         }
     }

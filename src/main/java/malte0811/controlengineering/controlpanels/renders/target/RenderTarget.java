@@ -1,6 +1,7 @@
 package malte0811.controlengineering.controlpanels.renders.target;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.vector.Vector3d;
@@ -13,22 +14,31 @@ import java.util.function.Predicate;
 
 public abstract class RenderTarget {
     private final Predicate<TargetType> doRender;
-    private final int baseLight;
+    private final int baseLightBlock;
+    private final int baseLightSky;
     private final int overlay;
     private TextureAtlasSprite texture;
 
     protected RenderTarget(Predicate<TargetType> doRender, int baseLight, int overlay) {
         this.doRender = doRender;
-        this.baseLight = baseLight;
+        this.baseLightBlock = LightTexture.getLightBlock(baseLight);
+        this.baseLightSky = LightTexture.getLightSky(baseLight);
         this.overlay = overlay;
     }
 
     void addVertex(
             Vector4f pos, Vector3f normal,
             float red, float green, float blue, float alpha,
-            float texU, float texV, OptionalInt lightOverride
+            float texU, float texV, OptionalInt blockLightOverride
     ) {
-        addVertex(pos, normal, red, green, blue, alpha, texU, texV, overlay, lightOverride.orElse(baseLight));
+        final int blockLight;
+        if (blockLightOverride.isPresent()) {
+            blockLight = Math.max(baseLightBlock, blockLightOverride.getAsInt());
+        } else {
+            blockLight = baseLightBlock;
+        }
+        final int light = LightTexture.packLight(blockLight, baseLightSky);
+        addVertex(pos, normal, red, green, blue, alpha, texU, texV, overlay, light);
     }
 
     protected abstract void addVertex(
@@ -67,7 +77,7 @@ public abstract class RenderTarget {
                     .setNormal(Vector3d.copy(side.getDirectionVec()))
                     .setRGB(entry.getValue());
             if (lightOverrides.containsKey(side)) {
-                builder.setLightOverride(lightOverrides.get(side));
+                builder.setBlockLightOverride(lightOverrides.get(side));
             }
             builder.writeTo(transform, this, targets.get(side));
         }

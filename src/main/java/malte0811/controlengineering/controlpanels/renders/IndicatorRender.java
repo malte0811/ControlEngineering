@@ -17,7 +17,7 @@ public class IndicatorRender extends ComponentRenderer<Indicator> {
         new QuadBuilder(Vector3d.ZERO, new Vector3d(0, 0, 1), new Vector3d(1, 0, 1), new Vector3d(1, 0, 0))
                 .setNormal(new Vector3d(0, 1, 0))
                 .setRGB(ColorUtils.fractionalColor(instance.getColor(), colorFactor))
-                .setLightOverride(ownBrightness)
+                .setBlockLightOverride(ownBrightness)
                 .writeTo(transform, output, TargetType.DYNAMIC);
     }
 }

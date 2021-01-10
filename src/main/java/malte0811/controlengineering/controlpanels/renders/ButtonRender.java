@@ -32,7 +32,7 @@ public class ButtonRender extends ComponentRenderer<Button> {
         }
         final Map<Direction, Integer> lightOverrides;
         if (instance.active) {
-            lightOverrides = ImmutableMap.of(Direction.UP, FULLBRIGHT);
+            lightOverrides = ImmutableMap.of(Direction.UP, 15);
             colors.put(Direction.UP, instance.color);
         } else {
             lightOverrides = ImmutableMap.of();
