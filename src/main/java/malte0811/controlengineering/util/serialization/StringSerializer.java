@@ -1,9 +1,9 @@
 package malte0811.controlengineering.util.serialization;
 
 import com.google.common.base.Preconditions;
+import com.mojang.serialization.DataResult;
 import net.minecraft.nbt.CompoundNBT;
 
-import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,38 +20,38 @@ public class StringSerializer<T> {
         this.fields = Arrays.asList(fields);
     }
 
-    @Nullable
-    public T fromString(List<String> input) {
+    public DataResult<T> fromString(List<String> input) {
         List<Object> arguments = new ArrayList<>(fields.size());
         int inputIndex = 0;
         for (StringSerializableField<T, ?> field : fields) {
             int length = field.getCodec().numTokens();
             if (inputIndex + length > input.size()) {
-                return null;
+                return DataResult.error("Not enough tokens");
             }
             List<String> subArray = input.subList(inputIndex, inputIndex + length);
-            Optional<?> nextOpt = field.getCodec().fromString(subArray);
-            if (!nextOpt.isPresent()) {
-                return null;
+            DataResult<?> nextOpt = field.getCodec().fromString(subArray);
+            Optional<? extends DataResult.PartialResult<?>> nextError = nextOpt.error();
+            if (nextError.isPresent()) {
+                return DataResult.error("While reading field: " + field.getName() + ": " + nextError.get().message());
             }
-            arguments.add(nextOpt.get());
+            arguments.add(nextOpt.result().get());
             inputIndex += length;
         }
         Preconditions.checkState(inputIndex == input.size());
         return construct(arguments);
     }
 
-    public Optional<T> fromNBT(CompoundNBT nbt) {
+    public DataResult<T> fromNBT(CompoundNBT nbt) {
         List<Object> arguments = new ArrayList<>(fields.size());
         for (StringSerializableField<T, ?> field : fields) {
-            Optional<?> fieldValue = field.getCodec().fromNBT(nbt.get(field.getName()));
-            if (fieldValue.isPresent()) {
-                arguments.add(fieldValue.get());
+            DataResult<?> fieldValue = field.getCodec().fromNBT(nbt.get(field.getName()));
+            if (fieldValue.result().isPresent()) {
+                arguments.add(fieldValue.result().get());
             } else {
-                return Optional.empty();
+                return DataResult.error("While parsing " + field.getName() + ": " + fieldValue.error().get().message());
             }
         }
-        return Optional.ofNullable(construct(arguments));
+        return construct(arguments);
     }
 
     public CompoundNBT toNBT(T input) {
@@ -62,13 +62,13 @@ public class StringSerializer<T> {
         return nbt;
     }
 
-    private T construct(List<Object> args) {
+    private DataResult<T> construct(List<Object> args) {
         try {
-            return (T) constructor.invokeWithArguments(args);
+            return DataResult.success((T) constructor.invokeWithArguments(args));
         } catch (Exception x) {
             //TODO is this exception ever good?
             x.printStackTrace();
-            return null;
+            return DataResult.error(x.getMessage());
         } catch (Error x) {
             throw x;
         } catch (Throwable last) {

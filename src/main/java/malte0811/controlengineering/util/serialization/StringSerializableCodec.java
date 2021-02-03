@@ -1,22 +1,22 @@
 package malte0811.controlengineering.util.serialization;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import net.minecraft.nbt.INBT;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class StringSerializableCodec<T> {
     // TODO Optional -> DataResult?
-    private final Function<List<String>, Optional<T>> fromString;
-    private final Function<INBT, Optional<T>> fromNBT;
+    private final Function<List<String>, DataResult<T>> fromString;
+    private final Function<INBT, DataResult<T>> fromNBT;
     private final Function<T, INBT> toNBT;
     private final int consumedTokens;
 
     public StringSerializableCodec(
-            Function<List<String>, Optional<T>> fromString, Function<INBT, Optional<T>> fromNBT,
+            Function<List<String>, DataResult<T>> fromString, Function<INBT, DataResult<T>> fromNBT,
             Function<T, INBT> toNBT, int consumedTokens
     ) {
         this.fromString = fromString;
@@ -26,7 +26,7 @@ public class StringSerializableCodec<T> {
     }
 
     public static <T> StringSerializableCodec<T> fromCodec(
-            Codec<T> pureCodec, Function<List<String>, Optional<T>> fromString, int numConsumed
+            Codec<T> pureCodec, Function<List<String>, DataResult<T>> fromString, int numConsumed
     ) {
         return new StringSerializableCodec<>(
                 fromString, nbt -> Codecs.read(pureCodec, nbt), t -> Codecs.encode(pureCodec, t), numConsumed
@@ -35,7 +35,7 @@ public class StringSerializableCodec<T> {
 
     public static <T> StringSerializableCodec<T> fromCodec(
             Codec<T> pureCodec,
-            Function<String, Optional<T>> fromString
+            Function<String, DataResult<T>> fromString
     ) {
         return fromCodec(pureCodec, s -> fromString.apply(s.get(0)), 1);
     }
@@ -45,7 +45,7 @@ public class StringSerializableCodec<T> {
     }
 
     public static <T> StringSerializableCodec<T> fromCodec(
-            Codec<T> pureCodec, BiFunction<String, String, Optional<T>> fromString
+            Codec<T> pureCodec, BiFunction<String, String, DataResult<T>> fromString
     ) {
         return fromCodec(pureCodec, s -> fromString.apply(s.get(0), s.get(1)), 2);
     }
@@ -56,11 +56,11 @@ public class StringSerializableCodec<T> {
         return fromCodec(pureCodec, wrapXcp(s -> fromString.apply(s.get(0), s.get(1))), 2);
     }
 
-    public Optional<T> fromNBT(INBT in) {
+    public DataResult<T> fromNBT(INBT in) {
         return fromNBT.apply(in);
     }
 
-    public Optional<T> fromString(List<String> in) {
+    public DataResult<T> fromString(List<String> in) {
         return fromString.apply(in);
     }
 
@@ -73,15 +73,18 @@ public class StringSerializableCodec<T> {
     }
 
     public StringSerializableCodec<T> constant(T i) {
-        return new StringSerializableCodec<>(s -> Optional.of(i), fromNBT, toNBT, 0);
+        return new StringSerializableCodec<>(s -> DataResult.success(i), fromNBT, toNBT, 0);
     }
 
-    private static <A, B> Function<A, Optional<B>> wrapXcp(Function<A, B> base) {
+    private static <A, B> Function<A, DataResult<B>> wrapXcp(Function<A, B> base) {
         return a -> {
             try {
-                return Optional.of(base.apply(a));
+                return DataResult.success(base.apply(a));
+            } catch (NumberFormatException x) {
+                return DataResult.error("Invalid number: " + x.getMessage());
             } catch (Exception x) {
-                return Optional.empty();
+                x.printStackTrace();
+                return DataResult.error("Unexpected error: " + x.getMessage());
             }
         };
     }

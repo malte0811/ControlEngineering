@@ -2,6 +2,7 @@ package malte0811.controlengineering.controlpanels;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.util.Matrix4;
@@ -19,7 +20,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class PlacedComponent extends SelectionShapes {
     public static final Codec<PlacedComponent> CODEC = RecordCodecBuilder.create(
@@ -147,7 +147,7 @@ public class PlacedComponent extends SelectionShapes {
         return Objects.hash(component, pos);
     }
 
-    public static Optional<PlacedComponent> fromNBT(INBT nbt) {
+    public static DataResult<PlacedComponent> fromNBT(INBT nbt) {
         return Codecs.read(CODEC, nbt);
     }
 
@@ -156,7 +156,7 @@ public class PlacedComponent extends SelectionShapes {
     }
 
     public static List<PlacedComponent> readListFromNBT(INBT list) {
-        return Codecs.read(Codec.list(CODEC), list).orElseGet(ImmutableList::of);
+        return Codecs.read(Codec.list(CODEC), list).result().orElseGet(ImmutableList::of);
     }
 
     public static INBT writeListToNBT(List<PlacedComponent> components) {

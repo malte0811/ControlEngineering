@@ -3,6 +3,7 @@ package malte0811.controlengineering.controlpanels.cnc;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
@@ -15,7 +16,6 @@ import malte0811.controlengineering.util.Vec2d;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class CNCInstructionParser {
     private static final char ESCAPE = '\\';
@@ -39,16 +39,17 @@ public class CNCInstructionParser {
                 error = true;
                 break;
             }
-            Optional<PlacedComponent> next = parseComponent(tokens);
-            if (next.isPresent()) {
+            DataResult<PlacedComponent> nextRes = parseComponent(tokens);
+            if (nextRes.result().isPresent()) {
+                PlacedComponent next = nextRes.result().get();
                 for (PlacedComponent existing : components) {
-                    if (!existing.disjoint(next.get())) {
+                    if (!existing.disjoint(next)) {
                         error = true;
                         break;
                     }
                 }
                 if (!error) {
-                    components.add(next.get());
+                    components.add(next);
                     componentEnds.add(pos);
                 }
             } else {
@@ -63,31 +64,32 @@ public class CNCInstructionParser {
         }
     }
 
-    private static Optional<PlacedComponent> parseComponent(List<String> tokens) {
+    private static DataResult<PlacedComponent> parseComponent(List<String> tokens) {
         String typeName = tokens.get(0);
         String xStr = tokens.get(1);
         String yStr = tokens.get(2);
         PanelComponentType<?> type = PanelComponents.getType(typeName);
         if (type == null) {
-            return Optional.empty();
+            return DataResult.error("Unknown type: " + typeName);
         }
-        PanelComponent<?> component = type.fromString(tokens.subList(3, tokens.size()));
-        if (component == null) {
-            return Optional.empty();
+        DataResult<? extends PanelComponent<?>> component = type.fromString(tokens.subList(3, tokens.size()));
+        if (component.error().isPresent()) {
+            return DataResult.error(component.error().get().message());
         }
+        Preconditions.checkState(component.result().isPresent());
         double x;
         double y;
         try {
             x = Double.parseDouble(xStr);
             y = Double.parseDouble(yStr);
         } catch (NumberFormatException xcp) {
-            return Optional.empty();
+            return DataResult.error("Invalid position: " + xcp.getMessage());
         }
-        PlacedComponent placed = new PlacedComponent(component, new Vec2d(x, y));
+        PlacedComponent placed = new PlacedComponent(component.result().get(), new Vec2d(x, y));
         if (!placed.isWithinPanel()) {
-            return Optional.empty();
+            return DataResult.error("Not within panel bounds");
         }
-        return Optional.of(placed);
+        return DataResult.success(placed);
     }
 
     private static Pair<String, Integer> nextComponent(String input, int start) {

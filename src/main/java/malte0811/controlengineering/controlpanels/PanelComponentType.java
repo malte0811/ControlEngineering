@@ -1,11 +1,11 @@
 package malte0811.controlengineering.controlpanels;
 
+import com.mojang.serialization.DataResult;
 import malte0811.controlengineering.util.serialization.StringSerializer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 public final class PanelComponentType<T extends PanelComponent<T>> {
@@ -23,10 +23,11 @@ public final class PanelComponentType<T extends PanelComponent<T>> {
         return codec.toNBT(instance);
     }
 
-    public Optional<T> fromNBT(CompoundNBT data) {
-        Optional<T> result = codec.fromNBT(data);
-        result.ifPresent(r -> r.setType(this));
-        return result;
+    public DataResult<T> fromNBT(CompoundNBT data) {
+        return codec.fromNBT(data).map(r -> {
+            r.setType(this);
+            return r;
+        });
     }
 
     public T empty() {
@@ -43,11 +44,10 @@ public final class PanelComponentType<T extends PanelComponent<T>> {
         return name;
     }
 
-    public T fromString(List<String> subList) {
-        T result = getCodec().fromString(subList);
-        if (result != null) {
-            result.setType(this);
-        }
-        return result;
+    public DataResult<T> fromString(List<String> subList) {
+        return getCodec().fromString(subList).map(c -> {
+            c.setType(this);
+            return c;
+        });
     }
 }

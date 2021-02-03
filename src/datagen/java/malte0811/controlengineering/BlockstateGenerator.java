@@ -1,7 +1,7 @@
 package malte0811.controlengineering;
 
 import blusunrize.immersiveengineering.api.Lib;
-import blusunrize.immersiveengineering.client.models.connection.ConnectionLoader;
+import blusunrize.immersiveengineering.data.models.ConnectorBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import malte0811.controlengineering.blocks.CEBlocks;
@@ -13,7 +13,6 @@ import malte0811.controlengineering.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderState;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.state.Property;
 import net.minecraft.util.Direction;
@@ -28,18 +27,15 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import java.lang.reflect.Field;
 
 public class BlockstateGenerator extends BlockStateProvider {
-    private final LoadedModels loadedModels;
     private static final ConfiguredModel EMPTY_MODEL = new ConfiguredModel(
             new ModelFile.UncheckedModelFile(new ResourceLocation(Lib.MODID, "block/ie_empty"))
     );
 
     public BlockstateGenerator(
             DataGenerator gen,
-            ExistingFileHelper exFileHelper,
-            LoadedModels loadedModels
+            ExistingFileHelper exFileHelper
     ) {
         super(gen, ControlEngineering.MODID, exFileHelper);
-        this.loadedModels = loadedModels;
     }
 
     @Override
@@ -50,8 +46,6 @@ public class BlockstateGenerator extends BlockStateProvider {
         panelModel();
         horizontalRotated(CEBlocks.TELETYPE.get(), TeletypeBlock.FACING, obj("typewriter.obj"));
         horizontalRotated(CEBlocks.PANEL_CNC.get(), PanelCNCBlock.FACING, obj("panel_cnc.obj"));
-
-        loadedModels.backupModels();
     }
 
     private ModelFile obj(String objFile) {
@@ -71,10 +65,11 @@ public class BlockstateGenerator extends BlockStateProvider {
     private void dummyIIC(Block b) {
         JsonObject baseJson = new JsonObject();
         baseJson.addProperty("parent", mcLoc("block/dirt").toString());
-        ModelFile busRelayModel = loadedModels.getBuilder("dummy_iic")
-                .loader(ConnectionLoader.LOADER_NAME)
-                .additional("base_model", baseJson)
-                .additional("layers", ImmutableList.of(getName(RenderType.getSolid())));
+        ModelFile busRelayModel = models().getBuilder("dummy_iic")
+                .customLoader(ConnectorBuilder::begin)
+                .baseModel(models().getExistingFile(mcLoc("block/dirt")))
+                .layers(ImmutableList.of("solid"))
+                .end();
         simpleBlock(b, busRelayModel);
     }
 

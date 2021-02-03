@@ -26,7 +26,8 @@ sourceSets {
         setupSourceSet(sourceSets.main, "main")
     }
     datagen {
-        setupDataGenSourceSet(sourceSets.datagen)
+        compileClasspath += main.output + main.compileClasspath
+        runtimeClasspath += main.output + main.runtimeClasspath
     }
 }
 
@@ -40,12 +41,6 @@ def setupSourceSet(SourceSet sourceSet, String name) {
         //But exclude the cache of the generated data from what gets built
         exclude '.cache'
     }
-}
-
-def setupDataGenSourceSet(SourceSet datagenSourceSet) {
-    datagenSourceSet.java.srcDirs = ['src/datagen/java']
-    datagenSourceSet.resources.srcDirs = ['src/datagen/resources']
-    datagenSourceSet.compileClasspath += project.sourceSets.main.output
 }
 
 processResources {
@@ -115,6 +110,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
             property 'fml.earlyprogresswindow', 'false'
             property 'mixin.env.disableRefMap', 'true'
+            ideaModule project.name+".datagen"
 
             args '--mod', 'controlengineering', '--all', '--output', file('src/generated/resources/'), '--validate',
                     '--existing', sourceSets.main.resources.srcDirs[0]
@@ -148,8 +144,9 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.4-35.1.13'
-	compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:1.16.4-+")
+    minecraft 'net.minecraftforge:forge:1.16.5-36.0.0'
+	compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:1.16.5-4.2.1-131.4")
+    compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:1.16.5-4.2.1-131.4:datagen")
     testImplementation('junit:junit:4.13')
 }
 

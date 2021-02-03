@@ -117,6 +117,7 @@ public class PanelTransform {
 
     public static PanelTransform from(CompoundNBT nbt, PanelOrientation orientation) {
         TileTransformData tile = Codecs.read(CODEC, nbt, "transform")
+                .result()
                 .orElseGet(TileTransformData::new);
         return new PanelTransform(tile, orientation);
     }

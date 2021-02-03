@@ -8,15 +8,9 @@ import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 public class CEDataGen {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent ev) {
-        LoadedModels loadedModels = new LoadedModels(ev.getGenerator(), ev.getExistingFileHelper());
-        BlockstateGenerator blockstates = new BlockstateGenerator(
-                ev.getGenerator(),
-                ev.getExistingFileHelper(),
-                loadedModels
-        );
+        BlockstateGenerator blockstates = new BlockstateGenerator(ev.getGenerator(), ev.getExistingFileHelper());
         ev.getGenerator().addProvider(blockstates);
         ev.getGenerator().addProvider(new ItemModels(ev));
-        ev.getGenerator().addProvider(loadedModels);
         ev.getGenerator().addProvider(new Recipes(ev.getGenerator()));
         ev.getGenerator().addProvider(new LangGenerator(ev.getGenerator()));
     }
