@@ -11,6 +11,7 @@ import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.items.CEItems;
+import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.network.AddTTYData;
 import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.temp.ImprovedLocalRSHandler;
@@ -61,6 +62,7 @@ public class ControlEngineering {
         CERecipeSerializers.REGISTER.register(modBus);
         modBus.addListener(this::setup);
         modBus.addListener(this::loadComplete);
+        Leafcells.init();
     }
 
     public void setup(FMLCommonSetupEvent ev) {
