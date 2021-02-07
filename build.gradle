@@ -145,7 +145,7 @@ repositories {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.0.0'
 	compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:1.16.5-4.2.1-131.4")
-    compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:1.16.5-4.2.1-131.4:datagen")
+    datagenCompile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:1.16.5-4.2.1-131.4:datagen")
     testImplementation('junit:junit:4.13')
 }
 

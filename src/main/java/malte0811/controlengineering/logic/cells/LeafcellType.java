@@ -78,6 +78,14 @@ public abstract class LeafcellType<State> {
 
     public abstract DoubleList getOutputSignals(DoubleList inputSignals, State currentState);
 
+    public List<Pin> getInputPins() {
+        return inputPins;
+    }
+
+    public List<Pin> getOutputPins() {
+        return outputPins;
+    }
+
     protected static boolean bool(double value) {
         return value == 1;
     }

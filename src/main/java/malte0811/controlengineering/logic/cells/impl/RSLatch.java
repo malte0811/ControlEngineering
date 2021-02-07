@@ -2,8 +2,8 @@ package malte0811.controlengineering.logic.cells.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
-import it.unimi.dsi.fastutil.doubles.DoubleLists;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
@@ -46,7 +46,8 @@ public class RSLatch extends LeafcellType<Boolean> {
 
     @Override
     public DoubleList getOutputSignals(DoubleList inputSignals, Boolean currentState) {
-        return DoubleLists.singleton(currentState ? 1 : 0);
+        final double q = currentState ? 1 : 0;
+        return new DoubleArrayList(new double[]{q, 1 - q});
     }
 
     private boolean r(DoubleList input) {

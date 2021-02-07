@@ -13,6 +13,10 @@ public class Pin {
         this.type = type;
     }
 
+    public SignalType getType() {
+        return type;
+    }
+
     public static List<Pin> numbered(int numPins, String baseName, SignalType type) {
         ImmutableList.Builder<Pin> result = ImmutableList.builder();
         for (int i = 0; i < numPins; ++i) {

@@ -37,4 +37,8 @@ public class Codecs {
     public static <T> INBT encode(Codec<T> codec, T value) {
         return codec.encodeStart(NBTDynamicOps.INSTANCE, value).getOrThrow(false, s -> {});
     }
+
+    public static <T> T readOrNull(Codec<T> codec, INBT pinNBT) {
+        return read(codec, pinNBT).result().orElse(null);
+    }
 }
