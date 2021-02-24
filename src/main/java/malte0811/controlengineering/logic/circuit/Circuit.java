@@ -6,7 +6,6 @@ import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import malte0811.controlengineering.logic.cells.LeafcellInstance;
-import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.nbt.CompoundNBT;
@@ -35,7 +34,7 @@ public class Circuit {
             ListNBT stageNBT = stages.getList(stage);
             List<LeafcellInstance<?>> cells = new ArrayList<>(stageNBT.size());
             for (int cell = 0; cell < stageNBT.size(); cell++) {
-                LeafcellInstance<?> newCell = LeafcellType.fromNBT(stageNBT.getCompound(cell));
+                LeafcellInstance<?> newCell = LeafcellInstance.fromNBT(stageNBT.getCompound(cell));
                 if (newCell != null) {
                     cells.add(newCell);
                 }

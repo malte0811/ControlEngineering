@@ -4,11 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
 import malte0811.controlengineering.logic.cells.SignalType;
-import net.minecraft.util.ResourceLocation;
 
 import java.util.Random;
 
@@ -17,13 +15,8 @@ public class RSLatch extends LeafcellType<Boolean> {
 
     public RSLatch() {
         super(
-                new ResourceLocation(ControlEngineering.MODID, "rs_latch"),
-                ImmutableList.of(
-                        new Pin("reset", SignalType.DIGITAL), new Pin("set", SignalType.DIGITAL)
-                ),
-                ImmutableList.of(
-                        new Pin("q", SignalType.DIGITAL), new Pin("not_q", SignalType.DIGITAL)
-                ),
+                ImmutableList.of(new Pin("reset", SignalType.DIGITAL), new Pin("set", SignalType.DIGITAL)),
+                ImmutableList.of(new Pin("q", SignalType.DIGITAL), new Pin("not_q", SignalType.DIGITAL)),
                 false,
                 Codec.BOOL
         );

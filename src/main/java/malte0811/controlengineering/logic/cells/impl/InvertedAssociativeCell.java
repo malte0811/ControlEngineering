@@ -6,10 +6,8 @@ import it.unimi.dsi.fastutil.doubles.DoubleLists;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 
 public class InvertedAssociativeCell extends AssociativeFunctionCell {
-    public InvertedAssociativeCell(
-            String baseName, int numInputs, IBooleanFunction nonInvertedFunc, boolean baseState
-    ) {
-        super(baseName, numInputs, nonInvertedFunc, baseState);
+    public InvertedAssociativeCell(int numInputs, IBooleanFunction nonInvertedFunc, boolean baseState) {
+        super(numInputs, nonInvertedFunc, baseState);
     }
 
     @Override
