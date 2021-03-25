@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,height=0": {
+      "model": "controlengineering:logicbox/chassis_obj",
+      "y": 180
+    },
+    "facing=south,height=0": {
+      "model": "controlengineering:logicbox/chassis_obj"
+    },
+    "facing=west,height=0": {
+      "model": "controlengineering:logicbox/chassis_obj",
+      "y": 90
+    },
+    "facing=east,height=0": {
+      "model": "controlengineering:logicbox/chassis_obj",
+      "y": 270
+    },
+    "facing=north,height=1": {
+      "model": "controlengineering:block/dynamic_logic_box",
+      "y": 180
+    },
+    "facing=south,height=1": {
+      "model": "controlengineering:block/dynamic_logic_box"
+    },
+    "facing=west,height=1": {
+      "model": "controlengineering:block/dynamic_logic_box",
+      "y": 90
+    },
+    "facing=east,height=1": {
+      "model": "controlengineering:block/dynamic_logic_box",
+      "y": 270
+    }
+  }
+}

@@ -12,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -21,22 +22,28 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public abstract class CEBlock<PlacementData> extends Block {
+public abstract class CEBlock<PlacementData, Tile extends TileEntity> extends Block {
     public final PlacementBehavior<PlacementData> placementBehavior;
     private final FromBlockFunction<VoxelShape> getShape;
+    @Nullable
+    private final RegistryObject<TileEntityType<Tile>> tileType;
 
     public CEBlock(
             Properties properties,
             PlacementBehavior<PlacementData> placement,
-            FromBlockFunction<VoxelShape> getShape
+            FromBlockFunction<VoxelShape> getShape,
+            @Nullable RegistryObject<TileEntityType<Tile>> tileType
     ) {
         super(properties);
         this.placementBehavior = placement;
         this.getShape = getShape;
+        this.tileType = tileType;
     }
 
     @Override
@@ -124,5 +131,20 @@ public abstract class CEBlock<PlacementData> extends Block {
         if (player instanceof ServerPlayerEntity) {
             NetworkHooks.openGui((ServerPlayerEntity) player, state.getContainer(worldIn, pos), pos);
         }
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        if (this.tileType != null) {
+            return this.tileType.get().create();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean hasTileEntity(BlockState state) {
+        return this.tileType != null;
     }
 }

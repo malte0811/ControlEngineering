@@ -6,6 +6,7 @@ import malte0811.controlengineering.blocks.shapes.CachedShape;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.HorizontalShapeProvider;
 import malte0811.controlengineering.gui.TeletypeContainer;
+import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.tape.TeletypeTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -28,7 +29,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TeletypeBlock extends CEBlock<Direction> {
+public class TeletypeBlock extends CEBlock<Direction, TeletypeTile> {
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     private static final VoxelShape BASE_SHAPE = VoxelShapes.or(
             makeCuboidShape(0, 0, 0, 16, 10, 8),
@@ -39,7 +40,12 @@ public class TeletypeBlock extends CEBlock<Direction> {
     );
 
     public TeletypeBlock() {
-        super(Properties.create(Material.IRON).notSolid(), new HorizontalPlacement(FACING), SHAPE_PROVIDER);
+        super(
+                Properties.create(Material.IRON).notSolid(),
+                new HorizontalPlacement(FACING),
+                SHAPE_PROVIDER,
+                CETileEntities.TELETYPE
+        );
     }
 
     @Override

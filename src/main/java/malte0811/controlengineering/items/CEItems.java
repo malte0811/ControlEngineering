@@ -40,6 +40,7 @@ public class CEItems {
     private static final RegistryObject<CEBlockItem<PanelOrientation>> CONTROL_PANEL = blockItemCE(CEBlocks.CONTROL_PANEL);
     private static final RegistryObject<CEBlockItem<Direction>> TELETYPE = blockItemCE(CEBlocks.TELETYPE);
     private static final RegistryObject<CEBlockItem<Direction>> PANEL_CNC = blockItemCE(CEBlocks.PANEL_CNC);
+    private static final RegistryObject<CEBlockItem<Direction>> LOGIC_BOX = blockItemCE(CEBlocks.LOGIC_BOX);
 
     @Nonnull
     public static BusCoilItem getBusCoil(int width) {
@@ -59,7 +60,7 @@ public class CEItems {
         );
     }
 
-    private static <T> RegistryObject<CEBlockItem<T>> blockItemCE(RegistryObject<? extends CEBlock<T>> block) {
+    private static <T> RegistryObject<CEBlockItem<T>> blockItemCE(RegistryObject<? extends CEBlock<T, ?>> block) {
         return REGISTER.register(
                 block.getId().getPath(),
                 () -> new CEBlockItem<>(block.get(), new Item.Properties().group(ControlEngineering.ITEM_GROUP))

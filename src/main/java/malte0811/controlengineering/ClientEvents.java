@@ -39,6 +39,7 @@ public class ClientEvents {
         if (te instanceof SelectionShapeOwner) {
             MatrixStack transform = ev.getMatrix();
             transform.push();
+            int pushCount = 1;
             Vector3d projectedView = Vector3d.copy(highlighted).subtract(ev.getInfo().getProjectedView());
             transform.translate(projectedView.x, projectedView.y, projectedView.z);
             IVertexBuilder builder = ev.getBuffers().getBuffer(RenderType.getLines());
@@ -55,8 +56,11 @@ public class ClientEvents {
                         //TODO cache?
                         .inverse()
                         .push(transform);
+                ++pushCount;
             }
-            transform.pop();
+            for (int i = 0; i < pushCount; ++i) {
+                transform.pop();
+            }
 
             ev.setCanceled(true);
         }

@@ -17,7 +17,7 @@ import java.util.Collection;
 public class CEBlockItem<PlacementData> extends BlockItem {
     private final PlacementBehavior<PlacementData> placementBehavior;
 
-    public CEBlockItem(CEBlock<PlacementData> blockIn, Properties builder) {
+    public CEBlockItem(CEBlock<PlacementData, ?> blockIn, Properties builder) {
         super(blockIn, builder);
         placementBehavior = blockIn.placementBehavior;
     }

@@ -1,18 +1,18 @@
 {
   "variants": {
     "facing=north": {
-      "model": "controlengineering:block/typewriter.obj",
+      "model": "controlengineering:block/typewriter_obj",
       "y": 180
     },
     "facing=south": {
-      "model": "controlengineering:block/typewriter.obj"
+      "model": "controlengineering:block/typewriter_obj"
     },
     "facing=west": {
-      "model": "controlengineering:block/typewriter.obj",
+      "model": "controlengineering:block/typewriter_obj",
       "y": 90
     },
     "facing=east": {
-      "model": "controlengineering:block/typewriter.obj",
+      "model": "controlengineering:block/typewriter_obj",
       "y": 270
     }
   }

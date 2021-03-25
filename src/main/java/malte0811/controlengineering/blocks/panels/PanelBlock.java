@@ -14,9 +14,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-public class PanelBlock extends CEBlock<PanelOrientation> {
+public class PanelBlock extends CEBlock<PanelOrientation, ControlPanelTile> {
     public static final BooleanProperty IS_BASE = BooleanProperty.create("base");
 
     public PanelBlock() {
@@ -26,7 +25,8 @@ public class PanelBlock extends CEBlock<PanelOrientation> {
                         .hardnessAndResistance(2, 6)
                         .variableOpacity(),
                 new PanelPlacementBehavior(),
-                CachedPanelShape.create()
+                CachedPanelShape.create(),
+                CETileEntities.CONTROL_PANEL
         );
     }
 
@@ -50,16 +50,5 @@ public class PanelBlock extends CEBlock<PanelOrientation> {
     protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
         builder.add(IS_BASE, PanelOrientation.PROPERTY);
-    }
-
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return CETileEntities.CONTROL_PANEL.get().create();
-    }
-
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
     }
 }
