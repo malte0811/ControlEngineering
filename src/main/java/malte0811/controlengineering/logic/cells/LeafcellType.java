@@ -17,13 +17,22 @@ public abstract class LeafcellType<State> extends TypedRegistryEntry<State> {
 
     private final List<Pin> inputPins;
     private final List<Pin> outputPins;
+    private final double numTubes;
 
-    protected LeafcellType(List<Pin> inputPins, List<Pin> outputPins, State initialState, Codec<State> stateCodec) {
+    protected LeafcellType(
+            List<Pin> inputPins,
+            List<Pin> outputPins,
+            State initialState,
+            Codec<State> stateCodec,
+            double numTubes
+    ) {
         super(initialState, stateCodec);
         this.inputPins = inputPins;
         this.outputPins = outputPins;
+        this.numTubes = numTubes;
     }
 
+    @Override
     public LeafcellInstance<State> newInstance() {
         return new LeafcellInstance<>(this, getInitialState());
     }
@@ -38,6 +47,10 @@ public abstract class LeafcellType<State> extends TypedRegistryEntry<State> {
 
     public List<Pin> getOutputPins() {
         return outputPins;
+    }
+
+    public double getNumTubes() {
+        return numTubes;
     }
 
     protected static boolean bool(double value) {

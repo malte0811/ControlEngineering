@@ -20,25 +20,33 @@ public class Leafcells {
         for (int numIn = 2; numIn < 4; ++numIn) {
             BASIC_LOGIC.put(
                     Pair.of(IBooleanFunction.AND, numIn),
-                    register("and" + numIn, new AssociativeFunctionCell(numIn, IBooleanFunction.AND, true))
+                    register(
+                            "and" + numIn,
+                            new AssociativeFunctionCell(numIn, IBooleanFunction.AND, true, (1 + numIn) / 2.)
+                    )
             );
             BASIC_LOGIC.put(
                     Pair.of(IBooleanFunction.NOT_AND, numIn),
-                    register("nand" + numIn, new InvertedAssociativeCell(numIn, IBooleanFunction.AND, true))
+                    register("nand" + numIn, new InvertedAssociativeCell(numIn, IBooleanFunction.AND, true, numIn / 2.))
             );
 
             BASIC_LOGIC.put(
                     Pair.of(IBooleanFunction.OR, numIn),
-                    register("or" + numIn, new AssociativeFunctionCell(numIn, IBooleanFunction.OR, false))
+                    register(
+                            "or" + numIn,
+                            new AssociativeFunctionCell(numIn, IBooleanFunction.OR, false, (1 + numIn) / 2.)
+                    )
             );
             BASIC_LOGIC.put(
                     Pair.of(IBooleanFunction.NOT_OR, numIn),
-                    register("nor" + numIn, new InvertedAssociativeCell(numIn, IBooleanFunction.OR, false))
+                    register("nor" + numIn, new InvertedAssociativeCell(numIn, IBooleanFunction.OR, false, numIn / 2.))
             );
 
             BASIC_LOGIC.put(
                     Pair.of(IBooleanFunction.NOT_SAME, numIn),
-                    register("xor" + numIn, new AssociativeFunctionCell(numIn, IBooleanFunction.NOT_SAME, false))
+                    register(
+                            "xor" + numIn, new AssociativeFunctionCell(numIn, IBooleanFunction.NOT_SAME, false, numIn)
+                    )
             );
         }
         register("rs_latch", RS_LATCH);

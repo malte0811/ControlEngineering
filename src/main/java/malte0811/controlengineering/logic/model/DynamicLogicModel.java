@@ -27,7 +27,7 @@ public class DynamicLogicModel implements IBakedModel {
     private static final Random RANDOM = new Random(1234);
     private static final Vector2f[] TUBE_OFFSETS;
     private static final float[] BOARD_HEIGHTS = {.5f / 16f, 5.5f / 16f, -4.5f / 16f, 10.5f / 16f,};
-    private static final ModelProperty<Integer> NUM_TUBES = new ModelProperty<>();
+    public static final ModelProperty<Integer> NUM_TUBES = new ModelProperty<>();
 
     static {
         int[] tubeAxisOffsets = {0, 3, 7, 10};
@@ -85,7 +85,7 @@ public class DynamicLogicModel implements IBakedModel {
             if (numTubesBox != null)
                 numTubes = numTubesBox;
             else
-                numTubes = 19;
+                numTubes = 13;
             while (this.knownModels.size() <= numTubes) {
                 this.knownModels.add(null);
             }

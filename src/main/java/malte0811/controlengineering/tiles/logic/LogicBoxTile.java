@@ -1,35 +1,39 @@
 package malte0811.controlengineering.tiles.logic;
 
+import blusunrize.immersiveengineering.api.utils.client.SinglePropertyModelData;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import malte0811.controlengineering.blocks.logic.LogicBoxBlock;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
-import malte0811.controlengineering.bus.BusSignalRef;
-import malte0811.controlengineering.bus.BusState;
-import malte0811.controlengineering.bus.BusWireTypes;
-import malte0811.controlengineering.bus.IBusInterface;
+import malte0811.controlengineering.bus.*;
+import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.circuit.Circuit;
 import malte0811.controlengineering.logic.circuit.CircuitBuilder;
 import malte0811.controlengineering.logic.circuit.NetReference;
-import malte0811.controlengineering.logic.clock.ClockGenerator;
+import malte0811.controlengineering.logic.clock.ClockGenerator.ClockInstance;
+import malte0811.controlengineering.logic.clock.ClockTypes;
+import malte0811.controlengineering.logic.model.DynamicLogicModel;
 import malte0811.controlengineering.tiles.CETileEntities;
+import malte0811.controlengineering.util.CEEnergyStorage;
 import malte0811.controlengineering.util.Clearable;
-import malte0811.controlengineering.util.typereg.TypedInstance;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraftforge.energy.EnergyStorage;
+import net.minecraftforge.client.model.data.IModelData;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBusInterface {
+public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBusInterface, ITickableTileEntity {
     private static final BiMap<BusSignalRef, NetReference> INPUT_NETS = HashBiMap.create();
     private static final BiMap<BusSignalRef, NetReference> OUTPUT_NETS = HashBiMap.create();
 
@@ -42,34 +46,103 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
         }
     }
 
-    private final EnergyStorage energy = new EnergyStorage(2048, 128);
-    private Circuit circuit = CircuitBuilder.builder()
-            .addInputNet(INPUT_NETS.get(new BusSignalRef(0, 0)), SignalType.DIGITAL)
-            .addInputNet(INPUT_NETS.get(new BusSignalRef(0, 1)), SignalType.DIGITAL)
-            .addStage()
-            .addCell(Leafcells.BASIC_LOGIC.get(Pair.of(IBooleanFunction.AND, 2)).newInstance())
-            .input(0, INPUT_NETS.get(new BusSignalRef(0, 0)))
-            .input(1, INPUT_NETS.get(new BusSignalRef(0, 1)))
-            .output(0, OUTPUT_NETS.get(new BusSignalRef(0, 2)))
-            .buildCell()
-            .buildStage()
-            .build();
-    @Nullable
-    private TypedInstance<?, ? extends ClockGenerator<?>> clock;
+    private final CEEnergyStorage energy = new CEEnergyStorage(2048, 128, 128);
+    private Circuit circuit;
+    @Nonnull
+    private ClockInstance<?> clock = ClockTypes.NEVER.newInstance();
+    private BusState outputValues = BusState.EMPTY;
+    private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
+    private int numTubes;
 
     public LogicBoxTile() {
         super(CETileEntities.LOGIC_BOX.get());
+        setCircuit(CircuitBuilder.builder()
+                .addInputNet(INPUT_NETS.get(new BusSignalRef(0, 0)), SignalType.DIGITAL)
+                .addInputNet(INPUT_NETS.get(new BusSignalRef(0, 1)), SignalType.DIGITAL)
+                .addStage()
+                .addCell(Leafcells.BASIC_LOGIC.get(Pair.of(IBooleanFunction.AND, 2)).newInstance())
+                .input(0, INPUT_NETS.get(new BusSignalRef(0, 0)))
+                .input(1, INPUT_NETS.get(new BusSignalRef(0, 1)))
+                .output(0, OUTPUT_NETS.get(new BusSignalRef(0, 2)))
+                .buildCell()
+                .buildStage()
+                .build());
+    }
+
+    @Override
+    public void tick() {
+        //TODO less?
+        if (energy.extractOrTrue(128) || world.getGameTime() % 2 != 0) {
+            return;
+        }
+        final Direction facing = getBlockState().get(LogicBoxBlock.FACING);
+        boolean rsIn = world.getRedstonePower(pos, facing.rotateY()) > 0;
+        if (!clock.tick(rsIn)) {
+            return;
+        }
+        // Inputs are updated in onBusUpdated
+        circuit.tick();
+        boolean changed = false;
+        for (Object2DoubleMap.Entry<NetReference> netWithValue : circuit.getNetValues().object2DoubleEntrySet()) {
+            final BusSignalRef signal = OUTPUT_NETS.inverse().get(netWithValue.getKey());
+            if (signal != null) {
+                final int currentValue = outputValues.getSignal(signal);
+                final int newValue = (int) MathHelper.clamp(
+                        BusLine.MAX_VALID_VALUE * netWithValue.getDoubleValue(),
+                        BusLine.MIN_VALID_VALUE,
+                        BusLine.MAX_VALID_VALUE
+                );
+                if (currentValue != newValue) {
+                    outputValues = outputValues.with(signal, newValue);
+                    changed = true;
+                }
+            }
+        }
+        if (changed) {
+            markBusDirty.run();
+        }
     }
 
     @Override
     public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
         super.read(state, nbt);
+        clock = ClockInstance.fromNBT(nbt.getCompound("clock"));
+        if (clock == null) {
+            clock = ClockTypes.NEVER.newInstance();
+        }
+        setCircuit(new Circuit(nbt.getCompound("circuit")));
+        energy.readNBT(nbt.get("energy"));
     }
 
     @Nonnull
     @Override
     public CompoundNBT write(@Nonnull CompoundNBT compound) {
-        return super.write(compound);
+        compound = super.write(compound);
+        compound.put("clock", clock.toNBT());
+        compound.put("circuit", circuit.toNBT());
+        compound.put("energy", energy.writeNBT());
+        return compound;
+    }
+
+    @Nonnull
+    @Override
+    public CompoundNBT getUpdateTag() {
+        CompoundNBT result = super.getUpdateTag();
+        result.putInt("numTubes", numTubes);
+        return result;
+    }
+
+    @Override
+    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
+        super.handleUpdateTag(state, tag);
+        numTubes = tag.getInt("numTubes");
+        requestModelDataUpdate();
+    }
+
+    @Nonnull
+    @Override
+    public IModelData getModelData() {
+        return new SinglePropertyModelData<>(numTubes, DynamicLogicModel.NUM_TUBES);
     }
 
     @Override
@@ -80,21 +153,46 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
 
     @Override
     public void onBusUpdated(BusState newState) {
-
+        for (NetReference inputSignal : circuit.getInputNets()) {
+            BusSignalRef busSignal = INPUT_NETS.inverse().get(inputSignal);
+            if (busSignal != null) {
+                circuit.updateInputValue(inputSignal, newState.getSignal(busSignal) / (double) BusLine.MAX_VALID_VALUE);
+            }
+        }
     }
 
     @Override
     public BusState getEmittedState() {
-        return null;
+        return outputValues;
     }
 
     @Override
     public boolean canConnect(Direction fromSide) {
+        //TODO
         return false;
     }
 
     @Override
     public void addMarkDirtyCallback(Clearable<Runnable> markDirty) {
+        this.markBusDirty.addCallback(markDirty);
+    }
 
+    @Override
+    public void remove() {
+        super.remove();
+        this.markBusDirty.run();
+    }
+
+    @Override
+    public void onChunkUnloaded() {
+        super.onChunkUnloaded();
+        this.markBusDirty.run();
+    }
+
+    public void setCircuit(Circuit circuit) {
+        this.circuit = circuit;
+        this.numTubes = MathHelper.ceil(circuit.getCellTypes()
+                .mapToDouble(LeafcellType::getNumTubes)
+                .sum());
     }
 }

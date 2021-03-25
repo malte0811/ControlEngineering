@@ -18,7 +18,8 @@ public class RSLatch extends LeafcellType<Boolean> {
                 ImmutableList.of(new Pin("reset", SignalType.DIGITAL), new Pin("set", SignalType.DIGITAL)),
                 ImmutableList.of(new Pin("q", SignalType.DIGITAL), new Pin("not_q", SignalType.DIGITAL)),
                 false,
-                Codec.BOOL
+                Codec.BOOL,
+                2.5
         );
     }
 

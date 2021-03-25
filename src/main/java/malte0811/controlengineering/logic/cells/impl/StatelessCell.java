@@ -9,8 +9,8 @@ import malte0811.controlengineering.logic.cells.Pin;
 import java.util.List;
 
 public abstract class StatelessCell extends LeafcellType<Unit> {
-    protected StatelessCell(List<Pin> inputPins, List<Pin> outputPins) {
-        super(inputPins, outputPins, Unit.INSTANCE, Codec.unit(Unit.INSTANCE));
+    protected StatelessCell(List<Pin> inputPins, List<Pin> outputPins, double numTubes) {
+        super(inputPins, outputPins, Unit.INSTANCE, Codec.unit(Unit.INSTANCE), numTubes);
     }
 
     @Override

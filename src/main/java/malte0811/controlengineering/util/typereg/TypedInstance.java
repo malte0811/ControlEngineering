@@ -9,7 +9,8 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-public class TypedInstance<State, Type extends TypedRegistryEntry<State>> {
+// Not "logically" abstract, but the using the class itself causes general issues with the type system
+public abstract class TypedInstance<State, Type extends TypedRegistryEntry<State>> {
     private final Type type;
     protected State currentState;
 
@@ -37,6 +38,9 @@ public class TypedInstance<State, Type extends TypedRegistryEntry<State>> {
     @Nullable
     protected static <T extends TypedRegistryEntry<?>, I extends TypedInstance<?, ? extends T>>
     I fromNBT(CompoundNBT nbt, TypedRegistry<T> registry, BiFunction<T, Object, I> make) {
+        if (nbt == null) {
+            return null;
+        }
         ResourceLocation name = ResourceLocation.tryCreate(nbt.getString("type"));
         if (name == null) {
             return null;

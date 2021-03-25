@@ -103,7 +103,7 @@ public abstract class CEBlock<PlacementData, Tile extends TileEntity> extends Bl
     @Nonnull
     @Override
     public VoxelShape getRenderShape(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos) {
-        return state.getRenderShape(worldIn, pos);
+        return state.getCollisionShape(worldIn, pos);
     }
 
     @Nonnull

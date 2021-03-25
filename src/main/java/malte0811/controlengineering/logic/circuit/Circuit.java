@@ -4,8 +4,10 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import malte0811.controlengineering.logic.cells.LeafcellInstance;
+import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.nbt.CompoundNBT;
@@ -14,6 +16,7 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class Circuit {
     private static final String STAGES_KEY = "stages";
@@ -102,11 +105,12 @@ public class Circuit {
             pinsByNet.computeIfAbsent(entry.getValue(), $ -> new ArrayList<>()).add(entry.getKey());
         }
         CompoundNBT nets = new CompoundNBT();
-        for (NetReference net : allNetValues.keySet()) {
+        for (Map.Entry<NetReference, List<PinReference>> entry : pinsByNet.entrySet()) {
+            NetReference net = entry.getKey();
             CompoundNBT netNBT = new CompoundNBT();
             netNBT.putDouble(CURRENT_VALUE_KEY, allNetValues.getDouble(net));
             ListNBT netPins = new ListNBT();
-            for (PinReference pin : pinsByNet.get(net)) {
+            for (PinReference pin : entry.getValue()) {
                 netPins.add(Codecs.encode(PinReference.CODEC, pin));
             }
             netNBT.put(PINS_KEY, netPins);
@@ -152,5 +156,17 @@ public class Circuit {
             }
             allNetValues.putAll(stageOutputs);
         }
+    }
+
+    public Object2DoubleMap<NetReference> getNetValues() {
+        return Object2DoubleMaps.unmodifiable(allNetValues);
+    }
+
+    public Collection<NetReference> getInputNets() {
+        return inputValues.keySet();
+    }
+
+    public Stream<LeafcellType<?>> getCellTypes() {
+        return cellsByStage.stream().flatMap(List::stream).map(LeafcellInstance::getType);
     }
 }

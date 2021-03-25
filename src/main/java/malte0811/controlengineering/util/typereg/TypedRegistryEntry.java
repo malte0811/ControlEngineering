@@ -30,4 +30,6 @@ public abstract class TypedRegistryEntry<StateType> {
         Preconditions.checkState(this.registryName == null);
         this.registryName = registryName;
     }
+
+    public abstract TypedInstance<StateType, ? extends TypedRegistryEntry<StateType>> newInstance();
 }
