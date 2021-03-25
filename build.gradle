@@ -144,8 +144,9 @@ repositories {
 
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.0.27'
-	compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:1.16.5-4.2.4-134.7")
-    datagenCompile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:1.16.5-4.2.4-134.7:datagen")
+    //TODO only API
+	compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:1.16.5-5.0.0-pre.29")
+    datagenCompile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:1.16.5-5.0.0-pre.29:datagen")
     testImplementation('junit:junit:4.13')
 }
 

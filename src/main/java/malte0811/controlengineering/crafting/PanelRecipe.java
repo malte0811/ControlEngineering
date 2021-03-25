@@ -1,7 +1,7 @@
 package malte0811.controlengineering.crafting;
 
+import blusunrize.immersiveengineering.api.EnumMetals;
 import blusunrize.immersiveengineering.api.IETags;
-import blusunrize.immersiveengineering.common.blocks.EnumMetals;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.controlpanels.PanelTransform;

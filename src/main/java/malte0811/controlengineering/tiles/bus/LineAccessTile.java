@@ -1,7 +1,10 @@
 package malte0811.controlengineering.tiles.bus;
 
 import blusunrize.immersiveengineering.api.TargetingInfo;
-import blusunrize.immersiveengineering.api.wires.*;
+import blusunrize.immersiveengineering.api.wires.Connection;
+import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
+import blusunrize.immersiveengineering.api.wires.LocalWireNetwork;
+import blusunrize.immersiveengineering.api.wires.WireType;
 import blusunrize.immersiveengineering.api.wires.redstone.IRedstoneConnector;
 import blusunrize.immersiveengineering.api.wires.redstone.RedstoneNetworkHandler;
 import com.google.common.collect.ImmutableList;
@@ -10,7 +13,9 @@ import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusConnector;
 import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.temp.ImprovedLocalRSHandler;
+import malte0811.controlengineering.tiles.CEIICTileEntity;
 import malte0811.controlengineering.tiles.CETileEntities;
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -23,7 +28,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Objects;
 
-public class LineAccessTile extends ImmersiveConnectableTileEntity implements IBusConnector, IRedstoneConnector {
+public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IRedstoneConnector {
     private static final int REDSTONE_ID = 0;
     private static final int BUS_ID = 1;
 
@@ -56,15 +61,16 @@ public class LineAccessTile extends ImmersiveConnectableTileEntity implements IB
     }
 
     @Override
-    public void readCustomNBT(@Nonnull CompoundNBT nbt, boolean descPacket) {
-        super.readCustomNBT(nbt, descPacket);
+    public void read(BlockState state, CompoundNBT nbt) {
+        super.read(state, nbt);
         selectedLine = nbt.getInt("selectedLine");
     }
 
     @Override
-    public void writeCustomNBT(@Nonnull CompoundNBT nbt, boolean descPacket) {
-        super.writeCustomNBT(nbt, descPacket);
+    public CompoundNBT write(CompoundNBT nbt) {
+        nbt = super.write(nbt);
         nbt.putInt("selectedLine", selectedLine);
+        return nbt;
     }
 
     /*BUS*/

@@ -2,7 +2,6 @@ package malte0811.controlengineering.tiles.bus;
 
 import blusunrize.immersiveengineering.api.wires.Connection;
 import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
-import blusunrize.immersiveengineering.api.wires.ImmersiveConnectableTileEntity;
 import blusunrize.immersiveengineering.api.wires.LocalWireNetwork;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
@@ -11,6 +10,7 @@ import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusConnector;
 import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.bus.LocalBusHandler;
+import malte0811.controlengineering.tiles.CEIICTileEntity;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.Clearable;
 import malte0811.controlengineering.util.DirectionUtils;
@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class BusInterfaceTile extends ImmersiveConnectableTileEntity implements IBusConnector, INeighborChangeListener {
+public class BusInterfaceTile extends CEIICTileEntity implements IBusConnector, INeighborChangeListener {
     private final Map<Direction, Pair<WeakReference<IBusInterface>, Runnable>> clearers = new EnumMap<>(Direction.class);
 
     public BusInterfaceTile() {

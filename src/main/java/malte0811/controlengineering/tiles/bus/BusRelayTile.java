@@ -2,18 +2,17 @@ package malte0811.controlengineering.tiles.bus;
 
 import blusunrize.immersiveengineering.api.wires.Connection;
 import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
-import blusunrize.immersiveengineering.api.wires.ImmersiveConnectableTileEntity;
 import blusunrize.immersiveengineering.api.wires.LocalWireNetwork;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.BusWireTypes;
 import malte0811.controlengineering.bus.IBusConnector;
+import malte0811.controlengineering.tiles.CEIICTileEntity;
 import malte0811.controlengineering.tiles.CETileEntities;
 import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nonnull;
 
-public class BusRelayTile extends ImmersiveConnectableTileEntity implements IBusConnector
-{
+public class BusRelayTile extends CEIICTileEntity implements IBusConnector {
     public BusRelayTile() {
         super(CETileEntities.BUS_RELAY.get());
     }
