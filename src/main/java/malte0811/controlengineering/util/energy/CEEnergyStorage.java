@@ -1,9 +1,11 @@
-package malte0811.controlengineering.util;
+package malte0811.controlengineering.util.energy;
 
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.IntNBT;
 import net.minecraft.nbt.NumberNBT;
 import net.minecraftforge.energy.IEnergyStorage;
+
+import javax.annotation.Nonnull;
 
 public class CEEnergyStorage implements IEnergyStorage {
     private final int capacity;
@@ -53,10 +55,10 @@ public class CEEnergyStorage implements IEnergyStorage {
 
     public boolean extractOrTrue(int amount) {
         if (energyStored < amount) {
-            return false;
+            return true;
         } else {
             energyStored -= amount;
-            return true;
+            return false;
         }
     }
 
@@ -78,5 +80,10 @@ public class CEEnergyStorage implements IEnergyStorage {
     @Override
     public boolean canReceive() {
         return maxIn > 0;
+    }
+
+    @Nonnull
+    public IEnergyStorage insertOnlyView() {
+        return new ExtractOnlyEnergyWrapper(this);
     }
 }

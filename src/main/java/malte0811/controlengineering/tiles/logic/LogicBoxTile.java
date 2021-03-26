@@ -20,8 +20,8 @@ import malte0811.controlengineering.logic.clock.ClockGenerator.ClockInstance;
 import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.logic.model.DynamicLogicModel;
 import malte0811.controlengineering.tiles.CETileEntities;
-import malte0811.controlengineering.util.CEEnergyStorage;
 import malte0811.controlengineering.util.Clearable;
+import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -30,8 +30,13 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBusInterface, ITickableTileEntity {
     private static final BiMap<BusSignalRef, NetReference> INPUT_NETS = HashBiMap.create();
@@ -46,11 +51,11 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
         }
     }
 
-    private final CEEnergyStorage energy = new CEEnergyStorage(2048, 128, 128);
+    private final CEEnergyStorage energy = new CEEnergyStorage(2048, 2 * 128, 128);
     private Circuit circuit;
     @Nonnull
     private ClockInstance<?> clock = ClockTypes.NEVER.newInstance();
-    private BusState outputValues = BusState.EMPTY;
+    private BusState outputValues = new BusState(BusWireTypes.MAX_BUS_WIDTH);
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private int numTubes;
 
@@ -71,12 +76,16 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
 
     @Override
     public void tick() {
+        if (world.isRemote || getBlockState().get(LogicBoxBlock.HEIGHT) != 0) {
+            return;
+        }
         //TODO less?
         if (energy.extractOrTrue(128) || world.getGameTime() % 2 != 0) {
             return;
         }
-        final Direction facing = getBlockState().get(LogicBoxBlock.FACING);
-        boolean rsIn = world.getRedstonePower(pos, facing.rotateY()) > 0;
+        final Direction facing = getFacing();
+        final Direction clockFace = facing.rotateYCCW();
+        boolean rsIn = world.getRedstonePower(pos.offset(clockFace), clockFace.getOpposite()) > 0;
         if (!clock.tick(rsIn)) {
             return;
         }
@@ -168,8 +177,26 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
 
     @Override
     public boolean canConnect(Direction fromSide) {
-        //TODO
-        return false;
+        return fromSide == getFacing().rotateY();
+    }
+
+    private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(energy::insertOnlyView);
+
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(
+            @Nonnull Capability<T> cap, @Nullable Direction side
+    ) {
+        if (cap == CapabilityEnergy.ENERGY && side == getFacing()) {
+            return energyCap.cast();
+        }
+        return super.getCapability(cap, side);
+    }
+
+    @Override
+    protected void invalidateCaps() {
+        super.invalidateCaps();
+        energyCap.invalidate();
     }
 
     @Override
@@ -194,5 +221,9 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
         this.numTubes = MathHelper.ceil(circuit.getCellTypes()
                 .mapToDouble(LeafcellType::getNumTubes)
                 .sum());
+    }
+
+    private Direction getFacing() {
+        return getBlockState().get(LogicBoxBlock.FACING);
     }
 }
