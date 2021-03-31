@@ -1,4 +1,4 @@
-package malte0811.controlengineering.render.utils;
+package malte0811.controlengineering.client.render.utils;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.matrix.MatrixStack;

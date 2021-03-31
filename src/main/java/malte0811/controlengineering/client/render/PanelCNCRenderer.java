@@ -1,4 +1,4 @@
-package malte0811.controlengineering.render;
+package malte0811.controlengineering.client.render;
 
 import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.google.common.base.Preconditions;
@@ -6,15 +6,15 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
+import malte0811.controlengineering.client.render.tape.TapeDrive;
+import malte0811.controlengineering.client.render.target.DynamicRenderTarget;
+import malte0811.controlengineering.client.render.target.TargetType;
+import malte0811.controlengineering.client.render.utils.ModelRenderUtils;
+import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath;
+import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath.Node;
+import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
-import malte0811.controlengineering.controlpanels.renders.target.DynamicRenderTarget;
-import malte0811.controlengineering.controlpanels.renders.target.TargetType;
-import malte0811.controlengineering.render.tape.TapeDrive;
-import malte0811.controlengineering.render.utils.ModelRenderUtils;
-import malte0811.controlengineering.render.utils.PiecewiseAffinePath;
-import malte0811.controlengineering.render.utils.PiecewiseAffinePath.Node;
-import malte0811.controlengineering.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.tiles.panels.CNCJob;
 import malte0811.controlengineering.tiles.panels.PanelCNCTile;
 import malte0811.controlengineering.util.Vec2d;

@@ -1,13 +1,13 @@
-package malte0811.controlengineering.render;
+package malte0811.controlengineering.client.render;
 
 import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
+import malte0811.controlengineering.client.render.target.DynamicRenderTarget;
+import malte0811.controlengineering.client.render.target.TargetType;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
-import malte0811.controlengineering.controlpanels.renders.target.DynamicRenderTarget;
-import malte0811.controlengineering.controlpanels.renders.target.TargetType;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;

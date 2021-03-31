@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,5 +21,9 @@ public class TypedRegistry<T extends TypedRegistryEntry<?>> {
     @Nullable
     public T get(ResourceLocation name) {
         return entries.get(name);
+    }
+
+    public Map<ResourceLocation, T> getEntries() {
+        return Collections.unmodifiableMap(entries);
     }
 }

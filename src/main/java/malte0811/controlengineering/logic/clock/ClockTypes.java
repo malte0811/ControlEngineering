@@ -1,8 +1,11 @@
 package malte0811.controlengineering.logic.clock;
 
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.util.typereg.TypedRegistry;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Unit;
+
+import java.util.Map;
 
 public class ClockTypes {
     public static final ClockGenerator<Unit> ALWAYS_ON = new FreeClock();
@@ -10,10 +13,20 @@ public class ClockTypes {
     public static final ClockGenerator<Unit> WHILE_RS_ON = new StateClock();
     public static final ClockGenerator<Unit> NEVER = new NoneClock();
 
-    public static void init() {
-        ClockGenerator.register(new ResourceLocation(ControlEngineering.MODID, "free"), ALWAYS_ON);
-        ClockGenerator.register(new ResourceLocation(ControlEngineering.MODID, "edge"), RISING_EDGE);
-        ClockGenerator.register(new ResourceLocation(ControlEngineering.MODID, "state"), WHILE_RS_ON);
-        ClockGenerator.register(new ResourceLocation(ControlEngineering.MODID, "none"), NEVER);
+    public static final TypedRegistry<ClockGenerator<?>> REGISTRY = new TypedRegistry<>();
+
+    public static <T extends ClockGenerator<?>> T register(ResourceLocation name, T generator) {
+        return REGISTRY.register(name, generator);
+    }
+
+    public static Map<ResourceLocation, ClockGenerator<?>> getGenerators() {
+        return REGISTRY.getEntries();
+    }
+
+    static {
+        register(new ResourceLocation(ControlEngineering.MODID, "clock_free"), ALWAYS_ON);
+        register(new ResourceLocation(ControlEngineering.MODID, "clock_edge"), RISING_EDGE);
+        register(new ResourceLocation(ControlEngineering.MODID, "clock_state"), WHILE_RS_ON);
+        register(new ResourceLocation(ControlEngineering.MODID, "clock_none"), NEVER);
     }
 }

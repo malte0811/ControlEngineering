@@ -1,4 +1,4 @@
-package malte0811.controlengineering.controlpanels.renders.target;
+package malte0811.controlengineering.client.render.target;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.LightTexture;

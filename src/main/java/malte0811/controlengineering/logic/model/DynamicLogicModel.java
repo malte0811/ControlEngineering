@@ -1,7 +1,11 @@
 package malte0811.controlengineering.logic.model;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.client.render.target.QuadBuilder;
+import malte0811.controlengineering.client.render.target.StaticRenderTarget;
+import malte0811.controlengineering.client.render.target.TargetType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.model.*;
@@ -10,6 +14,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraft.util.math.vector.Vector2f;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.ModelTransformComposition;
@@ -27,7 +32,7 @@ public class DynamicLogicModel implements IBakedModel {
     private static final Random RANDOM = new Random(1234);
     private static final Vector2f[] TUBE_OFFSETS;
     private static final float[] BOARD_HEIGHTS = {.5f / 16f, 5.5f / 16f, -4.5f / 16f, 10.5f / 16f,};
-    public static final ModelProperty<Integer> NUM_TUBES = new ModelProperty<>();
+    public static final ModelProperty<ModelData> DATA = new ModelProperty<>();
 
     static {
         int[] tubeAxisOffsets = {0, 3, 7, 10};
@@ -45,6 +50,7 @@ public class DynamicLogicModel implements IBakedModel {
     private final Function<RenderMaterial, TextureAtlasSprite> spriteGetter;
     private final IModelTransform modelTransform;
     private final TextureAtlasSprite particles;
+    private final BakedQuad clockQuad;
 
     private final List<FixedTubeModel> knownModels = new ArrayList<>();
 
@@ -63,7 +69,22 @@ public class DynamicLogicModel implements IBakedModel {
         this.modelTransform = modelTransform;
         particles = board.bakeModel(
                 bakery, spriteGetter, modelTransform, new ResourceLocation(ControlEngineering.MODID, "temp")
-        ).getParticleTexture(EmptyModelData.INSTANCE);
+        ).getQuads(null, null, RANDOM, EmptyModelData.INSTANCE).get(0).getSprite();
+
+        StaticRenderTarget target = new StaticRenderTarget($ -> true);
+        MatrixStack transform = new MatrixStack();
+        modelTransform.getRotation().blockCenterToCorner().push(transform);
+        new QuadBuilder(
+                new Vector3d(1, 0.375 - 1, 0.625),
+                new Vector3d(1, 0.375 - 1, 0.375),
+                new Vector3d(1, 0.625 - 1, 0.375),
+                new Vector3d(1, 0.625 - 1, 0.625)
+        ).setSprite(particles)
+                .setUCoords(15 / 16f, 15 / 16f, 1, 1)
+                .setVCoords(0, 1 / 16f, 1 / 16f, 0)
+                .setNormal(new Vector3d(1, 0, 0))
+                .writeTo(transform, target, TargetType.STATIC);
+        this.clockQuad = target.getQuads().get(0);
     }
 
     @Nonnull
@@ -79,23 +100,24 @@ public class DynamicLogicModel implements IBakedModel {
     public List<BakedQuad> getQuads(
             @Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData
     ) {
-        final int numTubes;
-        {
-            Integer numTubesBox = extraData.getData(NUM_TUBES);
-            if (numTubesBox != null)
-                numTubes = numTubesBox;
-            else
-                numTubes = 13;
-            while (this.knownModels.size() <= numTubes) {
-                this.knownModels.add(null);
-            }
+        ModelData data = extraData.getData(DATA);
+        if (data == null) {
+            data = new ModelData(0, false);
         }
-        FixedTubeModel result = this.knownModels.get(numTubes);
+        while (this.knownModels.size() <= data.numTubes) {
+            this.knownModels.add(null);
+        }
+        FixedTubeModel result = this.knownModels.get(data.numTubes);
         if (result == null) {
-            result = new FixedTubeModel(numTubes);
-            this.knownModels.set(numTubes, result);
+            result = new FixedTubeModel(data.numTubes);
+            this.knownModels.set(data.numTubes, result);
         }
-        return result.getQuads();
+        List<BakedQuad> quads = result.getQuads();
+        if (data.hasClock) {
+            quads = new ArrayList<>(quads);
+            quads.add(clockQuad);
+        }
+        return quads;
     }
 
     @Override
@@ -182,6 +204,16 @@ public class DynamicLogicModel implements IBakedModel {
             } else {
                 return ImmutableList.of();
             }
+        }
+    }
+
+    public static class ModelData {
+        private final int numTubes;
+        private final boolean hasClock;
+
+        public ModelData(int numTubes, boolean hasClock) {
+            this.numTubes = numTubes;
+            this.hasClock = hasClock;
         }
     }
 }

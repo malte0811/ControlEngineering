@@ -1,4 +1,4 @@
-package malte0811.controlengineering.controlpanels.renders.target;
+package malte0811.controlengineering.client.render.target;
 
 public enum TargetType {
     //Render using TER

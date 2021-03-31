@@ -6,37 +6,55 @@ import com.google.common.collect.HashBiMap;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import malte0811.controlengineering.blocks.logic.LogicBoxBlock;
+import malte0811.controlengineering.blocks.shapes.ListShapes;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.bus.*;
+import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.circuit.Circuit;
 import malte0811.controlengineering.logic.circuit.CircuitBuilder;
 import malte0811.controlengineering.logic.circuit.NetReference;
+import malte0811.controlengineering.logic.clock.ClockGenerator;
 import malte0811.controlengineering.logic.clock.ClockGenerator.ClockInstance;
 import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.logic.model.DynamicLogicModel;
 import malte0811.controlengineering.tiles.CETileEntities;
+import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.Clearable;
+import malte0811.controlengineering.util.ItemUtil;
+import malte0811.controlengineering.util.Matrix4;
 import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.IBooleanFunction;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.server.ServerChunkProvider;
+import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fml.RegistryObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBusInterface, ITickableTileEntity {
     private static final BiMap<BusSignalRef, NetReference> INPUT_NETS = HashBiMap.create();
@@ -76,7 +94,7 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
 
     @Override
     public void tick() {
-        if (world.isRemote || getBlockState().get(LogicBoxBlock.HEIGHT) != 0) {
+        if (world.isRemote || isUpper()) {
             return;
         }
         //TODO less?
@@ -133,31 +151,66 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
         return compound;
     }
 
-    @Nonnull
-    @Override
-    public CompoundNBT getUpdateTag() {
-        CompoundNBT result = super.getUpdateTag();
-        result.putInt("numTubes", numTubes);
+    private CompoundNBT writeDynamicSyncNBT() {
+        CompoundNBT result = new CompoundNBT();
+        result.putBoolean("hasClock", clock.getType().isActiveClock());
         return result;
+    }
+
+    private void readDynamicSyncNBT(CompoundNBT tag) {
+        if (tag.getBoolean("hasClock"))
+            clock = ClockTypes.ALWAYS_ON.newInstance();
+        else
+            clock = ClockTypes.NEVER.newInstance();
+        requestModelDataUpdate();
+        TileEntity above = getWorld().getTileEntity(pos.up());
+        if (above != null) {
+            above.requestModelDataUpdate();
+            world.notifyBlockUpdate(
+                    pos.up(), above.getBlockState(), above.getBlockState(), Constants.BlockFlags.DEFAULT
+            );
+        }
     }
 
     @Override
     public void handleUpdateTag(BlockState state, CompoundNBT tag) {
         super.handleUpdateTag(state, tag);
         numTubes = tag.getInt("numTubes");
-        requestModelDataUpdate();
+        readDynamicSyncNBT(tag);
+    }
+
+    @Nonnull
+    @Override
+    public CompoundNBT getUpdateTag() {
+        CompoundNBT result = writeDynamicSyncNBT();
+        result.putInt("numTubes", numTubes);
+        return result;
+    }
+
+    @Nullable
+    @Override
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        return new SUpdateTileEntityPacket(pos, -1, writeDynamicSyncNBT());
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+        readDynamicSyncNBT(pkt.getNbtCompound());
     }
 
     @Nonnull
     @Override
     public IModelData getModelData() {
-        return new SinglePropertyModelData<>(numTubes, DynamicLogicModel.NUM_TUBES);
-    }
-
-    @Override
-    public SelectionShapes getShape() {
-        // TODO
-        return SingleShape.FULL_BLOCK;
+        TileEntity below = getWorld().getTileEntity(pos.down());
+        if (below instanceof LogicBoxTile) {
+            LogicBoxTile box = (LogicBoxTile) below;
+            return new SinglePropertyModelData<>(
+                    new DynamicLogicModel.ModelData(box.numTubes, box.clock.getType().isActiveClock()),
+                    DynamicLogicModel.DATA
+            );
+        } else {
+            return EmptyModelData.INSTANCE;
+        }
     }
 
     @Override
@@ -225,5 +278,62 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
 
     private Direction getFacing() {
         return getBlockState().get(LogicBoxBlock.FACING);
+    }
+
+    private boolean isUpper() {
+        return getBlockState().get(LogicBoxBlock.HEIGHT) != 0;
+    }
+
+    private final CachedValue<Pair<Direction, Boolean>, SelectionShapes> selectionShapes = new CachedValue<>(
+            () -> Pair.of(getFacing(), isUpper()),
+            f -> {
+                if (f.getSecond()) {
+                    return SingleShape.FULL_BLOCK;
+                } else {
+                    return createSelectionShapes(f.getFirst(), this);
+                }
+            }
+    );
+
+    @Override
+    public SelectionShapes getShape() {
+        return selectionShapes.get();
+    }
+
+    private void markDirtyAndSync() {
+        markDirty();
+        if (world.getChunkProvider() instanceof ServerChunkProvider) {
+            ((ServerChunkProvider) world.getChunkProvider()).markBlockChanged(pos);
+        }
+    }
+
+    private static SelectionShapes createSelectionShapes(Direction d, LogicBoxTile tile) {
+        List<SelectionShapes> subshapes = new ArrayList<>(1);
+        // Add clear tape to input/take it from input
+        subshapes.add(new SingleShape(
+                VoxelShapes.create(0, 6 / 16., 6 / 16., 5 / 16., 10 / 16., 10 / 16.), ctx -> {
+            if (ctx.getPlayer() == null) {
+                return ActionResultType.PASS;
+            }
+            ClockGenerator<?> currentClock = tile.clock.getType();
+            RegistryObject<Item> clockItem = CEItems.CLOCK_GENERATORS.get(currentClock.getRegistryName());
+            if (!ctx.getWorld().isRemote) {
+                if (clockItem != null) {
+                    ItemUtil.giveOrDrop(ctx.getPlayer(), new ItemStack(clockItem.get()));
+                    tile.clock = ClockTypes.NEVER.newInstance();
+                    tile.markDirtyAndSync();
+                } else {
+                    ItemStack item = ctx.getItem();
+                    ClockGenerator<?> newClock = ClockTypes.REGISTRY.get(item.getItem().getRegistryName());
+                    if (newClock != null) {
+                        tile.clock = newClock.newInstance();
+                        item.shrink(1);
+                        tile.markDirtyAndSync();
+                    }
+                }
+            }
+            return ActionResultType.SUCCESS;
+        }));
+        return new ListShapes(VoxelShapes.fullCube(), new Matrix4(d), subshapes, $ -> ActionResultType.PASS);
     }
 }

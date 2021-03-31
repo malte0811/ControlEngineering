@@ -2,10 +2,10 @@ package malte0811.controlengineering.controlpanels.renders;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.bus.BusLine;
+import malte0811.controlengineering.client.render.target.QuadBuilder;
+import malte0811.controlengineering.client.render.target.RenderTarget;
+import malte0811.controlengineering.client.render.target.TargetType;
 import malte0811.controlengineering.controlpanels.components.Indicator;
-import malte0811.controlengineering.controlpanels.renders.target.QuadBuilder;
-import malte0811.controlengineering.controlpanels.renders.target.RenderTarget;
-import malte0811.controlengineering.controlpanels.renders.target.TargetType;
 import malte0811.controlengineering.util.ColorUtils;
 import net.minecraft.util.math.vector.Vector3d;
 

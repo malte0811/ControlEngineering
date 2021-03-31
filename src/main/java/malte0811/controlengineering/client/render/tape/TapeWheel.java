@@ -1,4 +1,4 @@
-package malte0811.controlengineering.render.tape;
+package malte0811.controlengineering.client.render.tape;
 
 import blusunrize.immersiveengineering.api.IEApi;
 import blusunrize.immersiveengineering.api.utils.ResettableLazy;
@@ -7,7 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.mojang.datafixers.util.Pair;
-import malte0811.controlengineering.render.utils.TransformingVertexBuilder;
+import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.util.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SpriteAwareVertexBuilder;

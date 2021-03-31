@@ -17,4 +17,9 @@ public class NoneClock extends ClockGenerator<Unit> {
     public Unit nextState(Unit oldState, boolean triggerSignal) {
         return oldState;
     }
+
+    @Override
+    public boolean isActiveClock() {
+        return false;
+    }
 }

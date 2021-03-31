@@ -8,10 +8,7 @@ with open(sys.argv[1], 'r') as input_file:
         if line.startswith('v '):
             coords = [float(c) for c in line[2:].split(' ')]
             line = 'v '
-            line += str(coords[0] / 16 + 0.5) + ' '
-            line += str(coords[1] / 16) + ' '
-            line += str(coords[2] / 16 + 0.5) + ' '
-            line += '\n'
+            line += "{:.5f} {:.5f} {:.5f}\n".format(coords[0] / 16 + 0.5, coords[1] / 16, coords[2] / 16 + 0.5)
         elif line.startswith('f '):
             face_vertices = line[2:].split(' ')
             if len(face_vertices) % 2 == 1:

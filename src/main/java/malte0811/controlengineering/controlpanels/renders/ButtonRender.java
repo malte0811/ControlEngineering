@@ -2,9 +2,9 @@ package malte0811.controlengineering.controlpanels.renders;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import malte0811.controlengineering.client.render.target.RenderTarget;
+import malte0811.controlengineering.client.render.target.TargetType;
 import malte0811.controlengineering.controlpanels.components.Button;
-import malte0811.controlengineering.controlpanels.renders.target.RenderTarget;
-import malte0811.controlengineering.controlpanels.renders.target.TargetType;
 import malte0811.controlengineering.util.ColorUtils;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.util.Direction;

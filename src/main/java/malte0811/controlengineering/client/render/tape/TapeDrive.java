@@ -1,4 +1,4 @@
-package malte0811.controlengineering.render.tape;
+package malte0811.controlengineering.client.render.tape;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;

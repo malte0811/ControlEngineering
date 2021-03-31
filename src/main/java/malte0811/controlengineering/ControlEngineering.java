@@ -12,7 +12,6 @@ import malte0811.controlengineering.crafting.CERecipeSerializers;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.logic.cells.Leafcells;
-import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.network.AddTTYData;
 import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.temp.ImprovedLocalRSHandler;
@@ -64,7 +63,6 @@ public class ControlEngineering {
         modBus.addListener(this::setup);
         modBus.addListener(this::loadComplete);
         Leafcells.init();
-        ClockTypes.init();
     }
 
     public void setup(FMLCommonSetupEvent ev) {

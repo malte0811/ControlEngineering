@@ -1,11 +1,11 @@
 package malte0811.controlengineering.controlpanels.renders;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import malte0811.controlengineering.client.render.target.RenderTarget;
 import malte0811.controlengineering.controlpanels.PanelComponent;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
-import malte0811.controlengineering.controlpanels.renders.target.RenderTarget;
 
 import java.util.HashMap;
 import java.util.List;

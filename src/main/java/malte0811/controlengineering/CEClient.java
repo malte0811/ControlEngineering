@@ -1,10 +1,10 @@
 package malte0811.controlengineering;
 
 import malte0811.controlengineering.blocks.BlockRenderLayers;
+import malte0811.controlengineering.client.render.PanelCNCRenderer;
+import malte0811.controlengineering.client.render.PanelRenderer;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.gui.ContainerScreenManager;
-import malte0811.controlengineering.render.PanelCNCRenderer;
-import malte0811.controlengineering.render.PanelRenderer;
 import malte0811.controlengineering.tiles.CETileEntities;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

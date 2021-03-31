@@ -7,6 +7,7 @@ import net.minecraft.util.IItemProvider;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 public class ItemModels extends ItemModelProvider {
@@ -24,13 +25,14 @@ public class ItemModels extends ItemModelProvider {
         //getBuilder(name(CEItems.CONTROL_PANEL.get()))
         //        .customLoader(DynamicModelBuilder.customLoader(ModelLoaders.PANEL_MODEL))
         //        .end();
+        CEItems.CLOCK_GENERATORS.forEach((rl, item) -> addItemModel(rl.getPath().replace('_', '/'), item));
     }
 
     public static String name(Supplier<? extends IItemProvider> item) {
         return item.get().asItem().getRegistryName().getPath();
     }
 
-    private void addItemModel(String texture, Supplier<? extends IItemProvider> item) {
+    private void addItemModel(@Nullable String texture, Supplier<? extends IItemProvider> item) {
         String path = name(item);
         String textureLoc = texture == null ? path : ("item/" + texture);
         withExistingParent(path, mcLoc("item/generated"))
