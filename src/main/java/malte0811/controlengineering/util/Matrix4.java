@@ -101,10 +101,10 @@ public class Matrix4 {
                 rotate(factor * Math.PI, 0, 1, 0);
                 break;
             case EAST:
-                rotate(factor * Math.PI / 2, 0, 1, 0);
+                rotate(-factor * Math.PI / 2, 0, 1, 0);
                 break;
             case WEST:
-                rotate(-factor * Math.PI / 2, 0, 1, 0);
+                rotate(factor * Math.PI / 2, 0, 1, 0);
                 break;
             case NORTH:
         }

@@ -31,7 +31,7 @@ import java.util.function.Function;
 public class DynamicLogicModel implements IBakedModel {
     private static final Random RANDOM = new Random(1234);
     private static final Vector2f[] TUBE_OFFSETS;
-    private static final float[] BOARD_HEIGHTS = {.5f / 16f, 5.5f / 16f, -4.5f / 16f, 10.5f / 16f,};
+    private static final float[] BOARD_HEIGHTS = {16.5f / 16f, 21.5f / 16f, 12.5f / 16f, 26.5f / 16f,};
     public static final ModelProperty<ModelData> DATA = new ModelProperty<>();
 
     static {
@@ -75,10 +75,10 @@ public class DynamicLogicModel implements IBakedModel {
         MatrixStack transform = new MatrixStack();
         modelTransform.getRotation().blockCenterToCorner().push(transform);
         new QuadBuilder(
-                new Vector3d(1, 0.375 - 1, 0.625),
-                new Vector3d(1, 0.375 - 1, 0.375),
-                new Vector3d(1, 0.625 - 1, 0.375),
-                new Vector3d(1, 0.625 - 1, 0.625)
+                new Vector3d(1, 0.375, 0.625),
+                new Vector3d(1, 0.375, 0.375),
+                new Vector3d(1, 0.625, 0.375),
+                new Vector3d(1, 0.625, 0.625)
         ).setSprite(particles)
                 .setUCoords(15 / 16f, 15 / 16f, 1, 1)
                 .setVCoords(0, 1 / 16f, 1 / 16f, 0)
@@ -179,10 +179,7 @@ public class DynamicLogicModel implements IBakedModel {
 
         private List<BakedQuad> translated(IUnbakedModel model, Vector3f offset) {
             IModelTransform offsetTransform = new SimpleModelTransform(new TransformationMatrix(
-                    offset,
-                    null,
-                    null,
-                    null
+                    offset, null, null, null
             ));
             ResourceLocation dummy = new ResourceLocation(ControlEngineering.MODID, "dynamic");
             IBakedModel baked = model.bakeModel(

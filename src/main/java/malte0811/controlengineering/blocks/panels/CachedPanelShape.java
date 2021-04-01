@@ -5,25 +5,17 @@ import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import malte0811.controlengineering.util.ShapeUtils;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CachedPanelShape extends CachedShape<PanelTransform> {
-    protected CachedPanelShape() {
-        super((state, world, pos) -> {
-            ControlPanelTile base = PanelBlock.getBase(world, state, pos);
-            if (base != null) {
-                return base.getTransform();
-            } else {
-                return new PanelTransform(.5F, 0, PanelOrientation.DOWN_NORTH);
-            }
-        });
-    }
-
     @Override
     protected VoxelShape compute(PanelTransform transform) {
         return getPanelShape(transform);
@@ -38,6 +30,16 @@ public class CachedPanelShape extends CachedShape<PanelTransform> {
         return ShapeUtils.or(
                 parts.stream().map(ShapeUtils.transformFunc(transform.getPanelBottomToWorld()))
         );
+    }
+
+    @Override
+    protected PanelTransform getKey(BlockState state, IBlockReader world, BlockPos pos) {
+        ControlPanelTile base = PanelBlock.getBase(world, state, pos);
+        if (base != null) {
+            return base.getTransform();
+        } else {
+            return new PanelTransform(.5F, 0, PanelOrientation.DOWN_NORTH);
+        }
     }
 
     public static FromBlockFunction<VoxelShape> create() {

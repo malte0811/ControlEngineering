@@ -1,20 +1,24 @@
 package malte0811.controlengineering.blocks.shapes;
 
 import malte0811.controlengineering.util.Matrix4;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.IBlockReader;
 
 import java.util.List;
 
 public class HorizontalShapeProvider extends CachedShape<Direction> {
+    private final FromBlockFunction<Direction> getKey;
     private final VoxelShape baseShape;
 
     public HorizontalShapeProvider(FromBlockFunction<Direction> getKey, VoxelShape baseShape) {
-        super(getKey);
+        this.getKey = getKey;
         this.baseShape = baseShape;
     }
 
@@ -32,5 +36,10 @@ public class HorizontalShapeProvider extends CachedShape<Direction> {
             rotated = VoxelShapes.combine(rotated, rotatedBox, IBooleanFunction.OR);
         }
         return rotated.simplify();
+    }
+
+    @Override
+    protected Direction getKey(BlockState state, IBlockReader world, BlockPos pos) {
+        return getKey.apply(state, world, pos);
     }
 }

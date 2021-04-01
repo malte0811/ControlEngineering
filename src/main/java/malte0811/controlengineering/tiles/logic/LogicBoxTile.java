@@ -42,7 +42,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.server.ServerChunkProvider;
-import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
@@ -151,8 +150,7 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
         return compound;
     }
 
-    private CompoundNBT writeDynamicSyncNBT() {
-        CompoundNBT result = new CompoundNBT();
+    private CompoundNBT writeDynamicSyncNBT(CompoundNBT result) {
         result.putBoolean("hasClock", clock.getType().isActiveClock());
         return result;
     }
@@ -163,13 +161,9 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
         else
             clock = ClockTypes.NEVER.newInstance();
         requestModelDataUpdate();
-        TileEntity above = getWorld().getTileEntity(pos.up());
-        if (above != null) {
-            above.requestModelDataUpdate();
-            world.notifyBlockUpdate(
-                    pos.up(), above.getBlockState(), above.getBlockState(), Constants.BlockFlags.DEFAULT
-            );
-        }
+        world.notifyBlockUpdate(
+                pos, getBlockState(), getBlockState(), Constants.BlockFlags.DEFAULT
+        );
     }
 
     @Override
@@ -182,7 +176,7 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
     @Nonnull
     @Override
     public CompoundNBT getUpdateTag() {
-        CompoundNBT result = writeDynamicSyncNBT();
+        CompoundNBT result = writeDynamicSyncNBT(super.getUpdateTag());
         result.putInt("numTubes", numTubes);
         return result;
     }
@@ -190,7 +184,7 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, -1, writeDynamicSyncNBT());
+        return new SUpdateTileEntityPacket(pos, -1, writeDynamicSyncNBT(new CompoundNBT()));
     }
 
     @Override
@@ -201,16 +195,9 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
     @Nonnull
     @Override
     public IModelData getModelData() {
-        TileEntity below = getWorld().getTileEntity(pos.down());
-        if (below instanceof LogicBoxTile) {
-            LogicBoxTile box = (LogicBoxTile) below;
-            return new SinglePropertyModelData<>(
-                    new DynamicLogicModel.ModelData(box.numTubes, box.clock.getType().isActiveClock()),
-                    DynamicLogicModel.DATA
-            );
-        } else {
-            return EmptyModelData.INSTANCE;
-        }
+        return new SinglePropertyModelData<>(
+                new DynamicLogicModel.ModelData(numTubes, clock.getType().isActiveClock()), DynamicLogicModel.DATA
+        );
     }
 
     @Override
@@ -288,7 +275,7 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
             () -> Pair.of(getFacing(), isUpper()),
             f -> {
                 if (f.getSecond()) {
-                    return SingleShape.FULL_BLOCK;
+                    return new SingleShape(LogicBoxBlock.TOP_SHAPE.apply(f.getFirst()), $ -> ActionResultType.PASS);
                 } else {
                     return createSelectionShapes(f.getFirst(), this);
                 }
@@ -334,6 +321,8 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
             }
             return ActionResultType.SUCCESS;
         }));
-        return new ListShapes(VoxelShapes.fullCube(), new Matrix4(d), subshapes, $ -> ActionResultType.PASS);
+        return new ListShapes(
+                LogicBoxBlock.BOTTOM_SHAPE.apply(d), Matrix4.inverseFacing(d), subshapes, $ -> ActionResultType.PASS
+        );
     }
 }

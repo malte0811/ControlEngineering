@@ -25,6 +25,7 @@ import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.client.model.generators.VariantBlockStateBuilder.PartialBlockstate;
+import net.minecraftforge.client.model.generators.loaders.CompositeModelBuilder;
 import net.minecraftforge.client.model.generators.loaders.OBJLoaderBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -51,25 +52,27 @@ public class BlockstateGenerator extends BlockStateProvider {
         panelModel();
         horizontalRotated(CEBlocks.TELETYPE.get(), TeletypeBlock.FACING, obj("typewriter.obj"));
         horizontalRotated(CEBlocks.PANEL_CNC.get(), PanelCNCBlock.FACING, obj("panel_cnc.obj"));
+        BlockModelBuilder boxModel = models().getBuilder("combined_logic_box")
+                .customLoader(CompositeModelBuilder::begin)
+                .submodel("static", obj("logicbox/chassis.obj"))
+                .submodel("dynamic", models().getBuilder("dynamic_logic_box")
+                        .customLoader(LogicBoxBuilder::begin)
+                        .board(obj("logicbox/board.obj"))
+                        .tube(obj("logicbox/tube.obj"))
+                        .end())
+                .end();
         horizontalRotated(
-                CEBlocks.LOGIC_BOX.get(),
-                LogicBoxBlock.FACING,
-                obj("logicbox/chassis.obj"),
-                ImmutableMap.of(LogicBoxBlock.HEIGHT, 0)
+                CEBlocks.LOGIC_BOX.get(), LogicBoxBlock.FACING, boxModel, ImmutableMap.of(LogicBoxBlock.HEIGHT, 0)
         );
         horizontalRotated(
                 CEBlocks.LOGIC_BOX.get(),
                 LogicBoxBlock.FACING,
-                models().getBuilder("dynamic_logic_box")
-                        .customLoader(LogicBoxBuilder::begin)
-                        .board(obj("logicbox/board.obj"))
-                        .tube(obj("logicbox/tube.obj"))
-                        .end(),
+                EMPTY_MODEL.model,
                 ImmutableMap.of(LogicBoxBlock.HEIGHT, 1)
         );
     }
 
-    private ModelFile obj(String objFile) {
+    private BlockModelBuilder obj(String objFile) {
         return models()
                 .withExistingParent(objFile.replace('.', '_'), mcLoc("block"))
                 .customLoader(OBJLoaderBuilder::begin)

@@ -2,6 +2,8 @@ package malte0811.controlengineering.blocks.logic;
 
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.SidedColumnPlacement;
+import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
+import malte0811.controlengineering.blocks.shapes.HorizontalShapeProvider;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.logic.LogicBoxTile;
 import net.minecraft.block.Block;
@@ -20,12 +22,30 @@ public class LogicBoxBlock extends CEBlock<Direction, LogicBoxTile> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final IntegerProperty HEIGHT = IntegerProperty.create("height", 0, 1);
 
+    public static HorizontalShapeProvider BOTTOM_SHAPE = new HorizontalShapeProvider(
+            FromBlockFunction.getProperty(FACING),
+            VoxelShapes.or(
+                    VoxelShapes.create(0, 0, 0, 1, 0.6875, 1),
+                    VoxelShapes.create(0, 0.6875, 0, 1, 1, 1 / 16.),
+                    VoxelShapes.create(0, 0.6875, 0, 1 / 16., 1, 1),
+                    VoxelShapes.create(15 / 16., 0.6875, 0, 1, 1, 1)
+            )
+    );
+    public static HorizontalShapeProvider TOP_SHAPE = new HorizontalShapeProvider(
+            FromBlockFunction.getProperty(FACING),
+            VoxelShapes.or(
+                    VoxelShapes.create(0, 0, 0, 1, 15 / 16., 1 / 16.),
+                    VoxelShapes.create(0, 0, 0, 1 / 16., 15 / 16., 1),
+                    VoxelShapes.create(15 / 16., 0, 0, 1, 15 / 16., 1),
+                    VoxelShapes.create(0, 15 / 16., 0, 1, 1, 1)
+            )
+    );
+
     public LogicBoxBlock() {
         super(
                 Properties.create(Material.IRON).notSolid().setOpaque(($1, $2, $3) -> false),
                 new SidedColumnPlacement(FACING, HEIGHT),
-                // TODO proper shapes and caching
-                (state, world, pos) -> VoxelShapes.create(0.125, 0.125, 0.125, 0.875, 0.875, 0.875),
+                FromBlockFunction.either((state, world, pos) -> state.get(HEIGHT) > 0, BOTTOM_SHAPE, TOP_SHAPE),
                 CETileEntities.LOGIC_BOX
         );
     }

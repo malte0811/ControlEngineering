@@ -13,15 +13,10 @@ public abstract class CachedShape<Key> implements FromBlockFunction<VoxelShape>,
     private final Cache<Key, VoxelShape> shapeCache = CacheBuilder.newBuilder()
             .maximumSize(100)
             .build();
-    private final FromBlockFunction<Key> getKey;
-
-    protected CachedShape(FromBlockFunction<Key> getKey) {
-        this.getKey = getKey;
-    }
 
     @Override
     public VoxelShape apply(BlockState state, IBlockReader world, BlockPos pos) {
-        Key k = getKey.apply(state, world, pos);
+        Key k = getKey(state, world, pos);
         return apply(k);
     }
 
@@ -36,4 +31,6 @@ public abstract class CachedShape<Key> implements FromBlockFunction<VoxelShape>,
     }
 
     protected abstract VoxelShape compute(Key k);
+
+    protected abstract Key getKey(BlockState state, IBlockReader world, BlockPos pos);
 }
