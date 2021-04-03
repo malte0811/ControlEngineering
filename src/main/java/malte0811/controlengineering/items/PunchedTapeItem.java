@@ -1,7 +1,7 @@
 package malte0811.controlengineering.items;
 
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.gui.ViewTapeScreen;
+import malte0811.controlengineering.gui.tape.ViewTapeScreen;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.Constants;
 import malte0811.controlengineering.util.ItemNBTUtil;

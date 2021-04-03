@@ -1,4 +1,4 @@
-package malte0811.controlengineering.gui;
+package malte0811.controlengineering.gui.tape;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;

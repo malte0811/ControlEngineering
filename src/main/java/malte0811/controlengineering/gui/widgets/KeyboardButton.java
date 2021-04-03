@@ -3,7 +3,6 @@ package malte0811.controlengineering.gui.widgets;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.chars.CharConsumer;
-import malte0811.controlengineering.gui.Keyboard;
 import malte0811.controlengineering.gui.SubTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;

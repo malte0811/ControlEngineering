@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.logic.LogicBoxBlock;
+import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.tape.TeletypeBlock;
@@ -70,6 +71,20 @@ public class BlockstateGenerator extends BlockStateProvider {
                 EMPTY_MODEL.model,
                 ImmutableMap.of(LogicBoxBlock.HEIGHT, 1)
         );
+        for (LogicWorkbenchBlock.Offset offset : LogicWorkbenchBlock.Offset.values()) {
+            ModelFile model;
+            if (offset == LogicWorkbenchBlock.Offset.ORIGIN) {
+                model = obj("logicbox/workbench.obj");
+            } else {
+                model = EMPTY_MODEL.model;
+            }
+            horizontalRotated(
+                    CEBlocks.LOGIC_WORKBENCH.get(),
+                    LogicWorkbenchBlock.FACING,
+                    model,
+                    ImmutableMap.of(LogicWorkbenchBlock.OFFSET, offset)
+            );
+        }
     }
 
     private BlockModelBuilder obj(String objFile) {

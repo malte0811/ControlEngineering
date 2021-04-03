@@ -39,7 +39,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraftforge.client.model.data.IModelData;
@@ -82,7 +81,7 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
                 .addInputNet(INPUT_NETS.get(new BusSignalRef(0, 0)), SignalType.DIGITAL)
                 .addInputNet(INPUT_NETS.get(new BusSignalRef(0, 1)), SignalType.DIGITAL)
                 .addStage()
-                .addCell(Leafcells.BASIC_LOGIC.get(Pair.of(IBooleanFunction.AND, 2)).newInstance())
+                .addCell(Leafcells.AND2.newInstance())
                 .input(0, INPUT_NETS.get(new BusSignalRef(0, 0)))
                 .input(1, INPUT_NETS.get(new BusSignalRef(0, 1)))
                 .output(0, OUTPUT_NETS.get(new BusSignalRef(0, 2)))

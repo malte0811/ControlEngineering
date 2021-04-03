@@ -5,7 +5,7 @@ import malte0811.controlengineering.blocks.placement.HorizontalPlacement;
 import malte0811.controlengineering.blocks.shapes.CachedShape;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.HorizontalShapeProvider;
-import malte0811.controlengineering.gui.TeletypeContainer;
+import malte0811.controlengineering.gui.tape.TeletypeContainer;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.tape.TeletypeTile;
 import net.minecraft.block.Block;

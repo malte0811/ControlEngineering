@@ -46,6 +46,7 @@ public class CEItems {
     private static final RegistryObject<CEBlockItem<Direction>> TELETYPE = blockItemCE(CEBlocks.TELETYPE);
     private static final RegistryObject<CEBlockItem<Direction>> PANEL_CNC = blockItemCE(CEBlocks.PANEL_CNC);
     private static final RegistryObject<CEBlockItem<Direction>> LOGIC_BOX = blockItemCE(CEBlocks.LOGIC_BOX);
+    private static final RegistryObject<CEBlockItem<Direction>> LOGIC_WORKBENCH = blockItemCE(CEBlocks.LOGIC_WORKBENCH);
 
     @Nonnull
     public static BusCoilItem getBusCoil(int width) {

@@ -1,6 +1,8 @@
-package malte0811.controlengineering.gui;
+package malte0811.controlengineering.gui.tape;
 
 import malte0811.controlengineering.blocks.CEBlocks;
+import malte0811.controlengineering.gui.CEContainers;
+import malte0811.controlengineering.gui.ContainerScreenManager;
 import malte0811.controlengineering.tiles.tape.TeletypeTile;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;

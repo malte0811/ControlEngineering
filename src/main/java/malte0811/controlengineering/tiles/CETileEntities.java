@@ -7,6 +7,7 @@ import malte0811.controlengineering.tiles.bus.BusInterfaceTile;
 import malte0811.controlengineering.tiles.bus.BusRelayTile;
 import malte0811.controlengineering.tiles.bus.LineAccessTile;
 import malte0811.controlengineering.tiles.logic.LogicBoxTile;
+import malte0811.controlengineering.tiles.logic.LogicWorkbenchTile;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import malte0811.controlengineering.tiles.panels.PanelCNCTile;
 import malte0811.controlengineering.tiles.tape.TeletypeTile;
@@ -58,6 +59,11 @@ public class CETileEntities {
     public static RegistryObject<TileEntityType<LogicBoxTile>> LOGIC_BOX = REGISTER.register(
             "logic_box",
             createTileType(LogicBoxTile::new, CEBlocks.LOGIC_BOX)
+    );
+
+    public static RegistryObject<TileEntityType<LogicWorkbenchTile>> LOGIC_WORKBENCH = REGISTER.register(
+            "logic_workbench",
+            createTileType(LogicWorkbenchTile::new, CEBlocks.LOGIC_WORKBENCH)
     );
 
     private static <T extends TileEntity> Supplier<TileEntityType<T>> createTileType(

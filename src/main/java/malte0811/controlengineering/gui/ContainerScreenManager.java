@@ -1,5 +1,7 @@
 package malte0811.controlengineering.gui;
 
+import malte0811.controlengineering.gui.tape.TeletypeContainer;
+import malte0811.controlengineering.gui.tape.TeletypeScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.network.PacketBuffer;

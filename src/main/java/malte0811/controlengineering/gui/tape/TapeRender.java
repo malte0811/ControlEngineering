@@ -1,4 +1,4 @@
-package malte0811.controlengineering.gui;
+package malte0811.controlengineering.gui.tape;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.matrix.MatrixStack;

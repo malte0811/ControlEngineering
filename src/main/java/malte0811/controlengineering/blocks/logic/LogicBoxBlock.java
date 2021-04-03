@@ -1,7 +1,7 @@
 package malte0811.controlengineering.blocks.logic;
 
 import malte0811.controlengineering.blocks.CEBlock;
-import malte0811.controlengineering.blocks.placement.SidedColumnPlacement;
+import malte0811.controlengineering.blocks.placement.HorizontalStructurePlacement;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.HorizontalShapeProvider;
 import malte0811.controlengineering.tiles.CETileEntities;
@@ -44,7 +44,7 @@ public class LogicBoxBlock extends CEBlock<Direction, LogicBoxTile> {
     public LogicBoxBlock() {
         super(
                 Properties.create(Material.IRON).notSolid().setOpaque(($1, $2, $3) -> false),
-                new SidedColumnPlacement(FACING, HEIGHT),
+                HorizontalStructurePlacement.column(FACING, HEIGHT),
                 FromBlockFunction.either((state, world, pos) -> state.get(HEIGHT) > 0, BOTTOM_SHAPE, TOP_SHAPE),
                 CETileEntities.LOGIC_BOX
         );

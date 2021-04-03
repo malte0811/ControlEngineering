@@ -1,6 +1,7 @@
 package malte0811.controlengineering.gui;
 
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.gui.tape.TeletypeContainer;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.network.PacketBuffer;

@@ -1,6 +1,6 @@
 package malte0811.controlengineering.network;
 
-import malte0811.controlengineering.gui.TeletypeContainer;
+import malte0811.controlengineering.gui.tape.TeletypeContainer;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
