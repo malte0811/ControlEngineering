@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class SchematicNet {
-    private static final int WIRE_COLOR = 0xfff0aa2a;
+    public static final int WIRE_COLOR = 0xfff0aa2a;
 
     private final List<WireSegment> segments;
 

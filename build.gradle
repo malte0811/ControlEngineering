@@ -70,7 +70,6 @@ minecraft {
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', ''
-            property 'fml.earlyprogresswindow', 'false'
             property 'mixin.env.disableRefMap', 'true'
 
             // Recommended logging level for the console
@@ -107,7 +106,6 @@ minecraft {
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
-            property 'fml.earlyprogresswindow', 'false'
             property 'mixin.env.disableRefMap', 'true'
             ideaModule project.name+".datagen"
 

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,5 +54,15 @@ public class Schematic {
         for (SchematicNet net : nets) {
             net.render(stack);
         }
+    }
+
+    @Nullable
+    public PlacedSymbol getSymbolAt(double actualMouseX, double actualMouseY) {
+        for (PlacedSymbol symbol : symbols) {
+            if (symbol.containsPoint(actualMouseX, actualMouseY)) {
+                return symbol;
+            }
+        }
+        return null;
     }
 }

@@ -6,6 +6,7 @@ import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
+import malte0811.controlengineering.logic.schematic.symbol.IOSymbol;
 import malte0811.controlengineering.util.Constants;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
@@ -56,12 +57,15 @@ public class LangGenerator extends LanguageProvider {
 
         add(Leafcells.NOT, "Inverter");
         add(Leafcells.RS_LATCH, "RS-latch");
+        add(Leafcells.SCHMITT_TRIGGER, "Schmitt-Trigger");
     }
 
     private void addGuiStrings() {
         add(BusSignalSelector.COLOR_KEY, "Signal color");
         add(BusSignalSelector.BUS_LINE_INDEX_KEY, "Bus line %d");
         add(BusSignalSelector.DONE_KEY, "Done");
+        add(IOSymbol.INPUT_KEY, "Input pin");
+        add(IOSymbol.OUTPUT_KEY, "Output pin");
     }
 
     private void add(LeafcellType<?> type, String name) {

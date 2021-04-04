@@ -2,9 +2,10 @@ package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.serialization.Codec;
-import malte0811.controlengineering.util.Vec2i;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
+import net.minecraft.util.text.ITextComponent;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -18,15 +19,17 @@ public abstract class SchematicSymbol<State> extends TypedRegistryEntry<State> {
         return new SymbolInstance<>(this, getInitialState());
     }
 
-    public abstract void render(MatrixStack transform, int x, int y, State state);
+    public abstract void render(MatrixStack transform, int x, int y, @Nullable State state);
 
     public abstract int getXSize();
 
     public abstract int getYSize();
 
-    public abstract List<Vec2i> getInputPins();
+    public abstract List<SymbolPin> getInputPins();
 
-    public abstract List<Vec2i> getOutputPins();
+    public abstract List<SymbolPin> getOutputPins();
 
     public abstract void createInstanceWithUI(Consumer<? super SymbolInstance<State>> onDone);
+
+    public abstract ITextComponent getDesc();
 }

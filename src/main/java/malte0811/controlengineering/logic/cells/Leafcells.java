@@ -1,10 +1,7 @@
 package malte0811.controlengineering.logic.cells;
 
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.logic.cells.impl.AssociativeFunctionCell;
-import malte0811.controlengineering.logic.cells.impl.InvertedAssociativeCell;
-import malte0811.controlengineering.logic.cells.impl.NotCell;
-import malte0811.controlengineering.logic.cells.impl.RSLatch;
+import malte0811.controlengineering.logic.cells.impl.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 
@@ -33,6 +30,7 @@ public class Leafcells {
     public static final AssociativeFunctionCell NOR3 = new InvertedAssociativeCell(3, IBooleanFunction.OR, false, 1);
     public static final NotCell NOT = new NotCell();
     public static final RSLatch RS_LATCH = new RSLatch();
+    public static final SchmittTrigger SCHMITT_TRIGGER = new SchmittTrigger();
 
     public static void init() {
         register("and2", AND2);
@@ -47,6 +45,7 @@ public class Leafcells {
         register("nor3", NOR3);
         register("not", NOT);
         register("rs_latch", RS_LATCH);
+        register("schmitt_trigger", SCHMITT_TRIGGER);
     }
 
     private static <T extends LeafcellType<?>> T register(String name, T type) {

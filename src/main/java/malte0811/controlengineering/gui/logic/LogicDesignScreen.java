@@ -10,6 +10,7 @@ import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.util.Vec2i;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 import javax.annotation.Nonnull;
@@ -49,16 +50,17 @@ public class LogicDesignScreen extends StackedScreen {
 
     @Override
     protected void renderForeground(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        matrixStack.push();
+        matrixStack.translate(width / 2. + centerX, height / 2. + centerY, 0);
+        matrixStack.scale(currentScale, currentScale, 1);
+
         final double scale = minecraft.getMainWindow().getGuiScaleFactor();
         RenderSystem.enableScissor(
                 (int) (TOTAL_BORDER * scale), (int) (TOTAL_BORDER * scale),
                 (int) ((width - 2 * TOTAL_BORDER) * scale), (int) ((height - 2 * TOTAL_BORDER) * scale)
         );
-        double actualMouseX = getMousePosition(mouseX, centerX, width);
-        double actualMouseY = getMousePosition(mouseY, centerY, height);
-        matrixStack.push();
-        matrixStack.translate(width / 2. + centerX, height / 2. + centerY, 0);
-        matrixStack.scale(currentScale, currentScale, 1);
+        final double actualMouseX = getMousePosition(mouseX, centerX, width);
+        final double actualMouseY = getMousePosition(mouseY, centerY, height);
         schematic.render(matrixStack);
         PlacedSymbol placed = getPlacingSymbol(actualMouseX, actualMouseY);
         if (placed != null) {
@@ -68,8 +70,14 @@ public class LogicDesignScreen extends StackedScreen {
         if (placedWire != null) {
             placedWire.renderWithoutBlobs(matrixStack, 0xff785515);
         }
-        matrixStack.pop();
         RenderSystem.disableScissor();
+
+        matrixStack.pop();
+        PlacedSymbol hovered = schematic.getSymbolAt(actualMouseX, actualMouseY);
+        if (hovered != null) {
+            ITextComponent toShow = hovered.getSymbol().getDesc();
+            renderTooltip(matrixStack, toShow, mouseX, mouseY);
+        }
     }
 
     private double mouseXDown;
@@ -96,6 +104,7 @@ public class LogicDesignScreen extends StackedScreen {
         if (clickConsumedAsDrag) {
             return false;
         }
+        clickConsumedAsDrag = true;
         final double posX = getMousePosition(mouseX, centerX, width);
         final double posY = getMousePosition(mouseY, centerY, height);
         PlacedSymbol placed = getPlacingSymbol(posX, posY);
