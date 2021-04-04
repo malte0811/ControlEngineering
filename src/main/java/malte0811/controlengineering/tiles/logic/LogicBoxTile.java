@@ -28,6 +28,7 @@ import malte0811.controlengineering.util.Clearable;
 import malte0811.controlengineering.util.ItemUtil;
 import malte0811.controlengineering.util.Matrix4;
 import malte0811.controlengineering.util.energy.CEEnergyStorage;
+import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -131,7 +132,7 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
     @Override
     public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
         super.read(state, nbt);
-        clock = ClockInstance.fromNBT(nbt.getCompound("clock"));
+        clock = Codecs.readOrNull(ClockInstance.CODEC, nbt.getCompound("clock"));
         if (clock == null) {
             clock = ClockTypes.NEVER.newInstance();
         }
@@ -143,7 +144,7 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
     @Override
     public CompoundNBT write(@Nonnull CompoundNBT compound) {
         compound = super.write(compound);
-        compound.put("clock", clock.toNBT());
+        compound.put("clock", Codecs.encode(ClockInstance.CODEC, clock));
         compound.put("circuit", circuit.toNBT());
         compound.put("energy", energy.writeNBT());
         return compound;

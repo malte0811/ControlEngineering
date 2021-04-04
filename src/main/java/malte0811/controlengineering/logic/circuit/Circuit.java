@@ -1,6 +1,7 @@
 package malte0811.controlengineering.logic.circuit;
 
 import com.google.common.base.Preconditions;
+import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
@@ -24,6 +25,9 @@ public class Circuit {
     private static final String CURRENT_VALUE_KEY = "current";
     private static final String IS_INPUT_KEY = "isInput";
     private static final String PINS_KEY = "pins";
+    private static final Codec<List<List<LeafcellInstance<?>>>> CELLS_CODEC = Codec.list(Codec.list(
+            LeafcellInstance.CODEC
+    ));
 
     private final List<List<LeafcellInstance<?>>> cellsByStage;
     private final Object2DoubleMap<NetReference> allNetValues = new Object2DoubleOpenHashMap<>();
@@ -31,19 +35,8 @@ public class Circuit {
     private final Map<PinReference, NetReference> pinToNet;
 
     public Circuit(CompoundNBT nbt) {
-        cellsByStage = new ArrayList<>();
         ListNBT stages = nbt.getList(STAGES_KEY, Constants.NBT.TAG_LIST);
-        for (int stage = 0; stage < stages.size(); ++stage) {
-            ListNBT stageNBT = stages.getList(stage);
-            List<LeafcellInstance<?>> cells = new ArrayList<>(stageNBT.size());
-            for (int cell = 0; cell < stageNBT.size(); cell++) {
-                LeafcellInstance<?> newCell = LeafcellInstance.fromNBT(stageNBT.getCompound(cell));
-                if (newCell != null) {
-                    cells.add(newCell);
-                }
-            }
-            cellsByStage.add(cells);
-        }
+        cellsByStage = Codecs.readOrNull(CELLS_CODEC, stages);
         pinToNet = new HashMap<>();
         CompoundNBT netsNBT = nbt.getCompound(NETS_KEY);
         for (String netName : netsNBT.keySet()) {
@@ -92,14 +85,7 @@ public class Circuit {
     }
 
     public CompoundNBT toNBT() {
-        ListNBT stages = new ListNBT();
-        for (List<LeafcellInstance<?>> stage : cellsByStage) {
-            ListNBT cellsInStage = new ListNBT();
-            for (LeafcellInstance<?> cell : stage) {
-                cellsInStage.add(cell.toNBT());
-            }
-            stages.add(cellsInStage);
-        }
+        INBT stages = Codecs.encode(CELLS_CODEC, cellsByStage);
         Map<NetReference, List<PinReference>> pinsByNet = new HashMap<>();
         for (Map.Entry<PinReference, NetReference> entry : pinToNet.entrySet()) {
             pinsByNet.computeIfAbsent(entry.getValue(), $ -> new ArrayList<>()).add(entry.getKey());

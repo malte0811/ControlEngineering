@@ -1,12 +1,13 @@
 package malte0811.controlengineering.util.typereg;
 
-import malte0811.controlengineering.util.serialization.Codecs;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nullable;
-import java.util.Optional;
 import java.util.function.BiFunction;
 
 // Not "logically" abstract, but the using the class itself causes general issues with the type system
@@ -27,33 +28,30 @@ public abstract class TypedInstance<State, Type extends TypedRegistryEntry<State
         return currentState;
     }
 
-    public final CompoundNBT toNBT() {
-        CompoundNBT result = new CompoundNBT();
-        INBT stateNBT = Codecs.encode(type.getStateCodec(), currentState);
-        result.put("state", stateNBT);
-        result.putString("type", type.getRegistryName().toString());
-        return result;
+    DataResult<Dynamic<?>> serializeState() {
+        return getType().getStateCodec().encodeStart(NBTDynamicOps.INSTANCE, getCurrentState())
+                .map(nbt -> new Dynamic<>(NBTDynamicOps.INSTANCE, nbt));
     }
 
-    @Nullable
-    protected static <T extends TypedRegistryEntry<?>, I extends TypedInstance<?, ? extends T>>
-    I fromNBT(CompoundNBT nbt, TypedRegistry<T> registry, BiFunction<T, Object, I> make) {
-        if (nbt == null) {
-            return null;
-        }
-        ResourceLocation name = ResourceLocation.tryCreate(nbt.getString("type"));
-        if (name == null) {
-            return null;
-        }
-        T type = registry.get(name);
-        if (type == null) {
-            return null;
-        }
-        Optional<?> state = Codecs.read(type.getStateCodec(), nbt.get("state")).result();
-        if (state.isPresent()) {
-            return make.apply(type, state.get());
-        } else {
-            return null;
-        }
+    protected static <I extends TypedInstance<?, ?>, T extends TypedRegistryEntry<?>>
+    Codec<I> makeCodec(TypedRegistry<T> registry, BiFunction<T, Object, I> makeUncheck) {
+        Codec<Pair<ResourceLocation, Dynamic<?>>> baseCodec = RecordCodecBuilder.create(
+                inst -> inst.group(
+                        ResourceLocation.CODEC.fieldOf("key").forGetter(Pair::getFirst),
+                        Codec.PASSTHROUGH.fieldOf("data").forGetter(Pair::getSecond)
+                ).apply(inst, Pair::of)
+        );
+        return baseCodec.flatXmap(
+                p -> {
+                    T entry = registry.get(p.getFirst());
+                    if (entry == null) {
+                        return DataResult.error("No such entry");
+                    } else {
+                        return entry.getStateCodec().decode(p.getSecond())
+                                .map(p2 -> makeUncheck.apply(entry, p2.getFirst()));
+                    }
+                },
+                t -> t.serializeState().map(d -> Pair.of(t.getType().getRegistryName(), d))
+        );
     }
 }
