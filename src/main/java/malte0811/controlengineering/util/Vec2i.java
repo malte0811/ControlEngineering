@@ -32,4 +32,8 @@ public class Vec2i {
                 .add("y=" + y)
                 .toString();
     }
+
+    public Vec2i add(Vec2i other) {
+        return new Vec2i(x + other.x, y + other.y);
+    }
 }

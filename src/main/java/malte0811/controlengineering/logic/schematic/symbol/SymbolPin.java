@@ -3,6 +3,8 @@ package malte0811.controlengineering.logic.schematic.symbol;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.util.Vec2i;
 
+import java.util.Objects;
+
 public class SymbolPin {
     private final Vec2i position;
     private final SignalType type;
@@ -30,5 +32,18 @@ public class SymbolPin {
 
     public SignalType getType() {
         return type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SymbolPin symbolPin = (SymbolPin) o;
+        return position.equals(symbolPin.position) && type == symbolPin.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(position, type);
     }
 }

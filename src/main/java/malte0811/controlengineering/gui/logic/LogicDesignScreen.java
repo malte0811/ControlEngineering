@@ -68,7 +68,8 @@ public class LogicDesignScreen extends StackedScreen {
         }
         WireSegment placedWire = getPlacingSegment(actualMouseX, actualMouseY);
         if (placedWire != null) {
-            placedWire.renderWithoutBlobs(matrixStack, 0xff785515);
+            final int color = schematic.canAdd(placedWire) ? 0xff785515 : 0xffff5515;
+            placedWire.renderWithoutBlobs(matrixStack, color);
         }
         RenderSystem.disableScissor();
 
@@ -115,11 +116,13 @@ public class LogicDesignScreen extends StackedScreen {
         } else {
             WireSegment placedWire = getPlacingSegment(posX, posY);
             if (placedWire != null) {
-                schematic.addWire(placedWire);
-                if (placedWire.getEnd().equals(currentWireStart)) {
-                    currentWireStart = placedWire.getStart();
-                } else {
-                    currentWireStart = placedWire.getEnd();
+                if (schematic.canAdd(placedWire)) {
+                    schematic.addWire(placedWire);
+                    if (placedWire.getEnd().equals(currentWireStart)) {
+                        currentWireStart = placedWire.getStart();
+                    } else {
+                        currentWireStart = placedWire.getEnd();
+                    }
                 }
             } else {
                 currentWireStart = new Vec2i(floor(posX), floor(posY));
