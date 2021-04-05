@@ -1,9 +1,12 @@
 package malte0811.controlengineering.blocks.shapes;
 
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
+
+import java.util.Map;
 
 @FunctionalInterface
 public interface FromBlockFunction<T> {
@@ -16,13 +19,18 @@ public interface FromBlockFunction<T> {
     static <T> FromBlockFunction<T> either(
             FromBlockFunction<Boolean> useSecond, FromBlockFunction<T> first, FromBlockFunction<T> second
     ) {
-        return (state, world, pos) -> {
-            if (useSecond.apply(state, world, pos)) {
-                return second.apply(state, world, pos);
-            } else {
-                return first.apply(state, world, pos);
-            }
-        };
+        return switchOn(useSecond, ImmutableMap.of(false, first, true, second));
+    }
+
+    static <T, T2 extends Comparable<T2>>
+    FromBlockFunction<T> switchOnProperty(Property<T2> prop, Map<T2, FromBlockFunction<T>> subFunctions) {
+        return switchOn((state, world, pos) -> state.get(prop), subFunctions);
+    }
+
+    static <T, T2 extends Comparable<T2>>
+    FromBlockFunction<T> switchOn(FromBlockFunction<T2> prop, Map<T2, FromBlockFunction<T>> subFunctions) {
+        return (state, world, pos) -> subFunctions.get(prop.apply(state, world, pos))
+                .apply(state, world, pos);
     }
 
     static <T> FromBlockFunction<T> constant(T value) {

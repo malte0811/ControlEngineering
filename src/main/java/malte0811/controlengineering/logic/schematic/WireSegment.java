@@ -3,6 +3,8 @@ package malte0811.controlengineering.logic.schematic;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.util.Vec2i;
 import net.minecraft.client.gui.AbstractGui;
 
@@ -11,6 +13,14 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 public class WireSegment {
+    public static final Codec<WireSegment> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    Vec2i.CODEC.fieldOf("start").forGetter(WireSegment::getStart),
+                    Codec.INT.fieldOf("length").forGetter(WireSegment::getLength),
+                    WireAxis.CODEC.fieldOf("axis").forGetter(WireSegment::getAxis)
+            ).apply(inst, WireSegment::new)
+    );
+
     private final Vec2i start;
     private final int length;
     private final WireAxis axis;
@@ -27,6 +37,14 @@ public class WireSegment {
 
     public Vec2i getEnd() {
         return axis.addToCoord(start, length);
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public WireAxis getAxis() {
+        return axis;
     }
 
     public boolean containsClosed(Vec2i point) {
@@ -93,6 +111,8 @@ public class WireSegment {
 
     public enum WireAxis {
         X, Y;
+
+        public static final Codec<WireAxis> CODEC = Codec.BOOL.xmap(b -> b ? X : Y, a -> a == X);
 
         public Vec2i addToCoord(Vec2i fixed, int inAxisCoord) {
             if (this == X) {

@@ -55,4 +55,8 @@ public class Vec2d {
     public double get(int coord) {
         return coord == 1 ? y : x;
     }
+
+    public Vec2i floor() {
+        return new Vec2i(MathHelper.floor(x), MathHelper.floor(y));
+    }
 }

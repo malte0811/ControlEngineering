@@ -3,21 +3,37 @@ package malte0811.controlengineering.logic.schematic;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
+import malte0811.controlengineering.util.Vec2d;
 import malte0811.controlengineering.util.Vec2i;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Schematic {
-    private final List<PlacedSymbol> symbols = new ArrayList<>();
-    private final List<SchematicNet> nets = new ArrayList<>();
+    public static final Codec<Schematic> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    Codec.list(PlacedSymbol.CODEC).fieldOf("symbols").forGetter(s -> s.symbols),
+                    Codec.list(SchematicNet.CODEC).fieldOf("nets").forGetter(s -> s.nets)
+            ).apply(inst, Schematic::new)
+    );
+
+    private final List<PlacedSymbol> symbols;
+    private final List<SchematicNet> nets;
+
+    private Schematic(List<PlacedSymbol> symbols, List<SchematicNet> nets) {
+        this.symbols = new ArrayList<>(symbols);
+        this.nets = new ArrayList<>(nets);
+    }
+
+    public Schematic() {
+        this(ImmutableList.of(), ImmutableList.of());
+    }
 
     public void addSymbol(PlacedSymbol newSymbol) {
         symbols.add(newSymbol);
@@ -83,6 +99,24 @@ public class Schematic {
         return true;
     }
 
+    public boolean removeOneContaining(Vec2d mouse) {
+        for (Iterator<SchematicNet> iterator = nets.iterator(); iterator.hasNext(); ) {
+            SchematicNet net = iterator.next();
+            if (net.removeOneContaining(mouse.floor())) {
+                iterator.remove();
+                nets.addAll(net.splitComponents());
+                return true;
+            }
+        }
+        for (Iterator<PlacedSymbol> iterator = symbols.iterator(); iterator.hasNext(); ) {
+            if (iterator.next().containsPoint(mouse)) {
+                iterator.remove();
+                return true;
+            }
+        }
+        return false;
+    }
+
     private IntSet getConnectedIndices(WireSegment toAdd) {
         IntSet indices = new IntArraySet();
         for (int i = 0; i < nets.size(); ++i) {
@@ -100,16 +134,16 @@ public class Schematic {
         for (PlacedSymbol s : symbols) {
             s.render(stack);
         }
-        // TODO highlight nets under cursor
+        // TODO highlight nets under cursor?
         for (SchematicNet net : nets) {
             net.render(stack);
         }
     }
 
     @Nullable
-    public PlacedSymbol getSymbolAt(double actualMouseX, double actualMouseY) {
+    public PlacedSymbol getSymbolAt(Vec2d pos) {
         for (PlacedSymbol symbol : symbols) {
-            if (symbol.containsPoint(actualMouseX, actualMouseY)) {
+            if (symbol.containsPoint(pos)) {
                 return symbol;
             }
         }

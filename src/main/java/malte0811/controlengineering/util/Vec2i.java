@@ -1,9 +1,18 @@
 package malte0811.controlengineering.util;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public class Vec2i {
+    public static final Codec<Vec2i> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    Codec.INT.fieldOf("x").forGetter(v -> v.x),
+                    Codec.INT.fieldOf("y").forGetter(v -> v.y)
+            ).apply(inst, Vec2i::new)
+    );
     public final int x;
     public final int y;
 

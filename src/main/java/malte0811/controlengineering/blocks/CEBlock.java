@@ -147,4 +147,9 @@ public abstract class CEBlock<PlacementData, Tile extends TileEntity> extends Bl
     public boolean hasTileEntity(BlockState state) {
         return this.tileType != null;
     }
+
+    public BlockPos getMainBlock(BlockState state, TileEntity te) {
+        Pair<PlacementData, BlockPos> data = placementBehavior.getPlacementDataAndOffset(state, te);
+        return te.getPos().subtract(data.getSecond());
+    }
 }

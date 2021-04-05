@@ -2,6 +2,7 @@ package malte0811.controlengineering.logic.schematic;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
@@ -11,11 +12,18 @@ import malte0811.controlengineering.util.Vec2i;
 import net.minecraft.client.gui.AbstractGui;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SchematicNet {
     public static final int WIRE_COLOR = 0xfff0aa2a;
+    public static final Codec<SchematicNet> CODEC = Codec.list(WireSegment.CODEC)
+            .xmap(SchematicNet::new, s -> s.segments);
 
     private final List<WireSegment> segments;
+
+    public SchematicNet() {
+        this(ImmutableList.of());
+    }
 
     public SchematicNet(List<WireSegment> wires) {
         this.segments = new ArrayList<>(wires);
@@ -91,6 +99,47 @@ public class SchematicNet {
     private boolean containsPin(PlacedSymbol symbol, SymbolPin pin) {
         final Vec2i actualPinPos = pin.getPosition().add(symbol.getPosition());
         return contains(actualPinPos);
+    }
+
+    public boolean removeOneContaining(Vec2i point) {
+        for (Iterator<WireSegment> iterator = segments.iterator(); iterator.hasNext(); ) {
+            if (iterator.next().containsClosed(point)) {
+                iterator.remove();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<SchematicNet> splitComponents() {
+        Map<Vec2i, SchematicNet> indexForPoint = new HashMap<>();
+        for (WireSegment segment : segments) {
+            final SchematicNet first = indexForPoint.get(segment.getStart());
+            final SchematicNet second = indexForPoint.get(segment.getEnd());
+            final SchematicNet finalNet;
+            if (first == null && second == null) {
+                // New net
+                finalNet = new SchematicNet();
+            } else if (first == null || second == null || first == second) {
+                finalNet = first != null ? first : second;
+            } else {
+                finalNet = first;
+                for (WireSegment segmentToMove : second.segments) {
+                    first.addSegment(segmentToMove);
+                    for (Vec2i end : segmentToMove.getEnds()) {
+                        indexForPoint.put(end, finalNet);
+                    }
+                }
+            }
+            finalNet.addSegment(segment);
+            for (Vec2i end : segment.getEnds()) {
+                indexForPoint.put(end, finalNet);
+            }
+        }
+        return indexForPoint.values()
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public static class ConnectedPin {

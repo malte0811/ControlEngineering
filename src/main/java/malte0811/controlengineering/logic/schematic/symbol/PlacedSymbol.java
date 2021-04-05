@@ -1,12 +1,22 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import malte0811.controlengineering.util.Vec2d;
 import malte0811.controlengineering.util.Vec2i;
 import net.minecraft.client.gui.AbstractGui;
 
 import java.util.List;
 
 public class PlacedSymbol {
+    public static final Codec<PlacedSymbol> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    Vec2i.CODEC.fieldOf("pos").forGetter(PlacedSymbol::getPosition),
+                    SymbolInstance.CODEC.fieldOf("symbol").forGetter(PlacedSymbol::getSymbol)
+            ).apply(inst, PlacedSymbol::new)
+    );
+
     private final Vec2i pos;
     private final SymbolInstance<?> symbol;
 
@@ -39,8 +49,8 @@ public class PlacedSymbol {
                 (pos.y + symbol.getYSize() < other.pos.y || other.pos.y + other.getSymbol().getYSize() < pos.y);
     }
 
-    public boolean containsPoint(double x, double y) {
-        return x >= pos.x && x <= pos.x + symbol.getXSize() && y >= pos.y && y <= pos.y + symbol.getYSize();
+    public boolean containsPoint(Vec2d p) {
+        return p.x >= pos.x && p.x <= pos.x + symbol.getXSize() && p.y >= pos.y && p.y <= pos.y + symbol.getYSize();
     }
 
     private void drawPins(MatrixStack stack, List<SymbolPin> pinPositions, int color) {
