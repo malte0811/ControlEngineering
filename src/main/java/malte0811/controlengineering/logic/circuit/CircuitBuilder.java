@@ -92,6 +92,10 @@ public class CircuitBuilder {
                 for (Map.Entry<PinReference, NetReference> e : cellPins.entrySet()) {
                     if (e.getKey().isOutput()) {
                         outputNets.add(e.getValue());
+                        final Pin cellPin = cell.getType().getOutputPins().get(e.getKey().getPin());
+                        if (cellPin.getType() == SignalType.ANALOG) {
+                            analogOutputNets.add(e.getValue());
+                        }
                     }
                 }
                 return StageBuilder.this;

@@ -71,4 +71,8 @@ public class CellSymbol extends SchematicSymbol<Unit> {
     public ITextComponent getDesc() {
         return new TranslationTextComponent(getTranslationKey(type));
     }
+
+    public LeafcellType<?> getCellType() {
+        return type;
+    }
 }

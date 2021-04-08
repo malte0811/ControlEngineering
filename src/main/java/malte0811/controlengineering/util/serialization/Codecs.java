@@ -10,6 +10,9 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.Direction;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 public class Codecs {
     public static final Codec<INBT> INBT_CODEC = Codec.PASSTHROUGH.flatXmap(
             dyn -> DataResult.success(dyn.convert(NBTDynamicOps.INSTANCE).getValue()),
@@ -20,6 +23,16 @@ public class Codecs {
             i -> DirectionUtils.VALUES[i],
             Direction::ordinal
     );
+
+    public static <K, V> Codec<Map<K, V>> codecForMap(Codec<K> key, Codec<V> value) {
+        return Codec.list(Codec.pair(key, value))
+                .xmap(
+                        l -> l.stream().collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)),
+                        m -> m.entrySet().stream()
+                                .map(e -> Pair.of(e.getKey(), e.getValue()))
+                                .collect(Collectors.toList())
+                );
+    }
 
     public static <T> DataResult<T> read(Codec<T> codec, CompoundNBT in, String subName) {
         return read(codec, in.get(subName));
@@ -40,5 +53,14 @@ public class Codecs {
 
     public static <T> T readOrNull(Codec<T> codec, INBT pinNBT) {
         return read(codec, pinNBT).result().orElse(null);
+    }
+
+    public static <T> T readOrThrow(Codec<T> codec, INBT data) {
+        T result = readOrNull(codec, data);
+        if (result == null) {
+            throw new RuntimeException("Failed to read from " + data);
+        } else {
+            return result;
+        }
     }
 }

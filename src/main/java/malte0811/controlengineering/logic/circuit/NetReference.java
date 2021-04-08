@@ -1,8 +1,12 @@
 package malte0811.controlengineering.logic.circuit;
 
+import com.mojang.serialization.Codec;
+
 import java.util.Objects;
 
 public class NetReference {
+    public static final Codec<NetReference> CODEC = Codec.STRING.xmap(NetReference::new, NetReference::getId);
+
     private final String id;
 
     public NetReference(String id) {

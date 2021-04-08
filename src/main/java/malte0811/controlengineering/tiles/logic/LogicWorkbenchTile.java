@@ -9,16 +9,19 @@ import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.CachedValue;
+import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemUseContext;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 
+import javax.annotation.Nonnull;
+
 public class LogicWorkbenchTile extends TileEntity implements SelectionShapeOwner {
-    // TODO save
     private Schematic schematic = new Schematic();
 
     public LogicWorkbenchTile() {
@@ -47,9 +50,25 @@ public class LogicWorkbenchTile extends TileEntity implements SelectionShapeOwne
         return shapes.get();
     }
 
+    @Nonnull
+    @Override
+    public CompoundNBT write(@Nonnull CompoundNBT compound) {
+        compound.put("schematic", Codecs.encode(Schematic.CODEC, schematic));
+        return super.write(compound);
+    }
+
+    @Override
+    public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
+        super.read(state, nbt);
+        schematic = Codecs.readOrNull(Schematic.CODEC, nbt.get("schematic"));
+        if (schematic == null) {
+            schematic = new Schematic();
+        }
+    }
+
     private ActionResultType handleMainClick(ItemUseContext ctx) {
         if (world.isRemote) {
-            //TODO sync back to server
+            //TODO open on server, implement sync
             Minecraft.getInstance().displayGuiScreen(new LogicDesignScreen(schematic));
         }
         return ActionResultType.SUCCESS;

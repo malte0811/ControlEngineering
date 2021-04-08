@@ -3,10 +3,12 @@ package malte0811.controlengineering.util;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import javax.annotation.Nonnull;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class Vec2i {
+public class Vec2i implements Comparable<Vec2i> {
     public static final Codec<Vec2i> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
                     Codec.INT.fieldOf("x").forGetter(v -> v.x),
@@ -44,5 +46,13 @@ public class Vec2i {
 
     public Vec2i add(Vec2i other) {
         return new Vec2i(x + other.x, y + other.y);
+    }
+
+    private static final Comparator<Vec2i> COMPARATOR = Comparator.<Vec2i>comparingInt(v -> v.x)
+            .thenComparingInt(v -> v.y);
+
+    @Override
+    public int compareTo(@Nonnull Vec2i o) {
+        return COMPARATOR.compare(this, o);
     }
 }

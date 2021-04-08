@@ -105,4 +105,8 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
     public ITextComponent getDesc() {
         return new TranslationTextComponent(isInput ? INPUT_KEY : OUTPUT_KEY);
     }
+
+    public boolean isInput() {
+        return isInput;
+    }
 }
