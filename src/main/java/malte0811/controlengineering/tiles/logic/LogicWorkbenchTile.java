@@ -5,13 +5,11 @@ import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
-import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -66,11 +64,17 @@ public class LogicWorkbenchTile extends TileEntity implements SelectionShapeOwne
         }
     }
 
+    //TODO only pass the relevant and correct parts of ctx
     private ActionResultType handleMainClick(ItemUseContext ctx) {
-        if (world.isRemote) {
-            //TODO open on server, implement sync
-            Minecraft.getInstance().displayGuiScreen(new LogicDesignScreen(schematic));
+        if (!world.isRemote) {
+            CEBlocks.LOGIC_WORKBENCH.get().openContainer(
+                    ctx.getPlayer(), getBlockState(), ctx.getWorld(), pos
+            );
         }
         return ActionResultType.SUCCESS;
+    }
+
+    public Schematic getSchematic() {
+        return schematic;
     }
 }

@@ -2,6 +2,7 @@ package malte0811.controlengineering.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
 import java.util.Comparator;
@@ -21,6 +22,15 @@ public class Vec2i implements Comparable<Vec2i> {
     public Vec2i(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public Vec2i(PacketBuffer buffer) {
+        this(buffer.readVarInt(), buffer.readVarInt());
+    }
+
+    public void write(PacketBuffer out) {
+        out.writeVarInt(x);
+        out.writeVarInt(y);
     }
 
     @Override

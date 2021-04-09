@@ -2,16 +2,19 @@ package malte0811.controlengineering.gui.logic;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.WireSegment;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
+import malte0811.controlengineering.network.logic.*;
 import malte0811.controlengineering.util.Vec2d;
 import malte0811.controlengineering.util.Vec2i;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHelper;
+import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
@@ -24,14 +27,15 @@ import javax.annotation.Nullable;
 import static net.minecraft.util.math.MathHelper.ceil;
 import static net.minecraft.util.math.MathHelper.floor;
 
-public class LogicDesignScreen extends StackedScreen {
+public class LogicDesignScreen extends StackedScreen implements IHasContainer<LogicDesignContainer> {
     private static final int TRANSLUCENT_BORDER_SIZE = 20;
     private static final int WHITE_BORDER_SIZE = 1;
     private static final int TOTAL_BORDER = TRANSLUCENT_BORDER_SIZE + WHITE_BORDER_SIZE;
     public static final int BASE_SCALE = 3;
 
-    //TODO sync/save changes
-    private final Schematic schematic;
+    // TODO store schematic in there?
+    private final LogicDesignContainer container;
+    private Schematic schematic;
     @Nullable
     private Vec2i currentWireStart = null;
     @Nullable
@@ -40,9 +44,10 @@ public class LogicDesignScreen extends StackedScreen {
     private double centerX = 0;
     private double centerY = 0;
 
-    public LogicDesignScreen(Schematic schematic) {
-        super(new StringTextComponent("Logic Design"));
-        this.schematic = schematic;
+    public LogicDesignScreen(LogicDesignContainer container, ITextComponent title) {
+        super(title);
+        this.schematic = new Schematic();
+        this.container = container;
     }
 
     @Override
@@ -116,12 +121,14 @@ public class LogicDesignScreen extends StackedScreen {
         if (placed != null) {
             if (schematic.canPlace(placed)) {
                 schematic.addSymbol(placed);
+                sendToServer(new AddSymbol(placed));
             }
         } else {
             WireSegment placedWire = getPlacingSegment(mousePos);
             if (placedWire != null) {
                 if (schematic.canAdd(placedWire)) {
                     schematic.addWire(placedWire);
+                    sendToServer(new AddWire(placedWire));
                     if (placedWire.getEnd().equals(currentWireStart)) {
                         currentWireStart = placedWire.getStart();
                     } else {
@@ -178,7 +185,10 @@ public class LogicDesignScreen extends StackedScreen {
                     helper.getMouseX() * window.getScaledWidth() / (double) window.getWidth(),
                     helper.getMouseY() * window.getScaledHeight() / (double) window.getHeight()
             );
-            return schematic.removeOneContaining(mousePos);
+            if (schematic.removeOneContaining(mousePos)) {
+                sendToServer(new Delete(mousePos));
+                return true;
+            }
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
@@ -253,5 +263,23 @@ public class LogicDesignScreen extends StackedScreen {
 
     private int getWireLength(int fixed, double mouse) {
         return mouse < fixed ? ceil(fixed - mouse) : floor(mouse - fixed);
+    }
+
+    public void setSchematic(Schematic schematic) {
+        this.schematic = schematic;
+    }
+
+    public Schematic getSchematic() {
+        return schematic;
+    }
+
+    private void sendToServer(LogicSubPacket data) {
+        ControlEngineering.NETWORK.sendToServer(new LogicPacket(data));
+    }
+
+    @Nonnull
+    @Override
+    public LogicDesignContainer getContainer() {
+        return container;
     }
 }

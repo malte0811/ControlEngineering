@@ -171,11 +171,11 @@ public class SchematicNet {
                 } else if (!pin.isAnalog()) {
                     hasDigitalSink = true;
                 }
-                if (leftmostX > pin.getPin().getPosition().x) {
-                    leftmostX = pin.getPin().getPosition().x;
+                if (leftmostX > pin.getPosition().x) {
+                    leftmostX = pin.getPosition().x;
                 }
             }
-            if (sourcePin != null && sourcePin.getPin().getPosition().x > leftmostX) {
+            if (sourcePin != null && sourcePin.getPosition().x > leftmostX) {
                 // there are pins left of the source pin
                 return false;
             }
@@ -197,6 +197,10 @@ public class SchematicNet {
 
         public PlacedSymbol getSymbol() {
             return symbol;
+        }
+
+        public Vec2i getPosition() {
+            return symbol.getPosition().add(pin.getPosition());
         }
 
         @Override

@@ -2,6 +2,7 @@ package malte0811.controlengineering.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Objects;
@@ -20,6 +21,15 @@ public class Vec2d {
     public Vec2d(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+
+    public Vec2d(PacketBuffer in) {
+        this(in.readDouble(), in.readDouble());
+    }
+
+    public void write(PacketBuffer out) {
+        out.writeDouble(x);
+        out.writeDouble(y);
     }
 
     public static Vec2d lerp(Vec2d start, Vec2d end, double time) {

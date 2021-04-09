@@ -1,6 +1,7 @@
 package malte0811.controlengineering.gui;
 
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.gui.logic.LogicDesignContainer;
 import malte0811.controlengineering.gui.tape.TeletypeContainer;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
@@ -20,6 +21,10 @@ public class CEContainers {
 
     public static final RegistryObject<ContainerType<TeletypeContainer>> TELETYPE = REGISTER.register(
             "teletype", createNoInv(TeletypeContainer::new)
+    );
+
+    public static final RegistryObject<ContainerType<LogicDesignContainer>> LOGIC_DESIGN = REGISTER.register(
+            "logic_design", createNoInv(LogicDesignContainer::new)
     );
 
     private static <T extends Container> Supplier<ContainerType<T>> createNoInv(BiFunction<Integer, PacketBuffer, T> factory) {

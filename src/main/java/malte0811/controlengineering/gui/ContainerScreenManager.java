@@ -1,5 +1,7 @@
 package malte0811.controlengineering.gui;
 
+import malte0811.controlengineering.gui.logic.LogicDesignContainer;
+import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.gui.tape.TeletypeContainer;
 import malte0811.controlengineering.gui.tape.TeletypeScreen;
 import net.minecraft.client.Minecraft;
@@ -15,8 +17,10 @@ public class ContainerScreenManager {
     @SuppressWarnings("RedundantTypeArguments")
     public static void registerScreens() {
         ScreenManager.<TeletypeContainer, TeletypeScreen>registerFactory(
-                CEContainers.TELETYPE.get(),
-                (container, inv, title) -> new TeletypeScreen(container, title)
+                CEContainers.TELETYPE.get(), (container, inv, title) -> new TeletypeScreen(container, title)
+        );
+        ScreenManager.<LogicDesignContainer, LogicDesignScreen>registerFactory(
+                CEContainers.LOGIC_DESIGN.get(), (container, inv, title) -> new LogicDesignScreen(container, title)
         );
     }
 

@@ -5,21 +5,28 @@ import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.HorizontalStructurePlacement;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.HorizontalWithExtraShape;
+import malte0811.controlengineering.gui.logic.LogicDesignContainer;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.logic.LogicWorkbenchTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.Property;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Locale;
 
 public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> {
@@ -51,6 +58,17 @@ public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> 
         builder.add(OFFSET, FACING);
     }
 
+    @Nullable
+    @Override
+    public INamedContainerProvider getContainer(
+            @Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos
+    ) {
+        return new SimpleNamedContainerProvider(
+                (id, inv, player) -> new LogicDesignContainer(id, IWorldPosCallable.of(worldIn, pos)),
+                new TranslationTextComponent("screen.controlengineering.logic_design")
+        );
+    }
+
     public enum Offset implements IStringSerializable {
         ORIGIN(0, 0),
         FRONT_RIGHT(1, 0),
@@ -66,6 +84,7 @@ public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> 
             return offset;
         }
 
+        @Nonnull
         @Override
         public String getString() {
             return name().toLowerCase(Locale.ROOT);

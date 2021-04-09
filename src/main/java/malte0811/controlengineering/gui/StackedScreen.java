@@ -67,4 +67,9 @@ public abstract class StackedScreen extends Screen {
     protected void renderCustomBackground(
             @Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks
     ) {}
+
+    @Nullable
+    public StackedScreen getPreviousInStack() {
+        return previousInStack;
+    }
 }
