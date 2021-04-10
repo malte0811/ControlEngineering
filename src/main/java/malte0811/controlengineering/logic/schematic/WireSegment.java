@@ -52,18 +52,45 @@ public class WireSegment {
         if (!isOnExtendedWire(point)) {
             return false;
         }
-        final int min = axis.get(start);
-        final int pos = axis.get(point);
-        return pos >= min && pos <= min + length;
+        return containsClosedOnAxis(axis.get(point));
     }
 
     public boolean containsOpen(Vec2i point) {
         if (!isOnExtendedWire(point)) {
             return false;
         }
+        return containsOpenOnAxis(axis.get(point));
+    }
+
+    private boolean containsOpenOnAxis(int axisCoord) {
         final int min = axis.get(start);
-        final int pos = axis.get(point);
-        return pos > min && pos < min + length;
+        return axisCoord > min && axisCoord < min + length;
+    }
+
+    private boolean containsClosedOnAxis(int axisCoord) {
+        final int min = axis.get(start);
+        return axisCoord >= min && axisCoord <= min + length;
+    }
+
+    /**
+     * Crossing check for splitting. True if the wires are orthogonal to each other, intersect as closed lines and the
+     * intersection is in the interior of at least one of the segments
+     */
+    public boolean crossesOneOpen(WireSegment other) {
+        if (getAxis() == other.getAxis()) {
+            return false;
+        } else if (getAxis() == WireAxis.Y) {
+            return other.crossesOneOpen(this);
+        }
+        // This: X wire, other: Y wire
+        final int intersectionX = other.getStart().x;
+        final int intersectionY = this.getStart().y;
+        if (!containsClosedOnAxis(intersectionX) || !other.containsClosedOnAxis(intersectionY)) {
+            // Intersection does not actually exist
+            return false;
+        } else {
+            return containsOpenOnAxis(intersectionX) || other.containsOpenOnAxis(intersectionY);
+        }
     }
 
     public List<WireSegment> splitAt(Vec2i point) {
@@ -76,7 +103,7 @@ public class WireSegment {
         );
     }
 
-    private boolean isOnExtendedWire(Vec2i point) {
+    public boolean isOnExtendedWire(Vec2i point) {
         return axis.other().get(point) == axis.other().get(start);
     }
 

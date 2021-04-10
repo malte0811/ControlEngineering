@@ -70,7 +70,7 @@ public class Schematic {
         IntSet connectedIndices = getConnectedIndices(segment);
         if (connectedIndices.isEmpty()) {
             // New net
-            nets.add(new SchematicNet(ImmutableList.of(segment)));
+            nets.add(new SchematicNet(segment));
         } else if (connectedIndices.size() == 1) {
             // Within one net
             final int netId = connectedIndices.iterator().nextInt();
@@ -90,9 +90,7 @@ public class Schematic {
     }
 
     public boolean canAdd(WireSegment segment) {
-        Set<ConnectedPin> pinsOnWire = new SchematicNet(
-                Collections.singletonList(segment)
-        ).computeConnectedPins(symbols);
+        Set<ConnectedPin> pinsOnWire = new SchematicNet(segment).computeConnectedPins(symbols);
         if (!ConnectedPin.isConsistent(pinsOnWire)) {
             return false;
         }

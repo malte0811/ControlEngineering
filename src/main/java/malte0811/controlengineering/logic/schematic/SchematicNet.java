@@ -1,8 +1,10 @@
 package malte0811.controlengineering.logic.schematic;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
@@ -14,56 +16,71 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static malte0811.controlengineering.logic.schematic.WireSegment.WireAxis.X;
+
 public class SchematicNet {
     public static final int WIRE_COLOR = 0xff_f0_aa_2a;
     public static final int SELECTED_WIRE_COLOR = 0xff_f0_fa_2a;
-    public static final Codec<SchematicNet> CODEC = Codec.list(WireSegment.CODEC)
-            .xmap(SchematicNet::new, s -> s.segments);
+    private static final Codec<List<WireSegment>> WIRE_LIST_CODEC = Codec.list(WireSegment.CODEC);
+    public static final Codec<SchematicNet> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    WIRE_LIST_CODEC.fieldOf("horizontal").forGetter(n -> n.horizontalSegments),
+                    WIRE_LIST_CODEC.fieldOf("vertical").forGetter(n -> n.verticalSegments)
+            ).apply(inst, SchematicNet::new)
+    );
 
-    private final List<WireSegment> segments;
+    private final List<WireSegment> horizontalSegments;
+    private final List<WireSegment> verticalSegments;
+    private final Iterable<WireSegment> allSegments;
     @Nullable
     private Set<ConnectedPin> pins;
 
     public SchematicNet() {
-        this(ImmutableList.of());
+        this(ImmutableList.of(), ImmutableList.of());
     }
 
-    public SchematicNet(List<WireSegment> wires) {
-        this.segments = new ArrayList<>(wires);
+    public SchematicNet(WireSegment singleWire) {
+        this(ImmutableList.of(), ImmutableList.of());
+        addSegment(singleWire);
+    }
+
+    public SchematicNet(List<WireSegment> horizontal, List<WireSegment> vertical) {
+        this.horizontalSegments = new ArrayList<>(horizontal);
+        this.verticalSegments = new ArrayList<>(vertical);
+        this.allSegments = () -> Iterators.concat(horizontalSegments.iterator(), verticalSegments.iterator());
     }
 
     public void addSegment(WireSegment segment) {
-        // TODO simplify segments
-        List<WireSegment> newSegments = new ArrayList<>();
-        for (Iterator<WireSegment> iterator = segments.iterator(); iterator.hasNext(); ) {
-            WireSegment existing = iterator.next();
-            for (Vec2i end : segment.getEnds()) {
-                if (existing.containsOpen(end)) {
-                    newSegments.addAll(existing.splitAt(end));
-                    iterator.remove();
-                    break;
-                }
-            }
+        if (segment.getAxis() == X) {
+            horizontalSegments.add(segment);
+        } else {
+            verticalSegments.add(segment);
         }
-        newSegments.add(segment);
-        segments.addAll(newSegments);
+        simplify();
     }
 
     public void addAll(SchematicNet other) {
-        segments.addAll(other.segments);
+        verticalSegments.addAll(other.verticalSegments);
+        horizontalSegments.addAll(other.horizontalSegments);
+        simplify();
     }
 
     public boolean contains(Vec2i point) {
-        return segments.stream().anyMatch(s -> s.containsClosed(point));
+        for (WireSegment s : allSegments) {
+            if (s.containsClosed(point)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void render(MatrixStack stack, Vec2d mouse, List<PlacedSymbol> symbols) {
         final int color = contains(mouse.floor()) ? SELECTED_WIRE_COLOR : WIRE_COLOR;
-        for (WireSegment segment : segments) {
+        for (WireSegment segment : allSegments) {
             segment.renderWithoutBlobs(stack, color);
         }
         Object2IntOpenHashMap<Vec2i> endsAt = new Object2IntOpenHashMap<>();
-        for (WireSegment segment : segments) {
+        for (WireSegment segment : allSegments) {
             for (Vec2i end : segment.getEnds()) {
                 if (endsAt.addTo(end, 1) == 2) {
                     AbstractGui.fill(stack, end.x, end.y, end.x + 1, end.y + 1, color);
@@ -105,7 +122,7 @@ public class SchematicNet {
     }
 
     public boolean canAdd(WireSegment segment, List<PlacedSymbol> symbols) {
-        return canMerge(new SchematicNet(ImmutableList.of(segment)), symbols);
+        return canMerge(new SchematicNet(segment), symbols);
     }
 
     private boolean containsPin(PlacedSymbol symbol, SymbolPin pin) {
@@ -114,7 +131,7 @@ public class SchematicNet {
     }
 
     public boolean removeOneContaining(Vec2i point) {
-        for (Iterator<WireSegment> iterator = segments.iterator(); iterator.hasNext(); ) {
+        for (Iterator<WireSegment> iterator = allSegments.iterator(); iterator.hasNext(); ) {
             if (iterator.next().containsClosed(point)) {
                 iterator.remove();
                 return true;
@@ -124,8 +141,9 @@ public class SchematicNet {
     }
 
     public List<SchematicNet> splitComponents() {
+        // TODO improve using horizontal/vertical structure?
         Map<Vec2i, SchematicNet> indexForPoint = new HashMap<>();
-        for (WireSegment segment : segments) {
+        for (WireSegment segment : allSegments) {
             final SchematicNet first = indexForPoint.get(segment.getStart());
             final SchematicNet second = indexForPoint.get(segment.getEnd());
             final SchematicNet finalNet;
@@ -136,7 +154,7 @@ public class SchematicNet {
                 finalNet = first != null ? first : second;
             } else {
                 finalNet = first;
-                for (WireSegment segmentToMove : second.segments) {
+                for (WireSegment segmentToMove : second.allSegments) {
                     first.addSegment(segmentToMove);
                     for (Vec2i end : segmentToMove.getEnds()) {
                         indexForPoint.put(end, finalNet);
@@ -152,5 +170,60 @@ public class SchematicNet {
                 .stream()
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public void simplify() {
+        mergeIntervals();
+        splitIntersections();
+    }
+
+    private void mergeIntervals() {
+        mergeIntervalsIn(X, horizontalSegments);
+        mergeIntervalsIn(WireSegment.WireAxis.Y, verticalSegments);
+    }
+
+    private static void mergeIntervalsIn(WireSegment.WireAxis axis, List<WireSegment> segments) {
+        segments.sort(
+                Comparator.<WireSegment>comparingInt(s -> axis.other().get(s.getStart()))
+                        .thenComparing(s -> axis.get(s.getStart()))
+        );
+        for (int i = 1; i < segments.size(); i++) {
+            final WireSegment last = segments.get(i - 1);
+            final WireSegment current = segments.get(i);
+            if (last.isOnExtendedWire(current.getStart())) {
+                final int lastEnd = axis.get(last.getEnd());
+                final int currentStart = axis.get(current.getStart());
+                if (lastEnd > currentStart) {
+                    final int addedLength = Math.max(0, axis.get(current.getEnd()) - lastEnd);
+                    segments.set(i - 1, new WireSegment(last.getStart(), last.getLength() + addedLength, axis));
+                    segments.remove(i);
+                    --i;
+                }
+            }
+        }
+    }
+
+    private void splitIntersections() {
+        // TODO fancy sweepline approach?
+        for (int xI = 0; xI < horizontalSegments.size(); xI++) {
+            final WireSegment horizontal = horizontalSegments.get(xI);
+            for (int yI = 0; yI < verticalSegments.size(); yI++) {
+                final WireSegment vertical = verticalSegments.get(yI);
+                if (horizontal.crossesOneOpen(vertical)) {
+                    final Vec2i intersection = new Vec2i(vertical.getStart().x, horizontal.getStart().y);
+                    if (vertical.containsOpen(intersection)) {
+                        verticalSegments.remove(yI);
+                        --yI;
+                        verticalSegments.addAll(vertical.splitAt(intersection));
+                    }
+                    if (horizontal.containsOpen(intersection)) {
+                        horizontalSegments.remove(xI);
+                        --xI;
+                        horizontalSegments.addAll(horizontal.splitAt(intersection));
+                        break;
+                    }
+                }
+            }
+        }
     }
 }
