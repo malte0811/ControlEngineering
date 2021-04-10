@@ -9,7 +9,10 @@ import malte0811.controlengineering.blocks.shapes.ListShapes;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
-import malte0811.controlengineering.bus.*;
+import malte0811.controlengineering.bus.BusSignalRef;
+import malte0811.controlengineering.bus.BusState;
+import malte0811.controlengineering.bus.IBusInterface;
+import malte0811.controlengineering.bus.MarkDirtyHandler;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
@@ -60,7 +63,6 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
     private BusConnectedCircuit circuit;
     @Nonnull
     private ClockInstance<?> clock = ClockTypes.NEVER.newInstance();
-    private BusState outputValues = new BusState(BusWireTypes.MAX_BUS_WIDTH);
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private int numTubes;
 
@@ -86,7 +88,8 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
                 ImmutableMap.of(
                         new BusSignalRef(0, 0), ImmutableList.of(inA),
                         new BusSignalRef(0, 1), ImmutableList.of(inB)
-                )
+                ),
+                ImmutableMap.of()
         ));
     }
 
@@ -189,7 +192,7 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
 
     @Override
     public BusState getEmittedState() {
-        return outputValues;
+        return circuit.getOutputState();
     }
 
     @Override

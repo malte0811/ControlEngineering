@@ -4,14 +4,13 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusSignalRef;
-import malte0811.controlengineering.gui.bus.BusSignalSelector;
-import malte0811.controlengineering.logic.cells.SignalType;
-import malte0811.controlengineering.logic.schematic.SchematicNet;
-import malte0811.controlengineering.util.ColorUtils;
+import malte0811.controlengineering.gui.widgets.BusSignalSelector;
+import malte0811.controlengineering.util.TextUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.DyeColor;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -22,9 +21,11 @@ import java.util.function.Consumer;
 public class IOSymbol extends SchematicSymbol<BusSignalRef> {
     public static final String INPUT_KEY = ControlEngineering.MODID + ".gui.inputPin";
     public static final String OUTPUT_KEY = ControlEngineering.MODID + ".gui.outputPin";
+    public static final String SIGNAL_KEY = ControlEngineering.MODID + ".gui.busRef";
+    public static final String VANILLA_COLOR_PREFIX = "item.minecraft.firework_star.";
 
-    private static final List<SymbolPin> OUTPUT_PIN = ImmutableList.of(new SymbolPin(5, 1, SignalType.ANALOG));
-    private static final List<SymbolPin> INPUT_PIN = ImmutableList.of(new SymbolPin(0, 1, SignalType.ANALOG));
+    private static final List<SymbolPin> OUTPUT_PIN = ImmutableList.of(SymbolPin.analogOut(5, 1));
+    private static final List<SymbolPin> INPUT_PIN = ImmutableList.of(SymbolPin.analogIn(0, 1));
     private final boolean isInput;
 
     public IOSymbol(boolean isInput) {
@@ -33,7 +34,7 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
     }
 
     @Override
-    public void render(MatrixStack transform, int x, int y, @Nullable BusSignalRef state) {
+    public void renderCustom(MatrixStack transform, int x, int y, @Nullable BusSignalRef state) {
         int color;
         if (state != null) {
             color = DyeColor.byId(state.color).getColorValue();
@@ -41,28 +42,14 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
             color = 0;
         }
         color |= 0xff000000;
-        final int blockX = x + (isInput ? 0 : 3);
-        AbstractGui.fill(transform, blockX, y, blockX + 3, y + 3, color);
         if (isInput) {
             AbstractGui.fill(transform, x + 3, y + 1, x + 4, y + 2, color);
-            AbstractGui.fill(transform, x + 4, y + 1, x + 6, y + 2, SchematicNet.WIRE_COLOR);
         } else {
             AbstractGui.fill(transform, x + 2, y + 1, x + 3, y + 2, color);
-            AbstractGui.fill(transform, x, y + 1, x + 2, y + 2, SchematicNet.WIRE_COLOR);
         }
-        if (state != null) {
-            final String text = Integer.toString(state.line);
-            final FontRenderer font = Minecraft.getInstance().fontRenderer;
-            final float scale = 4;
-            final float yOffset = (3 - font.FONT_HEIGHT / scale) / 2;
-            final float xOffset = (3 - font.getStringWidth(text) / scale) / 2;
-            transform.push();
-            transform.translate(xOffset + blockX, y + yOffset, 0);
-            transform.scale(1 / scale, 1 / scale, 1);
-            final int textColor = 0xff000000 | ColorUtils.inverseColor(color);
-            font.drawString(transform, text, 0, 0, textColor);
-            transform.pop();
-        }
+        final String text = state != null ? Integer.toString(state.line) : "";
+        final int blockX = x + (isInput ? 0 : 3);
+        TextUtil.renderBoxWithText(transform, color, text, 4, blockX, y, 3, 3);
     }
 
     @Override
@@ -76,20 +63,11 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
     }
 
     @Override
-    public List<SymbolPin> getInputPins() {
-        if (isInput) {
-            return ImmutableList.of();
-        } else {
-            return INPUT_PIN;
-        }
-    }
-
-    @Override
-    public List<SymbolPin> getOutputPins() {
+    public List<SymbolPin> getPins(@Nullable BusSignalRef state) {
         if (isInput) {
             return OUTPUT_PIN;
         } else {
-            return ImmutableList.of();
+            return INPUT_PIN;
         }
     }
 
@@ -102,8 +80,15 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
     }
 
     @Override
-    public ITextComponent getDesc() {
+    public ITextComponent getName() {
         return new TranslationTextComponent(isInput ? INPUT_KEY : OUTPUT_KEY);
+    }
+
+    @Override
+    public List<IFormattableTextComponent> getExtraDescription(BusSignalRef state) {
+        final DyeColor color = DyeColor.byId(state.color);
+        final String colorName = I18n.format(VANILLA_COLOR_PREFIX + color);
+        return ImmutableList.of(new TranslationTextComponent(SIGNAL_KEY, colorName, state.line));
     }
 
     public boolean isInput() {

@@ -1,5 +1,6 @@
 package malte0811.controlengineering.logic.circuit;
 
+import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusSignalRef;
@@ -13,9 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 public class BusConnectedCircuit {
-    //TODO make available in UI
-    public static final NetReference ZERO = new NetReference("zero");
-    public static final NetReference ONE = new NetReference("one");
 
     private static final Codec<Map<NetReference, List<BusSignalRef>>> OUTPUT_CODEC = Codecs.codecForMap(
             NetReference.CODEC, Codec.list(BusSignalRef.CODEC)
@@ -23,28 +21,39 @@ public class BusConnectedCircuit {
     private static final Codec<Map<BusSignalRef, List<NetReference>>> INPUT_CODEC = Codecs.codecForMap(
             BusSignalRef.CODEC, Codec.list(NetReference.CODEC)
     );
+    private static final Codec<Map<NetReference, Double>> CONSTANCE_CODEC = Codecs.codecForMap(
+            NetReference.CODEC, Codec.DOUBLE
+    );
     private final Circuit circuit;
     private final Map<NetReference, List<BusSignalRef>> outputConnections;
     private final Map<BusSignalRef, List<NetReference>> inputConnections;
+    private final Map<NetReference, Double> constantInputs;
     private BusState outputValues = new BusState(BusWireTypes.MAX_BUS_WIDTH);
 
     public BusConnectedCircuit(
             Circuit circuit,
             Map<NetReference, List<BusSignalRef>> outputConnections,
-            Map<BusSignalRef, List<NetReference>> inputConnections
+            Map<BusSignalRef, List<NetReference>> inputConnections,
+            Map<NetReference, Double> constantInputs
     ) {
         this.circuit = circuit;
         this.outputConnections = outputConnections;
         this.inputConnections = inputConnections;
-        circuit.updateInputValue(ONE, 1);
-        circuit.updateInputValue(ZERO, 1);
+        this.constantInputs = constantInputs;
+        Preconditions.checkArgument(
+                inputConnections.values().stream()
+                        .flatMap(List::stream)
+                        .noneMatch(constantInputs::containsKey)
+        );
+        constantInputs.forEach(circuit::updateInputValue);
     }
 
     public BusConnectedCircuit(CompoundNBT nbt) {
         this(
                 new Circuit(nbt.getCompound("circuit")),
                 Codecs.readOrThrow(OUTPUT_CODEC, nbt.get("outputs")),
-                Codecs.readOrThrow(INPUT_CODEC, nbt.get("inputs"))
+                Codecs.readOrThrow(INPUT_CODEC, nbt.get("inputs")),
+                Codecs.readOrThrow(CONSTANCE_CODEC, nbt.get("constants"))
         );
     }
 
@@ -87,6 +96,11 @@ public class BusConnectedCircuit {
         result.put("circuit", circuit.toNBT());
         result.put("inputs", Codecs.encode(INPUT_CODEC, inputConnections));
         result.put("outputs", Codecs.encode(OUTPUT_CODEC, outputConnections));
+        result.put("constants", Codecs.encode(CONSTANCE_CODEC, constantInputs));
         return result;
+    }
+
+    public BusState getOutputState() {
+        return outputValues;
     }
 }

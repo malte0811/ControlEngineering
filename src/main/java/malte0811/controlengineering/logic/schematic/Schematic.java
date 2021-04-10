@@ -6,8 +6,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -18,7 +16,6 @@ import malte0811.controlengineering.logic.circuit.CircuitBuilder;
 import malte0811.controlengineering.logic.circuit.CircuitBuilder.StageBuilder;
 import malte0811.controlengineering.logic.circuit.CircuitBuilder.StageBuilder.CellBuilder;
 import malte0811.controlengineering.logic.circuit.NetReference;
-import malte0811.controlengineering.logic.schematic.SchematicNet.ConnectedPin;
 import malte0811.controlengineering.logic.schematic.symbol.*;
 import malte0811.controlengineering.util.Vec2d;
 import malte0811.controlengineering.util.Vec2i;
@@ -41,6 +38,7 @@ public class Schematic {
     private Schematic(List<PlacedSymbol> symbols, List<SchematicNet> nets) {
         this.symbols = new ArrayList<>(symbols);
         this.nets = new ArrayList<>(nets);
+        this.resetConnectedPins();
     }
 
     public Schematic() {
@@ -49,6 +47,7 @@ public class Schematic {
 
     public void addSymbol(PlacedSymbol newSymbol) {
         symbols.add(newSymbol);
+        resetConnectedPins();
     }
 
     public boolean canPlace(PlacedSymbol candidate) {
@@ -56,9 +55,9 @@ public class Schematic {
             // Intersects with other symbol(s)
             return false;
         }
-        for (SchematicNet net : nets) {
-            Set<ConnectedPin> pinsInNet = net.getConnectedPins(symbols);
-            pinsInNet.addAll(net.getConnectedPins(Collections.singletonList(candidate)));
+        for (SchematicNet net : this.nets) {
+            Set<ConnectedPin> pinsInNet = new HashSet<>(net.getOrComputePins(symbols));
+            pinsInNet.addAll(net.computeConnectedPins(Collections.singletonList(candidate)));
             if (!ConnectedPin.isConsistent(pinsInNet)) {
                 // Would make a net inconsistent, i.e. would add multiple sources or analog/digital incompatibility
                 return false;
@@ -74,22 +73,26 @@ public class Schematic {
             nets.add(new SchematicNet(ImmutableList.of(segment)));
         } else if (connectedIndices.size() == 1) {
             // Within one net
-            nets.get(connectedIndices.iterator().nextInt()).addSegment(segment);
+            final int netId = connectedIndices.iterator().nextInt();
+            nets.get(netId).addSegment(segment);
         } else {
             // connecting two nets
             Preconditions.checkState(connectedIndices.size() == 2);
             IntIterator it = connectedIndices.iterator();
-            final SchematicNet netToKeep = nets.get(it.nextInt());
-            final SchematicNet netToRemove = nets.remove(it.nextInt());
+            final int netIdToKeep = it.nextInt();
+            final int netIdToRemove = it.nextInt();
+            final SchematicNet netToKeep = nets.get(netIdToKeep);
+            final SchematicNet netToRemove = nets.remove(netIdToRemove);
             netToKeep.addAll(netToRemove);
             netToKeep.addSegment(segment);
         }
+        resetConnectedPins();
     }
 
     public boolean canAdd(WireSegment segment) {
         Set<ConnectedPin> pinsOnWire = new SchematicNet(
                 Collections.singletonList(segment)
-        ).getConnectedPins(symbols);
+        ).computeConnectedPins(symbols);
         if (!ConnectedPin.isConsistent(pinsOnWire)) {
             return false;
         }
@@ -98,7 +101,7 @@ public class Schematic {
             SchematicNet netA = nets.get(netIdA);
             for (int netIdB : netsToCheck) {
                 if (netIdB > netIdA) {
-                    SchematicNet netB = nets.get(netIdA);
+                    SchematicNet netB = nets.get(netIdB);
                     if (!netA.canMerge(netB, symbols)) {
                         return false;
                     }
@@ -117,12 +120,14 @@ public class Schematic {
             if (net.removeOneContaining(mouse.floor())) {
                 iterator.remove();
                 nets.addAll(net.splitComponents());
+                resetConnectedPins();
                 return true;
             }
         }
         for (Iterator<PlacedSymbol> iterator = symbols.iterator(); iterator.hasNext(); ) {
             if (iterator.next().containsPoint(mouse)) {
                 iterator.remove();
+                resetConnectedPins();
                 return true;
             }
         }
@@ -142,13 +147,12 @@ public class Schematic {
         return indices;
     }
 
-    public void render(MatrixStack stack) {
+    public void render(MatrixStack stack, Vec2d mouse) {
         for (PlacedSymbol s : symbols) {
             s.render(stack);
         }
-        // TODO highlight nets under cursor?
         for (SchematicNet net : nets) {
-            net.render(stack);
+            net.render(stack, mouse, symbols);
         }
     }
 
@@ -162,16 +166,23 @@ public class Schematic {
         return null;
     }
 
+    private void resetConnectedPins() {
+        nets.forEach(SchematicNet::resetCachedPins);
+    }
+
+    //TODO split up or maybe move somewhere else
     public Either<BusConnectedCircuit, List<SchematicError>> toCircuit() {
         Map<NetReference, List<BusSignalRef>> outputConnections = new HashMap<>();
         Map<BusSignalRef, List<NetReference>> inputConnections = new HashMap<>();
         Map<ConnectedPin, NetReference> cellPins = new HashMap<>();
-        BooleanList netHasSource = new BooleanArrayList();
-        netHasSource.size(nets.size());
+        Map<NetReference, Double> constantNets = new HashMap<>();
+        Set<NetReference> netHasSource = new HashSet<>();
+        NetReference errorNet = null;
+        CircuitBuilder builder = CircuitBuilder.builder();
         for (int netId = 0; netId < nets.size(); netId++) {
             SchematicNet net = nets.get(netId);
             NetReference netRef = new NetReference(netId + "");
-            for (ConnectedPin pin : net.getConnectedPins(symbols)) {
+            for (ConnectedPin pin : net.getOrComputePins(symbols)) {
                 SymbolInstance<?> symbolInstance = pin.getSymbol().getSymbol();
                 SchematicSymbol<?> symbolType = symbolInstance.getType();
                 if (symbolType instanceof CellSymbol) {
@@ -180,22 +191,20 @@ public class Schematic {
                     BusSignalRef busRef = (BusSignalRef) symbolInstance.getCurrentState();
                     if (((IOSymbol) symbolType).isInput()) {
                         inputConnections.computeIfAbsent(busRef, $ -> new ArrayList<>()).add(netRef);
+                        builder.addInputNet(netRef, SignalType.ANALOG);
                     } else {
                         outputConnections.computeIfAbsent(netRef, $ -> new ArrayList<>()).add(busRef);
                     }
+                } else if (symbolType instanceof ConstantSymbol) {
+                    constantNets.put(netRef, (Double) symbolInstance.getCurrentState());
+                    builder.addInputNet(netRef, pin.getPin().getType());
                 }
-                if (pin.isOutput()) {
-                    netHasSource.set(netId, true);
+                if (pin.getPin().isOutput()) {
+                    netHasSource.add(netRef);
                 }
             }
         }
 
-        CircuitBuilder builder = CircuitBuilder.builder();
-        builder.addInputNet(BusConnectedCircuit.ONE, SignalType.DIGITAL);
-        builder.addInputNet(BusConnectedCircuit.ZERO, SignalType.DIGITAL);
-        inputConnections.values().stream()
-                .flatMap(List::stream)
-                .forEach(ref -> builder.addInputNet(ref, SignalType.ANALOG));
         StageBuilder currentStage = null;
         List<PlacedSymbol> cells = symbols.stream()
                 .filter(s -> s.getSymbol().getType() instanceof CellSymbol)
@@ -211,24 +220,33 @@ public class Schematic {
                 currentStage = builder.addStage();
                 lastX = cell.getPosition().x;
             }
-            CellSymbol symbol = (CellSymbol) cell.getSymbol().getType();
+            SymbolInstance<?> instance = cell.getSymbol();
+            CellSymbol symbol = (CellSymbol) instance.getType();
             CellBuilder cellBuilder = currentStage.addCell(symbol.getCellType().newInstance());
-            List<SymbolPin> inputPins = symbol.getInputPins();
-            for (int i = 0; i < inputPins.size(); i++) {
-                NetReference inputNet = cellPins.get(new ConnectedPin(cell, inputPins.get(i), false));
-                if (inputNet == null || !netHasSource.getBoolean(i)) {
-                    cellBuilder.input(i, BusConnectedCircuit.ZERO);
-                    //TODO add error
+            int inputIndex = 0;
+            int outputIndex = 0;
+            for (SymbolPin pin : instance.getPins()) {
+                ConnectedPin connectedPin = new ConnectedPin(cell, pin);
+                if (pin.isOutput()) {
+                    cellBuilder.output(outputIndex, cellPins.get(connectedPin));
+                    ++outputIndex;
                 } else {
-                    cellBuilder.input(i, inputNet);
+                    NetReference inputNet = cellPins.get(connectedPin);
+                    if (inputNet == null || !netHasSource.contains(inputNet)) {
+                        if (errorNet == null) {
+                            errorNet = new NetReference("error");
+                            builder.addInputNet(errorNet, SignalType.DIGITAL);
+                        }
+                        cellBuilder.input(inputIndex, errorNet);
+                        //TODO add error
+                    } else {
+                        cellBuilder.input(inputIndex, inputNet);
+                    }
+                    ++inputIndex;
                 }
-            }
-            List<SymbolPin> outputPins = symbol.getOutputPins();
-            for (int i = 0; i < outputPins.size(); i++) {
-                cellBuilder.output(i, cellPins.get(new ConnectedPin(cell, outputPins.get(i), true)));
             }
             cellBuilder.buildCell();
         }
-        return Either.left(new BusConnectedCircuit(builder.build(), outputConnections, inputConnections));
+        return Either.left(new BusConnectedCircuit(builder.build(), outputConnections, inputConnections, constantNets));
     }
 }

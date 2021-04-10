@@ -9,6 +9,7 @@ import malte0811.controlengineering.logic.schematic.WireSegment;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.network.logic.*;
+import malte0811.controlengineering.util.TextUtil;
 import malte0811.controlengineering.util.Vec2d;
 import malte0811.controlengineering.util.Vec2i;
 import net.minecraft.client.MainWindow;
@@ -16,13 +17,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHelper;
 import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 import static net.minecraft.util.math.MathHelper.ceil;
 import static net.minecraft.util.math.MathHelper.floor;
@@ -71,7 +76,7 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
                 (int) ((width - 2 * TOTAL_BORDER) * scale), (int) ((height - 2 * TOTAL_BORDER) * scale)
         );
         Vec2d mousePos = getMousePosition(mouseX, mouseY);
-        schematic.render(matrixStack);
+        schematic.render(matrixStack, mousePos);
         PlacedSymbol placed = getPlacingSymbol(mousePos);
         if (placed != null) {
             placed.render(matrixStack);
@@ -86,8 +91,18 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         matrixStack.pop();
         PlacedSymbol hovered = schematic.getSymbolAt(mousePos);
         if (hovered != null) {
-            ITextComponent toShow = hovered.getSymbol().getDesc();
-            renderTooltip(matrixStack, toShow, mouseX, mouseY);
+            ITextComponent toShow = hovered.getSymbol().getName();
+            List<IFormattableTextComponent> extra = hovered.getSymbol().getExtraDesc();
+            if (extra.isEmpty()) {
+                renderTooltip(matrixStack, toShow, mouseX, mouseY);
+            } else {
+                List<IReorderingProcessor> tooltip = new ArrayList<>(1 + extra.size());
+                tooltip.add(toShow.func_241878_f());
+                for (IFormattableTextComponent extraLine : extra) {
+                    TextUtil.addTooltipLineReordering(tooltip, extraLine);
+                }
+                renderTooltip(matrixStack, tooltip, mouseX, mouseY);
+            }
         }
     }
 

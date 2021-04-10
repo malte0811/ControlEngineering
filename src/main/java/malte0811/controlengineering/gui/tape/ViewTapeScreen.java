@@ -12,8 +12,7 @@ import javax.annotation.Nonnull;
 
 public class ViewTapeScreen extends Screen {
     public static final ResourceLocation BASE_SCREEN = new ResourceLocation(
-            ControlEngineering.MODID,
-            "textures/gui/read_tape.png"
+            ControlEngineering.MODID, "textures/gui/read_tape.png"
     );
     private static final int WIDTH = 256;
     private static final int HEIGHT = 128;

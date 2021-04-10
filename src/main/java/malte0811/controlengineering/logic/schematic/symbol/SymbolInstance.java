@@ -3,7 +3,10 @@ package malte0811.controlengineering.logic.schematic.symbol;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.serialization.Codec;
 import malte0811.controlengineering.util.typereg.TypedInstance;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
+
+import java.util.List;
 
 public class SymbolInstance<State> extends TypedInstance<State, SchematicSymbol<State>> {
     public static final Codec<SymbolInstance<?>> CODEC = makeCodec(
@@ -26,8 +29,16 @@ public class SymbolInstance<State> extends TypedInstance<State, SchematicSymbol<
         return getType().getYSize();
     }
 
-    public ITextComponent getDesc() {
-        return getType().getDesc();
+    public ITextComponent getName() {
+        return getType().getName();
+    }
+
+    public List<IFormattableTextComponent> getExtraDesc() {
+        return getType().getExtraDescription(getCurrentState());
+    }
+
+    public List<SymbolPin> getPins() {
+        return getType().getPins(getCurrentState());
     }
 
     private static <T> SymbolInstance<T> makeUnchecked(SchematicSymbol<T> type, Object state) {

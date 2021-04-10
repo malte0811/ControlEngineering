@@ -5,8 +5,8 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import malte0811.controlengineering.util.GuiUtil;
 import malte0811.controlengineering.util.Vec2i;
-import net.minecraft.client.gui.AbstractGui;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +20,7 @@ public class WireSegment {
                     WireAxis.CODEC.fieldOf("axis").forGetter(WireSegment::getAxis)
             ).apply(inst, WireSegment::new)
     );
+    public static final float WIRE_SPACE = 1 / 8f;
 
     private final Vec2i start;
     private final int length;
@@ -84,7 +85,12 @@ public class WireSegment {
     }
 
     public void renderWithoutBlobs(MatrixStack stack, int color) {
-        AbstractGui.fill(stack, getStart().x, getStart().y, getEnd().x + 1, getEnd().y + 1, color);
+        GuiUtil.fill(
+                stack,
+                getStart().x + WIRE_SPACE, getStart().y + WIRE_SPACE,
+                getEnd().x + 1 - WIRE_SPACE, getEnd().y + 1 - WIRE_SPACE,
+                color
+        );
     }
 
     @Override

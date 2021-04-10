@@ -4,22 +4,25 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
-import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
+import malte0811.controlengineering.util.Vec2d;
 import malte0811.controlengineering.util.Vec2i;
 import net.minecraft.client.gui.AbstractGui;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class SchematicNet {
-    public static final int WIRE_COLOR = 0xfff0aa2a;
+    public static final int WIRE_COLOR = 0xff_f0_aa_2a;
+    public static final int SELECTED_WIRE_COLOR = 0xff_f0_fa_2a;
     public static final Codec<SchematicNet> CODEC = Codec.list(WireSegment.CODEC)
             .xmap(SchematicNet::new, s -> s.segments);
 
     private final List<WireSegment> segments;
+    @Nullable
+    private Set<ConnectedPin> pins;
 
     public SchematicNet() {
         this(ImmutableList.of());
@@ -54,41 +57,50 @@ public class SchematicNet {
         return segments.stream().anyMatch(s -> s.containsClosed(point));
     }
 
-    public void render(MatrixStack stack) {
+    public void render(MatrixStack stack, Vec2d mouse, List<PlacedSymbol> symbols) {
+        final int color = contains(mouse.floor()) ? SELECTED_WIRE_COLOR : WIRE_COLOR;
         for (WireSegment segment : segments) {
-            segment.renderWithoutBlobs(stack, WIRE_COLOR);
+            segment.renderWithoutBlobs(stack, color);
         }
         Object2IntOpenHashMap<Vec2i> endsAt = new Object2IntOpenHashMap<>();
         for (WireSegment segment : segments) {
             for (Vec2i end : segment.getEnds()) {
                 if (endsAt.addTo(end, 1) == 2) {
-                    AbstractGui.fill(stack, end.x - 1, end.y - 1, end.x + 2, end.y + 2, WIRE_COLOR);
+                    AbstractGui.fill(stack, end.x, end.y, end.x + 1, end.y + 1, color);
                 }
             }
+        }
+        for (ConnectedPin pin : getOrComputePins(symbols)) {
+            pin.render(stack, color);
         }
     }
 
-    public Set<ConnectedPin> getConnectedPins(List<PlacedSymbol> symbols) {
+    public Set<ConnectedPin> computeConnectedPins(List<PlacedSymbol> symbols) {
         Set<ConnectedPin> connected = new HashSet<>();
         for (PlacedSymbol s : symbols) {
-            SchematicSymbol<?> type = s.getSymbol().getType();
-            for (SymbolPin output : type.getOutputPins()) {
+            for (SymbolPin output : s.getSymbol().getPins()) {
                 if (containsPin(s, output)) {
-                    connected.add(new ConnectedPin(s, output, true));
-                }
-            }
-            for (SymbolPin input : type.getInputPins()) {
-                if (containsPin(s, input)) {
-                    connected.add(new ConnectedPin(s, input, false));
+                    connected.add(new ConnectedPin(s, output));
                 }
             }
         }
-        return connected;
+        return Collections.unmodifiableSet(connected);
+    }
+
+    public Set<ConnectedPin> getOrComputePins(List<PlacedSymbol> symbols) {
+        if (pins == null) {
+            pins = computeConnectedPins(symbols);
+        }
+        return pins;
+    }
+
+    public void resetCachedPins() {
+        pins = null;
     }
 
     public boolean canMerge(SchematicNet other, List<PlacedSymbol> symbols) {
-        Set<ConnectedPin> totalPins = getConnectedPins(symbols);
-        totalPins.addAll(other.getConnectedPins(symbols));
+        Set<ConnectedPin> totalPins = new HashSet<>(getOrComputePins(symbols));
+        totalPins.addAll(other.getOrComputePins(symbols));
         return ConnectedPin.isConsistent(totalPins);
     }
 
@@ -140,80 +152,5 @@ public class SchematicNet {
                 .stream()
                 .distinct()
                 .collect(Collectors.toList());
-    }
-
-    public static class ConnectedPin {
-        private final PlacedSymbol symbol;
-        private final SymbolPin pin;
-        private final boolean isOutput;
-
-        public ConnectedPin(PlacedSymbol symbol, SymbolPin pin, boolean isOutput) {
-            this.symbol = symbol;
-            this.pin = pin;
-            this.isOutput = isOutput;
-        }
-
-        public static boolean isConsistent(Set<ConnectedPin> netPins) {
-            ConnectedPin sourcePin = null;
-            boolean hasAnalogSource = false;
-            boolean hasDigitalSink = false;
-            int leftmostX = Integer.MAX_VALUE;
-            for (ConnectedPin pin : netPins) {
-                if (pin.isOutput()) {
-                    if (sourcePin != null) {
-                        // Only allow one signal source
-                        return false;
-                    }
-                    sourcePin = pin;
-                    if (pin.isAnalog()) {
-                        hasAnalogSource = true;
-                    }
-                } else if (!pin.isAnalog()) {
-                    hasDigitalSink = true;
-                }
-                if (leftmostX > pin.getPosition().x) {
-                    leftmostX = pin.getPosition().x;
-                }
-            }
-            if (sourcePin != null && sourcePin.getPosition().x > leftmostX) {
-                // there are pins left of the source pin
-                return false;
-            }
-            // Do not allow analog source with digital sink
-            return !(hasAnalogSource && hasDigitalSink);
-        }
-
-        public boolean isOutput() {
-            return isOutput;
-        }
-
-        public boolean isAnalog() {
-            return pin.getType() == SignalType.ANALOG;
-        }
-
-        public SymbolPin getPin() {
-            return pin;
-        }
-
-        public PlacedSymbol getSymbol() {
-            return symbol;
-        }
-
-        public Vec2i getPosition() {
-            return symbol.getPosition().add(pin.getPosition());
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ConnectedPin that = (ConnectedPin) o;
-            return isOutput == that.isOutput && symbol.equals(that.symbol) && pin.equals(that.pin);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(symbol, pin, isOutput);
-        }
     }
 }

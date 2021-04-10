@@ -39,7 +39,7 @@ public class CellSelectionScreen extends StackedScreen {
         super.init();
         xGrid = symbols.stream()
                 .mapToInt(symbol -> (int) Math.max(
-                        symbol.getXSize(), font.getStringPropertyWidth(symbol.getDesc()) / TEXT_SCALE
+                        symbol.getXSize(), font.getStringPropertyWidth(symbol.getName()) / TEXT_SCALE
                 ))
                 .max()
                 .orElse(5) + 2;
@@ -68,7 +68,7 @@ public class CellSelectionScreen extends StackedScreen {
                 matrixStack.push();
                 matrixStack.translate(xBase, yBase, 0);
                 matrixStack.scale(1 / TEXT_SCALE, 1 / TEXT_SCALE, 1);
-                ITextComponent desc = symbol.getDesc();
+                ITextComponent desc = symbol.getName();
                 final int offset = (int) ((symbol.getXSize() * TEXT_SCALE - font.getStringPropertyWidth(desc)) / 2);
                 font.drawText(matrixStack, desc, offset, 0, 0xff000000);
                 matrixStack.pop();

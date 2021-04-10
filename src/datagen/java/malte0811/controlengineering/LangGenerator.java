@@ -1,11 +1,12 @@
 package malte0811.controlengineering;
 
 import malte0811.controlengineering.blocks.CEBlocks;
-import malte0811.controlengineering.gui.bus.BusSignalSelector;
+import malte0811.controlengineering.gui.widgets.BusSignalSelector;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
+import malte0811.controlengineering.logic.schematic.symbol.ConstantSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.IOSymbol;
 import malte0811.controlengineering.util.Constants;
 import net.minecraft.data.DataGenerator;
@@ -64,8 +65,13 @@ public class LangGenerator extends LanguageProvider {
         add(BusSignalSelector.COLOR_KEY, "Signal color");
         add(BusSignalSelector.BUS_LINE_INDEX_KEY, "Bus line %d");
         add(BusSignalSelector.DONE_KEY, "Done");
+
         add(IOSymbol.INPUT_KEY, "Input pin");
         add(IOSymbol.OUTPUT_KEY, "Output pin");
+        add(IOSymbol.SIGNAL_KEY, "%d signal on line %d");
+
+        add(ConstantSymbol.NAME, "Constant");
+        add(ConstantSymbol.INPUT_KEY, "Signal strength: %d");
     }
 
     private void add(LeafcellType<?> type, String name) {

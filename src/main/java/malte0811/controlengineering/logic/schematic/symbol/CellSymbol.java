@@ -17,23 +17,17 @@ import static malte0811.controlengineering.logic.schematic.symbol.SchematicSymbo
 public class CellSymbol extends SchematicSymbol<Unit> {
     private final LeafcellType<?> type;
     private final SubTexture texture;
-    private final List<SymbolPin> inputPins;
-    private final List<SymbolPin> outputPins;
+    private final List<SymbolPin> pins;
 
-    public CellSymbol(
-            LeafcellType<?> type,
-            int uMin, int vMin, int uSize, int vSize,
-            List<SymbolPin> inputPins, List<SymbolPin> outputPins
-    ) {
+    public CellSymbol(LeafcellType<?> type, int uMin, int vMin, int uSize, int vSize, List<SymbolPin> pins) {
         super(Unit.INSTANCE, Codec.unit(Unit.INSTANCE));
         this.type = type;
-        this.inputPins = inputPins;
-        this.outputPins = outputPins;
+        this.pins = pins;
         this.texture = new SubTexture(SYMBOLS_SHEET, uMin, vMin, uMin + uSize, vMin + vSize);
     }
 
     @Override
-    public void render(MatrixStack transform, int x, int y, @Nullable Unit state) {
+    public void renderCustom(MatrixStack transform, int x, int y, @Nullable Unit state) {
         texture.blit(transform, x, y);
     }
 
@@ -48,13 +42,8 @@ public class CellSymbol extends SchematicSymbol<Unit> {
     }
 
     @Override
-    public List<SymbolPin> getInputPins() {
-        return inputPins;
-    }
-
-    @Override
-    public List<SymbolPin> getOutputPins() {
-        return outputPins;
+    public List<SymbolPin> getPins(@Nullable Unit unit) {
+        return pins;
     }
 
     @Override
@@ -68,7 +57,7 @@ public class CellSymbol extends SchematicSymbol<Unit> {
     }
 
     @Override
-    public ITextComponent getDesc() {
+    public ITextComponent getName() {
         return new TranslationTextComponent(getTranslationKey(type));
     }
 
