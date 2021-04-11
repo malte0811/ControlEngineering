@@ -23,7 +23,7 @@ public class CellSymbol extends SchematicSymbol<Unit> {
         super(Unit.INSTANCE, Codec.unit(Unit.INSTANCE));
         this.type = type;
         this.pins = pins;
-        this.texture = new SubTexture(SYMBOLS_SHEET, uMin, vMin, uMin + uSize, vMin + vSize);
+        this.texture = new SubTexture(SYMBOLS_SHEET, uMin, vMin, uMin + uSize, vMin + vSize, 64);
     }
 
     @Override

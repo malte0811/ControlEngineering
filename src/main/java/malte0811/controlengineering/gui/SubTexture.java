@@ -13,13 +13,19 @@ public class SubTexture {
     private final int minV;
     private final int maxU;
     private final int maxV;
+    private final int mainSize;
 
     public SubTexture(ResourceLocation mainTexture, int minU, int minV, int maxU, int maxV) {
+        this(mainTexture, minU, minV, maxU, maxV, 256);
+    }
+
+    public SubTexture(ResourceLocation mainTexture, int minU, int minV, int maxU, int maxV, int mainSize) {
         this.mainTexture = mainTexture;
         this.minU = minU;
         this.minV = minV;
         this.maxU = maxU;
         this.maxV = maxV;
+        this.mainSize = mainSize;
     }
 
     public int getMaxV() {
@@ -63,7 +69,7 @@ public class SubTexture {
         Minecraft.getInstance().getTextureManager().bindTexture(getMainTexture());
         Screen.blit(
                 transform, x, y, getWidth(), getHeight(), getMinU(), getMinV(), getWidth(), getHeight(),
-                256, 256
+                mainSize, mainSize
         );
     }
 }
