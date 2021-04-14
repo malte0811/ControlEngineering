@@ -72,8 +72,8 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
         NetReference inB = new NetReference("B");
         NetReference out = new NetReference("out");
         Circuit defaultCircuit = CircuitBuilder.builder()
-                .addInputNet(inA, SignalType.ANALOG)
-                .addInputNet(inB, SignalType.ANALOG)
+                .addInputNet(inA, SignalType.DIGITAL)
+                .addInputNet(inB, SignalType.DIGITAL)
                 .addStage()
                 .addCell(Leafcells.AND2.newInstance())
                 .input(0, inA)

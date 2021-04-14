@@ -193,7 +193,7 @@ public class SchematicNet {
             if (last.isOnExtendedWire(current.getStart())) {
                 final int lastEnd = axis.get(last.getEnd());
                 final int currentStart = axis.get(current.getStart());
-                if (lastEnd > currentStart) {
+                if (lastEnd >= currentStart) {
                     final int addedLength = Math.max(0, axis.get(current.getEnd()) - lastEnd);
                     segments.set(i - 1, new WireSegment(last.getStart(), last.getLength() + addedLength, axis));
                     segments.remove(i);

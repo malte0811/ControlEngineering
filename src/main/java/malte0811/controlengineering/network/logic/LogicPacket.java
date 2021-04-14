@@ -57,6 +57,7 @@ public class LogicPacket extends SimplePacket {
                     ((LogicDesignScreen) currentScreen).getSchematic(),
                     ((LogicDesignScreen) currentScreen)::setSchematic
             );
+            ((LogicDesignScreen) currentScreen).updateErrors();
         }
     }
 }

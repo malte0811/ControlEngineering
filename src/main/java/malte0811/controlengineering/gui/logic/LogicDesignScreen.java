@@ -1,9 +1,11 @@
 package malte0811.controlengineering.gui.logic;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.StackedScreen;
+import malte0811.controlengineering.logic.schematic.ConnectedPin;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.WireSegment;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
@@ -22,17 +24,23 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static net.minecraft.util.math.MathHelper.ceil;
 import static net.minecraft.util.math.MathHelper.floor;
 
 public class LogicDesignScreen extends StackedScreen implements IHasContainer<LogicDesignContainer> {
+    public static final String COMPONENTS_KEY = ControlEngineering.MODID + ".gui.components";
+    public static final String ENABLE_DRC_KEY = ControlEngineering.MODID + ".gui.drcOn";
+    public static final String DISABLE_DRC_KEY = ControlEngineering.MODID + ".gui.drcOff";
+
     private static final int TRANSLUCENT_BORDER_SIZE = 20;
     private static final int WHITE_BORDER_SIZE = 1;
     private static final int TOTAL_BORDER = TRANSLUCENT_BORDER_SIZE + WHITE_BORDER_SIZE;
@@ -45,6 +53,8 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
     private Vec2i currentWireStart = null;
     @Nullable
     private SymbolInstance<?> placingSymbol = null;
+    private List<ConnectedPin> errors = ImmutableList.of();
+    private boolean errorsShown = false;
     private float currentScale = BASE_SCALE;
     private double centerX = 0;
     private double centerY = 0;
@@ -59,9 +69,22 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
     protected void init() {
         super.init();
         addButton(new Button(
-                TOTAL_BORDER, TOTAL_BORDER, 18, 18, new StringTextComponent("C"),
-                btn -> minecraft.displayGuiScreen(new CellSelectionScreen(s -> placingSymbol = s))
+                TOTAL_BORDER, TOTAL_BORDER, 20, 20, new StringTextComponent("C"),
+                btn -> minecraft.displayGuiScreen(new CellSelectionScreen(s -> placingSymbol = s)),
+                makeTooltip(() -> COMPONENTS_KEY)
         ));
+        addButton(new Button(
+                TOTAL_BORDER, TOTAL_BORDER + 20, 20, 20, new StringTextComponent("E"),
+                btn -> {
+                    errorsShown = !errorsShown;
+                    updateErrors();
+                },
+                makeTooltip(() -> errorsShown ? DISABLE_DRC_KEY : ENABLE_DRC_KEY)
+        ));
+    }
+
+    private Button.ITooltip makeTooltip(Supplier<String> key) {
+        return ($, transform, x, y) -> this.renderTooltip(transform, new TranslationTextComponent(key.get()), x, y);
     }
 
     @Override
@@ -75,6 +98,7 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
                 (int) (TOTAL_BORDER * scale), (int) (TOTAL_BORDER * scale),
                 (int) ((width - 2 * TOTAL_BORDER) * scale), (int) ((height - 2 * TOTAL_BORDER) * scale)
         );
+        drawErrors(matrixStack);
         Vec2d mousePos = getMousePosition(mouseX, mouseY);
         schematic.render(matrixStack, mousePos);
         PlacedSymbol placed = getPlacingSymbol(mousePos);
@@ -103,6 +127,13 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
                 }
                 renderTooltip(matrixStack, tooltip, mouseX, mouseY);
             }
+        }
+    }
+
+    private void drawErrors(MatrixStack transform) {
+        for (ConnectedPin pin : errors) {
+            final Vec2i pos = pin.getPosition();
+            fill(transform, pos.x - 1, pos.y - 1, pos.x + 2, pos.y + 2, 0xffff0000);
         }
     }
 
@@ -290,11 +321,18 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
 
     private void sendToServer(LogicSubPacket data) {
         ControlEngineering.NETWORK.sendToServer(new LogicPacket(data));
+        updateErrors();
     }
 
     @Nonnull
     @Override
     public LogicDesignContainer getContainer() {
         return container;
+    }
+
+    public void updateErrors() {
+        if (errorsShown) {
+            errors = schematic.toCircuit().right().orElse(ImmutableList.of());
+        }
     }
 }

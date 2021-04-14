@@ -1,6 +1,7 @@
 package malte0811.controlengineering;
 
 import malte0811.controlengineering.blocks.CEBlocks;
+import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.gui.widgets.BusSignalSelector;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.logic.cells.LeafcellType;
@@ -72,6 +73,10 @@ public class LangGenerator extends LanguageProvider {
 
         add(ConstantSymbol.NAME, "Constant");
         add(ConstantSymbol.INPUT_KEY, "Signal strength: %d");
+
+        add(LogicDesignScreen.COMPONENTS_KEY, "Components");
+        add(LogicDesignScreen.ENABLE_DRC_KEY, "Enable error checking");
+        add(LogicDesignScreen.DISABLE_DRC_KEY, "Disable error checking");
     }
 
     private void add(LeafcellType<?> type, String name) {

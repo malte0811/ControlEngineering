@@ -169,13 +169,14 @@ public class Schematic {
     }
 
     //TODO split up or maybe move somewhere else
-    public Either<BusConnectedCircuit, List<SchematicError>> toCircuit() {
+    public Either<BusConnectedCircuit, List<ConnectedPin>> toCircuit() {
         Map<NetReference, List<BusSignalRef>> outputConnections = new HashMap<>();
         Map<BusSignalRef, List<NetReference>> inputConnections = new HashMap<>();
         Map<ConnectedPin, NetReference> cellPins = new HashMap<>();
         Map<NetReference, Double> constantNets = new HashMap<>();
         Set<NetReference> netHasSource = new HashSet<>();
         NetReference errorNet = null;
+        List<ConnectedPin> errors = new ArrayList<>();
         CircuitBuilder builder = CircuitBuilder.builder();
         for (int netId = 0; netId < nets.size(); netId++) {
             SchematicNet net = nets.get(netId);
@@ -225,26 +226,35 @@ public class Schematic {
             int outputIndex = 0;
             for (SymbolPin pin : instance.getPins()) {
                 ConnectedPin connectedPin = new ConnectedPin(cell, pin);
+                NetReference circuitNet = cellPins.get(connectedPin);
                 if (pin.isOutput()) {
-                    cellBuilder.output(outputIndex, cellPins.get(connectedPin));
+                    if (circuitNet != null) {
+                        // Non-connected output is not an error
+                        cellBuilder.output(outputIndex, circuitNet);
+                    }
                     ++outputIndex;
                 } else {
-                    NetReference inputNet = cellPins.get(connectedPin);
-                    if (inputNet == null || !netHasSource.contains(inputNet)) {
+                    if (circuitNet == null || !netHasSource.contains(circuitNet)) {
                         if (errorNet == null) {
                             errorNet = new NetReference("error");
                             builder.addInputNet(errorNet, SignalType.DIGITAL);
                         }
                         cellBuilder.input(inputIndex, errorNet);
-                        //TODO add error
+                        errors.add(connectedPin);
                     } else {
-                        cellBuilder.input(inputIndex, inputNet);
+                        cellBuilder.input(inputIndex, circuitNet);
                     }
                     ++inputIndex;
                 }
             }
             cellBuilder.buildCell();
         }
-        return Either.left(new BusConnectedCircuit(builder.build(), outputConnections, inputConnections, constantNets));
+        if (errors.isEmpty()) {
+            return Either.left(
+                    new BusConnectedCircuit(builder.build(), outputConnections, inputConnections, constantNets)
+            );
+        } else {
+            return Either.right(errors);
+        }
     }
 }
