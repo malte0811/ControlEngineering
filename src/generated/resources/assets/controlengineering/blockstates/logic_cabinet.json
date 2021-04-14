@@ -1,18 +1,18 @@
 {
   "variants": {
     "facing=north,height=0": {
-      "model": "controlengineering:block/combined_logic_box",
+      "model": "controlengineering:block/combined_logic_cabinet",
       "y": 180
     },
     "facing=south,height=0": {
-      "model": "controlengineering:block/combined_logic_box"
+      "model": "controlengineering:block/combined_logic_cabinet"
     },
     "facing=west,height=0": {
-      "model": "controlengineering:block/combined_logic_box",
+      "model": "controlengineering:block/combined_logic_cabinet",
       "y": 90
     },
     "facing=east,height=0": {
-      "model": "controlengineering:block/combined_logic_box",
+      "model": "controlengineering:block/combined_logic_cabinet",
       "y": 270
     },
     "facing=north,height=1": {

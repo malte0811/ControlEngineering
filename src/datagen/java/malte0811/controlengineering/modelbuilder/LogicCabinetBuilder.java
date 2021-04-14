@@ -11,26 +11,26 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.Objects;
 
-public class LogicBoxBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
+public class LogicCabinetBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
     public static <T extends ModelBuilder<T>>
-    LogicBoxBuilder<T> begin(T parent, ExistingFileHelper existingFileHelper) {
-        return new LogicBoxBuilder<>(parent, existingFileHelper);
+    LogicCabinetBuilder<T> begin(T parent, ExistingFileHelper existingFileHelper) {
+        return new LogicCabinetBuilder<>(parent, existingFileHelper);
     }
 
     private ModelFile tube;
     private ModelFile board;
 
-    private LogicBoxBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(ModelLoaders.LOGIC_BOX, parent, existingFileHelper);
+    private LogicCabinetBuilder(T parent, ExistingFileHelper existingFileHelper) {
+        super(ModelLoaders.LOGIC_CABINET, parent, existingFileHelper);
     }
 
-    public LogicBoxBuilder<T> tube(ModelFile tubeModel) {
+    public LogicCabinetBuilder<T> tube(ModelFile tubeModel) {
         Preconditions.checkState(this.tube == null);
         this.tube = tubeModel;
         return this;
     }
 
-    public LogicBoxBuilder<T> board(ModelFile boardModel) {
+    public LogicCabinetBuilder<T> board(ModelFile boardModel) {
         Preconditions.checkState(this.board == null);
         this.board = boardModel;
         return this;

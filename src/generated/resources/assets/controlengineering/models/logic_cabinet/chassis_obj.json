@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:block/block",
   "loader": "forge:obj",
-  "model": "controlengineering:models/logicbox/tube.obj",
+  "model": "controlengineering:models/logic_cabinet/chassis.obj",
   "detectCullableFaces": false,
   "flip-v": true
 }

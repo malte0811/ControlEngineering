@@ -18,7 +18,10 @@ import net.minecraftforge.fml.common.Mod;
 public class ModelLoaders {
     public static final ResourceLocation PANEL_TOP_ITEM = new ResourceLocation(ControlEngineering.MODID, "panel_top");
     public static final ResourceLocation PANEL_MODEL = new ResourceLocation(ControlEngineering.MODID, "panel");
-    public static final ResourceLocation LOGIC_BOX = new ResourceLocation(ControlEngineering.MODID, "dynamic_logic");
+    public static final ResourceLocation LOGIC_CABINET = new ResourceLocation(
+            ControlEngineering.MODID,
+            "dynamic_logic"
+    );
 
     @SubscribeEvent
     public static void registerModelLoaders(ModelRegistryEvent ev) {
@@ -28,6 +31,6 @@ public class ModelLoaders {
         ModelLoaderRegistry.registerLoader(PANEL_MODEL, new SpecialModelLoader(
                 PanelModel::new, PanelRenderer.PANEL_TEXTURE_LOC
         ));
-        ModelLoaderRegistry.registerLoader(LOGIC_BOX, new DynamicLogicModelLoader());
+        ModelLoaderRegistry.registerLoader(LOGIC_CABINET, new DynamicLogicModelLoader());
     }
 }

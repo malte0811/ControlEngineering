@@ -2,7 +2,7 @@ package malte0811.controlengineering.blocks;
 
 import blusunrize.immersiveengineering.api.wires.IImmersiveConnectable;
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.blocks.logic.LogicBoxBlock;
+import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
@@ -49,7 +49,10 @@ public class CEBlocks {
 
     public static final RegistryObject<TeletypeBlock> TELETYPE = REGISTER.register("teletype", TeletypeBlock::new);
 
-    public static final RegistryObject<LogicBoxBlock> LOGIC_BOX = REGISTER.register("logic_box", LogicBoxBlock::new);
+    public static final RegistryObject<LogicCabinetBlock> LOGIC_CABINET = REGISTER.register(
+            "logic_cabinet",
+            LogicCabinetBlock::new
+    );
 
     public static final RegistryObject<LogicWorkbenchBlock> LOGIC_WORKBENCH = REGISTER.register(
             "logic_workbench", LogicWorkbenchBlock::new

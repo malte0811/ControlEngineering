@@ -4,7 +4,7 @@ import blusunrize.immersiveengineering.api.utils.client.SinglePropertyModelData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
-import malte0811.controlengineering.blocks.logic.LogicBoxBlock;
+import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
@@ -58,7 +58,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBusInterface, ITickableTileEntity {
+public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner, IBusInterface, ITickableTileEntity {
     private final CEEnergyStorage energy = new CEEnergyStorage(2048, 2 * 128, 128);
     private BusConnectedCircuit circuit;
     @Nonnull
@@ -66,8 +66,8 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private int numTubes;
 
-    public LogicBoxTile() {
-        super(CETileEntities.LOGIC_BOX.get());
+    public LogicCabinetTile() {
+        super(CETileEntities.LOGIC_CABINET.get());
         NetReference inA = new NetReference("A");
         NetReference inB = new NetReference("B");
         NetReference out = new NetReference("out");
@@ -245,18 +245,18 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
     }
 
     private Direction getFacing() {
-        return getBlockState().get(LogicBoxBlock.FACING);
+        return getBlockState().get(LogicCabinetBlock.FACING);
     }
 
     private boolean isUpper() {
-        return getBlockState().get(LogicBoxBlock.HEIGHT) != 0;
+        return getBlockState().get(LogicCabinetBlock.HEIGHT) != 0;
     }
 
     private final CachedValue<Pair<Direction, Boolean>, SelectionShapes> selectionShapes = new CachedValue<>(
             () -> Pair.of(getFacing(), isUpper()),
             f -> {
                 if (f.getSecond()) {
-                    return new SingleShape(LogicBoxBlock.TOP_SHAPE.apply(f.getFirst()), $ -> ActionResultType.PASS);
+                    return new SingleShape(LogicCabinetBlock.TOP_SHAPE.apply(f.getFirst()), $ -> ActionResultType.PASS);
                 } else {
                     return createSelectionShapes(f.getFirst(), this);
                 }
@@ -275,7 +275,7 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
         }
     }
 
-    private static SelectionShapes createSelectionShapes(Direction d, LogicBoxTile tile) {
+    private static SelectionShapes createSelectionShapes(Direction d, LogicCabinetTile tile) {
         List<SelectionShapes> subshapes = new ArrayList<>(1);
         // Add clear tape to input/take it from input
         subshapes.add(new SingleShape(
@@ -303,7 +303,7 @@ public class LogicBoxTile extends TileEntity implements SelectionShapeOwner, IBu
             return ActionResultType.SUCCESS;
         }));
         return new ListShapes(
-                LogicBoxBlock.BOTTOM_SHAPE.apply(d), Matrix4.inverseFacing(d), subshapes, $ -> ActionResultType.PASS
+                LogicCabinetBlock.BOTTOM_SHAPE.apply(d), Matrix4.inverseFacing(d), subshapes, $ -> ActionResultType.PASS
         );
     }
 }

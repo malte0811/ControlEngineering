@@ -6,14 +6,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import malte0811.controlengineering.blocks.CEBlocks;
-import malte0811.controlengineering.blocks.logic.LogicBoxBlock;
+import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.tape.TeletypeBlock;
 import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.modelbuilder.DynamicModelBuilder;
-import malte0811.controlengineering.modelbuilder.LogicBoxBuilder;
+import malte0811.controlengineering.modelbuilder.LogicCabinetBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderState;
@@ -53,28 +53,31 @@ public class BlockstateGenerator extends BlockStateProvider {
         panelModel();
         horizontalRotated(CEBlocks.TELETYPE.get(), TeletypeBlock.FACING, obj("typewriter.obj"));
         horizontalRotated(CEBlocks.PANEL_CNC.get(), PanelCNCBlock.FACING, obj("panel_cnc.obj"));
-        BlockModelBuilder boxModel = models().getBuilder("combined_logic_box")
+        BlockModelBuilder logicModel = models().getBuilder("combined_logic_cabinet")
                 .customLoader(CompositeModelBuilder::begin)
-                .submodel("static", obj("logicbox/chassis.obj"))
-                .submodel("dynamic", models().getBuilder("dynamic_logic_box")
-                        .customLoader(LogicBoxBuilder::begin)
-                        .board(obj("logicbox/board.obj"))
-                        .tube(obj("logicbox/tube.obj"))
+                .submodel("static", obj("logic_cabinet/chassis.obj"))
+                .submodel("dynamic", models().getBuilder("dynamic_logic_cabinet")
+                        .customLoader(LogicCabinetBuilder::begin)
+                        .board(obj("logic_cabinet/board.obj"))
+                        .tube(obj("logic_cabinet/tube.obj"))
                         .end())
                 .end();
         horizontalRotated(
-                CEBlocks.LOGIC_BOX.get(), LogicBoxBlock.FACING, boxModel, ImmutableMap.of(LogicBoxBlock.HEIGHT, 0)
+                CEBlocks.LOGIC_CABINET.get(),
+                LogicCabinetBlock.FACING,
+                logicModel,
+                ImmutableMap.of(LogicCabinetBlock.HEIGHT, 0)
         );
         horizontalRotated(
-                CEBlocks.LOGIC_BOX.get(),
-                LogicBoxBlock.FACING,
+                CEBlocks.LOGIC_CABINET.get(),
+                LogicCabinetBlock.FACING,
                 EMPTY_MODEL.model,
-                ImmutableMap.of(LogicBoxBlock.HEIGHT, 1)
+                ImmutableMap.of(LogicCabinetBlock.HEIGHT, 1)
         );
         for (LogicWorkbenchBlock.Offset offset : LogicWorkbenchBlock.Offset.values()) {
             ModelFile model;
             if (offset == LogicWorkbenchBlock.Offset.ORIGIN) {
-                model = obj("logicbox/workbench.obj");
+                model = obj("logic_cabinet/workbench.obj");
             } else {
                 model = EMPTY_MODEL.model;
             }

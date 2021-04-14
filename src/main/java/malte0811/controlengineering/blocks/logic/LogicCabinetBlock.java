@@ -5,7 +5,7 @@ import malte0811.controlengineering.blocks.placement.HorizontalStructurePlacemen
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.HorizontalShapeProvider;
 import malte0811.controlengineering.tiles.CETileEntities;
-import malte0811.controlengineering.tiles.logic.LogicBoxTile;
+import malte0811.controlengineering.tiles.logic.LogicCabinetTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
@@ -18,7 +18,7 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 
 import javax.annotation.Nonnull;
 
-public class LogicBoxBlock extends CEBlock<Direction, LogicBoxTile> {
+public class LogicCabinetBlock extends CEBlock<Direction, LogicCabinetTile> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final IntegerProperty HEIGHT = IntegerProperty.create("height", 0, 1);
 
@@ -41,12 +41,12 @@ public class LogicBoxBlock extends CEBlock<Direction, LogicBoxTile> {
             )
     );
 
-    public LogicBoxBlock() {
+    public LogicCabinetBlock() {
         super(
                 Properties.create(Material.IRON).notSolid().setOpaque(($1, $2, $3) -> false),
                 HorizontalStructurePlacement.column(FACING, HEIGHT),
                 FromBlockFunction.either((state, world, pos) -> state.get(HEIGHT) > 0, BOTTOM_SHAPE, TOP_SHAPE),
-                CETileEntities.LOGIC_BOX
+                CETileEntities.LOGIC_CABINET
         );
     }
 

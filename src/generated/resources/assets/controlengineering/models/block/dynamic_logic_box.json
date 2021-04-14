@@ -1,5 +1,0 @@
-{
-  "loader": "controlengineering:dynamic_logic",
-  "board": "controlengineering:logicbox/board_obj",
-  "tube": "controlengineering:logicbox/tube_obj"
-}

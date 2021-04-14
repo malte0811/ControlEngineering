@@ -32,9 +32,8 @@ public class LangGenerator extends LanguageProvider {
         addItem(CEItems.PUNCHED_TAPE, "Punched Tape");
         addItem(CEItems.PANEL_TOP, "Panel Top");
 
-        //TODO change?
-        addBlock(CEBlocks.LOGIC_BOX, "Logic box");
-        addBlock(CEBlocks.LOGIC_WORKBENCH, "Logic workbench");
+        addBlock(CEBlocks.LOGIC_CABINET, "Logic Cabinet");
+        addBlock(CEBlocks.LOGIC_WORKBENCH, "Logic Workbench");
 
         add(Constants.PUNCHED_TAPE_BYTES, "Characters: %d");
         add(Constants.EMPTY_TAPE_BYTES, "Length: %d characters");
