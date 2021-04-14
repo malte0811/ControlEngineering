@@ -1,30 +1,21 @@
 package malte0811.controlengineering.tiles.logic;
 
 import blusunrize.immersiveengineering.api.utils.client.SinglePropertyModelData;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
-import malte0811.controlengineering.blocks.shapes.ListShapes;
-import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
-import malte0811.controlengineering.blocks.shapes.SelectionShapes;
-import malte0811.controlengineering.blocks.shapes.SingleShape;
-import malte0811.controlengineering.bus.BusSignalRef;
+import malte0811.controlengineering.blocks.shapes.*;
 import malte0811.controlengineering.bus.BusState;
+import malte0811.controlengineering.bus.BusWireTypes;
 import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.bus.MarkDirtyHandler;
 import malte0811.controlengineering.items.CEItems;
-import malte0811.controlengineering.logic.cells.LeafcellType;
-import malte0811.controlengineering.logic.cells.Leafcells;
-import malte0811.controlengineering.logic.cells.SignalType;
+import malte0811.controlengineering.items.PCBStackItem;
 import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
-import malte0811.controlengineering.logic.circuit.Circuit;
-import malte0811.controlengineering.logic.circuit.CircuitBuilder;
-import malte0811.controlengineering.logic.circuit.NetReference;
 import malte0811.controlengineering.logic.clock.ClockGenerator;
 import malte0811.controlengineering.logic.clock.ClockGenerator.ClockInstance;
 import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.logic.model.DynamicLogicModel;
+import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.Clearable;
@@ -42,7 +33,7 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraftforge.client.model.data.IModelData;
@@ -57,40 +48,20 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner, IBusInterface, ITickableTileEntity {
     private final CEEnergyStorage energy = new CEEnergyStorage(2048, 2 * 128, 128);
-    private BusConnectedCircuit circuit;
+    @Nullable
+    private Pair<Schematic, BusConnectedCircuit> circuit;
     @Nonnull
     private ClockInstance<?> clock = ClockTypes.NEVER.newInstance();
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private int numTubes;
+    private BusState currentBusState = new BusState(BusWireTypes.MAX_BUS_WIDTH);
 
     public LogicCabinetTile() {
         super(CETileEntities.LOGIC_CABINET.get());
-        NetReference inA = new NetReference("A");
-        NetReference inB = new NetReference("B");
-        NetReference out = new NetReference("out");
-        Circuit defaultCircuit = CircuitBuilder.builder()
-                .addInputNet(inA, SignalType.DIGITAL)
-                .addInputNet(inB, SignalType.DIGITAL)
-                .addStage()
-                .addCell(Leafcells.AND2.newInstance())
-                .input(0, inA)
-                .input(1, inB)
-                .output(0, out)
-                .buildCell()
-                .buildStage()
-                .build();
-        setCircuit(new BusConnectedCircuit(
-                defaultCircuit,
-                ImmutableMap.of(out, ImmutableList.of(new BusSignalRef(0, 2))),
-                ImmutableMap.of(
-                        new BusSignalRef(0, 0), ImmutableList.of(inA),
-                        new BusSignalRef(0, 1), ImmutableList.of(inB)
-                ),
-                ImmutableMap.of()
-        ));
     }
 
     @Override
@@ -99,7 +70,7 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
             return;
         }
         //TODO less? config?
-        if (energy.extractOrTrue(128) || world.getGameTime() % 2 != 0) {
+        if (circuit == null || energy.extractOrTrue(128) || world.getGameTime() % 2 != 0) {
             return;
         }
         final Direction facing = getFacing();
@@ -109,7 +80,7 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
             return;
         }
         // Inputs are updated in onBusUpdated
-        if (circuit.tick()) {
+        if (circuit.getSecond().tick()) {
             markBusDirty.run();
         }
     }
@@ -121,7 +92,11 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
         if (clock == null) {
             clock = ClockTypes.NEVER.newInstance();
         }
-        setCircuit(new BusConnectedCircuit(nbt.getCompound("circuit")));
+        if (nbt.contains("circuit")) {
+            setCircuit(Codecs.readOrNull(Schematic.CODEC, nbt.get("circuit")));
+        } else {
+            setCircuit(null);
+        }
         energy.readNBT(nbt.get("energy"));
     }
 
@@ -130,13 +105,16 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
     public CompoundNBT write(@Nonnull CompoundNBT compound) {
         compound = super.write(compound);
         compound.put("clock", Codecs.encode(ClockInstance.CODEC, clock));
-        compound.put("circuit", circuit.toNBT());
+        if (circuit != null) {
+            compound.put("circuit", Codecs.encode(Schematic.CODEC, circuit.getFirst()));
+        }
         compound.put("energy", energy.writeNBT());
         return compound;
     }
 
     private CompoundNBT writeDynamicSyncNBT(CompoundNBT result) {
         result.putBoolean("hasClock", clock.getType().isActiveClock());
+        result.putInt("numTubes", numTubes);
         return result;
     }
 
@@ -145,6 +123,7 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
             clock = ClockTypes.ALWAYS_ON.newInstance();
         else
             clock = ClockTypes.NEVER.newInstance();
+        numTubes = tag.getInt("numTubes");
         requestModelDataUpdate();
         world.notifyBlockUpdate(
                 pos, getBlockState(), getBlockState(), Constants.BlockFlags.DEFAULT
@@ -154,16 +133,13 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
     @Override
     public void handleUpdateTag(BlockState state, CompoundNBT tag) {
         super.handleUpdateTag(state, tag);
-        numTubes = tag.getInt("numTubes");
         readDynamicSyncNBT(tag);
     }
 
     @Nonnull
     @Override
     public CompoundNBT getUpdateTag() {
-        CompoundNBT result = writeDynamicSyncNBT(super.getUpdateTag());
-        result.putInt("numTubes", numTubes);
-        return result;
+        return writeDynamicSyncNBT(super.getUpdateTag());
     }
 
     @Nullable
@@ -187,12 +163,19 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
 
     @Override
     public void onBusUpdated(BusState newState) {
-        circuit.updateInputs(newState);
+        if (circuit != null) {
+            circuit.getSecond().updateInputs(newState);
+        }
+        this.currentBusState = newState;
     }
 
     @Override
     public BusState getEmittedState() {
-        return circuit.getOutputState();
+        if (circuit != null) {
+            return circuit.getSecond().getOutputState();
+        } else {
+            return BusState.EMPTY;
+        }
     }
 
     @Override
@@ -236,12 +219,20 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
         this.markBusDirty.run();
     }
 
-    public void setCircuit(BusConnectedCircuit circuit) {
-        this.circuit = circuit;
-        this.numTubes = MathHelper.ceil(circuit.getCircuit()
-                .getCellTypes()
-                .mapToDouble(LeafcellType::getNumTubes)
-                .sum());
+    public void setCircuit(@Nullable Schematic schematic) {
+        this.circuit = null;
+        if (schematic != null) {
+            Optional<BusConnectedCircuit> busCircuit = schematic.toCircuit().left();
+            if (busCircuit.isPresent()) {
+                this.circuit = Pair.of(schematic, busCircuit.get());
+            }
+        }
+        if (this.circuit != null) {
+            this.numTubes = this.circuit.getSecond().getNumTubes();
+            this.circuit.getSecond().updateInputs(currentBusState);
+        } else {
+            this.numTubes = 0;
+        }
     }
 
     private Direction getFacing() {
@@ -255,11 +246,14 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
     private final CachedValue<Pair<Direction, Boolean>, SelectionShapes> selectionShapes = new CachedValue<>(
             () -> Pair.of(getFacing(), isUpper()),
             f -> {
+                LogicCabinetTile tile = this;
                 if (f.getSecond()) {
-                    return new SingleShape(LogicCabinetBlock.TOP_SHAPE.apply(f.getFirst()), $ -> ActionResultType.PASS);
-                } else {
-                    return createSelectionShapes(f.getFirst(), this);
+                    TileEntity below = world.getTileEntity(pos.down());
+                    if (below instanceof LogicCabinetTile) {
+                        tile = (LogicCabinetTile) below;
+                    }
                 }
+                return createSelectionShapes(f.getFirst(), tile, f.getSecond());
             }
     );
 
@@ -275,10 +269,20 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
         }
     }
 
-    private static SelectionShapes createSelectionShapes(Direction d, LogicCabinetTile tile) {
+    private static SelectionShapes createSelectionShapes(Direction d, LogicCabinetTile tile, boolean upper) {
         List<SelectionShapes> subshapes = new ArrayList<>(1);
-        // Add clear tape to input/take it from input
-        subshapes.add(new SingleShape(
+        HorizontalShapeProvider baseShape = upper ? LogicCabinetBlock.TOP_SHAPE : LogicCabinetBlock.BOTTOM_SHAPE;
+        if (!upper) {
+            subshapes.add(makeClockInteraction(tile));
+        }
+        subshapes.add(makeBoardInteraction(tile, upper));
+        return new ListShapes(
+                baseShape.apply(d), Matrix4.inverseFacing(d), subshapes, $ -> ActionResultType.PASS
+        );
+    }
+
+    private static SelectionShapes makeClockInteraction(LogicCabinetTile tile) {
+        return new SingleShape(
                 VoxelShapes.create(0, 6 / 16., 6 / 16., 5 / 16., 10 / 16., 10 / 16.), ctx -> {
             if (ctx.getPlayer() == null) {
                 return ActionResultType.PASS;
@@ -301,9 +305,36 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
                 }
             }
             return ActionResultType.SUCCESS;
-        }));
-        return new ListShapes(
-                LogicCabinetBlock.BOTTOM_SHAPE.apply(d), Matrix4.inverseFacing(d), subshapes, $ -> ActionResultType.PASS
+        });
+    }
+
+    private static SelectionShapes makeBoardInteraction(LogicCabinetTile tile, boolean upper) {
+        final int yOff = upper ? -16 : 0;
+        final VoxelShape fullShape = VoxelShapes.create(
+                0, (11 + yOff) / 16., 1 / 16.,
+                15 / 16., (31 + yOff) / 16., 15 / 16.
         );
+        return new SingleShape(
+                fullShape, ctx -> {
+            if (ctx.getPlayer() == null) {
+                return ActionResultType.PASS;
+            }
+            if (!ctx.getWorld().isRemote) {
+                final Pair<Schematic, BusConnectedCircuit> oldSchematic = tile.circuit;
+                Pair<Schematic, BusConnectedCircuit> schematic = PCBStackItem.getSchematic(ctx.getItem());
+                if (schematic != null) {
+                    tile.setCircuit(schematic.getFirst());
+                    ctx.getItem().shrink(1);
+                } else {
+                    tile.setCircuit(null);
+                    tile.markBusDirty.run();
+                }
+                if (oldSchematic != null) {
+                    ItemUtil.giveOrDrop(ctx.getPlayer(), PCBStackItem.forSchematic(oldSchematic.getFirst()));
+                }
+                tile.markDirtyAndSync();
+            }
+            return ActionResultType.SUCCESS;
+        });
     }
 }

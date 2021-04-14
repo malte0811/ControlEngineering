@@ -21,6 +21,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -35,12 +36,14 @@ public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> 
     public static final HorizontalWithExtraShape<Offset> SHAPE = new HorizontalWithExtraShape<>(
             FromBlockFunction.getProperty(OFFSET),
             FromBlockFunction.getProperty(FACING),
-            ImmutableMap.of(
-                    Offset.ORIGIN, VoxelShapes.fullCube(),
-                    Offset.BACK_LEFT, VoxelShapes.fullCube(),
-                    Offset.FRONT_RIGHT, VoxelShapes.fullCube(),
-                    Offset.OPPOSITE, VoxelShapes.fullCube()
-            )
+            ImmutableMap.<Offset, VoxelShape>builder()
+                    .put(Offset.ORIGIN, VoxelShapes.fullCube())
+                    .put(Offset.BACK_LEFT, VoxelShapes.fullCube())
+                    .put(Offset.FRONT_RIGHT, VoxelShapes.fullCube())
+                    .put(Offset.OPPOSITE, VoxelShapes.fullCube())
+                    .put(Offset.TOP_LEFT, VoxelShapes.fullCube())
+                    .put(Offset.TOP_RIGHT, VoxelShapes.fullCube())
+                    .build()
     );
 
     public LogicWorkbenchBlock() {
@@ -73,11 +76,17 @@ public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> 
         ORIGIN(0, 0),
         FRONT_RIGHT(1, 0),
         BACK_LEFT(0, -1),
-        OPPOSITE(1, -1);
+        OPPOSITE(1, -1),
+        TOP_LEFT(0, 1, -1),
+        TOP_RIGHT(1, 1, -1);
         private final BlockPos offset;
 
         Offset(int xOff, int zOff) {
-            this.offset = new BlockPos(xOff, 0, zOff);
+            this(xOff, 0, zOff);
+        }
+
+        Offset(int xOff, int yOff, int zOff) {
+            this.offset = new BlockPos(xOff, yOff, zOff);
         }
 
         public BlockPos getOffset() {

@@ -5,9 +5,13 @@ import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
+import malte0811.controlengineering.items.IEItemRefs;
+import malte0811.controlengineering.items.PCBStackItem;
+import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.CachedValue;
+import malte0811.controlengineering.util.ItemUtil;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemUseContext;
@@ -18,6 +22,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class LogicWorkbenchTile extends TileEntity implements SelectionShapeOwner {
     private Schematic schematic = new Schematic();
@@ -31,17 +38,27 @@ public class LogicWorkbenchTile extends TileEntity implements SelectionShapeOwne
             state -> {
                 LogicWorkbenchBlock.Offset offset = state.get(LogicWorkbenchBlock.OFFSET);
                 VoxelShape baseShape = LogicWorkbenchBlock.SHAPE.apply(offset, state.get(LogicWorkbenchBlock.FACING));
-                return new SingleShape(baseShape, ctx -> {
-                    BlockPos origin = CEBlocks.LOGIC_WORKBENCH.get().getMainBlock(state, this);
-                    TileEntity atOrigin = world.getTileEntity(origin);
-                    if (atOrigin instanceof LogicWorkbenchTile) {
-                        return ((LogicWorkbenchTile) atOrigin).handleMainClick(ctx);
-                    } else {
-                        return ActionResultType.FAIL;
-                    }
-                });
+                if (offset == LogicWorkbenchBlock.Offset.TOP_RIGHT) {
+                    return new SingleShape(baseShape, makeInteraction(state, LogicWorkbenchTile::handleCreationClick));
+                } else {
+                    return new SingleShape(baseShape, makeInteraction(state, LogicWorkbenchTile::handleMainClick));
+                }
             }
     );
+
+    private Function<ItemUseContext, ActionResultType> makeInteraction(
+            BlockState state, BiFunction<LogicWorkbenchTile, ItemUseContext, ActionResultType> handler
+    ) {
+        return ctx -> {
+            BlockPos origin = CEBlocks.LOGIC_WORKBENCH.get().getMainBlock(state, this);
+            TileEntity atOrigin = world.getTileEntity(origin);
+            if (atOrigin instanceof LogicWorkbenchTile) {
+                return handler.apply((LogicWorkbenchTile) atOrigin, ctx);
+            } else {
+                return ActionResultType.FAIL;
+            }
+        };
+    }
 
     @Override
     public SelectionShapes getShape() {
@@ -70,6 +87,27 @@ public class LogicWorkbenchTile extends TileEntity implements SelectionShapeOwne
             CEBlocks.LOGIC_WORKBENCH.get().openContainer(
                     ctx.getPlayer(), getBlockState(), ctx.getWorld(), pos
             );
+        }
+        return ActionResultType.SUCCESS;
+    }
+
+    private ActionResultType handleCreationClick(ItemUseContext ctx) {
+        if (ctx.getPlayer() == null || ctx.getItem().getItem() != IEItemRefs.CIRCUIT_BOARD.get()) {
+            return ActionResultType.PASS;
+        }
+        Optional<BusConnectedCircuit> circuit = schematic.toCircuit().left();
+        if (!circuit.isPresent()) {
+            return ActionResultType.FAIL;
+        }
+        final int numTubes = circuit.get().getNumTubes();
+        final int numBoards = (numTubes + 15) / 16;
+        if (numBoards > ctx.getItem().getCount()) {
+            return ActionResultType.FAIL;
+        }
+        //TODO check and consume tubes and wiring, maybe even steiner tree stuff at some point
+        if (!world.isRemote) {
+            ctx.getItem().shrink(numBoards);
+            ItemUtil.giveOrDrop(ctx.getPlayer(), PCBStackItem.forSchematic(schematic));
         }
         return ActionResultType.SUCCESS;
     }

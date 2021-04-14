@@ -159,18 +159,20 @@ public class DynamicLogicModel implements IBakedModel {
         public FixedTubeModel(int numTubes) {
             List<BakedQuad> solid = new ArrayList<>();
             List<BakedQuad> translucent = new ArrayList<>();
-            int numAdded = 0;
-            for (float y : BOARD_HEIGHTS) {
-                solid.addAll(translated(board, new Vector3f(0, y, 0)));
-                for (Vector2f xz : TUBE_OFFSETS) {
-                    translucent.addAll(translated(tube, new Vector3f(-xz.x, y, -xz.y)));
-                    ++numAdded;
+            if (numTubes > 0) {
+                int numAdded = 0;
+                for (float y : BOARD_HEIGHTS) {
+                    solid.addAll(translated(board, new Vector3f(0, y, 0)));
+                    for (Vector2f xz : TUBE_OFFSETS) {
+                        translucent.addAll(translated(tube, new Vector3f(-xz.x, y, -xz.y)));
+                        ++numAdded;
+                        if (numAdded >= numTubes) {
+                            break;
+                        }
+                    }
                     if (numAdded >= numTubes) {
                         break;
                     }
-                }
-                if (numAdded >= numTubes) {
-                    break;
                 }
             }
             this.solid = ImmutableList.copyOf(solid);

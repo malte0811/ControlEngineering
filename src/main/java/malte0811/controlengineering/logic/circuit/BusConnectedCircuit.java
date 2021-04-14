@@ -6,6 +6,7 @@ import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.BusWireTypes;
+import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
@@ -102,5 +103,12 @@ public class BusConnectedCircuit {
 
     public BusState getOutputState() {
         return outputValues;
+    }
+
+    public int getNumTubes() {
+        return MathHelper.ceil(getCircuit()
+                .getCellTypes()
+                .mapToDouble(LeafcellType::getNumTubes)
+                .sum());
     }
 }

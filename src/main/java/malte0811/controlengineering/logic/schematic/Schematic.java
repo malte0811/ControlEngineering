@@ -249,6 +249,9 @@ public class Schematic {
             }
             cellBuilder.buildCell();
         }
+        if (currentStage != null) {
+            currentStage.buildStage();
+        }
         if (errors.isEmpty()) {
             return Either.left(
                     new BusConnectedCircuit(builder.build(), outputConnections, inputConnections, constantNets)
