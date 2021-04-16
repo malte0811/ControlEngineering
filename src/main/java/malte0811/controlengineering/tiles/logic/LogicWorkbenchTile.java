@@ -1,7 +1,9 @@
 package malte0811.controlengineering.tiles.logic;
 
+import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
+import malte0811.controlengineering.blocks.shapes.ListShapes;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
@@ -12,12 +14,14 @@ import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.ItemUtil;
+import malte0811.controlengineering.util.Matrix4;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 
@@ -37,9 +41,26 @@ public class LogicWorkbenchTile extends TileEntity implements SelectionShapeOwne
             this::getBlockState,
             state -> {
                 LogicWorkbenchBlock.Offset offset = state.get(LogicWorkbenchBlock.OFFSET);
-                VoxelShape baseShape = LogicWorkbenchBlock.SHAPE.apply(offset, state.get(LogicWorkbenchBlock.FACING));
+                Direction facing = state.get(LogicWorkbenchBlock.FACING);
+                VoxelShape baseShape = LogicWorkbenchBlock.SHAPE.apply(offset, facing);
+                Function<ItemUseContext, ActionResultType> drawers = makeInteraction(
+                        state, LogicWorkbenchTile::handleDrawerClick
+                );
                 if (offset == LogicWorkbenchBlock.Offset.TOP_RIGHT) {
-                    return new SingleShape(baseShape, makeInteraction(state, LogicWorkbenchTile::handleCreationClick));
+                    Function<ItemUseContext, ActionResultType> create = makeInteraction(
+                            state, LogicWorkbenchTile::handleCreationClick
+                    );
+                    return new ListShapes(
+                            baseShape,
+                            new Matrix4(facing),
+                            ImmutableList.<SelectionShapes>of(
+                                    new SingleShape(LogicWorkbenchBlock.BURNER, create),
+                                    new SingleShape(LogicWorkbenchBlock.DRAWERS_TOP_RIGHT, drawers)
+                            ),
+                            $ -> ActionResultType.PASS
+                    );
+                } else if (offset == LogicWorkbenchBlock.Offset.TOP_LEFT) {
+                    return new SingleShape(baseShape, drawers);
                 } else {
                     return new SingleShape(baseShape, makeInteraction(state, LogicWorkbenchTile::handleMainClick));
                 }
@@ -110,6 +131,11 @@ public class LogicWorkbenchTile extends TileEntity implements SelectionShapeOwne
             ItemUtil.giveOrDrop(ctx.getPlayer(), PCBStackItem.forSchematic(schematic));
         }
         return ActionResultType.SUCCESS;
+    }
+
+    private ActionResultType handleDrawerClick(ItemUseContext ctx) {
+        //TODO
+        return ActionResultType.FAIL;
     }
 
     public Schematic getSchematic() {

@@ -45,18 +45,48 @@
       "model": "immersiveengineering:block/ie_empty",
       "y": 270
     },
-    "facing=north,offset=opposite": {
+    "facing=north,offset=back_right": {
       "model": "immersiveengineering:block/ie_empty",
       "y": 180
     },
-    "facing=south,offset=opposite": {
+    "facing=south,offset=back_right": {
       "model": "immersiveengineering:block/ie_empty"
     },
-    "facing=west,offset=opposite": {
+    "facing=west,offset=back_right": {
       "model": "immersiveengineering:block/ie_empty",
       "y": 90
     },
-    "facing=east,offset=opposite": {
+    "facing=east,offset=back_right": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 270
+    },
+    "facing=north,offset=top_left": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 180
+    },
+    "facing=south,offset=top_left": {
+      "model": "immersiveengineering:block/ie_empty"
+    },
+    "facing=west,offset=top_left": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 90
+    },
+    "facing=east,offset=top_left": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 270
+    },
+    "facing=north,offset=top_right": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 180
+    },
+    "facing=south,offset=top_right": {
+      "model": "immersiveengineering:block/ie_empty"
+    },
+    "facing=west,offset=top_right": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 90
+    },
+    "facing=east,offset=top_right": {
       "model": "immersiveengineering:block/ie_empty",
       "y": 270
     }

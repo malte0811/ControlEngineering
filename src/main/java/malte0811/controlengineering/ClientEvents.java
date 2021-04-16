@@ -39,27 +39,29 @@ public class ClientEvents {
         if (te instanceof SelectionShapeOwner) {
             MatrixStack transform = ev.getMatrix();
             transform.push();
-            int pushCount = 1;
             Vector3d projectedView = Vector3d.copy(highlighted).subtract(ev.getInfo().getProjectedView());
             transform.translate(projectedView.x, projectedView.y, projectedView.z);
             IVertexBuilder builder = ev.getBuffers().getBuffer(RenderType.getLines());
             List<? extends SelectionShapes> selectedStack = ((SelectionShapeOwner) te).getShape()
                     .getTargeted(RaytraceUtils.create(player, ev.getPartialTicks(), Vector3d.copy(highlighted)));
-            for (SelectionShapes shape : selectedStack) {
+            if (!selectedStack.isEmpty()) {
+                final int pushCount = selectedStack.size() - 1;
+                for (int i = 0; i < pushCount; ++i) {
+                    selectedStack.get(i)
+                            .outerToInnerPosition()
+                            .toTransformationMatrix()
+                            //TODO cache?
+                            .inverse()
+                            .push(transform);
+                }
                 Matrix4f currentMatrix = transform.getLast().getMatrix();
-                shape.plotBox((v1, v2) -> {
+                selectedStack.get(pushCount).plotBox((v1, v2) -> {
                     addPoint(builder, currentMatrix, v1);
                     addPoint(builder, currentMatrix, v2);
                 });
-                shape.outerToInnerPosition()
-                        .toTransformationMatrix()
-                        //TODO cache?
-                        .inverse()
-                        .push(transform);
-                ++pushCount;
-            }
-            for (int i = 0; i < pushCount; ++i) {
-                transform.pop();
+                for (int i = 0; i < pushCount; ++i) {
+                    transform.pop();
+                }
             }
 
             ev.setCanceled(true);

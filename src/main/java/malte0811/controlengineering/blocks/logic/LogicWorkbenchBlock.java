@@ -33,16 +33,41 @@ import java.util.Locale;
 public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> {
     public static final Property<Offset> OFFSET = EnumProperty.create("offset", Offset.class);
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    private static final VoxelShape TABLE_TOP = VoxelShapes.create(0, 13 / 16., 0, 1, 1, 1);
+    private static final VoxelShape LEG_LEFT_FRONT = VoxelShapes.create(1 / 16., 0, 12 / 16., 4 / 16., 1, 15 / 16.);
+    private static final VoxelShape LEG_LEFT_BACK = VoxelShapes.create(1 / 16., 0, 1 / 16., 4 / 16., 1, 4 / 16.);
+    private static final VoxelShape LEG_RIGHT_FRONT = VoxelShapes.create(12 / 16., 0, 12 / 16., 15 / 16., 1, 15 / 16.);
+    private static final VoxelShape LEG_RIGHT_BACK = VoxelShapes.create(12 / 16., 0, 1 / 16., 15 / 16., 1, 4 / 16.);
+    private static final VoxelShape DRAWER_LOW = VoxelShapes.create(
+            1 / 16., 7 / 16., 1 / 16., 15 / 16., 13 / 16., 15 / 16.
+    );
+    public static final VoxelShape BURNER = VoxelShapes.or(
+            VoxelShapes.create(11 / 16., 0, 3 / 16., 13 / 16., 6 / 16., 5 / 16.),
+            VoxelShapes.create(9 / 16., 9 / 32., 7 / 32., 11 / 16., 11 / 32., 9 / 32.)
+    );
+    private static final VoxelShape DRAWERS_TOP = VoxelShapes.or(
+            VoxelShapes.create(2 / 16., 0, 2 / 16., 10 / 16., 8 / 16., 8 / 16.),
+            VoxelShapes.create(12 / 16., 0, 2 / 16., 20 / 16., 8 / 16., 8 / 16.)
+    );
+    public static final VoxelShape DRAWERS_TOP_RIGHT = DRAWERS_TOP.withOffset(-1, 0, 0);
+
     public static final HorizontalWithExtraShape<Offset> SHAPE = new HorizontalWithExtraShape<>(
             FromBlockFunction.getProperty(OFFSET),
             FromBlockFunction.getProperty(FACING),
             ImmutableMap.<Offset, VoxelShape>builder()
-                    .put(Offset.ORIGIN, VoxelShapes.fullCube())
-                    .put(Offset.BACK_LEFT, VoxelShapes.fullCube())
-                    .put(Offset.FRONT_RIGHT, VoxelShapes.fullCube())
-                    .put(Offset.OPPOSITE, VoxelShapes.fullCube())
-                    .put(Offset.TOP_LEFT, VoxelShapes.fullCube())
-                    .put(Offset.TOP_RIGHT, VoxelShapes.fullCube())
+                    .put(Offset.ORIGIN, VoxelShapes.or(
+                            TABLE_TOP,
+                            LEG_LEFT_FRONT,
+                            LEG_LEFT_BACK,
+                            LEG_RIGHT_FRONT,
+                            LEG_RIGHT_BACK,
+                            DRAWER_LOW
+                    ))
+                    .put(Offset.BACK_LEFT, VoxelShapes.or(TABLE_TOP, LEG_LEFT_BACK))
+                    .put(Offset.FRONT_RIGHT, VoxelShapes.or(TABLE_TOP, LEG_RIGHT_FRONT))
+                    .put(Offset.BACK_RIGHT, VoxelShapes.or(TABLE_TOP, LEG_RIGHT_BACK))
+                    .put(Offset.TOP_LEFT, DRAWERS_TOP)
+                    .put(Offset.TOP_RIGHT, VoxelShapes.or(BURNER, DRAWERS_TOP_RIGHT))
                     .build()
     );
 
@@ -76,7 +101,7 @@ public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> 
         ORIGIN(0, 0),
         FRONT_RIGHT(1, 0),
         BACK_LEFT(0, -1),
-        OPPOSITE(1, -1),
+        BACK_RIGHT(1, -1),
         TOP_LEFT(0, 1, -1),
         TOP_RIGHT(1, 1, -1);
         private final BlockPos offset;
