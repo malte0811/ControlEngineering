@@ -2,16 +2,21 @@ package malte0811.controlengineering.controlpanels.cnc;
 
 import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.bus.BusSignalRef;
+import malte0811.controlengineering.controlpanels.PanelComponentInstance;
+import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
-import malte0811.controlengineering.controlpanels.components.Button;
-import malte0811.controlengineering.controlpanels.components.Indicator;
+import malte0811.controlengineering.controlpanels.components.ColorAndSignal;
 import malte0811.controlengineering.util.Vec2d;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class CNCInstructionParserTest {
-    private static final Button BUTTON = new Button(0xffffff, false, new BusSignalRef(1, 2));
-    private static final Indicator INDICATOR = new Indicator(0xff00, new BusSignalRef(2, 1), 0);
+    private static final PanelComponentInstance<?, ?> BUTTON = PanelComponents.BUTTON.newInstance(
+            new ColorAndSignal(0xffffff, new BusSignalRef(1, 2))
+    );
+    private static final PanelComponentInstance<?, ?> INDICATOR = PanelComponents.INDICATOR.newInstance(
+            new ColorAndSignal(0xff00, new BusSignalRef(2, 1))
+    );
 
     private void assertSuccess(
             CNCInstructionParser.ParserResult result,

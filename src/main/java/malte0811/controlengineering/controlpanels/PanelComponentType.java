@@ -2,17 +2,21 @@ package malte0811.controlengineering.controlpanels;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.util.Vec2i;
 import malte0811.controlengineering.util.serialization.Codecs;
+import malte0811.controlengineering.util.serialization.serial.StringCodecParser;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.AxisAlignedBB;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public abstract class PanelComponentType<Config, State> extends TypedRegistryEntry<Pair<Config, State>> {
     private final Vec2i size;
+    private final StringCodecParser<Config> configParser;
 
     protected PanelComponentType(
             Config defaultConfig, State intitialState,
@@ -21,6 +25,7 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
     ) {
         super(Pair.of(defaultConfig, intitialState), Codecs.safePair(codecConfig, codecState));
         this.size = size;
+        this.configParser = StringCodecParser.getParser(codecConfig);
     }
 
     @Override
@@ -30,6 +35,10 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
 
     public PanelComponentInstance<Config, State> newInstance(Config config) {
         return new PanelComponentInstance<>(this, Pair.of(config, getInitialState().getSecond()));
+    }
+
+    public DataResult<PanelComponentInstance<Config, State>> newInstance(List<String> data) {
+        return configParser.parse(data).map(this::newInstance);
     }
 
     public abstract BusState getEmittedState(Config config, State state);

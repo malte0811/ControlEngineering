@@ -7,7 +7,7 @@ import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
-import malte0811.controlengineering.controlpanels.PanelComponent;
+import malte0811.controlengineering.controlpanels.PanelComponentInstance;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
@@ -66,25 +66,26 @@ public class CNCInstructionParser {
 
     private static DataResult<PlacedComponent> parseComponent(List<String> tokens) {
         String typeName = tokens.get(0);
-        String xStr = tokens.get(1);
-        String yStr = tokens.get(2);
-        PanelComponentType<?> type = PanelComponents.getType(typeName);
+        PanelComponentType<?, ?> type = PanelComponents.getType(typeName);
         if (type == null) {
             return DataResult.error("Unknown type: " + typeName);
         }
-        DataResult<? extends PanelComponent<?>> component = type.fromString(tokens.subList(3, tokens.size()));
+        double x;
+        double y;
+        try {
+            x = Double.parseDouble(tokens.get(1));
+            y = Double.parseDouble(tokens.get(2));
+        } catch (NumberFormatException xcp) {
+            return DataResult.error("Invalid position: " + xcp.getMessage());
+        }
+        DataResult<? extends PanelComponentInstance<?, ?>> component = type.newInstance(tokens.subList(
+                3,
+                tokens.size()
+        ));
         if (component.error().isPresent()) {
             return DataResult.error(component.error().get().message());
         }
         Preconditions.checkState(component.result().isPresent());
-        double x;
-        double y;
-        try {
-            x = Double.parseDouble(xStr);
-            y = Double.parseDouble(yStr);
-        } catch (NumberFormatException xcp) {
-            return DataResult.error("Invalid position: " + xcp.getMessage());
-        }
         PlacedComponent placed = new PlacedComponent(component.result().get(), new Vec2d(x, y));
         if (!placed.isWithinPanel()) {
             return DataResult.error("Not within panel bounds");

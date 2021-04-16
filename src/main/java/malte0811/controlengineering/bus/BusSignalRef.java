@@ -1,22 +1,15 @@
 package malte0811.controlengineering.bus;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import malte0811.controlengineering.util.serialization.StringSerializableCodec;
+import malte0811.controlengineering.util.serialization.ListBasedCodec;
 
 import java.util.Objects;
 
 public class BusSignalRef {
-    public static final Codec<BusSignalRef> CODEC = RecordCodecBuilder.create(
-            inst -> inst.group(
-                    Codec.INT.fieldOf("line").forGetter(ref -> ref.line),
-                    Codec.INT.fieldOf("color").forGetter(ref -> ref.color)
-            ).apply(inst, BusSignalRef::new)
-    );
-
-    public static final StringSerializableCodec<BusSignalRef> STRINGY_CODEC = StringSerializableCodec.fromCodecXcpError(
-            BusSignalRef.CODEC,
-            (line, color) -> new BusSignalRef(Integer.parseInt(line), Integer.parseInt(color))
+    public static final Codec<BusSignalRef> CODEC = ListBasedCodec.create(
+            "line", Codec.INT, ref -> ref.line,
+            "color", Codec.INT, ref -> ref.color,
+            BusSignalRef::new
     );
 
     public final int line;

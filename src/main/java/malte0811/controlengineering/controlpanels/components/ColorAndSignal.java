@@ -1,17 +1,17 @@
 package malte0811.controlengineering.controlpanels.components;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.bus.BusSignalRef;
+import malte0811.controlengineering.util.serialization.ListBasedCodec;
+import malte0811.controlengineering.util.serialization.serial.BasicCodecParser;
 
 import java.util.Objects;
 
 public class ColorAndSignal {
-    public static final Codec<ColorAndSignal> CODEC = RecordCodecBuilder.create(
-            inst -> inst.group(
-                    Codec.INT.fieldOf("color").forGetter(o -> o.color),
-                    BusSignalRef.CODEC.fieldOf("signal").forGetter(o -> o.signal)
-            ).apply(inst, ColorAndSignal::new)
+    public static final Codec<ColorAndSignal> CODEC = ListBasedCodec.create(
+            "color", BasicCodecParser.HEX_INT, ColorAndSignal::getColor,
+            "signal", BusSignalRef.CODEC, ColorAndSignal::getSignal,
+            ColorAndSignal::new
     );
     public static final ColorAndSignal DEFAULT = new ColorAndSignal(-1, new BusSignalRef(0, 0));
 
