@@ -37,14 +37,14 @@ public class ClientEvents {
         TileEntity te = world.getTileEntity(highlighted);
         //TODO fix panels
         if (te instanceof SelectionShapeOwner) {
-            MatrixStack transform = ev.getMatrix();
-            transform.push();
-            Vector3d projectedView = Vector3d.copy(highlighted).subtract(ev.getInfo().getProjectedView());
-            transform.translate(projectedView.x, projectedView.y, projectedView.z);
-            IVertexBuilder builder = ev.getBuffers().getBuffer(RenderType.getLines());
             List<? extends SelectionShapes> selectedStack = ((SelectionShapeOwner) te).getShape()
                     .getTargeted(RaytraceUtils.create(player, ev.getPartialTicks(), Vector3d.copy(highlighted)));
             if (!selectedStack.isEmpty()) {
+                MatrixStack transform = ev.getMatrix();
+                transform.push();
+                Vector3d projectedView = Vector3d.copy(highlighted).subtract(ev.getInfo().getProjectedView());
+                transform.translate(projectedView.x, projectedView.y, projectedView.z);
+                IVertexBuilder builder = ev.getBuffers().getBuffer(RenderType.getLines());
                 final int pushCount = selectedStack.size() - 1;
                 for (int i = 0; i < pushCount; ++i) {
                     selectedStack.get(i)
@@ -62,8 +62,8 @@ public class ClientEvents {
                 for (int i = 0; i < pushCount; ++i) {
                     transform.pop();
                 }
+                transform.pop();
             }
-
             ev.setCanceled(true);
         }
     }

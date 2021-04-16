@@ -1,53 +1,59 @@
 package malte0811.controlengineering.controlpanels;
 
-import com.mojang.serialization.DataResult;
-import malte0811.controlengineering.util.serialization.StringSerializer;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import malte0811.controlengineering.bus.BusState;
+import malte0811.controlengineering.util.Vec2i;
+import malte0811.controlengineering.util.serialization.Codecs;
+import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.math.AxisAlignedBB;
 
-import java.util.List;
-import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
-public final class PanelComponentType<T extends PanelComponent<T>> {
-    private final ResourceLocation name;
-    private final StringSerializer<T> codec;
-    private final Supplier<T> createEmpty;
+public abstract class PanelComponentType<Config, State> extends TypedRegistryEntry<Pair<Config, State>> {
+    private final Vec2i size;
 
-    public PanelComponentType(ResourceLocation name, StringSerializer<T> codec, Supplier<T> createEmpty) {
-        this.name = name;
-        this.codec = codec;
-        this.createEmpty = createEmpty;
+    protected PanelComponentType(
+            Config defaultConfig, State intitialState,
+            Codec<Config> codecConfig, Codec<State> codecState,
+            Vec2i size
+    ) {
+        super(Pair.of(defaultConfig, intitialState), Codecs.safePair(codecConfig, codecState));
+        this.size = size;
     }
 
-    public CompoundNBT toNBT(T instance) {
-        return codec.toNBT(instance);
+    @Override
+    public PanelComponentInstance<Config, State> newInstance() {
+        return new PanelComponentInstance<>(this, getInitialState());
     }
 
-    public DataResult<T> fromNBT(CompoundNBT data) {
-        return codec.fromNBT(data).map(r -> {
-            r.setType(this);
-            return r;
-        });
+    public PanelComponentInstance<Config, State> newInstance(Config config) {
+        return new PanelComponentInstance<>(this, Pair.of(config, getInitialState().getSecond()));
     }
 
-    public T empty() {
-        T empty = createEmpty.get();
-        empty.setType(this);
-        return empty;
+    public abstract BusState getEmittedState(Config config, State state);
+
+    public abstract State updateTotalState(Config config, State oldState, BusState busState);
+
+    public abstract State tick(Config config, State oldState);
+
+    public abstract Pair<ActionResultType, State> click(Config config, State oldState);
+
+    @Nullable
+    protected abstract AxisAlignedBB createSelectionShape();
+
+    private AxisAlignedBB selectionShape;
+
+    @Nullable
+    public AxisAlignedBB getSelectionShape() {
+        if (selectionShape == null) {
+            selectionShape = createSelectionShape();
+        }
+        return selectionShape;
     }
 
-    public StringSerializer<T> getCodec() {
-        return codec;
-    }
-
-    public ResourceLocation getName() {
-        return name;
-    }
-
-    public DataResult<T> fromString(List<String> subList) {
-        return getCodec().fromString(subList).map(c -> {
-            c.setType(this);
-            return c;
-        });
+    public Vec2i getSize() {
+        return size;
     }
 }

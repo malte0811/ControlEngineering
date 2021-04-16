@@ -2,7 +2,6 @@ package malte0811.controlengineering.controlpanels;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.util.Matrix4;
@@ -24,22 +23,22 @@ import java.util.Objects;
 public class PlacedComponent extends SelectionShapes {
     public static final Codec<PlacedComponent> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
-                    PanelComponent.CODEC.fieldOf("component").forGetter(pc -> pc.component),
+                    PanelComponentInstance.CODEC.fieldOf("component").forGetter(pc -> pc.component),
                     Vec2d.CODEC.fieldOf("position").forGetter(pc -> pc.pos)
             ).apply(inst, PlacedComponent::new)
     );
 
     @Nonnull
-    private final PanelComponent<?> component;
+    private final PanelComponentInstance<?, ?> component;
     @Nonnull
     private final Vec2d pos;
     private final Lazy<AxisAlignedBB> shape;
 
-    public PlacedComponent(@Nonnull PanelComponent<?> component, @Nonnull Vec2d pos) {
+    public PlacedComponent(@Nonnull PanelComponentInstance<?, ?> component, @Nonnull Vec2d pos) {
         this.component = component;
         this.pos = pos;
         shape = Lazy.of(() -> {
-            AxisAlignedBB compShape = component.getSelectionBox();
+            AxisAlignedBB compShape = component.getType().getSelectionShape();
             if (compShape == null) {
                 return null;
             } else {
@@ -49,7 +48,7 @@ public class PlacedComponent extends SelectionShapes {
     }
 
     @Nonnull
-    public PanelComponent<?> getComponent() {
+    public PanelComponentInstance<?, ?> getComponent() {
         return component;
     }
 
@@ -60,7 +59,7 @@ public class PlacedComponent extends SelectionShapes {
 
     @Nonnull
     public Vec2d getPosMax() {
-        return pos.add(component.getSize());
+        return pos.add(component.getType().getSize());
     }
 
     @Nullable
@@ -147,12 +146,8 @@ public class PlacedComponent extends SelectionShapes {
         return Objects.hash(component, pos);
     }
 
-    public static DataResult<PlacedComponent> fromNBT(INBT nbt) {
-        return Codecs.read(CODEC, nbt);
-    }
-
-    public INBT toNBT() {
-        return Codecs.encode(CODEC, this);
+    public PlacedComponent copy() {
+        return new PlacedComponent(component.copy(), pos);
     }
 
     public static List<PlacedComponent> readListFromNBT(INBT list) {

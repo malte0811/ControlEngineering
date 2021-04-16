@@ -6,6 +6,7 @@ import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.Constants;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,6 +43,14 @@ public class PanelData {
 
     public List<PlacedComponent> getComponents() {
         return components;
+    }
+
+    public PanelData copy() {
+        List<PlacedComponent> copiedComponents = new ArrayList<>(components.size());
+        for (PlacedComponent component : components) {
+            copiedComponents.add(component.copy());
+        }
+        return new PanelData(copiedComponents, getTransform());
     }
 
     public PanelTransform getTransform() {

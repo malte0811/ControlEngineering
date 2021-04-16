@@ -72,9 +72,12 @@ public class PanelModel implements IBakedModel {
         if (list == null) {
             list = new PanelData();
         }
-        //TODO mutability issues! Might not actually be a problem though, since components are recreated on NBT read?
         try {
-            return cache.get(list);
+            IBakedModel result = cache.getIfPresent(list);
+            if (result == null) {
+                result = cache.get(list.copy());
+            }
+            return result;
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }

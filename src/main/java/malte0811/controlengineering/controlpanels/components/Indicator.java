@@ -1,45 +1,33 @@
 package malte0811.controlengineering.controlpanels.components;
 
-import malte0811.controlengineering.bus.BusSignalRef;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusState;
-import malte0811.controlengineering.controlpanels.PanelComponent;
-import malte0811.controlengineering.util.ReflectionUtils;
-import malte0811.controlengineering.util.Vec2d;
-import malte0811.controlengineering.util.serialization.StringSerializableCodecs;
-import malte0811.controlengineering.util.serialization.StringSerializableField;
-import malte0811.controlengineering.util.serialization.StringSerializer;
+import malte0811.controlengineering.controlpanels.PanelComponentType;
+import malte0811.controlengineering.util.Vec2i;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.AxisAlignedBB;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Objects;
 
-public class Indicator extends PanelComponent<Indicator> {
-    private final int color;
-    @Nonnull
-    private final BusSignalRef signal;
-    private int rsValue;
-
+public class Indicator extends PanelComponentType<ColorAndSignal, Integer> {
     public Indicator() {
-        this(-1, new BusSignalRef(0, 0), 0);
-    }
-
-    public Indicator(int color, @Nonnull BusSignalRef signal, int rsValue) {
-        super(new Vec2d(1, 1));
-        this.color = color;
-        this.signal = signal;
-        this.rsValue = rsValue;
+        super(ColorAndSignal.DEFAULT, 0, ColorAndSignal.CODEC, Codec.INT, new Vec2i(1, 1));
     }
 
     @Override
-    public BusState getEmittedState() {
+    public BusState getEmittedState(ColorAndSignal colorAndSignal, Integer integer) {
         return BusState.EMPTY;
     }
 
     @Override
-    public void updateTotalState(BusState state) {
-        rsValue = state.getSignal(signal);
+    public Integer updateTotalState(ColorAndSignal colorAndSignal, Integer oldState, BusState busState) {
+        return busState.getSignal(colorAndSignal.getSignal());
+    }
+
+    @Override
+    public Integer tick(ColorAndSignal colorAndSignal, Integer oldState) {
+        return oldState;
     }
 
     @Nullable
@@ -49,37 +37,7 @@ public class Indicator extends PanelComponent<Indicator> {
     }
 
     @Override
-    public ActionResultType onClick() {
-        return ActionResultType.PASS;
-    }
-
-    public static StringSerializer<Indicator> createCodec() {
-        return new StringSerializer<>(
-                ReflectionUtils.findConstructor(Indicator.class, int.class, BusSignalRef.class, int.class),
-                new StringSerializableField<>("color", StringSerializableCodecs.HEX_INT, s -> s.color),
-                new StringSerializableField<>("input", BusSignalRef.STRINGY_CODEC, s -> s.signal),
-                new StringSerializableField<>("value", StringSerializableCodecs.INT.constant(0), s -> s.rsValue)
-        );
-    }
-
-    public int getColor() {
-        return color;
-    }
-
-    public int getRsValue() {
-        return rsValue;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Indicator indicator = (Indicator) o;
-        return color == indicator.color && rsValue == indicator.rsValue && signal.equals(indicator.signal);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(color, signal, rsValue);
+    public Pair<ActionResultType, Integer> click(ColorAndSignal colorAndSignal, Integer oldState) {
+        return Pair.of(ActionResultType.PASS, oldState);
     }
 }

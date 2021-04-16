@@ -7,8 +7,7 @@ import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.bus.*;
 import malte0811.controlengineering.controlpanels.*;
-import malte0811.controlengineering.controlpanels.components.Button;
-import malte0811.controlengineering.controlpanels.components.Indicator;
+import malte0811.controlengineering.controlpanels.components.ColorAndSignal;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.Clearable;
 import malte0811.controlengineering.util.RaytraceUtils;
@@ -48,20 +47,31 @@ public class ControlPanelTile extends TileEntity implements IBusInterface, Selec
 
     public ControlPanelTile() {
         super(CETileEntities.CONTROL_PANEL.get());
-        Button b = PanelComponents.BUTTON.empty();
-        b.setColor(0xff0000);
-        b.setOutputSignal(new BusSignalRef(0, 0));
-        components.add(new PlacedComponent(b, new Vec2d(5, 6)));
-        b = PanelComponents.BUTTON.empty();
-        b.setColor(0xff00);
-        b.setOutputSignal(new BusSignalRef(0, 1));
-        components.add(new PlacedComponent(b, new Vec2d(5, 7)));
-        b = PanelComponents.BUTTON.empty();
-        b.setColor(0xff);
-        b.setOutputSignal(new BusSignalRef(0, 2));
-        components.add(new PlacedComponent(b, new Vec2d(6, 6)));
-        Indicator ind = PanelComponents.INDICATOR.empty();
-        components.add(new PlacedComponent(ind, new Vec2d(6, 7)));
+        components.add(new PlacedComponent(
+                PanelComponents.BUTTON.newInstance(
+                        new ColorAndSignal(0xff0000, new BusSignalRef(0, 0))
+                ), new Vec2d(5, 6)
+        ));
+        components.add(new PlacedComponent(
+                PanelComponents.BUTTON.newInstance(
+                        new ColorAndSignal(0xff00, new BusSignalRef(0, 1))
+                ), new Vec2d(5, 7)
+        ));
+        components.add(new PlacedComponent(
+                PanelComponents.BUTTON.newInstance(
+                        new ColorAndSignal(0xff, new BusSignalRef(0, 2))
+                ), new Vec2d(5, 8)
+        ));
+        components.add(new PlacedComponent(
+                PanelComponents.INDICATOR.newInstance(
+                        new ColorAndSignal(0xff00ff, new BusSignalRef(0, 3))
+                ), new Vec2d(6, 6.5)
+        ));
+        components.add(new PlacedComponent(
+                PanelComponents.INDICATOR.newInstance(
+                        new ColorAndSignal(0xffff00, new BusSignalRef(0, 4))
+                ), new Vec2d(6, 7.5)
+        ));
         resetStateHandler();
     }
 

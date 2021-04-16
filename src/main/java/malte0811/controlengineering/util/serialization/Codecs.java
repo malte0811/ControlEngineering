@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -25,13 +26,22 @@ public class Codecs {
     );
 
     public static <K, V> Codec<Map<K, V>> codecForMap(Codec<K> key, Codec<V> value) {
-        return Codec.list(Codec.pair(key, value))
+        return Codec.list(safePair(key, value))
                 .xmap(
                         l -> l.stream().collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)),
                         m -> m.entrySet().stream()
                                 .map(e -> Pair.of(e.getKey(), e.getValue()))
                                 .collect(Collectors.toList())
                 );
+    }
+
+    public static <K, V> Codec<Pair<K, V>> safePair(Codec<K> left, Codec<V> right) {
+        return RecordCodecBuilder.create(
+                inst -> inst.group(
+                        left.fieldOf("first").forGetter(Pair::getFirst),
+                        right.fieldOf("second").forGetter(Pair::getSecond)
+                ).apply(inst, Pair::of)
+        );
     }
 
     public static <T> DataResult<T> read(Codec<T> codec, CompoundNBT in, String subName) {

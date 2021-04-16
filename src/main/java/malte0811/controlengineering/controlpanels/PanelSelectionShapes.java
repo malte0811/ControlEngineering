@@ -39,7 +39,7 @@ public class PanelSelectionShapes extends SelectionShapes {
 
     @Override
     public ActionResultType onUse(ItemUseContext ctx, ActionResultType defaultType) {
-        if (defaultType.isSuccess()) {
+        if (defaultType.isSuccess() && !tile.getWorld().isRemote) {
             tile.updateBusState(ControlPanelTile.SyncType.ALWAYS);
             tile.markDirty();
         }
