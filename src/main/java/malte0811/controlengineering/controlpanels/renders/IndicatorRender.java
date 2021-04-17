@@ -14,7 +14,13 @@ public class IndicatorRender extends ComponentRenderer<ColorAndSignal, Integer> 
     public void render(RenderTarget output, ColorAndSignal config, Integer rsValue, MatrixStack transform) {
         double colorFactor = 0.5 + rsValue / (2. * BusLine.MAX_VALID_VALUE);
         int ownBrightness = (rsValue * 15) / BusLine.MAX_VALID_VALUE;
-        new QuadBuilder(Vector3d.ZERO, new Vector3d(0, 0, 1), new Vector3d(1, 0, 1), new Vector3d(1, 0, 0))
+        final double zOffset = 1e-3;
+        new QuadBuilder(
+                new Vector3d(0, zOffset, 0),
+                new Vector3d(0, zOffset, 1),
+                new Vector3d(1, zOffset, 1),
+                new Vector3d(1, zOffset, 0)
+        )
                 .setNormal(new Vector3d(0, 1, 0))
                 .setRGB(ColorUtils.fractionalColor(config.getColor(), colorFactor))
                 .setBlockLightOverride(ownBrightness)

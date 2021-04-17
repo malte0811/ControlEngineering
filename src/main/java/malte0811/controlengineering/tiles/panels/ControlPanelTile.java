@@ -237,6 +237,10 @@ public class ControlPanelTile extends TileEntity implements IBusInterface, Selec
         return new PanelSelectionShapes(base);
     }
 
+    public PanelData getData() {
+        return new PanelData(getComponents(), getTransform());
+    }
+
     public enum SyncType {
         NEVER,
         IF_CHANGED,
