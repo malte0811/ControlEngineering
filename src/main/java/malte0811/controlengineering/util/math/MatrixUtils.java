@@ -1,4 +1,4 @@
-package malte0811.controlengineering.util;
+package malte0811.controlengineering.util.math;
 
 import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraft.util.math.vector.Vector3d;

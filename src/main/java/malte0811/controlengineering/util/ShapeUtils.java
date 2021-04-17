@@ -1,5 +1,6 @@
 package malte0811.controlengineering.util;
 
+import malte0811.controlengineering.util.math.Matrix4;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -25,7 +26,7 @@ public class ShapeUtils {
         );
     }
 
-    public static VoxelShape createPixelRelative(int x1, int y1, int z1, int x2, int y2, int z2) {
+    public static VoxelShape createPixelRelative(double x1, double y1, double z1, double x2, double y2, double z2) {
         return VoxelShapes.create(x1 / 16., y1 / 16., z1 / 16., x2 / 16., y2 / 16., z2 / 16.);
     }
 }

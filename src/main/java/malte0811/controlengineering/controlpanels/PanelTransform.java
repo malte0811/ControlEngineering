@@ -3,7 +3,7 @@ package malte0811.controlengineering.controlpanels;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
-import malte0811.controlengineering.util.Matrix4;
+import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;

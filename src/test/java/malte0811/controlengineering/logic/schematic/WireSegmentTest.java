@@ -1,6 +1,6 @@
 package malte0811.controlengineering.logic.schematic;
 
-import malte0811.controlengineering.util.Vec2i;
+import malte0811.controlengineering.util.math.Vec2i;
 import org.junit.Test;
 
 import java.util.List;

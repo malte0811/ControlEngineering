@@ -8,7 +8,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
-import malte0811.controlengineering.util.Vec2d;
+import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SpriteAwareVertexBuilder;
 import net.minecraft.client.renderer.texture.AtlasTexture;

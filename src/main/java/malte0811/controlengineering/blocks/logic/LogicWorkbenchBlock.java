@@ -27,24 +27,24 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Locale;
 
+import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
+
 public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> {
     public static final Property<Offset> OFFSET = EnumProperty.create("offset", Offset.class);
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    private static final VoxelShape TABLE_TOP = VoxelShapes.create(0, 13 / 16., 0, 1, 1, 1);
-    private static final VoxelShape LEG_LEFT_FRONT = VoxelShapes.create(1 / 16., 0, 12 / 16., 4 / 16., 1, 15 / 16.);
-    private static final VoxelShape LEG_LEFT_BACK = VoxelShapes.create(1 / 16., 0, 1 / 16., 4 / 16., 1, 4 / 16.);
-    private static final VoxelShape LEG_RIGHT_FRONT = VoxelShapes.create(12 / 16., 0, 12 / 16., 15 / 16., 1, 15 / 16.);
-    private static final VoxelShape LEG_RIGHT_BACK = VoxelShapes.create(12 / 16., 0, 1 / 16., 15 / 16., 1, 4 / 16.);
-    private static final VoxelShape DRAWER_LOW = VoxelShapes.create(
-            1 / 16., 7 / 16., 1 / 16., 15 / 16., 13 / 16., 15 / 16.
-    );
+    private static final VoxelShape TABLE_TOP = createPixelRelative(0, 13, 0, 16, 16, 16);
+    private static final VoxelShape LEG_LEFT_FRONT = createPixelRelative(1, 0, 12, 4, 16, 15);
+    private static final VoxelShape LEG_LEFT_BACK = createPixelRelative(1, 0, 1, 4, 16, 4);
+    private static final VoxelShape LEG_RIGHT_FRONT = createPixelRelative(12, 0, 12, 15, 16, 15);
+    private static final VoxelShape LEG_RIGHT_BACK = createPixelRelative(12, 0, 1, 15, 16, 4);
+    private static final VoxelShape DRAWER_LOW = createPixelRelative(1, 7, 1, 15, 13, 15);
     public static final VoxelShape BURNER = VoxelShapes.or(
-            VoxelShapes.create(11 / 16., 0, 3 / 16., 13 / 16., 6 / 16., 5 / 16.),
-            VoxelShapes.create(9 / 16., 9 / 32., 7 / 32., 11 / 16., 11 / 32., 9 / 32.)
+            createPixelRelative(11, 0, 3, 13, 6, 5),
+            createPixelRelative(9, 4.5, 3.5, 11, 5.5, 4.5)
     );
     private static final VoxelShape DRAWERS_TOP = VoxelShapes.or(
-            VoxelShapes.create(2 / 16., 0, 2 / 16., 10 / 16., 8 / 16., 8 / 16.),
-            VoxelShapes.create(12 / 16., 0, 2 / 16., 20 / 16., 8 / 16., 8 / 16.)
+            createPixelRelative(2, 0, 2, 10, 8, 8),
+            createPixelRelative(12, 0, 2, 20, 8, 8)
     );
     public static final VoxelShape DRAWERS_TOP_RIGHT = DRAWERS_TOP.withOffset(-1, 0, 0);
 

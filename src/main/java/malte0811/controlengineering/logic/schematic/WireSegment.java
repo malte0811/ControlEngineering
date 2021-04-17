@@ -6,7 +6,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.util.GuiUtil;
-import malte0811.controlengineering.util.Vec2i;
+import malte0811.controlengineering.util.math.Vec2i;
 
 import java.util.List;
 import java.util.Objects;

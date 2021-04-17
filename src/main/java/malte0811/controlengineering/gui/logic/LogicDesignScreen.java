@@ -11,9 +11,10 @@ import malte0811.controlengineering.logic.schematic.WireSegment;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.network.logic.*;
+import malte0811.controlengineering.util.GuiUtil;
 import malte0811.controlengineering.util.TextUtil;
-import malte0811.controlengineering.util.Vec2d;
-import malte0811.controlengineering.util.Vec2i;
+import malte0811.controlengineering.util.math.Vec2d;
+import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHelper;
@@ -54,7 +55,9 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
     private SymbolInstance<?> placingSymbol = null;
     private List<ConnectedPin> errors = ImmutableList.of();
     private boolean errorsShown = false;
+    private float minScale = 0.5F;
     private float currentScale = BASE_SCALE;
+    // In schematic coordinates
     private double centerX = 0;
     private double centerY = 0;
 
@@ -82,6 +85,10 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
                     makeTooltip(() -> errorsShown ? DISABLE_DRC_KEY : ENABLE_DRC_KEY)
             ));
         }
+        minScale = Math.max(
+                getScaleForShownSize(width, Schematic.BOUNDARY.getWidth()),
+                getScaleForShownSize(height, Schematic.BOUNDARY.getHeight())
+        );
     }
 
     private Button.ITooltip makeTooltip(Supplier<String> key) {
@@ -91,8 +98,9 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
     @Override
     protected void renderForeground(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         matrixStack.push();
-        matrixStack.translate(width / 2. + centerX, height / 2. + centerY, 0);
+        matrixStack.translate(width / 2., height / 2., 0);
         matrixStack.scale(currentScale, currentScale, 1);
+        matrixStack.translate(-centerX, -centerY, 0);
 
         final double scale = minecraft.getMainWindow().getGuiScaleFactor();
         RenderSystem.enableScissor(
@@ -100,6 +108,7 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
                 (int) ((width - 2 * TOTAL_BORDER) * scale), (int) ((height - 2 * TOTAL_BORDER) * scale)
         );
         drawErrors(matrixStack);
+        drawBoundary(matrixStack);
         Vec2d mousePos = getMousePosition(mouseX, mouseY);
         schematic.render(matrixStack, mousePos);
         PlacedSymbol placed = getPlacingSymbol(mousePos);
@@ -136,6 +145,35 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
             final Vec2i pos = pin.getPosition();
             fill(transform, pos.x - 1, pos.y - 1, pos.x + 2, pos.y + 2, 0xffff0000);
         }
+    }
+
+    private void drawBoundary(MatrixStack transform) {
+        final int color = 0xff_ff_dd_dd;
+        final float offset = 2 / currentScale;
+        GuiUtil.fill(
+                transform,
+                Schematic.GLOBAL_MIN - offset, Schematic.GLOBAL_MIN - offset,
+                Schematic.GLOBAL_MAX + offset, Schematic.GLOBAL_MIN,
+                color
+        );
+        GuiUtil.fill(
+                transform,
+                Schematic.GLOBAL_MIN - offset, Schematic.GLOBAL_MIN - offset,
+                Schematic.GLOBAL_MIN, Schematic.GLOBAL_MAX + offset,
+                color
+        );
+        GuiUtil.fill(
+                transform,
+                Schematic.GLOBAL_MAX, Schematic.GLOBAL_MIN - offset,
+                Schematic.GLOBAL_MAX + offset, Schematic.GLOBAL_MAX + offset,
+                color
+        );
+        GuiUtil.fill(
+                transform,
+                Schematic.GLOBAL_MIN - offset, Schematic.GLOBAL_MAX,
+                Schematic.GLOBAL_MAX + offset, Schematic.GLOBAL_MAX + offset,
+                color
+        );
     }
 
     private double mouseXDown;
@@ -197,8 +235,9 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         if (!clickConsumedAsDrag && !(Math.abs(mouseX - mouseXDown) > 1) && !(Math.abs(mouseY - mouseYDown) > 1)) {
             return false;
         }
-        centerX += dragX;
-        centerY += dragY;
+        centerX -= dragX / currentScale;
+        centerY -= dragY / currentScale;
+        clampView();
         clickConsumedAsDrag = true;
         return true;
     }
@@ -212,7 +251,8 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
             } else {
                 currentScale /= zoomScale;
             }
-            currentScale = MathHelper.clamp(currentScale, 0.5F, 10);
+            currentScale = MathHelper.clamp(currentScale, minScale, 10);
+            clampView();
         }
         return true;
     }
@@ -270,8 +310,8 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
 
     private Vec2d getMousePosition(double mouseX, double mouseY) {
         return new Vec2d(
-                (mouseX - width / 2. - centerX) / currentScale,
-                (mouseY - height / 2. - centerY) / currentScale
+                (mouseX - width / 2.) / currentScale + centerX,
+                (mouseY - height / 2.) / currentScale + centerY
         );
     }
 
@@ -337,5 +377,24 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         if (errorsShown) {
             errors = schematic.toCircuit().right().orElse(ImmutableList.of());
         }
+    }
+
+    private void clampView() {
+        final double halfScreenWidth = getShownSizeForScale(width, currentScale) / 2;
+        final double halfScreenHeight = getShownSizeForScale(height, currentScale) / 2;
+        centerX = MathHelper.clamp(
+                centerX, Schematic.GLOBAL_MIN + halfScreenWidth, Schematic.GLOBAL_MAX - halfScreenWidth
+        );
+        centerY = MathHelper.clamp(
+                centerY, Schematic.GLOBAL_MIN + halfScreenHeight, Schematic.GLOBAL_MAX - halfScreenHeight
+        );
+    }
+
+    private static float getShownSizeForScale(float dimensionSize, float scale) {
+        return (dimensionSize - 2 * TOTAL_BORDER - 5) / scale;
+    }
+
+    private static float getScaleForShownSize(float size, float shownSize) {
+        return (size - 2 * TOTAL_BORDER - 5) / shownSize;
     }
 }

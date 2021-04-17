@@ -13,7 +13,7 @@ import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.ItemUtil;
-import malte0811.controlengineering.util.Matrix4;
+import malte0811.controlengineering.util.math.Matrix4;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;

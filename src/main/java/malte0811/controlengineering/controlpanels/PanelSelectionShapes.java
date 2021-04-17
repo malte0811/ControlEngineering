@@ -3,7 +3,7 @@ package malte0811.controlengineering.controlpanels;
 import malte0811.controlengineering.blocks.panels.CachedPanelShape;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
-import malte0811.controlengineering.util.Matrix4;
+import malte0811.controlengineering.util.math.Matrix4;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.shapes.VoxelShape;

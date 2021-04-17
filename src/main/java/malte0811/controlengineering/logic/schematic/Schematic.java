@@ -17,14 +17,19 @@ import malte0811.controlengineering.logic.circuit.CircuitBuilder.StageBuilder;
 import malte0811.controlengineering.logic.circuit.CircuitBuilder.StageBuilder.CellBuilder;
 import malte0811.controlengineering.logic.circuit.NetReference;
 import malte0811.controlengineering.logic.schematic.symbol.*;
-import malte0811.controlengineering.util.Vec2d;
-import malte0811.controlengineering.util.Vec2i;
+import malte0811.controlengineering.util.math.Rectangle;
+import malte0811.controlengineering.util.math.Vec2d;
+import malte0811.controlengineering.util.math.Vec2i;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Schematic {
+    public static final int GLOBAL_MIN = -512;
+    public static final int GLOBAL_MAX = 512;
+    public static final Rectangle BOUNDARY = new Rectangle(GLOBAL_MIN, GLOBAL_MIN, GLOBAL_MAX, GLOBAL_MAX);
+
     public static final Codec<Schematic> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
                     Codec.list(PlacedSymbol.CODEC).fieldOf("symbols").forGetter(s -> s.symbols),
@@ -51,6 +56,9 @@ public class Schematic {
     }
 
     public boolean canPlace(PlacedSymbol candidate) {
+        if (!BOUNDARY.contains(candidate.getShape())) {
+            return false;
+        }
         if (!symbols.stream().allMatch(candidate::canCoexist)) {
             // Intersects with other symbol(s)
             return false;
@@ -90,6 +98,9 @@ public class Schematic {
     }
 
     public boolean canAdd(WireSegment segment) {
+        if (!BOUNDARY.containsClosed(segment.getStart()) || !BOUNDARY.containsClosed(segment.getEnd())) {
+            return false;
+        }
         Set<ConnectedPin> pinsOnWire = new SchematicNet(segment).computeConnectedPins(symbols);
         if (!ConnectedPin.isConsistent(pinsOnWire)) {
             return false;

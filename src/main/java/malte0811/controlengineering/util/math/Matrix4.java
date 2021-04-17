@@ -1,4 +1,4 @@
-package malte0811.controlengineering.util;
+package malte0811.controlengineering.util.math;
 
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.util.Direction;

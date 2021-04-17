@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import malte0811.controlengineering.bus.BusState;
-import malte0811.controlengineering.util.Vec2i;
+import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.serialization.Codecs;
 import malte0811.controlengineering.util.serialization.serial.StringCodecParser;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;

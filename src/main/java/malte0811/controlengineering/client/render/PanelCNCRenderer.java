@@ -17,7 +17,7 @@ import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.tiles.panels.CNCJob;
 import malte0811.controlengineering.tiles.panels.PanelCNCTile;
-import malte0811.controlengineering.util.Vec2d;
+import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;

@@ -11,7 +11,7 @@ import malte0811.controlengineering.controlpanels.PanelComponentInstance;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
-import malte0811.controlengineering.util.Vec2d;
+import malte0811.controlengineering.util.math.Vec2d;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

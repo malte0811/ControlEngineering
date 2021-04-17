@@ -6,7 +6,7 @@ import malte0811.controlengineering.controlpanels.PanelComponentInstance;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.components.ColorAndSignal;
-import malte0811.controlengineering.util.Vec2d;
+import malte0811.controlengineering.util.math.Vec2d;
 import org.junit.Assert;
 import org.junit.Test;
 

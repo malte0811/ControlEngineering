@@ -1,6 +1,6 @@
 package malte0811.controlengineering.blocks.shapes;
 
-import malte0811.controlengineering.util.Matrix4;
+import malte0811.controlengineering.util.math.Matrix4;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.BlockPos;

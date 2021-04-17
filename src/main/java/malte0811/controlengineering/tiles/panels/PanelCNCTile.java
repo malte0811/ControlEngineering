@@ -14,7 +14,7 @@ import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
-import malte0811.controlengineering.util.Matrix4;
+import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.serialization.NBTIO;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;

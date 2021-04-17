@@ -1,4 +1,4 @@
-package malte0811.controlengineering.util;
+package malte0811.controlengineering.util.math;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

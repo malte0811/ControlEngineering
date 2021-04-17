@@ -3,8 +3,9 @@ package malte0811.controlengineering.logic.schematic.symbol;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import malte0811.controlengineering.util.Vec2d;
-import malte0811.controlengineering.util.Vec2i;
+import malte0811.controlengineering.util.math.Rectangle;
+import malte0811.controlengineering.util.math.Vec2d;
+import malte0811.controlengineering.util.math.Vec2i;
 
 public class PlacedSymbol {
     public static final Codec<PlacedSymbol> CODEC = RecordCodecBuilder.create(
@@ -34,12 +35,19 @@ public class PlacedSymbol {
         return pos;
     }
 
+    public Rectangle getShape() {
+        return new Rectangle(getPosition(), getMaxPoint());
+    }
+
     public boolean canCoexist(PlacedSymbol other) {
-        return (pos.x + symbol.getXSize() < other.pos.x || other.pos.x + other.getSymbol().getXSize() < pos.x) ||
-                (pos.y + symbol.getYSize() < other.pos.y || other.pos.y + other.getSymbol().getYSize() < pos.y);
+        return getShape().disjoint(other.getShape());
     }
 
     public boolean containsPoint(Vec2d p) {
-        return p.x >= pos.x && p.x <= pos.x + symbol.getXSize() && p.y >= pos.y && p.y <= pos.y + symbol.getYSize();
+        return getShape().containsClosed(p);
+    }
+
+    public Vec2i getMaxPoint() {
+        return pos.add(new Vec2i(getSymbol().getXSize(), getSymbol().getYSize()));
     }
 }

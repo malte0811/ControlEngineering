@@ -4,7 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.WireSegment;
 import malte0811.controlengineering.util.GuiUtil;
-import malte0811.controlengineering.util.Vec2i;
+import malte0811.controlengineering.util.math.Vec2i;
 
 import java.util.Objects;
 

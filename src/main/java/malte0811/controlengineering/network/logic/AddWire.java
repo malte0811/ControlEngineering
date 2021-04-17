@@ -3,7 +3,7 @@ package malte0811.controlengineering.network.logic;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.WireSegment;
 import malte0811.controlengineering.logic.schematic.WireSegment.WireAxis;
-import malte0811.controlengineering.util.Vec2i;
+import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.network.PacketBuffer;
 
 import java.util.function.Consumer;

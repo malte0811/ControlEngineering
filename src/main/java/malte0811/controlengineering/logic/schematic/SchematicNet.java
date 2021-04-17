@@ -8,8 +8,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
-import malte0811.controlengineering.util.Vec2d;
-import malte0811.controlengineering.util.Vec2i;
+import malte0811.controlengineering.util.math.Vec2d;
+import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.client.gui.AbstractGui;
 
 import javax.annotation.Nullable;

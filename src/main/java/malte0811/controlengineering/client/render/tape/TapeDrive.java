@@ -2,7 +2,7 @@ package malte0811.controlengineering.client.render.tape;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import malte0811.controlengineering.util.Vec2d;
+import malte0811.controlengineering.util.math.Vec2d;
 
 public class TapeDrive {
     private final double totalLength;

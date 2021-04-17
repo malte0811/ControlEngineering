@@ -4,7 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
-import malte0811.controlengineering.util.Vec2i;
+import malte0811.controlengineering.util.math.Vec2i;
 
 import java.util.Objects;
 import java.util.Set;

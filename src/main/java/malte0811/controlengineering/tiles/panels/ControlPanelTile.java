@@ -11,7 +11,7 @@ import malte0811.controlengineering.controlpanels.components.ColorAndSignal;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.Clearable;
 import malte0811.controlengineering.util.RaytraceUtils;
-import malte0811.controlengineering.util.Vec2d;
+import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
