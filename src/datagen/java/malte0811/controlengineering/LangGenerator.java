@@ -6,6 +6,8 @@ import malte0811.controlengineering.gui.widgets.BusSignalSelector;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
+import malte0811.controlengineering.logic.clock.ClockGenerator;
+import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.ConstantSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.IOSymbol;
@@ -31,9 +33,14 @@ public class LangGenerator extends LanguageProvider {
         addItem(CEItems.EMPTY_TAPE, "Empty Tape");
         addItem(CEItems.PUNCHED_TAPE, "Punched Tape");
         addItem(CEItems.PANEL_TOP, "Panel Top");
+        //TODO?
+        addItem(CEItems.PCB_STACK, "Logic Circuit Boards");
 
         addBlock(CEBlocks.LOGIC_CABINET, "Logic Cabinet");
         addBlock(CEBlocks.LOGIC_WORKBENCH, "Logic Workbench");
+        addClock(ClockTypes.ALWAYS_ON, "Clock Generator: Free running");
+        addClock(ClockTypes.RISING_EDGE, "Clock Generator: Rising edge");
+        addClock(ClockTypes.WHILE_RS_ON, "Clock Generator: State triggered");
 
         add(Constants.PUNCHED_TAPE_BYTES, "Characters: %d");
         add(Constants.EMPTY_TAPE_BYTES, "Length: %d characters");
@@ -80,5 +87,9 @@ public class LangGenerator extends LanguageProvider {
 
     private void add(LeafcellType<?> type, String name) {
         add(CellSymbol.getTranslationKey(type), name);
+    }
+
+    private void addClock(ClockGenerator<?> type, String name) {
+        addItem(CEItems.CLOCK_GENERATORS.get(type.getRegistryName()), name);
     }
 }

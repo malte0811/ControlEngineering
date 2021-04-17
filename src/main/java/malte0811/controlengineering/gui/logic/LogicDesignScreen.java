@@ -46,7 +46,6 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
     private static final int TOTAL_BORDER = TRANSLUCENT_BORDER_SIZE + WHITE_BORDER_SIZE;
     public static final int BASE_SCALE = 3;
 
-    // TODO store schematic in there?
     private final LogicDesignContainer container;
     private Schematic schematic;
     @Nullable
@@ -68,19 +67,21 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
     @Override
     protected void init() {
         super.init();
-        addButton(new Button(
-                TOTAL_BORDER, TOTAL_BORDER, 20, 20, new StringTextComponent("C"),
-                btn -> minecraft.displayGuiScreen(new CellSelectionScreen(s -> placingSymbol = s)),
-                makeTooltip(() -> COMPONENTS_KEY)
-        ));
-        addButton(new Button(
-                TOTAL_BORDER, TOTAL_BORDER + 20, 20, 20, new StringTextComponent("E"),
-                btn -> {
-                    errorsShown = !errorsShown;
-                    updateErrors();
-                },
-                makeTooltip(() -> errorsShown ? DISABLE_DRC_KEY : ENABLE_DRC_KEY)
-        ));
+        if (!container.readOnly) {
+            addButton(new Button(
+                    TOTAL_BORDER, TOTAL_BORDER, 20, 20, new StringTextComponent("C"),
+                    btn -> minecraft.displayGuiScreen(new CellSelectionScreen(s -> placingSymbol = s)),
+                    makeTooltip(() -> COMPONENTS_KEY)
+            ));
+            addButton(new Button(
+                    TOTAL_BORDER, TOTAL_BORDER + 20, 20, 20, new StringTextComponent("E"),
+                    btn -> {
+                        errorsShown = !errorsShown;
+                        updateErrors();
+                    },
+                    makeTooltip(() -> errorsShown ? DISABLE_DRC_KEY : ENABLE_DRC_KEY)
+            ));
+        }
     }
 
     private Button.ITooltip makeTooltip(Supplier<String> key) {
@@ -155,7 +156,7 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (super.mouseReleased(mouseX, mouseY, button)) {
+        if (super.mouseReleased(mouseX, mouseY, button) || container.readOnly) {
             return true;
         }
         if (clickConsumedAsDrag) {
@@ -218,22 +219,24 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            if (currentWireStart != null || placingSymbol != null) {
-                currentWireStart = null;
-                placingSymbol = null;
-                return true;
-            }
-        } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
-            MouseHelper helper = Minecraft.getInstance().mouseHelper;
-            MainWindow window = Minecraft.getInstance().getMainWindow();
-            final Vec2d mousePos = getMousePosition(
-                    helper.getMouseX() * window.getScaledWidth() / (double) window.getWidth(),
-                    helper.getMouseY() * window.getScaledHeight() / (double) window.getHeight()
-            );
-            if (schematic.removeOneContaining(mousePos)) {
-                sendToServer(new Delete(mousePos));
-                return true;
+        if (!container.readOnly) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                if (currentWireStart != null || placingSymbol != null) {
+                    currentWireStart = null;
+                    placingSymbol = null;
+                    return true;
+                }
+            } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
+                MouseHelper helper = Minecraft.getInstance().mouseHelper;
+                MainWindow window = Minecraft.getInstance().getMainWindow();
+                final Vec2d mousePos = getMousePosition(
+                        helper.getMouseX() * window.getScaledWidth() / (double) window.getWidth(),
+                        helper.getMouseY() * window.getScaledHeight() / (double) window.getHeight()
+                );
+                if (schematic.removeOneContaining(mousePos)) {
+                    sendToServer(new Delete(mousePos));
+                    return true;
+                }
             }
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

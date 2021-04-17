@@ -12,18 +12,15 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.Property;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -91,10 +88,7 @@ public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> 
     public INamedContainerProvider getContainer(
             @Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos
     ) {
-        return new SimpleNamedContainerProvider(
-                (id, inv, player) -> new LogicDesignContainer(id, IWorldPosCallable.of(worldIn, pos)),
-                new TranslationTextComponent("screen.controlengineering.logic_design")
-        );
+        return LogicDesignContainer.makeProvider(worldIn, pos, false);
     }
 
     public enum Offset implements IStringSerializable {

@@ -1,1 +1,7 @@
- - Proper white TAS (currently using wool texture)
+- Limit schematic size
+- Proper white TAS (currently using wool texture)
+- Optimize panel TER (only update when necessary)
+- Add wire and tube costs for schematics
+- Manual :(
+- Various models and textures
+- GUI for panel creation (tape-based is cool but annoying)

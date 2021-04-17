@@ -4,12 +4,14 @@ import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.blocks.placement.PlacementBehavior;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
+import malte0811.controlengineering.gui.CustomDataContainerProvider;
 import malte0811.controlengineering.util.RaytraceUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -129,7 +131,12 @@ public abstract class CEBlock<PlacementData, Tile extends TileEntity> extends Bl
 
     public void openContainer(PlayerEntity player, BlockState state, World worldIn, BlockPos pos) {
         if (player instanceof ServerPlayerEntity) {
-            NetworkHooks.openGui((ServerPlayerEntity) player, state.getContainer(worldIn, pos), pos);
+            INamedContainerProvider container = state.getContainer(worldIn, pos);
+            if (container instanceof CustomDataContainerProvider) {
+                ((CustomDataContainerProvider) container).open((ServerPlayerEntity) player);
+            } else {
+                NetworkHooks.openGui((ServerPlayerEntity) player, container, pos);
+            }
         }
     }
 

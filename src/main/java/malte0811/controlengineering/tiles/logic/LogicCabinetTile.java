@@ -8,6 +8,7 @@ import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.BusWireTypes;
 import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.bus.MarkDirtyHandler;
+import malte0811.controlengineering.gui.logic.LogicDesignContainer;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PCBStackItem;
 import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
@@ -24,6 +25,8 @@ import malte0811.controlengineering.util.Matrix4;
 import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -50,7 +53,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner, IBusInterface, ITickableTileEntity {
+public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner, IBusInterface, ITickableTileEntity,
+        ISchematicTile {
     private final CEEnergyStorage energy = new CEEnergyStorage(2048, 2 * 128, 128);
     @Nullable
     private Pair<Schematic, BusConnectedCircuit> circuit;
@@ -274,6 +278,8 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
         HorizontalShapeProvider baseShape = upper ? LogicCabinetBlock.TOP_SHAPE : LogicCabinetBlock.BOTTOM_SHAPE;
         if (!upper) {
             subshapes.add(makeClockInteraction(tile));
+        } else {
+            subshapes.add(makeViewDesignInteraction(tile));
         }
         subshapes.add(makeBoardInteraction(tile, upper));
         return new ListShapes(
@@ -336,5 +342,34 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
             }
             return ActionResultType.SUCCESS;
         });
+    }
+
+    private static SelectionShapes makeViewDesignInteraction(LogicCabinetTile tile) {
+        final VoxelShape shape = VoxelShapes.create(
+                15 / 16., 1 / 16., 4 / 16.,
+                1, 11 / 16., 12 / 16.
+        );
+        return new SingleShape(
+                shape, ctx -> {
+            final PlayerEntity player = ctx.getPlayer();
+            if (player == null) {
+                return ActionResultType.PASS;
+            }
+            if (player instanceof ServerPlayerEntity && tile.circuit != null) {
+                LogicDesignContainer.makeProvider(tile.world, tile.pos, true)
+                        .open((ServerPlayerEntity) player);
+            }
+            return ActionResultType.SUCCESS;
+        });
+    }
+
+    @Override
+    public Schematic getSchematic() {
+        if (circuit != null) {
+            return circuit.getFirst();
+        } else {
+            // should never happen(?)
+            return new Schematic();
+        }
     }
 }

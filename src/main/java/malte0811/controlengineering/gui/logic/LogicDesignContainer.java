@@ -1,20 +1,24 @@
 package malte0811.controlengineering.gui.logic;
 
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.gui.ContainerScreenManager;
+import malte0811.controlengineering.gui.CustomDataContainerProvider;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.network.logic.FullSync;
 import malte0811.controlengineering.network.logic.LogicPacket;
 import malte0811.controlengineering.network.logic.LogicSubPacket;
-import malte0811.controlengineering.tiles.logic.LogicWorkbenchTile;
+import malte0811.controlengineering.tiles.logic.ISchematicTile;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.IContainerListener;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.IWorldPosCallable;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkDirection;
 
@@ -26,26 +30,41 @@ import java.util.List;
 public class LogicDesignContainer extends Container {
     private final List<IContainerListener> listeners = new ArrayList<>();
     private final IWorldPosCallable pos;
+    @Nullable
+    private final Block expectedBlock;
+    public final boolean readOnly;
 
-    public LogicDesignContainer(int id, IWorldPosCallable pos) {
+    public LogicDesignContainer(int id, IWorldPosCallable pos, boolean readOnly) {
         super(CEContainers.LOGIC_DESIGN.get(), id);
         this.pos = pos;
+        this.readOnly = readOnly;
+        this.expectedBlock = this.pos.apply(World::getBlockState).map(BlockState::getBlock).orElse(null);
     }
 
     public LogicDesignContainer(int id, PacketBuffer data) {
-        super(CEContainers.LOGIC_DESIGN.get(), id);
-        this.pos = ContainerScreenManager.readWorldPos(data);
+        this(id, ContainerScreenManager.readWorldPos(data), data.readBoolean());
+    }
+
+    public static CustomDataContainerProvider makeProvider(World worldIn, BlockPos pos, boolean readOnly) {
+        return new CustomDataContainerProvider(
+                new TranslationTextComponent("screen.controlengineering.logic_design"),
+                (id, inv, player) -> new LogicDesignContainer(id, IWorldPosCallable.of(worldIn, pos), readOnly),
+                buffer -> {
+                    buffer.writeBlockPos(pos);
+                    buffer.writeBoolean(readOnly);
+                }
+        );
     }
 
     @Override
     public boolean canInteractWith(@Nonnull PlayerEntity playerIn) {
-        return isWithinUsableDistance(pos, playerIn, CEBlocks.LOGIC_WORKBENCH.get());
+        return expectedBlock == null || isWithinUsableDistance(pos, playerIn, expectedBlock);
     }
 
     public Schematic getSchematic() {
         return pos.apply(World::getTileEntity)
-                .map(te -> te instanceof LogicWorkbenchTile ? (LogicWorkbenchTile) te : null)
-                .map(LogicWorkbenchTile::getSchematic)
+                .map(te -> te instanceof ISchematicTile ? (ISchematicTile) te : null)
+                .map(ISchematicTile::getSchematic)
                 .orElseThrow(RuntimeException::new);
     }
 

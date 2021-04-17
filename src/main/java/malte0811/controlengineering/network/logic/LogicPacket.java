@@ -33,7 +33,7 @@ public class LogicPacket extends SimplePacket {
         if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             Preconditions.checkState(packet.allowSendingToServer());
             Container activeContainer = ctx.getSender().openContainer;
-            if (activeContainer instanceof LogicDesignContainer) {
+            if (activeContainer instanceof LogicDesignContainer && !((LogicDesignContainer) activeContainer).readOnly) {
                 packet.process(((LogicDesignContainer) activeContainer).getSchematic(), $ -> {
                     throw new RuntimeException();
                 });

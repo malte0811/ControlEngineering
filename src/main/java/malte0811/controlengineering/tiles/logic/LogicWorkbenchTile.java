@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class LogicWorkbenchTile extends TileEntity implements SelectionShapeOwner {
+public class LogicWorkbenchTile extends TileEntity implements SelectionShapeOwner, ISchematicTile {
     private Schematic schematic = new Schematic();
 
     public LogicWorkbenchTile() {
@@ -138,6 +138,7 @@ public class LogicWorkbenchTile extends TileEntity implements SelectionShapeOwne
         return ActionResultType.FAIL;
     }
 
+    @Override
     public Schematic getSchematic() {
         return schematic;
     }
