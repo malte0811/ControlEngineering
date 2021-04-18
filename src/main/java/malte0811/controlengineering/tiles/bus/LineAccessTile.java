@@ -75,11 +75,6 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
 
     /*BUS*/
     @Override
-    public int getMinBusWidthForConfig(ConnectionPoint cp) {
-        return selectedLine + 1;
-    }
-
-    @Override
     public void onBusUpdated(ConnectionPoint updatedPoint) {
         RedstoneNetworkHandler rsHandler = getRSNet();
         BusLine lineToRS = getBusNet().getStateWithout(busPoint, this).getLine(selectedLine);
@@ -91,7 +86,7 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
 
     @Override
     public BusState getEmittedState(ConnectionPoint checkedPoint) {
-        BusState ret = new BusState(getActualBusWidth(checkedPoint));
+        BusState ret = BusState.EMPTY;
         ImprovedLocalRSHandler rs = getRSNet();
         if (rs != null) {
             ret = ret.withLine(selectedLine, BusLine.fromRSState(rs.getValuesWithout(redstonePoint)));

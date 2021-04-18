@@ -3,7 +3,7 @@ package malte0811.controlengineering.gui.widgets;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusSignalRef;
-import malte0811.controlengineering.bus.BusWireTypes;
+import malte0811.controlengineering.bus.BusWireType;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.widget.BasicSlider;
 import malte0811.controlengineering.gui.widget.ColorPicker16;
@@ -33,12 +33,9 @@ public class BusSignalSelector extends StackedScreen {
     protected void init() {
         super.init();
         lineSelect = new BasicSlider(
-                width / 2 - 64,
-                height / 2 + ColorPicker16.SIZE / 2 - 10,
-                128,
-                20,
-                0,
-                BusWireTypes.MAX_BUS_WIDTH - 1,
+                width / 2 - 64, height / 2 + ColorPicker16.SIZE / 2 - 10,
+                128, 20,
+                0, BusWireType.NUM_LINES - 1,
                 BUS_LINE_INDEX_KEY
         );
         colorSelect = new ColorPicker16(

@@ -21,7 +21,7 @@ public class BusSignalRef {
     }
 
     public BusState singleSignalState(int value) {
-        return new BusState(line + 1).with(this, value);
+        return BusState.EMPTY.with(this, value);
     }
 
     @Override

@@ -5,7 +5,6 @@ import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
 import malte0811.controlengineering.blocks.shapes.*;
 import malte0811.controlengineering.bus.BusState;
-import malte0811.controlengineering.bus.BusWireTypes;
 import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.bus.MarkDirtyHandler;
 import malte0811.controlengineering.gui.logic.LogicDesignContainer;
@@ -62,7 +61,7 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
     private ClockInstance<?> clock = ClockTypes.NEVER.newInstance();
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private int numTubes;
-    private BusState currentBusState = new BusState(BusWireTypes.MAX_BUS_WIDTH);
+    private BusState currentBusState = BusState.EMPTY;
 
     public LogicCabinetTile() {
         super(CETileEntities.LOGIC_CABINET.get());

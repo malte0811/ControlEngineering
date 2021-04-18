@@ -4,7 +4,6 @@ import blusunrize.immersiveengineering.api.wires.Connection;
 import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
 import blusunrize.immersiveengineering.api.wires.LocalWireNetwork;
 import malte0811.controlengineering.bus.BusState;
-import malte0811.controlengineering.bus.BusWireTypes;
 import malte0811.controlengineering.bus.IBusConnector;
 import malte0811.controlengineering.tiles.CEIICTileEntity;
 import malte0811.controlengineering.tiles.CETileEntities;
@@ -15,11 +14,6 @@ import javax.annotation.Nonnull;
 public class BusRelayTile extends CEIICTileEntity implements IBusConnector {
     public BusRelayTile() {
         super(CETileEntities.BUS_RELAY.get());
-    }
-
-    @Override
-    public int getMinBusWidthForConfig(ConnectionPoint cp) {
-        return BusWireTypes.MIN_BUS_WIDTH;
     }
 
     @Override

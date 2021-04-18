@@ -6,7 +6,7 @@ import blusunrize.immersiveengineering.api.wires.localhandlers.LocalNetworkHandl
 import blusunrize.immersiveengineering.api.wires.redstone.RedstoneNetworkHandler;
 import blusunrize.immersiveengineering.common.items.IEItems;
 import malte0811.controlengineering.blocks.CEBlocks;
-import malte0811.controlengineering.bus.BusWireTypes;
+import malte0811.controlengineering.bus.BusWireType;
 import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
 import malte0811.controlengineering.gui.CEContainers;
@@ -68,7 +68,7 @@ public class ControlEngineering {
 
     public void setup(FMLCommonSetupEvent ev) {
         LocalNetworkHandler.register(LocalBusHandler.NAME, LocalBusHandler::new);
-        BusWireTypes.init();
+        BusWireType.init();
         registerPackets();
     }
 

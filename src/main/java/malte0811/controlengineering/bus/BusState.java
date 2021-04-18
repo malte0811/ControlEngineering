@@ -9,12 +9,8 @@ public class BusState {
     private final List<BusLine> lines;
 
     private BusState() {
-        this(0);
-    }
-
-    public BusState(int width) {
-        this.lines = new ArrayList<>(width);
-        for (int i = 0; i < width; ++i) {
+        this.lines = new ArrayList<>(BusWireType.NUM_LINES);
+        for (int i = 0; i < BusWireType.NUM_LINES; ++i) {
             this.lines.add(new BusLine());
         }
     }

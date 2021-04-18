@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
-import malte0811.controlengineering.bus.BusWireTypes;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.nbt.CompoundNBT;
@@ -29,7 +28,7 @@ public class BusConnectedCircuit {
     private final Map<NetReference, List<BusSignalRef>> outputConnections;
     private final Map<BusSignalRef, List<NetReference>> inputConnections;
     private final Map<NetReference, Double> constantInputs;
-    private BusState outputValues = new BusState(BusWireTypes.MAX_BUS_WIDTH);
+    private BusState outputValues = BusState.EMPTY;
 
     public BusConnectedCircuit(
             Circuit circuit,

@@ -1,13 +1,10 @@
 package malte0811.controlengineering.items;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
-import malte0811.controlengineering.bus.BusWireTypes;
 import malte0811.controlengineering.logic.clock.ClockGenerator;
 import malte0811.controlengineering.logic.clock.ClockTypes;
 import net.minecraft.block.Block;
@@ -19,8 +16,6 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.Map;
 
 public class CEItems {
@@ -30,7 +25,9 @@ public class CEItems {
     );
 
     //Items
-    private static final List<RegistryObject<BusCoilItem>> BUS_WIRE_COILS;
+    public static final RegistryObject<BusCoilItem> BUS_WIRE_COIL = REGISTER.register(
+            "bus_wire_coil", BusCoilItem::new
+    );
     public static final RegistryObject<PunchedTapeItem> PUNCHED_TAPE = REGISTER.register(
             "punched_tape", PunchedTapeItem::new
     );
@@ -49,16 +46,6 @@ public class CEItems {
     private static final RegistryObject<CEBlockItem<Direction>> LOGIC_CABINET = blockItemCE(CEBlocks.LOGIC_CABINET);
     private static final RegistryObject<CEBlockItem<Direction>> LOGIC_WORKBENCH = blockItemCE(CEBlocks.LOGIC_WORKBENCH);
 
-    @Nonnull
-    public static BusCoilItem getBusCoil(int width) {
-        Preconditions.checkArgument(
-                width >= BusWireTypes.MIN_BUS_WIDTH && width <= BusWireTypes.MAX_BUS_WIDTH,
-                "Unexpected bus width %s",
-                width
-        );
-        return BUS_WIRE_COILS.get(width - BusWireTypes.MIN_BUS_WIDTH).get();
-    }
-
     //TODO remove
     private static RegistryObject<BlockItem> blockItem(RegistryObject<? extends Block> block) {
         return REGISTER.register(block.getId().getPath(), () -> new BlockItem(block.get(), simpleItemProperties()));
@@ -73,15 +60,6 @@ public class CEItems {
     }
 
     static {
-        ImmutableList.Builder<RegistryObject<BusCoilItem>> busWireCoils = ImmutableList.builder();
-        for (int width = BusWireTypes.MIN_BUS_WIDTH; width <= BusWireTypes.MAX_BUS_WIDTH; ++width) {
-            final int finalWidth = width;
-            busWireCoils.add(REGISTER.register(
-                    "bus_wire_coil_" + width,
-                    () -> new BusCoilItem(finalWidth)
-            ));
-        }
-        BUS_WIRE_COILS = busWireCoils.build();
         ImmutableMap.Builder<ResourceLocation, RegistryObject<Item>> clockSources = ImmutableMap.builder();
         for (Map.Entry<ResourceLocation, ClockGenerator<?>> entry : ClockTypes.getGenerators().entrySet()) {
             ResourceLocation id = entry.getKey();

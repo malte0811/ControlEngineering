@@ -35,11 +35,6 @@ public class BusInterfaceTile extends CEIICTileEntity implements IBusConnector, 
     }
 
     @Override
-    public int getMinBusWidthForConfig(ConnectionPoint cp) {
-        return 0;
-    }
-
-    @Override
     public void onBusUpdated(ConnectionPoint updatedPoint) {
         BusState state = getBusHandler(updatedPoint).getState();
         getConnectedTile().forEach(iBusInterface -> iBusInterface.onBusUpdated(state));
