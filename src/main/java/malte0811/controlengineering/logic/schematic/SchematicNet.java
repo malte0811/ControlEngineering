@@ -11,6 +11,7 @@ import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -115,14 +116,14 @@ public class SchematicNet {
         pins = null;
     }
 
-    public boolean canMerge(SchematicNet other, List<PlacedSymbol> symbols) {
+    public Optional<ITextComponent> canMerge(SchematicNet other, List<PlacedSymbol> symbols) {
         Set<ConnectedPin> totalPins = new HashSet<>(getOrComputePins(symbols));
         totalPins.addAll(other.getOrComputePins(symbols));
-        return ConnectedPin.isConsistent(totalPins);
+        return SchematicChecker.getConsistencyError(totalPins);
     }
 
     public boolean canAdd(WireSegment segment, List<PlacedSymbol> symbols) {
-        return canMerge(new SchematicNet(segment), symbols);
+        return !canMerge(new SchematicNet(segment), symbols).isPresent();
     }
 
     private boolean containsPin(PlacedSymbol symbol, SymbolPin pin) {

@@ -37,11 +37,13 @@ public class Schematic {
 
     private final List<PlacedSymbol> symbols;
     private final List<SchematicNet> nets;
+    private final SchematicChecker checker;
 
     private Schematic(List<PlacedSymbol> symbols, List<SchematicNet> nets) {
         this.symbols = new ArrayList<>(symbols);
         this.nets = new ArrayList<>(nets);
         this.resetConnectedPins();
+        this.checker = new SchematicChecker(this);
     }
 
     public Schematic() {
@@ -53,27 +55,8 @@ public class Schematic {
         resetConnectedPins();
     }
 
-    public boolean canPlace(PlacedSymbol candidate) {
-        if (!BOUNDARY.contains(candidate.getShape())) {
-            return false;
-        }
-        if (!symbols.stream().allMatch(candidate::canCoexist)) {
-            // Intersects with other symbol(s)
-            return false;
-        }
-        for (SchematicNet net : this.nets) {
-            Set<ConnectedPin> pinsInNet = new HashSet<>(net.getOrComputePins(symbols));
-            pinsInNet.addAll(net.computeConnectedPins(Collections.singletonList(candidate)));
-            if (!ConnectedPin.isConsistent(pinsInNet)) {
-                // Would make a net inconsistent, i.e. would add multiple sources or analog/digital incompatibility
-                return false;
-            }
-        }
-        return true;
-    }
-
     public void addWire(WireSegment segment) {
-        IntSet connectedIndices = getConnectedIndices(segment);
+        IntSet connectedIndices = getConnectedNetIndices(segment);
         if (connectedIndices.isEmpty()) {
             // New net
             nets.add(new SchematicNet(segment));
@@ -93,32 +76,6 @@ public class Schematic {
             netToKeep.addSegment(segment);
         }
         resetConnectedPins();
-    }
-
-    public boolean canAdd(WireSegment segment) {
-        if (!BOUNDARY.containsClosed(segment.getStart()) || !BOUNDARY.containsClosed(segment.getEnd())) {
-            return false;
-        }
-        Set<ConnectedPin> pinsOnWire = new SchematicNet(segment).computeConnectedPins(symbols);
-        if (!ConnectedPin.isConsistent(pinsOnWire)) {
-            return false;
-        }
-        IntSet netsToCheck = getConnectedIndices(segment);
-        for (int netIdA : netsToCheck) {
-            SchematicNet netA = nets.get(netIdA);
-            for (int netIdB : netsToCheck) {
-                if (netIdB > netIdA) {
-                    SchematicNet netB = nets.get(netIdB);
-                    if (!netA.canMerge(netB, symbols)) {
-                        return false;
-                    }
-                }
-            }
-            if (!netA.canAdd(segment, symbols)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public boolean removeOneContaining(Vec2d mouse) {
@@ -141,7 +98,7 @@ public class Schematic {
         return false;
     }
 
-    private IntSet getConnectedIndices(WireSegment toAdd) {
+    public IntSet getConnectedNetIndices(WireSegment toAdd) {
         IntSet indices = new IntArraySet();
         for (int i = 0; i < nets.size(); ++i) {
             final SchematicNet net = nets.get(i);
@@ -175,6 +132,18 @@ public class Schematic {
 
     private void resetConnectedPins() {
         nets.forEach(SchematicNet::resetCachedPins);
+    }
+
+    public List<PlacedSymbol> getSymbols() {
+        return Collections.unmodifiableList(symbols);
+    }
+
+    public List<SchematicNet> getNets() {
+        return Collections.unmodifiableList(nets);
+    }
+
+    public SchematicChecker getChecker() {
+        return checker;
     }
 
     //TODO split up or maybe move somewhere else

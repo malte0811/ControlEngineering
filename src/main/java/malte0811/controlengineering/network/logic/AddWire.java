@@ -30,7 +30,7 @@ public class AddWire extends LogicSubPacket {
 
     @Override
     protected void process(Schematic applyTo, Consumer<Schematic> replace) {
-        if (applyTo.canAdd(added)) {
+        if (applyTo.getChecker().canAdd(added)) {
             applyTo.addWire(added);
         }
     }

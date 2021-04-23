@@ -22,16 +22,14 @@ import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import static net.minecraft.util.math.MathHelper.ceil;
@@ -111,31 +109,49 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         drawBoundary(matrixStack);
         Vec2d mousePos = getMousePosition(mouseX, mouseY);
         schematic.render(matrixStack, mousePos);
+
+        Optional<ITextComponent> currentError = Optional.empty();
         PlacedSymbol placed = getPlacingSymbol(mousePos);
         if (placed != null) {
+            currentError = schematic.getChecker().getErrorForAdding(placed);
             placed.render(matrixStack);
-        }
-        WireSegment placedWire = getPlacingSegment(mousePos);
-        if (placedWire != null) {
-            final int color = schematic.canAdd(placedWire) ? 0xff785515 : 0xffff5515;
-            placedWire.renderWithoutBlobs(matrixStack, color);
+        } else {
+            WireSegment placedWire = getPlacingSegment(mousePos);
+            if (placedWire != null) {
+                currentError = schematic.getChecker().getErrorForAdding(placedWire);
+                final int color = currentError.isPresent() ? 0xffff5515 : 0xff785515;
+                placedWire.renderWithoutBlobs(matrixStack, color);
+            }
         }
         RenderSystem.disableScissor();
 
         matrixStack.pop();
-        PlacedSymbol hovered = schematic.getSymbolAt(mousePos);
-        if (hovered != null) {
-            ITextComponent toShow = hovered.getSymbol().getName();
-            List<IFormattableTextComponent> extra = hovered.getSymbol().getExtraDesc();
-            if (extra.isEmpty()) {
-                renderTooltip(matrixStack, toShow, mouseX, mouseY);
-            } else {
-                List<IReorderingProcessor> tooltip = new ArrayList<>(1 + extra.size());
-                tooltip.add(toShow.func_241878_f());
-                for (IFormattableTextComponent extraLine : extra) {
-                    TextUtil.addTooltipLineReordering(tooltip, extraLine);
+        renderTooltip(matrixStack, mouseX, mouseY, mousePos, currentError.orElse(null));
+    }
+
+    private void renderTooltip(
+            MatrixStack transform, int mouseX, int mouseY, Vec2d schematicMouse, @Nullable ITextComponent currentError
+    ) {
+        if (currentError != null) {
+            if (currentError instanceof IFormattableTextComponent) {
+                ((IFormattableTextComponent) currentError).setStyle(Style.EMPTY.setFormatting(TextFormatting.RED));
+            }
+            renderTooltip(transform, currentError, mouseX, mouseY);
+        } else {
+            PlacedSymbol hovered = schematic.getSymbolAt(schematicMouse);
+            if (hovered != null) {
+                ITextComponent toShow = hovered.getSymbol().getName();
+                List<IFormattableTextComponent> extra = hovered.getSymbol().getExtraDesc();
+                if (extra.isEmpty()) {
+                    renderTooltip(transform, toShow, mouseX, mouseY);
+                } else {
+                    List<IReorderingProcessor> tooltip = new ArrayList<>(1 + extra.size());
+                    tooltip.add(toShow.func_241878_f());
+                    for (IFormattableTextComponent extraLine : extra) {
+                        TextUtil.addTooltipLineReordering(tooltip, extraLine);
+                    }
+                    renderTooltip(transform, tooltip, mouseX, mouseY);
                 }
-                renderTooltip(matrixStack, tooltip, mouseX, mouseY);
             }
         }
     }
@@ -204,14 +220,14 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         final Vec2d mousePos = getMousePosition(mouseX, mouseY);
         PlacedSymbol placed = getPlacingSymbol(mousePos);
         if (placed != null) {
-            if (schematic.canPlace(placed)) {
+            if (schematic.getChecker().canAdd(placed)) {
                 schematic.addSymbol(placed);
                 sendToServer(new AddSymbol(placed));
             }
         } else {
             WireSegment placedWire = getPlacingSegment(mousePos);
             if (placedWire != null) {
-                if (schematic.canAdd(placedWire)) {
+                if (schematic.getChecker().canAdd(placedWire)) {
                     schematic.addWire(placedWire);
                     sendToServer(new AddWire(placedWire));
                     if (placedWire.getEnd().equals(currentWireStart)) {

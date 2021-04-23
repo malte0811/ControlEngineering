@@ -8,6 +8,7 @@ import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.clock.ClockGenerator;
 import malte0811.controlengineering.logic.clock.ClockTypes;
+import malte0811.controlengineering.logic.schematic.SchematicChecker;
 import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.ConstantSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.IOSymbol;
@@ -86,6 +87,13 @@ public class LangGenerator extends LanguageProvider {
         add(LogicDesignScreen.COMPONENTS_KEY, "Components");
         add(LogicDesignScreen.ENABLE_DRC_KEY, "Enable error checking");
         add(LogicDesignScreen.DISABLE_DRC_KEY, "Disable error checking");
+
+        add(SchematicChecker.ANALOG_DIGITAL_MIX, "Net would connect an analog source to digital sinks");
+        add(SchematicChecker.CYCLE, "Net would form a cycle");
+        add(SchematicChecker.MULTIPLE_SOURCES, "Net would contain multiple source pins");
+        add(SchematicChecker.WIRE_OUTSIDE_BOUNDARY, "Wire segment would be outside of schematic boundary");
+        add(SchematicChecker.SYMBOL_OUTSIDE_BOUNDARY, "Symbol would be outside of schematic boundary");
+        add(SchematicChecker.SYMBOL_INTERSECTION, "Symbol would intersect with other symbols");
     }
 
     private void add(LeafcellType<?> type, String name) {

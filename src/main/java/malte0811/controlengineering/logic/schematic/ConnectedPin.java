@@ -7,7 +7,6 @@ import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
 import malte0811.controlengineering.util.math.Vec2i;
 
 import java.util.Objects;
-import java.util.Set;
 
 public class ConnectedPin {
     private final PlacedSymbol symbol;
@@ -16,36 +15,6 @@ public class ConnectedPin {
     public ConnectedPin(PlacedSymbol symbol, SymbolPin pin) {
         this.symbol = symbol;
         this.pin = pin;
-    }
-
-    public static boolean isConsistent(Set<ConnectedPin> netPins) {
-        ConnectedPin sourcePin = null;
-        boolean hasAnalogSource = false;
-        boolean hasDigitalSink = false;
-        int leftmostX = Integer.MAX_VALUE;
-        for (ConnectedPin pin : netPins) {
-            if (pin.getPin().isOutput()) {
-                if (sourcePin != null) {
-                    // Only allow one signal source
-                    return false;
-                }
-                sourcePin = pin;
-                if (pin.isAnalog()) {
-                    hasAnalogSource = true;
-                }
-            } else if (!pin.isAnalog()) {
-                hasDigitalSink = true;
-            }
-            if (leftmostX > pin.getPosition().x) {
-                leftmostX = pin.getPosition().x;
-            }
-        }
-        if (sourcePin != null && sourcePin.getPin().isCombinatorialOutput() && sourcePin.getPosition().x > leftmostX) {
-            // there are pins left of the source pin
-            return false;
-        }
-        // Do not allow analog source with digital sink
-        return !(hasAnalogSource && hasDigitalSink);
     }
 
     public boolean isAnalog() {

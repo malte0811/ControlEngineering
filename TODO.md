@@ -1,4 +1,5 @@
 - Proper DAG/topological order for schematics
+- Sprites for delay line and D flip-flop
 - Proper white TAS (currently using wool texture)
 - Add wire and tube costs for schematics
 - Manual :(

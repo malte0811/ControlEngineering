@@ -36,7 +36,7 @@ public class AddSymbol extends LogicSubPacket {
 
     @Override
     protected void process(Schematic applyTo, Consumer<Schematic> replace) {
-        if (applyTo.canPlace(symbol)) {
+        if (applyTo.getChecker().canAdd(symbol)) {
             applyTo.addSymbol(symbol);
         }
     }
