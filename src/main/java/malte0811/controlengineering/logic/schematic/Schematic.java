@@ -13,8 +13,6 @@ import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
 import malte0811.controlengineering.logic.circuit.CircuitBuilder;
-import malte0811.controlengineering.logic.circuit.CircuitBuilder.StageBuilder;
-import malte0811.controlengineering.logic.circuit.CircuitBuilder.StageBuilder.CellBuilder;
 import malte0811.controlengineering.logic.circuit.NetReference;
 import malte0811.controlengineering.logic.schematic.symbol.*;
 import malte0811.controlengineering.util.math.Rectangle;
@@ -211,28 +209,21 @@ public class Schematic {
                 }
                 if (pin.getPin().isOutput()) {
                     netHasSource.add(netRef);
+                    if (!pin.getPin().isCombinatorialOutput()) {
+                        builder.addDelayedNet(netRef, pin.getPin().getType());
+                    }
                 }
             }
         }
 
-        StageBuilder currentStage = null;
         List<PlacedSymbol> cells = symbols.stream()
                 .filter(s -> s.getSymbol().getType() instanceof CellSymbol)
                 .sorted(Comparator.comparing(PlacedSymbol::getPosition))
                 .collect(Collectors.toList());
-        int lastX = Integer.MIN_VALUE;
         for (PlacedSymbol cell : cells) {
-            if (currentStage != null && cell.getPosition().x != lastX) {
-                currentStage.buildStage();
-                currentStage = null;
-            }
-            if (currentStage == null) {
-                currentStage = builder.addStage();
-                lastX = cell.getPosition().x;
-            }
             SymbolInstance<?> instance = cell.getSymbol();
             CellSymbol symbol = (CellSymbol) instance.getType();
-            CellBuilder cellBuilder = currentStage.addCell(symbol.getCellType().newInstance());
+            CircuitBuilder.CellBuilder cellBuilder = builder.addCell(symbol.getCellType().newInstance());
             int inputIndex = 0;
             int outputIndex = 0;
             for (SymbolPin pin : instance.getPins()) {
@@ -259,9 +250,6 @@ public class Schematic {
                 }
             }
             cellBuilder.buildCell();
-        }
-        if (currentStage != null) {
-            currentStage.buildStage();
         }
         if (errors.isEmpty()) {
             return Either.left(

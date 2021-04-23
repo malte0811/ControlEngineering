@@ -17,6 +17,8 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Circuit {
@@ -25,20 +27,21 @@ public class Circuit {
     private static final String CURRENT_VALUE_KEY = "current";
     private static final String IS_INPUT_KEY = "isInput";
     private static final String PINS_KEY = "pins";
-    private static final Codec<List<List<LeafcellInstance<?>>>> CELLS_CODEC = Codec.list(Codec.list(
-            LeafcellInstance.CODEC
-    ));
+    private static final Codec<List<LeafcellInstance<?>>> CELLS_CODEC = Codec.list(LeafcellInstance.CODEC);
 
-    private final List<List<LeafcellInstance<?>>> cellsByStage;
-    private final Object2DoubleMap<NetReference> allNetValues = new Object2DoubleOpenHashMap<>();
-    private final Object2DoubleMap<NetReference> inputValues = new Object2DoubleOpenHashMap<>();
+    private final List<LeafcellInstance<?>> cellsInTopoOrder;
+    private final Object2DoubleMap<NetReference> allNetValues;
+    private final Object2DoubleMap<NetReference> inputValues;
+    private final Map<NetReference, PinReference> delayedNetsBySource;
     private final Map<PinReference, NetReference> pinToNet;
 
-    public Circuit(CompoundNBT nbt) {
+    public static Circuit fromNBT(CompoundNBT nbt) {
         ListNBT stages = nbt.getList(STAGES_KEY, Constants.NBT.TAG_LIST);
-        cellsByStage = Codecs.readOrNull(CELLS_CODEC, stages);
-        pinToNet = new HashMap<>();
+        List<LeafcellInstance<?>> cellsInTopoOrder = Codecs.readOrNull(CELLS_CODEC, stages);
+        Map<PinReference, NetReference> pinToNet = new HashMap<>();
         CompoundNBT netsNBT = nbt.getCompound(NETS_KEY);
+        Object2DoubleMap<NetReference> allNetValues = new Object2DoubleOpenHashMap<>();
+        Object2DoubleMap<NetReference> inputValues = new Object2DoubleOpenHashMap<>();
         for (String netName : netsNBT.keySet()) {
             CompoundNBT netNBT = netsNBT.getCompound(netName);
             NetReference netRef = new NetReference(netName);
@@ -49,32 +52,55 @@ public class Circuit {
             }
             for (INBT pinNBT : netNBT.getList(PINS_KEY, Constants.NBT.TAG_COMPOUND)) {
                 PinReference pin = Codecs.readOrNull(PinReference.CODEC, pinNBT);
-                if (pin != null && isValidPin(pin) && !pinToNet.containsKey(pin)) {
+                if (pin != null && isValidPin(pin, cellsInTopoOrder) && !pinToNet.containsKey(pin)) {
                     pinToNet.put(pin, netRef);
                 }
             }
         }
+        return new Circuit(cellsInTopoOrder, inputValues, pinToNet, allNetValues);
     }
 
     public Circuit(
-            List<List<LeafcellInstance<?>>> stages, Set<NetReference> inputs, Map<PinReference, NetReference> pinNets
+            List<LeafcellInstance<?>> cellsInOrder,
+            Set<NetReference> inputs,
+            Map<PinReference, NetReference> pinNets
     ) {
-        this.cellsByStage = stages;
-        this.pinToNet = pinNets;
-        for (NetReference n : inputs) {
-            inputValues.put(n, 0);
-        }
+        this(
+                cellsInOrder,
+                inputs.stream().collect(Collectors.toMap(Function.identity(), $ -> 0.)),
+                pinNets,
+                new Object2DoubleOpenHashMap<>()
+        );
     }
 
-    private boolean isValidPin(PinReference pin) {
-        if (pin.getStage() >= cellsByStage.size()) {
+    public Circuit(
+            List<LeafcellInstance<?>> cellsInOrder,
+            Map<NetReference, Double> inputs,
+            Map<PinReference, NetReference> pinNets,
+            Object2DoubleMap<NetReference> netValues
+    ) {
+        this.cellsInTopoOrder = cellsInOrder;
+        this.pinToNet = pinNets;
+        this.inputValues = new Object2DoubleOpenHashMap<>(inputs);
+        Map<NetReference, PinReference> delayedSources = new HashMap<>();
+        for (Map.Entry<PinReference, NetReference> entry : pinNets.entrySet()) {
+            if (!entry.getKey().isOutput()) {
+                continue;
+            }
+            List<Pin> pins = cellsInOrder.get(entry.getKey().getCell()).getType().getOutputPins();
+            if (!pins.get(entry.getKey().getPin()).getDirection().isCombinatorialOutput()) {
+                delayedSources.put(entry.getValue(), entry.getKey());
+            }
+        }
+        this.delayedNetsBySource = delayedSources;
+        this.allNetValues = netValues;
+    }
+
+    private static boolean isValidPin(PinReference pin, List<LeafcellInstance<?>> cellsInTopoOrder) {
+        if (pin.getCell() >= cellsInTopoOrder.size()) {
             return false;
         }
-        List<LeafcellInstance<?>> stage = cellsByStage.get(pin.getStage());
-        if (pin.getCellInStage() >= stage.size()) {
-            return false;
-        }
-        LeafcellInstance<?> cell = stage.get(pin.getCellInStage());
+        LeafcellInstance<?> cell = cellsInTopoOrder.get(pin.getCell());
         List<Pin> pins;
         if (pin.isOutput()) {
             pins = cell.getType().getOutputPins();
@@ -85,7 +111,7 @@ public class Circuit {
     }
 
     public CompoundNBT toNBT() {
-        INBT stages = Codecs.encode(CELLS_CODEC, cellsByStage);
+        INBT stages = Codecs.encode(CELLS_CODEC, cellsInTopoOrder);
         Map<NetReference, List<PinReference>> pinsByNet = new HashMap<>();
         for (Map.Entry<PinReference, NetReference> entry : pinToNet.entrySet()) {
             pinsByNet.computeIfAbsent(entry.getValue(), $ -> new ArrayList<>()).add(entry.getKey());
@@ -121,27 +147,39 @@ public class Circuit {
     public void tick() {
         allNetValues.clear();
         allNetValues.putAll(inputValues);
-        for (int stageId = 0, cellsByStageSize = cellsByStage.size(); stageId < cellsByStageSize; stageId++) {
-            List<LeafcellInstance<?>> stage = cellsByStage.get(stageId);
-            Object2DoubleMap<NetReference> stageOutputs = new Object2DoubleOpenHashMap<>(inputValues);
-            for (int cellId = 0, stageSize = stage.size(); cellId < stageSize; cellId++) {
-                LeafcellInstance<?> cell = stage.get(cellId);
-                DoubleList inputValues = new DoubleArrayList();
-                for (int pinId = 0; pinId < cell.getType().getInputPins().size(); pinId++) {
-                    NetReference netAtInput = pinToNet.get(new PinReference(stageId, cellId, false, pinId));
-                    inputValues.add(allNetValues.getDouble(netAtInput));
-                }
-                DoubleList outputValues = cell.tick(inputValues);
-                for (int pinId = 0; pinId < outputValues.size(); pinId++) {
-                    NetReference net = pinToNet.get(new PinReference(stageId, cellId, true, pinId));
-                    if (net != null) {
-                        Preconditions.checkState(!allNetValues.containsKey(net) && !stageOutputs.containsKey(net));
-                        stageOutputs.put(net, outputValues.getDouble(pinId));
+        for (Map.Entry<NetReference, PinReference> delayedNet : delayedNetsBySource.entrySet()) {
+            NetReference net = delayedNet.getKey();
+            PinReference pin = delayedNet.getValue();
+            LeafcellInstance<?> cell = cellsInTopoOrder.get(pin.getCell());
+            allNetValues.put(
+                    net, cell.getCurrentOutput(getCellInputs(pin.getCell())).getDouble(pin.getPin())
+            );
+        }
+        for (int cellId = 0; cellId < cellsInTopoOrder.size(); cellId++) {
+            LeafcellInstance<?> cell = cellsInTopoOrder.get(cellId);
+            DoubleList outputValues = cell.tick(getCellInputs(cellId));
+            for (int pinId = 0; pinId < outputValues.size(); pinId++) {
+                NetReference net = pinToNet.get(new PinReference(cellId, true, pinId));
+                if (net != null) {
+                    if (cell.getType().getOutputPins().get(pinId).getDirection().isCombinatorialOutput()) {
+                        Preconditions.checkState(!allNetValues.containsKey(net));
+                        allNetValues.put(net, outputValues.getDouble(pinId));
+                    } else {
+                        Preconditions.checkState(allNetValues.containsKey(net));
                     }
                 }
             }
-            allNetValues.putAll(stageOutputs);
         }
+    }
+
+    private DoubleList getCellInputs(int cellId) {
+        LeafcellInstance<?> cell = cellsInTopoOrder.get(cellId);
+        DoubleList inputValues = new DoubleArrayList();
+        for (int pinId = 0; pinId < cell.getType().getInputPins().size(); pinId++) {
+            NetReference netAtInput = pinToNet.get(new PinReference(cellId, false, pinId));
+            inputValues.add(allNetValues.getDouble(netAtInput));
+        }
+        return inputValues;
     }
 
     public Object2DoubleMap<NetReference> getNetValues() {
@@ -153,6 +191,6 @@ public class Circuit {
     }
 
     public Stream<LeafcellType<?>> getCellTypes() {
-        return cellsByStage.stream().flatMap(List::stream).map(LeafcellInstance::getType);
+        return cellsInTopoOrder.stream().map(LeafcellInstance::getType);
     }
 }

@@ -8,31 +8,24 @@ import java.util.Objects;
 public class PinReference {
     public static final Codec<PinReference> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
-                    Codec.INT.fieldOf("stage").forGetter(r -> r.stage),
-                    Codec.INT.fieldOf("cell").forGetter(r -> r.cellInStage),
+                    Codec.INT.fieldOf("cell").forGetter(r -> r.cell),
                     Codec.BOOL.fieldOf("isOut").forGetter(r -> r.isOutput),
                     Codec.INT.fieldOf("pin").forGetter(r -> r.pin)
             ).apply(inst, PinReference::new)
     );
 
-    private final int stage;
-    private final int cellInStage;
+    private final int cell;
     private final boolean isOutput;
     private final int pin;
 
-    public PinReference(int stage, int cellInStage, boolean isOutput, int pin) {
-        this.stage = stage;
-        this.cellInStage = cellInStage;
+    public PinReference(int cell, boolean isOutput, int pin) {
+        this.cell = cell;
         this.isOutput = isOutput;
         this.pin = pin;
     }
 
-    public int getStage() {
-        return stage;
-    }
-
-    public int getCellInStage() {
-        return cellInStage;
+    public int getCell() {
+        return cell;
     }
 
     public boolean isOutput() {
@@ -48,11 +41,11 @@ public class PinReference {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PinReference that = (PinReference) o;
-        return stage == that.stage && cellInStage == that.cellInStage && isOutput == that.isOutput && pin == that.pin;
+        return cell == that.cell && isOutput == that.isOutput && pin == that.pin;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(stage, cellInStage, isOutput, pin);
+        return Objects.hash(cell, isOutput, pin);
     }
 }

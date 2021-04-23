@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
+import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 
 import java.util.Random;
@@ -15,11 +16,15 @@ public class RSLatch extends LeafcellType<Boolean> {
 
     public RSLatch() {
         super(
-                ImmutableList.of(new Pin("reset", SignalType.DIGITAL), new Pin("set", SignalType.DIGITAL)),
-                ImmutableList.of(new Pin("q", SignalType.DIGITAL), new Pin("not_q", SignalType.DIGITAL)),
-                false,
-                Codec.BOOL,
-                2.5
+                ImmutableList.of(
+                        new Pin("reset", SignalType.DIGITAL, PinDirection.INPUT),
+                        new Pin("set", SignalType.DIGITAL, PinDirection.INPUT)
+                ),
+                ImmutableList.of(
+                        new Pin("q", SignalType.DIGITAL, PinDirection.DELAYED_OUTPUT),
+                        new Pin("not_q", SignalType.DIGITAL, PinDirection.DELAYED_OUTPUT)
+                ),
+                false, Codec.BOOL, 5
         );
     }
 
@@ -39,8 +44,8 @@ public class RSLatch extends LeafcellType<Boolean> {
     }
 
     @Override
-    public DoubleList getOutputSignals(DoubleList inputSignals, Boolean currentState) {
-        final double q = currentState ? 1 : 0;
+    public DoubleList getOutputSignals(DoubleList inputSignals, Boolean oldState) {
+        final double q = oldState ? 1 : 0;
         return new DoubleArrayList(new double[]{q, 1 - q});
     }
 

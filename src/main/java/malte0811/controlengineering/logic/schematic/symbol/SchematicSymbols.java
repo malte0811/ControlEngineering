@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
+import malte0811.controlengineering.logic.cells.PinDirection;
+import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -47,6 +49,17 @@ public class SchematicSymbols {
         registerStandardSymbol(Leafcells.NOT, secondColumn, 28, 13, ImmutableList.of(digitalIn(0, 3)));
         //TODO RS latch
         registerStandardSymbol(Leafcells.SCHMITT_TRIGGER, 0, 42, 13, ImmutableList.of(analogIn(0, 3)));
+        //TODO proper symbol, digital version
+        REGISTRY.register(
+                Leafcells.DELAY_LINE.getRegistryName(),
+                new CellSymbol(
+                        Leafcells.DELAY_LINE,
+                        0, 42, 13, 7,
+                        ImmutableList.of(
+                                analogIn(0, 3), new SymbolPin(12, 3, SignalType.ANALOG, PinDirection.DELAYED_OUTPUT)
+                        )
+                )
+        );
 
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin"), new IOSymbol(true));
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "output_pin"), new IOSymbol(false));

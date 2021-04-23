@@ -1,5 +1,6 @@
 package malte0811.controlengineering.logic.cells;
 
+import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
@@ -20,13 +21,11 @@ public abstract class LeafcellType<State> extends TypedRegistryEntry<State> {
     private final double numTubes;
 
     protected LeafcellType(
-            List<Pin> inputPins,
-            List<Pin> outputPins,
-            State initialState,
-            Codec<State> stateCodec,
-            double numTubes
+            List<Pin> inputPins, List<Pin> outputPins, State initialState, Codec<State> stateCodec, int numTubes
     ) {
         super(initialState, stateCodec);
+        Preconditions.checkArgument(inputPins.stream().noneMatch(p -> p.getDirection().isOutput()));
+        Preconditions.checkArgument(outputPins.stream().allMatch(p -> p.getDirection().isOutput()));
         this.inputPins = inputPins;
         this.outputPins = outputPins;
         this.numTubes = numTubes;
@@ -39,7 +38,7 @@ public abstract class LeafcellType<State> extends TypedRegistryEntry<State> {
 
     public abstract State nextState(DoubleList inputSignals, State currentState);
 
-    public abstract DoubleList getOutputSignals(DoubleList inputSignals, State currentState);
+    public abstract DoubleList getOutputSignals(DoubleList inputSignals, State oldState);
 
     public List<Pin> getInputPins() {
         return inputPins;

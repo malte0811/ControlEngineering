@@ -7,30 +7,26 @@ import net.minecraft.util.math.shapes.IBooleanFunction;
 
 
 public class Leafcells {
-    // TODO adjust tube count
-    public static final AssociativeFunctionCell AND2 = new AssociativeFunctionCell(2, IBooleanFunction.AND, true, 1.5);
-    public static final AssociativeFunctionCell AND3 = new AssociativeFunctionCell(3, IBooleanFunction.AND, true, 2);
-    public static final AssociativeFunctionCell OR2 = new AssociativeFunctionCell(2, IBooleanFunction.OR, false, 1.5);
-    public static final AssociativeFunctionCell OR3 = new AssociativeFunctionCell(3, IBooleanFunction.OR, false, 2);
+    // TODO adjust tube count to what IE will use, add scaling
+    public static final AssociativeFunctionCell AND2 = new AssociativeFunctionCell(2, IBooleanFunction.AND, true, 3);
+    public static final AssociativeFunctionCell AND3 = new AssociativeFunctionCell(3, IBooleanFunction.AND, true, 4);
+    public static final AssociativeFunctionCell OR2 = new AssociativeFunctionCell(2, IBooleanFunction.OR, false, 3);
+    public static final AssociativeFunctionCell OR3 = new AssociativeFunctionCell(3, IBooleanFunction.OR, false, 4);
     public static final AssociativeFunctionCell XOR2 = new AssociativeFunctionCell(
-            2,
-            IBooleanFunction.NOT_SAME,
-            false,
-            3
+            2, IBooleanFunction.NOT_SAME, false, 6
     );
     public static final AssociativeFunctionCell XOR3 = new AssociativeFunctionCell(
-            3,
-            IBooleanFunction.NOT_SAME,
-            false,
-            5
+            3, IBooleanFunction.NOT_SAME, false, 10
     );
-    public static final AssociativeFunctionCell NAND2 = new InvertedAssociativeCell(2, IBooleanFunction.AND, true, 0.5);
-    public static final AssociativeFunctionCell NAND3 = new InvertedAssociativeCell(3, IBooleanFunction.AND, true, 1);
-    public static final AssociativeFunctionCell NOR2 = new InvertedAssociativeCell(2, IBooleanFunction.OR, false, 0.5);
-    public static final AssociativeFunctionCell NOR3 = new InvertedAssociativeCell(3, IBooleanFunction.OR, false, 1);
+    public static final AssociativeFunctionCell NAND2 = new InvertedAssociativeCell(2, IBooleanFunction.AND, true, 1);
+    public static final AssociativeFunctionCell NAND3 = new InvertedAssociativeCell(3, IBooleanFunction.AND, true, 2);
+    public static final AssociativeFunctionCell NOR2 = new InvertedAssociativeCell(2, IBooleanFunction.OR, false, 1);
+    public static final AssociativeFunctionCell NOR3 = new InvertedAssociativeCell(3, IBooleanFunction.OR, false, 2);
     public static final NotCell NOT = new NotCell();
     public static final RSLatch RS_LATCH = new RSLatch();
     public static final SchmittTrigger SCHMITT_TRIGGER = new SchmittTrigger();
+    public static final DelayCell DELAY_LINE = new DelayCell(SignalType.ANALOG, 2);
+    public static final DelayCell D_LATCH = new DelayCell(SignalType.DIGITAL, 2);
 
     public static void init() {
         register("and2", AND2);
@@ -46,6 +42,8 @@ public class Leafcells {
         register("not", NOT);
         register("rs_latch", RS_LATCH);
         register("schmitt_trigger", SCHMITT_TRIGGER);
+        register("delay_line", DELAY_LINE);
+        register("d_latch", D_LATCH);
     }
 
     private static <T extends LeafcellType<?>> T register(String name, T type) {

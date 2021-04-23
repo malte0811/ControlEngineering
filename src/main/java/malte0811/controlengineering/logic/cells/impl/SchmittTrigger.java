@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.doubles.DoubleLists;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
+import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 
 public class SchmittTrigger extends LeafcellType<Boolean> {
@@ -14,8 +15,8 @@ public class SchmittTrigger extends LeafcellType<Boolean> {
 
     public SchmittTrigger() {
         super(
-                ImmutableList.of(new Pin("in", SignalType.ANALOG)),
-                ImmutableList.of(new Pin("out", SignalType.DIGITAL)),
+                ImmutableList.of(new Pin("in", SignalType.ANALOG, PinDirection.INPUT)),
+                ImmutableList.of(new Pin("out", SignalType.DIGITAL, PinDirection.OUTPUT)),
                 false,
                 Codec.BOOL,
                 2
@@ -35,7 +36,7 @@ public class SchmittTrigger extends LeafcellType<Boolean> {
     }
 
     @Override
-    public DoubleList getOutputSignals(DoubleList inputSignals, Boolean currentState) {
-        return DoubleLists.singleton(nextState(inputSignals, currentState) ? 1 : 0);
+    public DoubleList getOutputSignals(DoubleList inputSignals, Boolean oldState) {
+        return DoubleLists.singleton(nextState(inputSignals, oldState) ? 1 : 0);
     }
 }

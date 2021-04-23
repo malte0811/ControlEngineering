@@ -50,7 +50,7 @@ public class BusConnectedCircuit {
 
     public BusConnectedCircuit(CompoundNBT nbt) {
         this(
-                new Circuit(nbt.getCompound("circuit")),
+                Circuit.fromNBT(nbt.getCompound("circuit")),
                 Codecs.readOrThrow(OUTPUT_CODEC, nbt.get("outputs")),
                 Codecs.readOrThrow(INPUT_CODEC, nbt.get("inputs")),
                 Codecs.readOrThrow(CONSTANCE_CODEC, nbt.get("constants"))

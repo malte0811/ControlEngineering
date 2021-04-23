@@ -1,6 +1,7 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.WireSegment;
 import malte0811.controlengineering.util.GuiUtil;
@@ -11,32 +12,32 @@ import java.util.Objects;
 public class SymbolPin {
     private final Vec2i position;
     private final SignalType type;
-    private final boolean isOutput;
+    private final PinDirection direction;
 
-    public SymbolPin(int x, int y, SignalType type, boolean isOutput) {
-        this(new Vec2i(x, y), type, isOutput);
+    public SymbolPin(int x, int y, SignalType type, PinDirection direction) {
+        this(new Vec2i(x, y), type, direction);
     }
 
-    public SymbolPin(Vec2i position, SignalType type, boolean isOutput) {
+    public SymbolPin(Vec2i position, SignalType type, PinDirection direction) {
         this.position = position;
         this.type = type;
-        this.isOutput = isOutput;
+        this.direction = direction;
     }
 
     public static SymbolPin digitalOut(int x, int y) {
-        return new SymbolPin(x, y, SignalType.DIGITAL, true);
+        return new SymbolPin(x, y, SignalType.DIGITAL, PinDirection.OUTPUT);
     }
 
     public static SymbolPin analogOut(int x, int y) {
-        return new SymbolPin(x, y, SignalType.ANALOG, true);
+        return new SymbolPin(x, y, SignalType.ANALOG, PinDirection.OUTPUT);
     }
 
     public static SymbolPin analogIn(int x, int y) {
-        return new SymbolPin(x, y, SignalType.ANALOG, false);
+        return new SymbolPin(x, y, SignalType.ANALOG, PinDirection.INPUT);
     }
 
     public static SymbolPin digitalIn(int x, int y) {
-        return new SymbolPin(x, y, SignalType.DIGITAL, false);
+        return new SymbolPin(x, y, SignalType.DIGITAL, PinDirection.INPUT);
     }
 
     public Vec2i getPosition() {
@@ -47,8 +48,13 @@ public class SymbolPin {
         return type;
     }
 
+    //TODO check usages and replace with isCombOut as necessary
     public boolean isOutput() {
-        return isOutput;
+        return direction.isOutput();
+    }
+
+    public boolean isCombinatorialOutput() {
+        return direction.isCombinatorialOutput();
     }
 
     public void render(MatrixStack stack, int x, int y, int wireColor) {
@@ -73,11 +79,11 @@ public class SymbolPin {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SymbolPin symbolPin = (SymbolPin) o;
-        return isOutput == symbolPin.isOutput && position.equals(symbolPin.position) && type == symbolPin.type;
+        return direction == symbolPin.direction && position.equals(symbolPin.position) && type == symbolPin.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(position, type, isOutput);
+        return Objects.hash(position, type, direction);
     }
 }

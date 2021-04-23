@@ -40,7 +40,7 @@ public class ConnectedPin {
                 leftmostX = pin.getPosition().x;
             }
         }
-        if (sourcePin != null && sourcePin.getPosition().x > leftmostX) {
+        if (sourcePin != null && sourcePin.getPin().isCombinatorialOutput() && sourcePin.getPosition().x > leftmostX) {
             // there are pins left of the source pin
             return false;
         }

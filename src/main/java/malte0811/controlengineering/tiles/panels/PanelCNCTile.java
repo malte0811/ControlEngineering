@@ -41,9 +41,7 @@ import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
 public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITickableTileEntity {
     @Nonnull
-    private byte[] insertedTape = BitUtils.toBytesWithParity(
-            "button 0 0 ff 0 0;button 15 0 ff00 0 0;button 15 15 ff0000 0 0;button 0 15 ffff 0 0"
-    );
+    private byte[] insertedTape = new byte[0];
     private final CachedValue<byte[], CNCJob> currentJob = new CachedValue<>(
             () -> insertedTape,
             tape -> {

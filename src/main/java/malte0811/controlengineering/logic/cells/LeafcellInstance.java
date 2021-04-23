@@ -8,26 +8,19 @@ public final class LeafcellInstance<State> extends TypedInstance<State, Leafcell
     public static final Codec<LeafcellInstance<?>> CODEC = makeCodec(
             LeafcellType.REGISTRY, LeafcellInstance::makeUnchecked
     );
-    private final LeafcellType<State> type;
-    private State currentState;
 
     public LeafcellInstance(LeafcellType<State> type, State currentState) {
         super(type, currentState);
-        this.type = type;
-        this.currentState = currentState;
-    }
-
-    public LeafcellType<State> getType() {
-        return type;
-    }
-
-    public State getCurrentState() {
-        return currentState;
     }
 
     public DoubleList tick(DoubleList inputValues) {
-        currentState = type.nextState(inputValues, currentState);
-        return type.getOutputSignals(inputValues, currentState);
+        final State lastState = currentState;
+        currentState = getType().nextState(inputValues, currentState);
+        return getType().getOutputSignals(inputValues, lastState);
+    }
+
+    public DoubleList getCurrentOutput(DoubleList inputs) {
+        return getType().getOutputSignals(inputs, currentState);
     }
 
     private static <T> LeafcellInstance<T> makeUnchecked(LeafcellType<T> type, Object state) {

@@ -64,8 +64,11 @@ public class LangGenerator extends LanguageProvider {
         add(Leafcells.XOR3, "3-input XOR");
 
         add(Leafcells.NOT, "Inverter");
-        add(Leafcells.RS_LATCH, "RS-latch");
-        add(Leafcells.SCHMITT_TRIGGER, "Schmitt-Trigger");
+        add(Leafcells.RS_LATCH, "RS latch");
+        add(Leafcells.SCHMITT_TRIGGER, "Schmitt Trigger");
+
+        add(Leafcells.D_LATCH, "D Flip-Flop");
+        add(Leafcells.DELAY_LINE, "Delay Line");
     }
 
     private void addGuiStrings() {
