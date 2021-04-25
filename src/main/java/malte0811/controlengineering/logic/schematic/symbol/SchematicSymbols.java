@@ -52,21 +52,20 @@ public class SchematicSymbols {
         registerStandardSymbol(Leafcells.NOT, secondColumn, 28, 13, ImmutableList.of(digitalIn(0, 3)));
         //TODO RS latch
         registerStandardSymbol(Leafcells.SCHMITT_TRIGGER, 0, 42, 13, ImmutableList.of(analogIn(0, 3)));
-        //TODO proper symbol, digital version
-        REGISTRY.register(
-                Leafcells.DELAY_LINE.getRegistryName(),
-                new CellSymbol(
-                        Leafcells.DELAY_LINE,
-                        0, 42, 13, 7,
-                        ImmutableList.of(
-                                analogIn(0, 3), new SymbolPin(12, 3, SignalType.ANALOG, PinDirection.DELAYED_OUTPUT)
-                        )
-                )
-        );
+        delayCell(Leafcells.D_LATCH, 49, 10, SignalType.DIGITAL);
+        delayCell(Leafcells.DELAY_LINE, 56, 13, SignalType.ANALOG);
 
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin"), INPUT_PIN);
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "output_pin"), OUTPUT_PIN);
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "constant"), CONSTANT);
+    }
+
+    private static void delayCell(LeafcellType<?> cell, int vMin, int uSize, SignalType type) {
+        List<SymbolPin> pins = ImmutableList.of(
+                new SymbolPin(0, 3, type, PinDirection.INPUT),
+                new SymbolPin(uSize - 1, 3, type, PinDirection.DELAYED_OUTPUT)
+        );
+        REGISTRY.register(cell.getRegistryName(), new CellSymbol(cell, 0, vMin, uSize, 7, pins));
     }
 
     private static void registerStandardSymbol(
