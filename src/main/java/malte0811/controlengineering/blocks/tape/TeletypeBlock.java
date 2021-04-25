@@ -1,10 +1,10 @@
 package malte0811.controlengineering.blocks.tape;
 
 import malte0811.controlengineering.blocks.CEBlock;
-import malte0811.controlengineering.blocks.placement.HorizontalPlacement;
+import malte0811.controlengineering.blocks.placement.BlockPropertyPlacement;
 import malte0811.controlengineering.blocks.shapes.CachedShape;
+import malte0811.controlengineering.blocks.shapes.DirectionalShapeProvider;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
-import malte0811.controlengineering.blocks.shapes.HorizontalShapeProvider;
 import malte0811.controlengineering.gui.tape.TeletypeContainer;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.tape.TeletypeTile;
@@ -35,14 +35,14 @@ public class TeletypeBlock extends CEBlock<Direction, TeletypeTile> {
             makeCuboidShape(0, 0, 0, 16, 10, 8),
             makeCuboidShape(0, 0, 8, 16, 4, 16)
     );
-    public static final CachedShape<Direction> SHAPE_PROVIDER = new HorizontalShapeProvider(
+    public static final CachedShape<Direction> SHAPE_PROVIDER = new DirectionalShapeProvider(
             FromBlockFunction.getProperty(FACING), BASE_SHAPE
     );
 
     public TeletypeBlock() {
         super(
                 Properties.create(Material.IRON).notSolid(),
-                new HorizontalPlacement(FACING),
+                BlockPropertyPlacement.horizontal(FACING),
                 SHAPE_PROVIDER,
                 CETileEntities.TELETYPE
         );

@@ -5,6 +5,7 @@ import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
 import blusunrize.immersiveengineering.api.wires.LocalWireNetwork;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import malte0811.controlengineering.blocks.BusInterfaceBlock;
 import malte0811.controlengineering.blocks.INeighborChangeListener;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusConnector;
@@ -13,7 +14,6 @@ import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.tiles.CEIICTileEntity;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.Clearable;
-import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -55,31 +55,33 @@ public class BusInterfaceTile extends CEIICTileEntity implements IBusConnector, 
 
     @Override
     public Vector3d getConnectionOffset(@Nonnull Connection con, ConnectionPoint here) {
-        return new Vector3d(0.5, 0.5, 0.5);
+        return new Vector3d(0.5, 0.5, 0.5)
+                .add(Vector3d.copy(getFacing().getDirectionVec()).scale(1.5 / 16));
     }
 
     private Collection<IBusInterface> getConnectedTile() {
-        //TODO facing
         Collection<IBusInterface> ret = new ArrayList<>();
-        for (Direction d : DirectionUtils.VALUES) {
-            TileEntity neighbor = world.getTileEntity(pos.offset(d));
-            if (neighbor instanceof IBusInterface) {
-                IBusInterface i = (IBusInterface) neighbor;
-                if (i.canConnect(d.getOpposite())) {
-                    Pair<WeakReference<IBusInterface>, Runnable> existing = clearers.get(d);
-                    if (existing == null || existing.getFirst().get() != i) {
-                        Pair<Clearable<Runnable>, Runnable> newClearer = Clearable.create(() -> getBusHandler(new ConnectionPoint(
-                                pos,
-                                0
-                        )).requestUpdate());
-                        i.addMarkDirtyCallback(newClearer.getFirst());
-                        clearers.put(d, Pair.of(new WeakReference<>(i), newClearer.getSecond()));
-                    }
-                    ret.add(i);
+        Direction facing = getFacing();
+        TileEntity neighbor = world.getTileEntity(pos.offset(facing));
+        if (neighbor instanceof IBusInterface) {
+            IBusInterface i = (IBusInterface) neighbor;
+            if (i.canConnect(facing.getOpposite())) {
+                Pair<WeakReference<IBusInterface>, Runnable> existing = clearers.get(facing);
+                if (existing == null || existing.getFirst().get() != i) {
+                    Pair<Clearable<Runnable>, Runnable> newClearer = Clearable.create(() -> getBusHandler(new ConnectionPoint(
+                            pos, 0
+                    )).requestUpdate());
+                    i.addMarkDirtyCallback(newClearer.getFirst());
+                    clearers.put(facing, Pair.of(new WeakReference<>(i), newClearer.getSecond()));
                 }
+                ret.add(i);
             }
         }
         return ret;
+    }
+
+    private Direction getFacing() {
+        return getBlockState().get(BusInterfaceBlock.FACING);
     }
 
     @Override

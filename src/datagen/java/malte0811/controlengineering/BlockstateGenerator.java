@@ -1,10 +1,12 @@
 package malte0811.controlengineering;
 
 import blusunrize.immersiveengineering.api.Lib;
+import blusunrize.immersiveengineering.data.blockstates.ConnectorBlockBuilder;
 import blusunrize.immersiveengineering.data.models.ConnectorBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
+import malte0811.controlengineering.blocks.BusInterfaceBlock;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
@@ -17,6 +19,7 @@ import malte0811.controlengineering.modelbuilder.LogicCabinetBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderState;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.state.Property;
 import net.minecraft.util.Direction;
@@ -49,7 +52,12 @@ public class BlockstateGenerator extends BlockStateProvider {
     protected void registerStatesAndModels() {
         dummyIIC(CEBlocks.BUS_RELAY.get());
         dummyIIC(CEBlocks.LINE_ACCESS.get());
-        dummyIIC(CEBlocks.BUS_INTERFACE.get());
+        ConnectorBlockBuilder.builder(models(), getVariantBuilder(CEBlocks.BUS_INTERFACE.get()), ($1, $2) -> {})
+                .rotationData(BusInterfaceBlock.FACING, 90)
+                .fixedModel(obj("bus_interface.obj"))
+                .layers(RenderType.getSolid())
+                .build();
+
         panelModel();
         horizontalRotated(CEBlocks.TELETYPE.get(), TeletypeBlock.FACING, obj("typewriter.obj"));
         horizontalRotated(CEBlocks.PANEL_CNC.get(), PanelCNCBlock.FACING, obj("panel_cnc.obj"));

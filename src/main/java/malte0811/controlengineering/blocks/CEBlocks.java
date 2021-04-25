@@ -8,7 +8,6 @@ import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.tape.TeletypeBlock;
 import malte0811.controlengineering.tiles.CETileEntities;
-import malte0811.controlengineering.tiles.bus.BusInterfaceTile;
 import malte0811.controlengineering.tiles.bus.BusRelayTile;
 import malte0811.controlengineering.tiles.bus.LineAccessTile;
 import net.minecraft.block.AbstractBlock;
@@ -28,9 +27,8 @@ public class CEBlocks {
             ControlEngineering.MODID
     );
 
-    public static final RegistryObject<BasicTileBlock<BusInterfaceTile>> BUS_INTERFACE = REGISTER.register(
-            "bus_interface",
-            createConnector(() -> CETileEntities.BUS_INTERFACE.get())
+    public static final RegistryObject<BusInterfaceBlock> BUS_INTERFACE = REGISTER.register(
+            "bus_interface", BusInterfaceBlock::new
     );
 
     public static final RegistryObject<BasicTileBlock<BusRelayTile>> BUS_RELAY = REGISTER.register(

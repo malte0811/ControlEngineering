@@ -15,7 +15,7 @@ public class HorizontalWithExtraShape<T> implements BiFunction<T, Direction, Vox
         FromBlockFunction<VoxelShape> {
     private final FromBlockFunction<T> getKey;
     private final FromBlockFunction<Direction> getFacing;
-    private final Map<T, HorizontalShapeProvider> shape;
+    private final Map<T, DirectionalShapeProvider> shape;
 
     public HorizontalWithExtraShape(
             FromBlockFunction<T> getKey, FromBlockFunction<Direction> getFacing, Map<T, VoxelShape> shapes
@@ -23,7 +23,7 @@ public class HorizontalWithExtraShape<T> implements BiFunction<T, Direction, Vox
         this.getKey = getKey;
         this.getFacing = getFacing;
         this.shape = shapes.entrySet().stream()
-                .map(p -> Pair.of(p.getKey(), new HorizontalShapeProvider(getFacing, p.getValue())))
+                .map(p -> Pair.of(p.getKey(), new DirectionalShapeProvider(getFacing, p.getValue())))
                 .collect(ImmutableMap.toImmutableMap(Pair::getFirst, Pair::getSecond));
     }
 

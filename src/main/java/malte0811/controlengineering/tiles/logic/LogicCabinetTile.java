@@ -21,6 +21,7 @@ import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.Clearable;
 import malte0811.controlengineering.util.ItemUtil;
+import malte0811.controlengineering.util.ShapeUtils;
 import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.serialization.Codecs;
@@ -37,7 +38,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.common.capabilities.Capability;
@@ -275,7 +275,7 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
 
     private static SelectionShapes createSelectionShapes(Direction d, LogicCabinetTile tile, boolean upper) {
         List<SelectionShapes> subshapes = new ArrayList<>(1);
-        HorizontalShapeProvider baseShape = upper ? LogicCabinetBlock.TOP_SHAPE : LogicCabinetBlock.BOTTOM_SHAPE;
+        DirectionalShapeProvider baseShape = upper ? LogicCabinetBlock.TOP_SHAPE : LogicCabinetBlock.BOTTOM_SHAPE;
         if (!upper) {
             subshapes.add(makeClockInteraction(tile));
         } else {
@@ -289,7 +289,7 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
 
     private static SelectionShapes makeClockInteraction(LogicCabinetTile tile) {
         return new SingleShape(
-                VoxelShapes.create(0, 6 / 16., 6 / 16., 5 / 16., 10 / 16., 10 / 16.), ctx -> {
+                ShapeUtils.createPixelRelative(0, 6, 6, 5, 10, 10), ctx -> {
             if (ctx.getPlayer() == null) {
                 return ActionResultType.PASS;
             }
@@ -316,9 +316,8 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
 
     private static SelectionShapes makeBoardInteraction(LogicCabinetTile tile, boolean upper) {
         final int yOff = upper ? -16 : 0;
-        final VoxelShape fullShape = VoxelShapes.create(
-                0, (11 + yOff) / 16., 1 / 16.,
-                15 / 16., (31 + yOff) / 16., 15 / 16.
+        final VoxelShape fullShape = ShapeUtils.createPixelRelative(
+                1, 11 + yOff, 1, 15, 31 + yOff, 15
         );
         return new SingleShape(
                 fullShape, ctx -> {
@@ -345,9 +344,8 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
     }
 
     private static SelectionShapes makeViewDesignInteraction(LogicCabinetTile tile) {
-        final VoxelShape shape = VoxelShapes.create(
-                15 / 16., 1 / 16., 4 / 16.,
-                1, 11 / 16., 12 / 16.
+        final VoxelShape shape = ShapeUtils.createPixelRelative(
+                15, 1, 4, 16, 11, 12
         );
         return new SingleShape(
                 shape, ctx -> {

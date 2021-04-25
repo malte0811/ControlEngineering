@@ -1,7 +1,36 @@
 {
   "variants": {
-    "": {
-      "model": "controlengineering:block/dummy_iic"
+    "facing=down": {
+      "model": "controlengineering:block/bus_interface_obj_connector",
+      "uvlock": true
+    },
+    "facing=up": {
+      "model": "controlengineering:block/bus_interface_obj_connector",
+      "x": 180,
+      "uvlock": true
+    },
+    "facing=north": {
+      "model": "controlengineering:block/bus_interface_obj_connector",
+      "x": 90,
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=south": {
+      "model": "controlengineering:block/bus_interface_obj_connector",
+      "x": 90,
+      "uvlock": true
+    },
+    "facing=west": {
+      "model": "controlengineering:block/bus_interface_obj_connector",
+      "x": 90,
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=east": {
+      "model": "controlengineering:block/bus_interface_obj_connector",
+      "x": 90,
+      "y": 270,
+      "uvlock": true
     }
   }
 }

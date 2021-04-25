@@ -1,7 +1,7 @@
 package malte0811.controlengineering.blocks.panels;
 
 import malte0811.controlengineering.blocks.CEBlock;
-import malte0811.controlengineering.blocks.placement.HorizontalPlacement;
+import malte0811.controlengineering.blocks.placement.BlockPropertyPlacement;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.panels.PanelCNCTile;
@@ -35,7 +35,7 @@ public class PanelCNCBlock extends CEBlock<Direction, PanelCNCTile> {
     public PanelCNCBlock() {
         super(
                 Properties.create(Material.IRON).notSolid(),
-                new HorizontalPlacement(FACING),
+                BlockPropertyPlacement.horizontal(FACING),
                 FromBlockFunction.constant(SHAPE),
                 CETileEntities.PANEL_CNC
         );

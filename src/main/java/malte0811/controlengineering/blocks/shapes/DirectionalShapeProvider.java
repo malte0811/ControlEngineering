@@ -13,11 +13,11 @@ import net.minecraft.world.IBlockReader;
 
 import java.util.List;
 
-public class HorizontalShapeProvider extends CachedShape<Direction> {
+public class DirectionalShapeProvider extends CachedShape<Direction> {
     private final FromBlockFunction<Direction> getKey;
     private final VoxelShape baseShape;
 
-    public HorizontalShapeProvider(FromBlockFunction<Direction> getKey, VoxelShape baseShape) {
+    public DirectionalShapeProvider(FromBlockFunction<Direction> getKey, VoxelShape baseShape) {
         this.getKey = getKey;
         this.baseShape = baseShape;
     }
