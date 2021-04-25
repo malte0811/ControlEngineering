@@ -1,16 +1,15 @@
 package malte0811.controlengineering;
 
 
-import blusunrize.immersiveengineering.api.wires.WireType;
 import blusunrize.immersiveengineering.api.wires.localhandlers.LocalNetworkHandler;
 import blusunrize.immersiveengineering.api.wires.redstone.RedstoneNetworkHandler;
-import blusunrize.immersiveengineering.common.items.IEItems;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.bus.BusWireType;
 import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.items.CEItems;
+import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.network.AddTTYData;
 import malte0811.controlengineering.network.SimplePacket;
@@ -50,7 +49,7 @@ public class ControlEngineering {
         @Nonnull
         public ItemStack createIcon() {
             //TODO
-            return new ItemStack(IEItems.Misc.wireCoils.get(WireType.COPPER));
+            return new ItemStack(IEItemRefs.LV_WIRE_COIL.get());
         }
     };
 
