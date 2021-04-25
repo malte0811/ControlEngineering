@@ -16,6 +16,7 @@ import malte0811.controlengineering.logic.clock.ClockGenerator.ClockInstance;
 import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.logic.model.DynamicLogicModel;
 import malte0811.controlengineering.logic.schematic.Schematic;
+import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.Clearable;
@@ -225,7 +226,7 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
     public void setCircuit(@Nullable Schematic schematic) {
         this.circuit = null;
         if (schematic != null) {
-            Optional<BusConnectedCircuit> busCircuit = schematic.toCircuit().left();
+            Optional<BusConnectedCircuit> busCircuit = SchematicCircuitConverter.toCircuit(schematic);
             if (busCircuit.isPresent()) {
                 this.circuit = Pair.of(schematic, busCircuit.get());
             }

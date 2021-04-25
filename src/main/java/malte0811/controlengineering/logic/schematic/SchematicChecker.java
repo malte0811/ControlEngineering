@@ -6,10 +6,7 @@ import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static malte0811.controlengineering.logic.schematic.Schematic.BOUNDARY;
 
@@ -37,7 +34,25 @@ public class SchematicChecker {
             SchematicNet net = schematic.getNets().get(netId);
             allPins.addAll(net.getOrComputePins(schematic.getSymbols()));
         }
-        return getConsistencyError(allPins);
+        Optional<ITextComponent> consistency = getConsistencyError(allPins);
+        if (consistency.isPresent()) {
+            return consistency;
+        }
+        if (netsToCheck.size() + wirePins.size() > 1) {
+            List<Collection<ConnectedPin>> nets = new ArrayList<>();
+            nets.add(new ArrayList<>(allPins));
+            for (int i = 0; i < schematic.getNets().size(); ++i) {
+                if (!netsToCheck.contains(i)) {
+                    nets.add(schematic.getNets().get(i).getOrComputePins(schematic.getSymbols()));
+                }
+            }
+            if (!SchematicCircuitConverter.getCellOrder(
+                    schematic.getSymbols(), SchematicCircuitConverter.getNetsBySource(nets)
+            ).isPresent()) {
+                return error(CYCLE);
+            }
+        }
+        return Optional.empty();
     }
 
     public boolean canAdd(WireSegment segment) {
@@ -48,7 +63,6 @@ public class SchematicChecker {
         ConnectedPin sourcePin = null;
         boolean hasAnalogSource = false;
         boolean hasDigitalSink = false;
-        int leftmostX = Integer.MAX_VALUE;
         for (ConnectedPin pin : netPins) {
             if (pin.getPin().isOutput()) {
                 if (sourcePin != null) {
@@ -62,13 +76,6 @@ public class SchematicChecker {
             } else if (!pin.isAnalog()) {
                 hasDigitalSink = true;
             }
-            if (leftmostX > pin.getPosition().x) {
-                leftmostX = pin.getPosition().x;
-            }
-        }
-        if (sourcePin != null && sourcePin.getPin().isCombinatorialOutput() && sourcePin.getPosition().x > leftmostX) {
-            // there are pins left of the source pin
-            return error(CYCLE);
         }
         // Do not allow analog source with digital sink
         if (hasAnalogSource && hasDigitalSink) {
@@ -78,10 +85,6 @@ public class SchematicChecker {
         }
     }
 
-    public static boolean isConsistent(Set<ConnectedPin> netPins) {
-        return !getConsistencyError(netPins).isPresent();
-    }
-
     public Optional<ITextComponent> getErrorForAdding(PlacedSymbol candidate) {
         if (!BOUNDARY.contains(candidate.getShape())) {
             return error(SYMBOL_OUTSIDE_BOUNDARY);
@@ -89,6 +92,7 @@ public class SchematicChecker {
         if (!schematic.getSymbols().stream().allMatch(candidate::canCoexist)) {
             return error(SYMBOL_INTERSECTION);
         }
+        List<Collection<ConnectedPin>> nets = new ArrayList<>();
         for (SchematicNet net : schematic.getNets()) {
             Set<ConnectedPin> pinsInNet = new HashSet<>(net.getOrComputePins(schematic.getSymbols()));
             pinsInNet.addAll(net.computeConnectedPins(Collections.singletonList(candidate)));
@@ -96,6 +100,14 @@ public class SchematicChecker {
             if (netConsistency.isPresent()) {
                 return netConsistency;
             }
+            nets.add(pinsInNet);
+        }
+        List<PlacedSymbol> allSymbols = new ArrayList<>(schematic.getSymbols());
+        allSymbols.add(candidate);
+        if (!SchematicCircuitConverter.getCellOrder(
+                allSymbols, SchematicCircuitConverter.getNetsBySource(nets)
+        ).isPresent()) {
+            return error(CYCLE);
         }
         return Optional.empty();
     }

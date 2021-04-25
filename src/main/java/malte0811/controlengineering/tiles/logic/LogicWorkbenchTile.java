@@ -11,6 +11,7 @@ import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.items.PCBStackItem;
 import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
 import malte0811.controlengineering.logic.schematic.Schematic;
+import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.ItemUtil;
@@ -116,7 +117,7 @@ public class LogicWorkbenchTile extends TileEntity implements SelectionShapeOwne
         if (ctx.getPlayer() == null || ctx.getItem().getItem() != IEItemRefs.CIRCUIT_BOARD.get()) {
             return ActionResultType.PASS;
         }
-        Optional<BusConnectedCircuit> circuit = schematic.toCircuit().left();
+        Optional<BusConnectedCircuit> circuit = SchematicCircuitConverter.toCircuit(schematic);
         if (!circuit.isPresent()) {
             return ActionResultType.FAIL;
         }

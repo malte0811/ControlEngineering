@@ -7,6 +7,8 @@ import malte0811.controlengineering.util.math.Rectangle;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
 
+import java.util.StringJoiner;
+
 public class PlacedSymbol {
     public static final Codec<PlacedSymbol> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
@@ -49,5 +51,13 @@ public class PlacedSymbol {
 
     public Vec2i getMaxPoint() {
         return pos.add(new Vec2i(getSymbol().getXSize(), getSymbol().getYSize()));
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", PlacedSymbol.class.getSimpleName() + "[", "]")
+                .add("pos=" + pos)
+                .add("symbol=" + symbol)
+                .toString();
     }
 }

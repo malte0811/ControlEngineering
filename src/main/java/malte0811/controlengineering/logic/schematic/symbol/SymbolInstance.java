@@ -41,6 +41,11 @@ public class SymbolInstance<State> extends TypedInstance<State, SchematicSymbol<
         return getType().getPins(getCurrentState());
     }
 
+    @Override
+    public String toString() {
+        return "[type=" + getType() + ", state=" + getCurrentState() + "]";
+    }
+
     private static <T> SymbolInstance<T> makeUnchecked(SchematicSymbol<T> type, Object state) {
         return new SymbolInstance<>(type, (T) state);
     }

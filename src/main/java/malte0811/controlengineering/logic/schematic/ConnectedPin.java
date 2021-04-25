@@ -38,6 +38,11 @@ public class ConnectedPin {
     }
 
     @Override
+    public String toString() {
+        return "Pin_" + getPosition().x + "_" + getPosition().y;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

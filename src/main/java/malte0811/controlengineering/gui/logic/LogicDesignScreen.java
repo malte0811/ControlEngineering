@@ -7,6 +7,7 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.logic.schematic.ConnectedPin;
 import malte0811.controlengineering.logic.schematic.Schematic;
+import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import malte0811.controlengineering.logic.schematic.WireSegment;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
@@ -391,7 +392,9 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
 
     public void updateErrors() {
         if (errorsShown) {
-            errors = schematic.toCircuit().right().orElse(ImmutableList.of());
+            errors = SchematicCircuitConverter.getFloatingInputs(schematic);
+        } else {
+            errors = ImmutableList.of();
         }
     }
 

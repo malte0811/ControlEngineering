@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
 import malte0811.controlengineering.logic.schematic.Schematic;
+import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -32,7 +33,7 @@ public class PCBStackItem extends Item {
         if (schematic == null) {
             return null;
         }
-        Optional<BusConnectedCircuit> circuit = schematic.toCircuit().left();
+        Optional<BusConnectedCircuit> circuit = SchematicCircuitConverter.toCircuit(schematic);
         if (!circuit.isPresent()) {
             return null;
         }
@@ -40,7 +41,7 @@ public class PCBStackItem extends Item {
     }
 
     public static ItemStack forSchematic(Schematic schematic) {
-        if (schematic.toCircuit().left().isPresent()) {
+        if (SchematicCircuitConverter.toCircuit(schematic).isPresent()) {
             ItemStack result = CEItems.PCB_STACK.get().getDefaultInstance();
             result.getOrCreateTag().put(SCHEMATIC_KEY, Codecs.encode(Schematic.CODEC, schematic));
             return result;

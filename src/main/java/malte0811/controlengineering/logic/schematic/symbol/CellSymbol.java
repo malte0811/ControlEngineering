@@ -64,4 +64,9 @@ public class CellSymbol extends SchematicSymbol<Unit> {
     public LeafcellType<?> getCellType() {
         return type;
     }
+
+    @Override
+    public String toString() {
+        return "[Cell:" + getCellType() + "]";
+    }
 }

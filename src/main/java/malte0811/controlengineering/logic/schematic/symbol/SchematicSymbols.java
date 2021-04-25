@@ -23,6 +23,9 @@ public class SchematicSymbols {
     public static final ResourceLocation SYMBOLS_SHEET = new ResourceLocation(
             ControlEngineering.MODID, "textures/gui/schematic_symbols.png"
     );
+    public static final IOSymbol INPUT_PIN = new IOSymbol(true);
+    public static final IOSymbol OUTPUT_PIN = new IOSymbol(false);
+    public static final ConstantSymbol CONSTANT = new ConstantSymbol();
 
     @SubscribeEvent
     public static void init(FMLClientSetupEvent ev) {
@@ -61,9 +64,9 @@ public class SchematicSymbols {
                 )
         );
 
-        REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin"), new IOSymbol(true));
-        REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "output_pin"), new IOSymbol(false));
-        REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "constant"), new ConstantSymbol());
+        REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin"), INPUT_PIN);
+        REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "output_pin"), OUTPUT_PIN);
+        REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "constant"), CONSTANT);
     }
 
     private static void registerStandardSymbol(
