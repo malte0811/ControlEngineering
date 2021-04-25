@@ -80,4 +80,8 @@ public abstract class SelectionShapes {
             closest.get().fillTargetedStack(innerRay, out);
         }
     }
+
+    public boolean shouldRenderNonTop() {
+        return false;
+    }
 }

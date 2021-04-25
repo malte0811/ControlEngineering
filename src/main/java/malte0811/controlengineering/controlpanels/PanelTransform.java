@@ -126,6 +126,31 @@ public class PanelTransform {
         return tileData.centerHeight;
     }
 
+    public Vector3d[] getBottomVertices() {
+        Vector3d[] bottomVertices = layerVertices(1);
+        for (int i = 0; i < 4; ++i) {
+            bottomVertices[i] = getPanelBottomToWorld().apply(bottomVertices[i]);
+        }
+        return bottomVertices;
+    }
+
+    public Vector3d[] getTopVertices() {
+        Vector3d[] topVertices = layerVertices(getTopFaceHeight());
+        for (int i = 0; i < 4; ++i) {
+            topVertices[i] = getPanelTopToWorld().apply(topVertices[i]);
+        }
+        return topVertices;
+    }
+
+    public static Vector3d[] layerVertices(double xMax) {
+        return new Vector3d[]{
+                new Vector3d(0, 0, 0),
+                new Vector3d(xMax, 0, 0),
+                new Vector3d(xMax, 0, 1),
+                new Vector3d(0, 0, 1),
+        };
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

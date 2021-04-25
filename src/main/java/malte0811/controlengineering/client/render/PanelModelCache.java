@@ -103,12 +103,8 @@ public class PanelModelCache {
         private static void renderPanel(
                 PanelTransform transform, MatrixStack matrix, RenderTarget builder, TextureAtlasSprite texture
         ) {
-            Vector3d[] bottomVertices = layerVertices(1);
-            Vector3d[] topVertices = layerVertices(transform.getTopFaceHeight());
-            for (int i = 0; i < 4; ++i) {
-                bottomVertices[i] = transform.getPanelBottomToWorld().apply(bottomVertices[i]);
-                topVertices[i] = transform.getPanelTopToWorld().apply(topVertices[i]);
-            }
+            Vector3d[] bottomVertices = transform.getBottomVertices();
+            Vector3d[] topVertices = transform.getTopVertices();
             new QuadBuilder(topVertices[3], topVertices[2], topVertices[1], topVertices[0])
                     .setSprite(texture)
                     .writeTo(matrix, builder, TargetType.STATIC);
@@ -135,15 +131,6 @@ public class PanelModelCache {
                         .setVCoords(0, (float) height[i], (float) height[next], 0)
                         .writeTo(transform, builder, TargetType.STATIC);
             }
-        }
-
-        private static Vector3d[] layerVertices(double xMax) {
-            return new Vector3d[]{
-                    new Vector3d(0, 0, 0),
-                    new Vector3d(xMax, 0, 0),
-                    new Vector3d(xMax, 0, 1),
-                    new Vector3d(0, 0, 1),
-            };
         }
     }
 }

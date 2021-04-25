@@ -47,18 +47,17 @@ public class ClientEvents {
                 IVertexBuilder builder = ev.getBuffers().getBuffer(RenderType.getLines());
                 final int pushCount = selectedStack.size() - 1;
                 for (int i = 0; i < pushCount; ++i) {
-                    selectedStack.get(i)
-                            .outerToInnerPosition()
+                    SelectionShapes nonTopShape = selectedStack.get(i);
+                    if (nonTopShape.shouldRenderNonTop()) {
+                        renderShape(transform, nonTopShape, builder);
+                    }
+                    nonTopShape.outerToInnerPosition()
                             .toTransformationMatrix()
                             //TODO cache?
                             .inverse()
                             .push(transform);
                 }
-                Matrix4f currentMatrix = transform.getLast().getMatrix();
-                selectedStack.get(pushCount).plotBox((v1, v2) -> {
-                    addPoint(builder, currentMatrix, v1);
-                    addPoint(builder, currentMatrix, v2);
-                });
+                renderShape(transform, selectedStack.get(pushCount), builder);
                 for (int i = 0; i < pushCount; ++i) {
                     transform.pop();
                 }
@@ -66,6 +65,14 @@ public class ClientEvents {
             }
             ev.setCanceled(true);
         }
+    }
+
+    private static void renderShape(MatrixStack transform, SelectionShapes shape, IVertexBuilder builder) {
+        Matrix4f currentMatrix = transform.getLast().getMatrix();
+        shape.plotBox((v1, v2) -> {
+            addPoint(builder, currentMatrix, v1);
+            addPoint(builder, currentMatrix, v2);
+        });
     }
 
     private static void addPoint(IVertexBuilder builder, Matrix4f transform, Vector3d pos) {
