@@ -1,20 +1,32 @@
 package malte0811.controlengineering.client.render.target;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.util.BitUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.math.vector.Vector4f;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.OptionalInt;
 
+@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class QuadBuilder {
+    public static final ResourceLocation WHITE_WITH_BORDER = new ResourceLocation(
+            ControlEngineering.MODID,
+            "white_with_border"
+    );
+
     private final Vertex[] vertices;
     @Nullable
     private TextureAtlasSprite sprite;
@@ -116,12 +128,17 @@ public class QuadBuilder {
     }
 
     public static TextureAtlasSprite getWhiteTexture() {
-        //TODO Forge PR to fix "real" white texture
-        ResourceLocation loc = new ResourceLocation("block/white_wool");
         return Minecraft.getInstance()
                 .getModelManager()
                 .getAtlasTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE)
-                .getSprite(loc);
+                .getSprite(WHITE_WITH_BORDER);
+    }
+
+    @SubscribeEvent
+    public static void onTextureStitch(TextureStitchEvent.Pre ev) {
+        if (ev.getMap().getTextureLocation().equals(PlayerContainer.LOCATION_BLOCKS_TEXTURE)) {
+            ev.addSprite(WHITE_WITH_BORDER);
+        }
     }
 
     private static class Vertex {

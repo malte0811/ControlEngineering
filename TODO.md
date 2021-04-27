@@ -1,5 +1,4 @@
 - Sprite for RS latch
-- Proper white TAS (currently using wool texture)
 - Add wire and tube costs for schematics
 - Manual :(
 - Various models and textures

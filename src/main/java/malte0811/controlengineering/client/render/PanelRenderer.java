@@ -41,6 +41,8 @@ public class PanelRenderer extends TileEntityRenderer<ControlPanelTile> {
         super(rendererDispatcherIn);
     }
 
+    private static final float[] ONES = {1, 1, 1, 1};
+
     @Override
     public void render(
             ControlPanelTile tile,
@@ -61,12 +63,10 @@ public class PanelRenderer extends TileEntityRenderer<ControlPanelTile> {
         IVertexBuilder builder = buffer.getBuffer(RenderType.getSolid());
         List<BakedQuad> quads = CACHED_MODELS.getModel(tile.getData())
                 .getQuads(null, null, ApiUtils.RANDOM, EmptyModelData.INSTANCE);
-        //TODO
-        final float[] ones = {1, 1, 1, 1};
         final int[] lights = {combinedLight, combinedLight, combinedLight, combinedLight};
         for (BakedQuad q : quads) {
             builder.addQuad(
-                    transform.getLast(), q, ones, 1, 1, 1, lights, combinedOverlay, true
+                    transform.getLast(), q, ONES, 1, 1, 1, lights, combinedOverlay, true
             );
         }
     }
