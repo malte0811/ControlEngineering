@@ -1,7 +1,7 @@
 package malte0811.controlengineering.logic.cells;
 
 import com.mojang.serialization.Codec;
-import it.unimi.dsi.fastutil.doubles.DoubleList;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 
 public final class LeafcellInstance<State> extends TypedInstance<State, LeafcellType<State>> {
@@ -13,13 +13,13 @@ public final class LeafcellInstance<State> extends TypedInstance<State, Leafcell
         super(type, currentState);
     }
 
-    public DoubleList tick(DoubleList inputValues) {
+    public Object2DoubleMap<String> tick(Object2DoubleMap<String> inputValues) {
         final State lastState = currentState;
         currentState = getType().nextState(inputValues, currentState);
         return getType().getOutputSignals(inputValues, lastState);
     }
 
-    public DoubleList getCurrentOutput(DoubleList inputs) {
+    public Object2DoubleMap<String> getCurrentOutput(Object2DoubleMap<String> inputs) {
         return getType().getOutputSignals(inputs, currentState);
     }
 

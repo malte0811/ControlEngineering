@@ -24,8 +24,8 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
     public static final String SIGNAL_KEY = ControlEngineering.MODID + ".gui.busRef";
     public static final String VANILLA_COLOR_PREFIX = "item.minecraft.firework_star.";
 
-    private static final List<SymbolPin> OUTPUT_PIN = ImmutableList.of(SymbolPin.analogOut(5, 1));
-    private static final List<SymbolPin> INPUT_PIN = ImmutableList.of(SymbolPin.analogIn(0, 1));
+    private static final List<SymbolPin> OUTPUT_PIN = ImmutableList.of(SymbolPin.analogOut(5, 1, "out"));
+    private static final List<SymbolPin> INPUT_PIN = ImmutableList.of(SymbolPin.analogIn(0, 1, "in"));
     private final boolean isInput;
 
     public IOSymbol(boolean isInput) {

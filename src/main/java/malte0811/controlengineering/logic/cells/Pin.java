@@ -1,16 +1,14 @@
 package malte0811.controlengineering.logic.cells;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
-import java.util.List;
+import java.util.Map;
 
 public class Pin {
-    private final String name;
     private final SignalType type;
     private final PinDirection direction;
 
-    public Pin(String name, SignalType type, PinDirection direction) {
-        this.name = name;
+    public Pin(SignalType type, PinDirection direction) {
         this.type = type;
         this.direction = direction;
     }
@@ -23,14 +21,10 @@ public class Pin {
         return type;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public static List<Pin> numbered(int numPins, String baseName, SignalType type, PinDirection direction) {
-        ImmutableList.Builder<Pin> result = ImmutableList.builder();
+    public static Map<String, Pin> numbered(int numPins, String baseName, SignalType type, PinDirection direction) {
+        ImmutableMap.Builder<String, Pin> result = ImmutableMap.builder();
         for (int i = 0; i < numPins; ++i) {
-            result.add(new Pin(baseName + (i + 1), type, direction));
+            result.put(baseName + (i + 1), new Pin(type, direction));
         }
         return result.build();
     }

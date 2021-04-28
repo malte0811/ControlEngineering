@@ -63,24 +63,24 @@ public class CircuitBuilder {
             this.cell = cell;
         }
 
-        public CellBuilder output(int index, NetReference net) {
+        public CellBuilder output(String name, NetReference net) {
             Preconditions.checkState(!existingNets.contains(net) || openDelayedNets.contains(net));
             Preconditions.checkState(!outputNets.contains(net));
             Preconditions.checkState(!cellPins.containsValue(net));
-            Preconditions.checkState(index < cell.getType().getOutputPins().size());
-            cellPins.put(new PinReference(cells.size(), true, index), net);
+            Preconditions.checkState(cell.getType().getOutputPins().containsKey(name));
+            cellPins.put(new PinReference(cells.size(), true, name), net);
             outputNets.add(net);
             return this;
         }
 
-        public CellBuilder input(int index, NetReference net) {
+        public CellBuilder input(String name, NetReference net) {
             Preconditions.checkState(existingNets.contains(net));
-            Preconditions.checkState(index < cell.getType().getInputPins().size());
-            final Pin cellPin = cell.getType().getInputPins().get(index);
+            final Pin cellPin = cell.getType().getInputPins().get(name);
+            Preconditions.checkNotNull(cellPin);
             if (cellPin.getType() == SignalType.DIGITAL) {
                 Preconditions.checkState(!analogNets.contains(net));
             }
-            cellPins.put(new PinReference(cells.size(), false, index), net);
+            cellPins.put(new PinReference(cells.size(), false, name), net);
             return this;
         }
 
@@ -93,7 +93,7 @@ public class CircuitBuilder {
             pins.putAll(cellPins);
             for (Map.Entry<PinReference, NetReference> e : cellPins.entrySet()) {
                 if (e.getKey().isOutput()) {
-                    final Pin cellPin = cell.getType().getOutputPins().get(e.getKey().getPin());
+                    final Pin cellPin = cell.getType().getOutputPins().get(e.getKey().getPinName());
                     if (cellPin.getDirection().isCombinatorialOutput() || !openDelayedNets.contains(e.getValue())) {
                         addNet(e.getValue(), cellPin.getType());
                     } else {

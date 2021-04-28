@@ -2,8 +2,7 @@ package malte0811.controlengineering.logic.circuit;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
-import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import it.unimi.dsi.fastutil.doubles.DoubleList;
+import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
@@ -87,8 +86,8 @@ public class Circuit {
             if (!entry.getKey().isOutput()) {
                 continue;
             }
-            List<Pin> pins = cellsInOrder.get(entry.getKey().getCell()).getType().getOutputPins();
-            if (!pins.get(entry.getKey().getPin()).getDirection().isCombinatorialOutput()) {
+            Map<String, Pin> pins = cellsInOrder.get(entry.getKey().getCell()).getType().getOutputPins();
+            if (!pins.get(entry.getKey().getPinName()).getDirection().isCombinatorialOutput()) {
                 delayedSources.put(entry.getValue(), entry.getKey());
             }
         }
@@ -101,13 +100,13 @@ public class Circuit {
             return false;
         }
         LeafcellInstance<?> cell = cellsInTopoOrder.get(pin.getCell());
-        List<Pin> pins;
+        Map<String, Pin> pins;
         if (pin.isOutput()) {
             pins = cell.getType().getOutputPins();
         } else {
             pins = cell.getType().getInputPins();
         }
-        return pin.getPin() < pins.size();
+        return pins.containsKey(pin.getPinName());
     }
 
     public CompoundNBT toNBT() {
@@ -152,18 +151,18 @@ public class Circuit {
             PinReference pin = delayedNet.getValue();
             LeafcellInstance<?> cell = cellsInTopoOrder.get(pin.getCell());
             allNetValues.put(
-                    net, cell.getCurrentOutput(getCellInputs(pin.getCell())).getDouble(pin.getPin())
+                    net, cell.getCurrentOutput(getCellInputs(pin.getCell())).getDouble(pin.getPinName())
             );
         }
         for (int cellId = 0; cellId < cellsInTopoOrder.size(); cellId++) {
             LeafcellInstance<?> cell = cellsInTopoOrder.get(cellId);
-            DoubleList outputValues = cell.tick(getCellInputs(cellId));
-            for (int pinId = 0; pinId < outputValues.size(); pinId++) {
-                NetReference net = pinToNet.get(new PinReference(cellId, true, pinId));
+            for (Object2DoubleMap.Entry<String> entry : cell.tick(getCellInputs(cellId)).object2DoubleEntrySet()) {
+                NetReference net = pinToNet.get(new PinReference(cellId, true, entry.getKey()));
                 if (net != null) {
-                    if (cell.getType().getOutputPins().get(pinId).getDirection().isCombinatorialOutput()) {
+                    Pin pin = cell.getType().getOutputPins().get(entry.getKey());
+                    if (pin.getDirection().isCombinatorialOutput()) {
                         Preconditions.checkState(!allNetValues.containsKey(net));
-                        allNetValues.put(net, outputValues.getDouble(pinId));
+                        allNetValues.put(net, entry.getDoubleValue());
                     } else {
                         Preconditions.checkState(allNetValues.containsKey(net));
                     }
@@ -172,12 +171,12 @@ public class Circuit {
         }
     }
 
-    private DoubleList getCellInputs(int cellId) {
+    private Object2DoubleMap<String> getCellInputs(int cellId) {
         LeafcellInstance<?> cell = cellsInTopoOrder.get(cellId);
-        DoubleList inputValues = new DoubleArrayList();
-        for (int pinId = 0; pinId < cell.getType().getInputPins().size(); pinId++) {
-            NetReference netAtInput = pinToNet.get(new PinReference(cellId, false, pinId));
-            inputValues.add(allNetValues.getDouble(netAtInput));
+        Object2DoubleMap<String> inputValues = new Object2DoubleArrayMap<>();
+        for (Map.Entry<String, Pin> entry : cell.getType().getInputPins().entrySet()) {
+            NetReference netAtInput = pinToNet.get(new PinReference(cellId, false, entry.getKey()));
+            inputValues.put(entry.getKey(), allNetValues.getDouble(netAtInput));
         }
         return inputValues;
     }

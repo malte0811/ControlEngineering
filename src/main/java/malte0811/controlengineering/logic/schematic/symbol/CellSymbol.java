@@ -1,5 +1,6 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.datafixers.util.Unit;
 import com.mojang.serialization.Codec;
@@ -24,6 +25,13 @@ public class CellSymbol extends SchematicSymbol<Unit> {
         this.type = type;
         this.pins = pins;
         this.texture = new SubTexture(SYMBOLS_SHEET, uMin, vMin, uMin + uSize, vMin + vSize, 64);
+        for (SymbolPin pin : pins) {
+            if (pin.isOutput()) {
+                Preconditions.checkState(type.getOutputPins().containsKey(pin.getPinName()));
+            } else {
+                Preconditions.checkState(type.getInputPins().containsKey(pin.getPinName()));
+            }
+        }
     }
 
     @Override

@@ -11,6 +11,7 @@ import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import malte0811.controlengineering.logic.schematic.WireSegment;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
+import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
 import malte0811.controlengineering.network.logic.*;
 import malte0811.controlengineering.util.GuiUtil;
 import malte0811.controlengineering.util.TextUtil;
@@ -40,6 +41,7 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
     public static final String COMPONENTS_KEY = ControlEngineering.MODID + ".gui.components";
     public static final String ENABLE_DRC_KEY = ControlEngineering.MODID + ".gui.drcOn";
     public static final String DISABLE_DRC_KEY = ControlEngineering.MODID + ".gui.drcOff";
+    public static final String PIN_KEY = ControlEngineering.MODID + ".gui.pin";
 
     private static final int TRANSLUCENT_BORDER_SIZE = 20;
     private static final int WHITE_BORDER_SIZE = 1;
@@ -142,17 +144,22 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
             PlacedSymbol hovered = schematic.getSymbolAt(schematicMouse);
             if (hovered != null) {
                 ITextComponent toShow = hovered.getSymbol().getName();
-                List<IFormattableTextComponent> extra = hovered.getSymbol().getExtraDesc();
-                if (extra.isEmpty()) {
-                    renderTooltip(transform, toShow, mouseX, mouseY);
-                } else {
-                    List<IReorderingProcessor> tooltip = new ArrayList<>(1 + extra.size());
-                    tooltip.add(toShow.func_241878_f());
-                    for (IFormattableTextComponent extraLine : extra) {
-                        TextUtil.addTooltipLineReordering(tooltip, extraLine);
+                List<IReorderingProcessor> tooltip = new ArrayList<>();
+                tooltip.add(toShow.func_241878_f());
+                for (SymbolPin pin : hovered.getSymbol().getPins()) {
+                    if (new ConnectedPin(hovered, pin).getShape().containsClosed(schematicMouse)) {
+                        tooltip.add(
+                                new TranslationTextComponent(PIN_KEY, pin.getPinName())
+                                        .mergeStyle(TextFormatting.GRAY)
+                                        .func_241878_f()
+                        );
                     }
-                    renderTooltip(transform, tooltip, mouseX, mouseY);
                 }
+                List<IFormattableTextComponent> extra = hovered.getSymbol().getExtraDesc();
+                for (IFormattableTextComponent extraLine : extra) {
+                    TextUtil.addTooltipLineReordering(tooltip, extraLine);
+                }
+                renderTooltip(transform, tooltip, mouseX, mouseY);
             }
         }
     }

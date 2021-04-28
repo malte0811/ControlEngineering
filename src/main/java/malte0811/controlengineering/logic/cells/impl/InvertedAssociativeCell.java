@@ -1,7 +1,7 @@
 package malte0811.controlengineering.logic.cells.impl;
 
-import it.unimi.dsi.fastutil.doubles.DoubleList;
-import it.unimi.dsi.fastutil.doubles.DoubleLists;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 
 public class InvertedAssociativeCell extends AssociativeFunctionCell {
@@ -10,8 +10,8 @@ public class InvertedAssociativeCell extends AssociativeFunctionCell {
     }
 
     @Override
-    public DoubleList getOutputSignals(DoubleList inputSignals) {
-        double nonInverted = super.getOutputSignals(inputSignals).getDouble(0);
-        return DoubleLists.singleton(1 - nonInverted);
+    public Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals) {
+        double nonInverted = super.getOutputSignals(inputSignals).getDouble(DEFAULT_OUT_NAME);
+        return Object2DoubleMaps.singleton(DEFAULT_OUT_NAME, 1 - nonInverted);
     }
 }

@@ -1,23 +1,25 @@
 package malte0811.controlengineering.logic.cells.impl;
 
-import com.google.common.collect.ImmutableList;
-import it.unimi.dsi.fastutil.doubles.DoubleList;
-import it.unimi.dsi.fastutil.doubles.DoubleLists;
+import com.google.common.collect.ImmutableMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
 import malte0811.controlengineering.logic.cells.Pin;
 import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 
 public class NotCell extends StatelessCell {
+    private static final String IN_NAME = "in";
+
     public NotCell() {
         super(
-                ImmutableList.of(new Pin("in", SignalType.DIGITAL, PinDirection.INPUT)),
-                ImmutableList.of(new Pin("out", SignalType.DIGITAL, PinDirection.OUTPUT)),
+                ImmutableMap.of(IN_NAME, new Pin(SignalType.DIGITAL, PinDirection.INPUT)),
+                ImmutableMap.of(DEFAULT_OUT_NAME, new Pin(SignalType.DIGITAL, PinDirection.OUTPUT)),
                 1
         );
     }
 
     @Override
-    public DoubleList getOutputSignals(DoubleList inputSignals) {
-        return DoubleLists.singleton(bool(inputSignals.getDouble(0)) ? 0 : 1);
+    public Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals) {
+        return Object2DoubleMaps.singleton(DEFAULT_OUT_NAME, bool(inputSignals.getDouble(IN_NAME)) ? 0 : 1);
     }
 }

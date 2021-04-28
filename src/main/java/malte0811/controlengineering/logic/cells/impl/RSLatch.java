@@ -1,9 +1,9 @@
 package malte0811.controlengineering.logic.cells.impl;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
-import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import it.unimi.dsi.fastutil.doubles.DoubleList;
+import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
 import malte0811.controlengineering.logic.cells.PinDirection;
@@ -13,26 +13,31 @@ import java.util.Random;
 
 public class RSLatch extends LeafcellType<Boolean> {
     private static final Random RAND = new Random();
+    private static final String RESET = "reset";
+    private static final String SET = "set";
+    private static final String Q = "q";
+    private static final String NOT_Q = "not_q";
 
     public RSLatch() {
         super(
-                ImmutableList.of(
-                        new Pin("reset", SignalType.DIGITAL, PinDirection.INPUT),
-                        new Pin("set", SignalType.DIGITAL, PinDirection.INPUT)
+                ImmutableMap.of(
+                        RESET, new Pin(SignalType.DIGITAL, PinDirection.INPUT),
+                        SET, new Pin(SignalType.DIGITAL, PinDirection.INPUT)
                 ),
-                ImmutableList.of(
-                        new Pin("q", SignalType.DIGITAL, PinDirection.DELAYED_OUTPUT),
-                        new Pin("not_q", SignalType.DIGITAL, PinDirection.DELAYED_OUTPUT)
+                ImmutableMap.of(
+                        Q, new Pin(SignalType.DIGITAL, PinDirection.DELAYED_OUTPUT),
+                        NOT_Q, new Pin(SignalType.DIGITAL, PinDirection.DELAYED_OUTPUT)
                 ),
                 false, Codec.BOOL, 5
         );
     }
 
     @Override
-    public Boolean nextState(DoubleList inputSignals, Boolean currentState) {
-        boolean r = r(inputSignals);
-        boolean s = s(inputSignals);
+    public Boolean nextState(Object2DoubleMap<String> inputSignals, Boolean currentState) {
+        boolean r = bool(inputSignals.getDouble(RESET));
+        boolean s = bool(inputSignals.getDouble(SET));
         if (r && s) {
+            //TODO?
             return RAND.nextBoolean();
         } else if (r) {
             return false;
@@ -44,16 +49,8 @@ public class RSLatch extends LeafcellType<Boolean> {
     }
 
     @Override
-    public DoubleList getOutputSignals(DoubleList inputSignals, Boolean oldState) {
+    public Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals, Boolean oldState) {
         final double q = oldState ? 1 : 0;
-        return new DoubleArrayList(new double[]{q, 1 - q});
-    }
-
-    private boolean r(DoubleList input) {
-        return bool(input.getDouble(0));
-    }
-
-    private boolean s(DoubleList input) {
-        return bool(input.getDouble(1));
+        return new Object2DoubleArrayMap<>(ImmutableMap.of(Q, q, NOT_Q, 1 - q));
     }
 }

@@ -30,9 +30,17 @@ public class SchematicSymbols {
     @SubscribeEvent
     public static void init(FMLClientSetupEvent ev) {
         final int secondColumn = 13;
-        List<SymbolPin> twoInputPins = ImmutableList.of(digitalIn(0, 1), digitalIn(0, 5));
-        List<SymbolPin> threeInputPinsFlush = ImmutableList.of(digitalIn(0, 1), digitalIn(0, 3), digitalIn(0, 5));
-        List<SymbolPin> threeInputPinsShift = ImmutableList.of(digitalIn(0, 1), digitalIn(1, 3), digitalIn(0, 5));
+        List<SymbolPin> twoInputPins = ImmutableList.of(digitalIn(0, 1, "in1"), digitalIn(0, 5, "in2"));
+        List<SymbolPin> threeInputPinsFlush = ImmutableList.of(
+                digitalIn(0, 1, "in1"),
+                digitalIn(0, 3, "in2"),
+                digitalIn(0, 5, "in3")
+        );
+        List<SymbolPin> threeInputPinsShift = ImmutableList.of(
+                digitalIn(0, 1, "in1"),
+                digitalIn(1, 3, "in2"),
+                digitalIn(0, 5, "in3")
+        );
 
         registerStandardSymbol(Leafcells.AND2, 0, 0, 9, twoInputPins);
         registerStandardSymbol(Leafcells.AND3, 0, 14, 9, threeInputPinsFlush);
@@ -49,9 +57,21 @@ public class SchematicSymbols {
         registerStandardSymbol(Leafcells.XOR2, 0, 28, 13, twoInputPins);
         registerStandardSymbol(Leafcells.XOR3, 0, 35, 13, threeInputPinsShift);
 
-        registerStandardSymbol(Leafcells.NOT, secondColumn, 28, 13, ImmutableList.of(digitalIn(0, 3)));
+        registerStandardSymbol(
+                Leafcells.NOT,
+                secondColumn,
+                28,
+                13,
+                ImmutableList.of(digitalIn(0, 3, LeafcellType.DEFAULT_IN_NAME))
+        );
         //TODO RS latch
-        registerStandardSymbol(Leafcells.SCHMITT_TRIGGER, 0, 42, 13, ImmutableList.of(analogIn(0, 3)));
+        registerStandardSymbol(
+                Leafcells.SCHMITT_TRIGGER,
+                0,
+                42,
+                13,
+                ImmutableList.of(analogIn(0, 3, LeafcellType.DEFAULT_IN_NAME))
+        );
         delayCell(Leafcells.D_LATCH, 49, 10, SignalType.DIGITAL);
         delayCell(Leafcells.DELAY_LINE, 56, 13, SignalType.ANALOG);
 
@@ -62,8 +82,8 @@ public class SchematicSymbols {
 
     private static void delayCell(LeafcellType<?> cell, int vMin, int uSize, SignalType type) {
         List<SymbolPin> pins = ImmutableList.of(
-                new SymbolPin(0, 3, type, PinDirection.INPUT),
-                new SymbolPin(uSize - 1, 3, type, PinDirection.DELAYED_OUTPUT)
+                new SymbolPin(0, 3, type, PinDirection.INPUT, LeafcellType.DEFAULT_IN_NAME),
+                new SymbolPin(uSize - 1, 3, type, PinDirection.DELAYED_OUTPUT, LeafcellType.DEFAULT_OUT_NAME)
         );
         REGISTRY.register(cell.getRegistryName(), new CellSymbol(cell, 0, vMin, uSize, 7, pins));
     }
@@ -72,7 +92,7 @@ public class SchematicSymbols {
             LeafcellType<?> cell, int uMin, int vMin, int uSize, List<SymbolPin> inputPins
     ) {
         List<SymbolPin> allPins = new ArrayList<>(inputPins);
-        allPins.add(digitalOut(uSize - 1, 3));
+        allPins.add(digitalOut(uSize - 1, 3, LeafcellType.DEFAULT_OUT_NAME));
         REGISTRY.register(cell.getRegistryName(), new CellSymbol(cell, uMin, vMin, uSize, 7, allPins));
     }
 }

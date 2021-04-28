@@ -35,6 +35,7 @@
   "controlengineering.gui.lineIndex": "Bus line %d",
   "controlengineering.gui.multipleSources": "Net would contain multiple source pins",
   "controlengineering.gui.outputPin": "Output pin",
+  "controlengineering.gui.pin": "Pin: %d",
   "controlengineering.gui.signalColor": "Signal color",
   "controlengineering.gui.symbolIntersection": "Symbol would intersect with other symbols",
   "controlengineering.gui.symbolOutsideBoundary": "Symbol would be outside of schematic boundary",

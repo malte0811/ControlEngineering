@@ -13,31 +13,33 @@ public class SymbolPin {
     private final Vec2i position;
     private final SignalType type;
     private final PinDirection direction;
+    private final String pinName;
 
-    public SymbolPin(int x, int y, SignalType type, PinDirection direction) {
-        this(new Vec2i(x, y), type, direction);
+    public SymbolPin(int x, int y, SignalType type, PinDirection direction, String pinName) {
+        this(new Vec2i(x, y), type, direction, pinName);
     }
 
-    public SymbolPin(Vec2i position, SignalType type, PinDirection direction) {
+    public SymbolPin(Vec2i position, SignalType type, PinDirection direction, String pinName) {
         this.position = position;
         this.type = type;
         this.direction = direction;
+        this.pinName = pinName;
     }
 
-    public static SymbolPin digitalOut(int x, int y) {
-        return new SymbolPin(x, y, SignalType.DIGITAL, PinDirection.OUTPUT);
+    public static SymbolPin digitalOut(int x, int y, String name) {
+        return new SymbolPin(x, y, SignalType.DIGITAL, PinDirection.OUTPUT, name);
     }
 
-    public static SymbolPin analogOut(int x, int y) {
-        return new SymbolPin(x, y, SignalType.ANALOG, PinDirection.OUTPUT);
+    public static SymbolPin analogOut(int x, int y, String name) {
+        return new SymbolPin(x, y, SignalType.ANALOG, PinDirection.OUTPUT, name);
     }
 
-    public static SymbolPin analogIn(int x, int y) {
-        return new SymbolPin(x, y, SignalType.ANALOG, PinDirection.INPUT);
+    public static SymbolPin analogIn(int x, int y, String name) {
+        return new SymbolPin(x, y, SignalType.ANALOG, PinDirection.INPUT, name);
     }
 
-    public static SymbolPin digitalIn(int x, int y) {
-        return new SymbolPin(x, y, SignalType.DIGITAL, PinDirection.INPUT);
+    public static SymbolPin digitalIn(int x, int y, String name) {
+        return new SymbolPin(x, y, SignalType.DIGITAL, PinDirection.INPUT, name);
     }
 
     public Vec2i getPosition() {
@@ -46,6 +48,10 @@ public class SymbolPin {
 
     public SignalType getType() {
         return type;
+    }
+
+    public String getPinName() {
+        return pinName;
     }
 
     //TODO check usages and replace with isCombOut as necessary
@@ -79,11 +85,12 @@ public class SymbolPin {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SymbolPin symbolPin = (SymbolPin) o;
-        return direction == symbolPin.direction && position.equals(symbolPin.position) && type == symbolPin.type;
+        return position.equals(symbolPin.position) && type == symbolPin.type && direction == symbolPin.direction && pinName.equals(
+                symbolPin.pinName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(position, type, direction);
+        return Objects.hash(position, type, direction, pinName);
     }
 }

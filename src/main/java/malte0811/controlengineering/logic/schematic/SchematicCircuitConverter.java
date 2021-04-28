@@ -206,20 +206,16 @@ public class SchematicCircuitConverter {
             SymbolInstance<?> instance = cell.getSymbol();
             CellSymbol symbol = (CellSymbol) instance.getType();
             CircuitBuilder.CellBuilder cellBuilder = builder.addCell(symbol.getCellType().newInstance());
-            int inputIndex = 0;
-            int outputIndex = 0;
             for (SymbolPin pin : instance.getPins()) {
                 ConnectedPin connectedPin = new ConnectedPin(cell, pin);
                 NetReference circuitNet = pinsToNet.get(connectedPin);
                 if (pin.isOutput()) {
                     if (circuitNet != null) {
                         // Non-connected output is not an error
-                        cellBuilder.output(outputIndex, circuitNet);
+                        cellBuilder.output(pin.getPinName(), circuitNet);
                     }
-                    ++outputIndex;
                 } else {
-                    cellBuilder.input(inputIndex, circuitNet);
-                    ++inputIndex;
+                    cellBuilder.input(pin.getPinName(), circuitNet);
                 }
             }
             cellBuilder.buildCell();

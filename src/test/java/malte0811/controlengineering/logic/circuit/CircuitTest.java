@@ -24,8 +24,8 @@ public class CircuitTest {
         CircuitBuilder.builder()
                 .addInputNet(IN_A, SignalType.DIGITAL)
                 .addCell(Leafcells.AND2)
-                .input(0, IN_A)
-                .input(1, IN_A)
+                .input("in1", IN_A)
+                .input("in2", IN_A)
                 .buildCell()
                 .build();
     }
@@ -44,9 +44,9 @@ public class CircuitTest {
                 .addInputNet(IN_A, SignalType.DIGITAL)
                 .addInputNet(IN_B, SignalType.DIGITAL)
                 .addCell(Leafcells.AND2)
-                .input(0, IN_A)
-                .input(1, IN_B)
-                .output(0, OUT_A)
+                .input("in1", IN_A)
+                .input("in2", IN_B)
+                .output("out", OUT_A)
                 .buildCell()
                 .build();
         c.tick();
@@ -66,10 +66,10 @@ public class CircuitTest {
                 .addInputNet(IN_A, SignalType.DIGITAL)
                 .addInputNet(IN_B, SignalType.DIGITAL)
                 .addCell(RS_LATCH)
-                .input(0, IN_A)
-                .input(1, IN_B)
-                .output(0, OUT_A)
-                .output(1, OUT_B)
+                .input("reset", IN_A)
+                .input("set", IN_B)
+                .output("q", OUT_A)
+                .output("not_q", OUT_B)
                 .buildCell()
                 .build();
         c.tick();
@@ -98,12 +98,12 @@ public class CircuitTest {
         Circuit c = CircuitBuilder.builder()
                 .addDelayedNet(OUT_A, SignalType.DIGITAL)
                 .addCell(Leafcells.NOT)
-                .input(0, OUT_A)
-                .output(0, INTERNAL)
+                .input("in", OUT_A)
+                .output("out", INTERNAL)
                 .buildCell()
                 .addCell(Leafcells.D_LATCH)
-                .input(0, INTERNAL)
-                .output(0, OUT_A)
+                .input("in", INTERNAL)
+                .output("out", OUT_A)
                 .buildCell()
                 .build();
         c.tick();

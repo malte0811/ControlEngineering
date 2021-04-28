@@ -2,26 +2,26 @@ package malte0811.controlengineering.logic.cells.impl;
 
 import com.mojang.datafixers.util.Unit;
 import com.mojang.serialization.Codec;
-import it.unimi.dsi.fastutil.doubles.DoubleList;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
 
-import java.util.List;
+import java.util.Map;
 
 public abstract class StatelessCell extends LeafcellType<Unit> {
-    protected StatelessCell(List<Pin> inputPins, List<Pin> outputPins, int numTubes) {
+    protected StatelessCell(Map<String, Pin> inputPins, Map<String, Pin> outputPins, int numTubes) {
         super(inputPins, outputPins, Unit.INSTANCE, Codec.unit(Unit.INSTANCE), numTubes);
     }
 
     @Override
-    public final Unit nextState(DoubleList inputSignals, Unit currentState) {
+    public final Unit nextState(Object2DoubleMap<String> inputSignals, Unit currentState) {
         return currentState;
     }
 
     @Override
-    public final DoubleList getOutputSignals(DoubleList inputSignals, Unit oldState) {
+    public final Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals, Unit oldState) {
         return getOutputSignals(inputSignals);
     }
 
-    protected abstract DoubleList getOutputSignals(DoubleList inputSignals);
+    protected abstract Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals);
 }

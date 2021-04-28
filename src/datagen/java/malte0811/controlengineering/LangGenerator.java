@@ -87,6 +87,7 @@ public class LangGenerator extends LanguageProvider {
         add(LogicDesignScreen.COMPONENTS_KEY, "Components");
         add(LogicDesignScreen.ENABLE_DRC_KEY, "Enable error checking");
         add(LogicDesignScreen.DISABLE_DRC_KEY, "Disable error checking");
+        add(LogicDesignScreen.PIN_KEY, "Pin: %d");
 
         add(SchematicChecker.ANALOG_DIGITAL_MIX, "Net would connect an analog source to digital sinks");
         add(SchematicChecker.CYCLE, "Net would form a cycle");

@@ -8,20 +8,20 @@ import java.util.Objects;
 public class PinReference {
     public static final Codec<PinReference> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
-                    Codec.INT.fieldOf("cell").forGetter(r -> r.cell),
-                    Codec.BOOL.fieldOf("isOut").forGetter(r -> r.isOutput),
-                    Codec.INT.fieldOf("pin").forGetter(r -> r.pin)
+                    Codec.INT.fieldOf("cell").forGetter(PinReference::getCell),
+                    Codec.BOOL.fieldOf("isOut").forGetter(PinReference::isOutput),
+                    Codec.STRING.fieldOf("pin").forGetter(PinReference::getPinName)
             ).apply(inst, PinReference::new)
     );
 
     private final int cell;
     private final boolean isOutput;
-    private final int pin;
+    private final String pinName;
 
-    public PinReference(int cell, boolean isOutput, int pin) {
+    public PinReference(int cell, boolean isOutput, String pinName) {
         this.cell = cell;
         this.isOutput = isOutput;
-        this.pin = pin;
+        this.pinName = pinName;
     }
 
     public int getCell() {
@@ -32,8 +32,8 @@ public class PinReference {
         return isOutput;
     }
 
-    public int getPin() {
-        return pin;
+    public String getPinName() {
+        return pinName;
     }
 
     @Override
@@ -41,11 +41,11 @@ public class PinReference {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PinReference that = (PinReference) o;
-        return cell == that.cell && isOutput == that.isOutput && pin == that.pin;
+        return cell == that.cell && isOutput == that.isOutput && pinName.equals(that.pinName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cell, isOutput, pin);
+        return Objects.hash(cell, isOutput, pinName);
     }
 }
