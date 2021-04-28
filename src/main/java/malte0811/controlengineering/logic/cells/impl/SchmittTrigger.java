@@ -10,26 +10,30 @@ import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 
 public class SchmittTrigger extends LeafcellType<Boolean> {
-    private static final double TRIGGER_LOW = 0.4;
-    private static final double TRIGGER_HIGH = 0.6;
+    public static final String LOW_PIN = "low";
+    public static final String HIGH_PIN = "high";
 
     public SchmittTrigger() {
         super(
-                ImmutableMap.of(DEFAULT_IN_NAME, new Pin(SignalType.ANALOG, PinDirection.INPUT)),
+                ImmutableMap.of(
+                        LOW_PIN, new Pin(SignalType.ANALOG, PinDirection.INPUT),
+                        DEFAULT_IN_NAME, new Pin(SignalType.ANALOG, PinDirection.INPUT),
+                        HIGH_PIN, new Pin(SignalType.ANALOG, PinDirection.INPUT)
+                ),
                 ImmutableMap.of(DEFAULT_OUT_NAME, new Pin(SignalType.DIGITAL, PinDirection.OUTPUT)),
                 false,
                 Codec.BOOL,
-                2
+                3
         );
     }
 
     @Override
     public Boolean nextState(Object2DoubleMap<String> inputSignals, Boolean currentState) {
         if (currentState) {
-            if (inputSignals.getDouble(DEFAULT_IN_NAME) < TRIGGER_LOW) {
+            if (inputSignals.getDouble(DEFAULT_IN_NAME) <= inputSignals.getDouble(LOW_PIN)) {
                 return false;
             }
-        } else if (inputSignals.getDouble(DEFAULT_IN_NAME) > TRIGGER_HIGH) {
+        } else if (inputSignals.getDouble(DEFAULT_IN_NAME) >= inputSignals.getDouble(HIGH_PIN)) {
             return true;
         }
         return currentState;
@@ -37,6 +41,6 @@ public class SchmittTrigger extends LeafcellType<Boolean> {
 
     @Override
     public Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals, Boolean oldState) {
-        return Object2DoubleMaps.singleton(DEFAULT_OUT_NAME, nextState(inputSignals, oldState) ? 1 : 0);
+        return Object2DoubleMaps.singleton(DEFAULT_OUT_NAME, debool(nextState(inputSignals, oldState)));
     }
 }

@@ -13,10 +13,10 @@ import java.util.Random;
 
 public class RSLatch extends LeafcellType<Boolean> {
     private static final Random RAND = new Random();
-    private static final String RESET = "reset";
-    private static final String SET = "set";
-    private static final String Q = "q";
-    private static final String NOT_Q = "not_q";
+    public static final String RESET = "reset";
+    public static final String SET = "set";
+    public static final String Q = "q";
+    public static final String NOT_Q = "not_q";
 
     public RSLatch() {
         super(

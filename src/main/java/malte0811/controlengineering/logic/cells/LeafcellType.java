@@ -62,4 +62,8 @@ public abstract class LeafcellType<State> extends TypedRegistryEntry<State> {
     protected static boolean bool(double value) {
         return value > 0.5;
     }
+
+    protected static double debool(boolean value) {
+        return value ? 1 : 0;
+    }
 }

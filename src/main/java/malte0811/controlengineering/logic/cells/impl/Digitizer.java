@@ -7,19 +7,17 @@ import malte0811.controlengineering.logic.cells.Pin;
 import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 
-public class NotCell extends StatelessCell {
-    private static final String IN_NAME = "in";
-
-    public NotCell() {
+public class Digitizer extends StatelessCell {
+    public Digitizer() {
         super(
-                ImmutableMap.of(IN_NAME, new Pin(SignalType.DIGITAL, PinDirection.INPUT)),
+                ImmutableMap.of(DEFAULT_IN_NAME, new Pin(SignalType.ANALOG, PinDirection.INPUT)),
                 ImmutableMap.of(DEFAULT_OUT_NAME, new Pin(SignalType.DIGITAL, PinDirection.OUTPUT)),
                 1
         );
     }
 
     @Override
-    public Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals) {
-        return Object2DoubleMaps.singleton(DEFAULT_OUT_NAME, debool(!bool(inputSignals.getDouble(IN_NAME))));
+    protected Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals) {
+        return Object2DoubleMaps.singleton(DEFAULT_OUT_NAME, debool(inputSignals.getDouble(DEFAULT_IN_NAME) > 0.5));
     }
 }

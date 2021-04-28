@@ -70,6 +70,9 @@ public class LangGenerator extends LanguageProvider {
 
         add(Leafcells.D_LATCH, "D Flip-Flop");
         add(Leafcells.DELAY_LINE, "Delay Line");
+
+        add(Leafcells.DIGITIZER, "Signal Digitizer");
+        add(Leafcells.COMPARATOR, "Comparator");
     }
 
     private void addGuiStrings() {

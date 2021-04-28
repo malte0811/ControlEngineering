@@ -13,7 +13,7 @@ public class AssociativeFunctionCell extends StatelessCell {
     private final double baseState;
 
     public AssociativeFunctionCell(int numInputs, IBooleanFunction func, boolean baseState, int numTubes) {
-        this(numInputs, (a, b) -> func.apply(bool(a), bool(b)) ? 1 : 0, baseState ? 1 : 0, numTubes);
+        this(numInputs, (a, b) -> debool(func.apply(bool(a), bool(b))), debool(baseState), numTubes);
     }
 
     public AssociativeFunctionCell(int numInputs, DoubleBiFunction func, double baseState, int numTubes) {
