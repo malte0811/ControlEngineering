@@ -16,9 +16,9 @@ import java.util.function.Function;
  */
 public class ListBasedCodec<T> implements Codec<T> {
     private final Codec<T> baseCodec;
-    private final List<Pair<String, Codec<?>>> fields;
+    private final List<Field<T, ?>> fields;
 
-    private ListBasedCodec(Codec<T> baseCodec, List<Pair<String, Codec<?>>> fields) {
+    private ListBasedCodec(Codec<T> baseCodec, List<Field<T, ?>> fields) {
         this.baseCodec = baseCodec;
         this.fields = fields;
     }
@@ -35,7 +35,7 @@ public class ListBasedCodec<T> implements Codec<T> {
                                 codec2.fieldOf(name2).forGetter(get2)
                         ).apply(inst, make)
                 ),
-                ImmutableList.of(Pair.of(name1, codec1), Pair.of(name2, codec2))
+                ImmutableList.of(new Field<>(name1, get1, codec1), new Field<>(name2, get2, codec2))
         );
     }
 
@@ -49,7 +49,31 @@ public class ListBasedCodec<T> implements Codec<T> {
         return baseCodec.encode(input, ops, prefix);
     }
 
-    public List<Pair<String, Codec<?>>> getFields() {
+    public List<Field<T, ?>> getFields() {
         return fields;
+    }
+
+    public static class Field<T, T1> {
+        private final String name;
+        private final Function<T, T1> get;
+        private final Codec<T1> fieldCodec;
+
+        private Field(String name, Function<T, T1> get, Codec<T1> fieldCodec) {
+            this.name = name;
+            this.get = get;
+            this.fieldCodec = fieldCodec;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Function<T, T1> getGetter() {
+            return get;
+        }
+
+        public Codec<T1> getFieldCodec() {
+            return fieldCodec;
+        }
     }
 }

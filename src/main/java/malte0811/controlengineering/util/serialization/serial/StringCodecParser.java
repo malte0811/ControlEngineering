@@ -7,6 +7,7 @@ import com.mojang.serialization.JsonOps;
 import malte0811.controlengineering.util.serialization.ListBasedCodec;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
@@ -34,5 +35,13 @@ public abstract class StringCodecParser<T> {
                 .flatMap(json -> baseCodec.parse(JsonOps.INSTANCE, json));
     }
 
+    public final List<String> stringify(T in) {
+        List<String> result = new ArrayList<>();
+        addTo(in, result);
+        return result;
+    }
+
     protected abstract DataResult<JsonElement> toJson(Queue<String> parts);
+
+    protected abstract void addTo(T in, List<String> parts);
 }
