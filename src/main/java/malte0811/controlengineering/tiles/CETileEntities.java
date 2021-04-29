@@ -10,6 +10,7 @@ import malte0811.controlengineering.tiles.logic.LogicCabinetTile;
 import malte0811.controlengineering.tiles.logic.LogicWorkbenchTile;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import malte0811.controlengineering.tiles.panels.PanelCNCTile;
+import malte0811.controlengineering.tiles.panels.PanelDesignerTile;
 import malte0811.controlengineering.tiles.tape.TeletypeTile;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
@@ -17,13 +18,15 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class CETileEntities {
     public static final DeferredRegister<TileEntityType<?>> REGISTER = DeferredRegister.create(
-            ForgeRegistries.TILE_ENTITIES,
-            ControlEngineering.MODID
+            ForgeRegistries.TILE_ENTITIES, ControlEngineering.MODID
     );
 
     public static RegistryObject<TileEntityType<BusRelayTile>> BUS_RELAY = REGISTER.register(
@@ -67,12 +70,16 @@ public class CETileEntities {
     );
 
     private static <T extends TileEntity> Supplier<TileEntityType<T>> createTileType(
-            Supplier<T> createTE, RegistryObject<? extends Block> valid
+            Function<TileEntityType<?>, T> createTE, RegistryObject<? extends Block> valid
     ) {
-        return () -> new TileEntityType<>(
-                createTE,
-                ImmutableSet.of(valid.get()),
-                null
-        );
+        return () -> {
+            Mutable<TileEntityType<T>> type = new MutableObject<>();
+            type.setValue(new TileEntityType<>(
+                    () -> createTE.apply(type.getValue()),
+                    ImmutableSet.of(valid.get()),
+                    null
+            ));
+            return type.getValue();
+        };
     }
 }

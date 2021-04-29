@@ -14,9 +14,9 @@ import malte0811.controlengineering.bus.IBusConnector;
 import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.temp.ImprovedLocalRSHandler;
 import malte0811.controlengineering.tiles.CEIICTileEntity;
-import malte0811.controlengineering.tiles.CETileEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
@@ -38,8 +38,8 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
     private ConnectionPoint redstonePoint;
     private ConnectionPoint busPoint;
 
-    public LineAccessTile() {
-        super(CETileEntities.LINE_ACCESS.get());
+    public LineAccessTile(TileEntityType<?> tileEntityTypeIn) {
+        super(tileEntityTypeIn);
         reinitConnectionPoints();
     }
 

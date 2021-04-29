@@ -12,9 +12,9 @@ import malte0811.controlengineering.bus.IBusConnector;
 import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.tiles.CEIICTileEntity;
-import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.Clearable;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -30,8 +30,8 @@ import java.util.Map;
 public class BusInterfaceTile extends CEIICTileEntity implements IBusConnector, INeighborChangeListener {
     private final Map<Direction, Pair<WeakReference<IBusInterface>, Runnable>> clearers = new EnumMap<>(Direction.class);
 
-    public BusInterfaceTile() {
-        super(CETileEntities.BUS_INTERFACE.get());
+    public BusInterfaceTile(TileEntityType<?> tileEntityTypeIn) {
+        super(tileEntityTypeIn);
     }
 
     @Override

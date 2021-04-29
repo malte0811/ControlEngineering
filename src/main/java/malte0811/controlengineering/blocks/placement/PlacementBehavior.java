@@ -15,7 +15,7 @@ import net.minecraftforge.fml.RegistryObject;
 import java.util.Collection;
 
 public interface PlacementBehavior<T> {
-    static PlacementBehavior<Unit> simple(RegistryObject<Block> block) {
+    static PlacementBehavior<Unit> simple(RegistryObject<? extends Block> block) {
         Lazy<BlockState> state = Lazy.of(() -> block.get().getDefaultState());
         return new PlacementBehavior<Unit>() {
             @Override

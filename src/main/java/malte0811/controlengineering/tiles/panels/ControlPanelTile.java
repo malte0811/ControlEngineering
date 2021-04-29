@@ -5,19 +5,23 @@ import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
-import malte0811.controlengineering.bus.*;
-import malte0811.controlengineering.controlpanels.*;
-import malte0811.controlengineering.controlpanels.components.ColorAndSignal;
-import malte0811.controlengineering.tiles.CETileEntities;
+import malte0811.controlengineering.bus.BusEmitterCombiner;
+import malte0811.controlengineering.bus.BusState;
+import malte0811.controlengineering.bus.IBusInterface;
+import malte0811.controlengineering.bus.MarkDirtyHandler;
+import malte0811.controlengineering.controlpanels.PanelData;
+import malte0811.controlengineering.controlpanels.PanelSelectionShapes;
+import malte0811.controlengineering.controlpanels.PanelTransform;
+import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.util.Clearable;
 import malte0811.controlengineering.util.RaytraceUtils;
-import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -45,33 +49,8 @@ public class ControlPanelTile extends TileEntity implements IBusInterface, Selec
             i -> components.get(i).getComponent().updateTotalState(getTotalState())
     );
 
-    public ControlPanelTile() {
-        super(CETileEntities.CONTROL_PANEL.get());
-        components.add(new PlacedComponent(
-                PanelComponents.BUTTON.newInstance(
-                        new ColorAndSignal(0xff0000, new BusSignalRef(0, 0))
-                ), new Vec2d(5, 6)
-        ));
-        components.add(new PlacedComponent(
-                PanelComponents.BUTTON.newInstance(
-                        new ColorAndSignal(0xff00, new BusSignalRef(0, 1))
-                ), new Vec2d(5, 7)
-        ));
-        components.add(new PlacedComponent(
-                PanelComponents.BUTTON.newInstance(
-                        new ColorAndSignal(0xff, new BusSignalRef(0, 2))
-                ), new Vec2d(5, 8)
-        ));
-        components.add(new PlacedComponent(
-                PanelComponents.INDICATOR.newInstance(
-                        new ColorAndSignal(0xff00ff, new BusSignalRef(0, 3))
-                ), new Vec2d(6, 6.5)
-        ));
-        components.add(new PlacedComponent(
-                PanelComponents.INDICATOR.newInstance(
-                        new ColorAndSignal(0xffff00, new BusSignalRef(0, 4))
-                ), new Vec2d(6, 7.5)
-        ));
+    public ControlPanelTile(TileEntityType<?> tileEntityTypeIn) {
+        super(tileEntityTypeIn);
         resetStateHandler();
     }
 

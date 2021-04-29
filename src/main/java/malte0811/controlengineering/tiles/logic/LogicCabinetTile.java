@@ -17,7 +17,6 @@ import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.logic.model.DynamicLogicModel;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
-import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.Clearable;
 import malte0811.controlengineering.util.ItemUtil;
@@ -35,6 +34,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -64,8 +64,8 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
     private int numTubes;
     private BusState currentBusState = BusState.EMPTY;
 
-    public LogicCabinetTile() {
-        super(CETileEntities.LOGIC_CABINET.get());
+    public LogicCabinetTile(TileEntityType<?> tileEntityTypeIn) {
+        super(tileEntityTypeIn);
     }
 
     @Override

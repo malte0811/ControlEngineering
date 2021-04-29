@@ -142,7 +142,7 @@ public abstract class CEBlock<PlacementData, Tile extends TileEntity> extends Bl
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    public final TileEntity createTileEntity(BlockState state, IBlockReader world) {
         if (this.tileType != null) {
             return this.tileType.get().create();
         } else {
@@ -151,7 +151,7 @@ public abstract class CEBlock<PlacementData, Tile extends TileEntity> extends Bl
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state) {
+    public final boolean hasTileEntity(BlockState state) {
         return this.tileType != null;
     }
 

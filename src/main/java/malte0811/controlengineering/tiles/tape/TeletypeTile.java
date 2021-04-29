@@ -10,7 +10,6 @@ import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.blocks.tape.TeletypeBlock;
 import malte0811.controlengineering.items.EmptyTapeItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
-import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.ItemUtil;
 import malte0811.controlengineering.util.math.Matrix4;
@@ -18,6 +17,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 
@@ -31,10 +31,10 @@ public class TeletypeTile extends TileEntity implements SelectionShapeOwner {
     private static final String WRITTEN_KEY = "writtenBytes";
     private static final String AVAILABLE_KEY = "available";
     private ByteList written = new ByteArrayList();
-    private int available = 20;
+    private int available = 0;
 
-    public TeletypeTile() {
-        super(CETileEntities.TELETYPE.get());
+    public TeletypeTile(TileEntityType<?> tileEntityTypeIn) {
+        super(tileEntityTypeIn);
     }
 
     @Override

@@ -11,7 +11,6 @@ import malte0811.controlengineering.controlpanels.cnc.CNCInstructionParser;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PanelTopItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
-import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.math.Matrix4;
@@ -26,6 +25,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.vector.Vector3d;
@@ -57,10 +57,6 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
     private boolean hasPanel;
     private final List<PlacedComponent> currentPlacedComponents = new ArrayList<>();
 
-    public PanelCNCTile() {
-        super(CETileEntities.PANEL_CNC.get());
-    }
-
     private final CachedValue<Direction, SelectionShapes> selectionShapes = new CachedValue<>(
             () -> getBlockState().get(PanelCNCBlock.FACING),
             facing -> new ListShapes(
@@ -79,6 +75,10 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
                     ctx -> ActionResultType.PASS
             )
     );
+
+    public PanelCNCTile(TileEntityType<?> tileEntityTypeIn) {
+        super(tileEntityTypeIn);
+    }
 
     private ActionResultType bottomClick(ItemUseContext ctx) {
         if (world == null) {
