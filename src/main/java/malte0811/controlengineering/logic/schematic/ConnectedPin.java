@@ -4,7 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
-import malte0811.controlengineering.util.math.Rectangle;
+import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2i;
 
 import java.util.Objects;
@@ -38,9 +38,9 @@ public class ConnectedPin {
         pin.render(stack, symbol.getPosition().x, symbol.getPosition().y, wireColor);
     }
 
-    public Rectangle getShape() {
+    public RectangleI getShape() {
         final Vec2i basePos = getPosition();
-        return new Rectangle(
+        return new RectangleI(
                 basePos.x + (pin.isOutput() ? -1 : 0), basePos.y,
                 basePos.x + (pin.isOutput() ? 1 : 2), basePos.y + 1
         );

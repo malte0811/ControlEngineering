@@ -54,6 +54,11 @@ public class CETileEntities {
             createTileType(PanelCNCTile::new, CEBlocks.PANEL_CNC)
     );
 
+    public static RegistryObject<TileEntityType<PanelDesignerTile>> PANEL_DESIGNER = REGISTER.register(
+            "panel_designer",
+            createTileType(PanelDesignerTile::new, CEBlocks.PANEL_DESIGNER)
+    );
+
     public static RegistryObject<TileEntityType<TeletypeTile>> TELETYPE = REGISTER.register(
             "teletype",
             createTileType(TeletypeTile::new, CEBlocks.TELETYPE)

@@ -9,13 +9,18 @@ public class BasicSlider extends AbstractSlider {
     private final int max;
     private final String translationKey;
 
+    public BasicSlider(int x, int y, int width, int height, int min, int max, String key) {
+        this(x, y, width, height, min, max, key, min);
+    }
+
     public BasicSlider(
-            int x, int y, int width, int height, int min, int max, String key
+            int x, int y, int width, int height, int min, int max, String key, int defaultValue
     ) {
-        super(x, y, width, height, new TranslationTextComponent(key, min), 0);
+        super(x, y, width, height, new TranslationTextComponent(key, min), min + defaultValue / (double) (max - min));
         this.min = min;
         this.max = max;
         this.translationKey = key;
+        func_230979_b_();
     }
 
     @Override

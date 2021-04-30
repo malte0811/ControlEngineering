@@ -13,7 +13,7 @@ public class ColorAndSignal {
             "signal", BusSignalRef.CODEC, ColorAndSignal::getSignal,
             ColorAndSignal::new
     );
-    public static final ColorAndSignal DEFAULT = new ColorAndSignal(-1, new BusSignalRef(0, 0));
+    public static final ColorAndSignal DEFAULT = new ColorAndSignal(0xff00, new BusSignalRef(0, 0));
 
     private final int color;
     private final BusSignalRef signal;

@@ -17,15 +17,18 @@ import java.util.List;
 public abstract class PanelComponentType<Config, State> extends TypedRegistryEntry<Pair<Config, State>> {
     private final Vec2i size;
     private final StringCodecParser<Config> configParser;
+    private final String translationKey;
 
     protected PanelComponentType(
             Config defaultConfig, State intitialState,
             Codec<Config> codecConfig, Codec<State> codecState,
-            Vec2i size
+            Vec2i size,
+            String translationKey
     ) {
         super(Pair.of(defaultConfig, intitialState), Codecs.safePair(codecConfig, codecState));
         this.size = size;
         this.configParser = StringCodecParser.getParser(codecConfig);
+        this.translationKey = translationKey;
     }
 
     @Override
@@ -39,6 +42,10 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
 
     public DataResult<PanelComponentInstance<Config, State>> newInstance(List<String> data) {
         return configParser.parse(data).map(this::newInstance);
+    }
+
+    public List<String> toCNCStrings(Config config) {
+        return configParser.stringify(config);
     }
 
     public abstract BusState getEmittedState(Config config, State state);
@@ -64,5 +71,9 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
 
     public Vec2i getSize() {
         return size;
+    }
+
+    public String getTranslationKey() {
+        return translationKey;
     }
 }

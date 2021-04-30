@@ -4,7 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusSignalRef;
-import malte0811.controlengineering.gui.widgets.BusSignalSelector;
+import malte0811.controlengineering.gui.misc.BusSignalSelector;
+import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.util.TextUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -12,6 +13,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
@@ -73,10 +75,13 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
 
     @Override
     public void createInstanceWithUI(Consumer<? super SymbolInstance<BusSignalRef>> onDone) {
-        Minecraft.getInstance().displayGuiScreen(new BusSignalSelector(ref -> {
-            SymbolInstance<BusSignalRef> instance = new SymbolInstance<>(this, ref);
-            onDone.accept(instance);
-        }));
+        Minecraft.getInstance().displayGuiScreen(new DataProviderScreen<>(
+                StringTextComponent.EMPTY, BusSignalSelector::new, null,
+                ref -> {
+                    SymbolInstance<BusSignalRef> instance = new SymbolInstance<>(this, ref);
+                    onDone.accept(instance);
+                }
+        ));
     }
 
     @Override

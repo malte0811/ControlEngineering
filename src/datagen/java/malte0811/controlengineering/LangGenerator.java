@@ -1,8 +1,12 @@
 package malte0811.controlengineering;
 
 import malte0811.controlengineering.blocks.CEBlocks;
+import malte0811.controlengineering.controlpanels.PanelComponentType;
+import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.gui.logic.LogicDesignScreen;
-import malte0811.controlengineering.gui.widgets.BusSignalSelector;
+import malte0811.controlengineering.gui.misc.BusSignalSelector;
+import malte0811.controlengineering.gui.misc.DataProviderScreen;
+import malte0811.controlengineering.gui.widget.ColorSelector;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
@@ -47,6 +51,7 @@ public class LangGenerator extends LanguageProvider {
         add(Constants.EMPTY_TAPE_BYTES, "Length: %d characters");
 
         addCells();
+        addPanelComponents();
         addGuiStrings();
     }
 
@@ -75,10 +80,15 @@ public class LangGenerator extends LanguageProvider {
         add(Leafcells.COMPARATOR, "Comparator");
     }
 
+    private void addPanelComponents() {
+        add(PanelComponents.BUTTON, "Button");
+        add(PanelComponents.INDICATOR, "Indicator");
+    }
+
     private void addGuiStrings() {
         add(BusSignalSelector.COLOR_KEY, "Signal color");
         add(BusSignalSelector.BUS_LINE_INDEX_KEY, "Bus line %d");
-        add(BusSignalSelector.DONE_KEY, "Done");
+        add(DataProviderScreen.DONE_KEY, "Done");
 
         add(IOSymbol.INPUT_KEY, "Input pin");
         add(IOSymbol.OUTPUT_KEY, "Output pin");
@@ -98,10 +108,18 @@ public class LangGenerator extends LanguageProvider {
         add(SchematicChecker.WIRE_OUTSIDE_BOUNDARY, "Wire segment would be outside of schematic boundary");
         add(SchematicChecker.SYMBOL_OUTSIDE_BOUNDARY, "Symbol would be outside of schematic boundary");
         add(SchematicChecker.SYMBOL_INTERSECTION, "Symbol would intersect with other symbols");
+
+        add(ColorSelector.RED, "Red: %d");
+        add(ColorSelector.GREEN, "Green: %d");
+        add(ColorSelector.BLUE, "Blue: %d");
     }
 
     private void add(LeafcellType<?> type, String name) {
         add(CellSymbol.getTranslationKey(type), name);
+    }
+
+    private void add(PanelComponentType<?, ?> type, String name) {
+        add(type.getTranslationKey(), name);
     }
 
     private void addClock(ClockGenerator<?> type, String name) {

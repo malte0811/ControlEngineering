@@ -1,23 +1,23 @@
 package malte0811.controlengineering.util.math;
 
-public class Rectangle {
+public class RectangleI {
     private final int minX;
     private final int minY;
     private final int maxX;
     private final int maxY;
 
-    public Rectangle(int minX, int minY, int maxX, int maxY) {
+    public RectangleI(int minX, int minY, int maxX, int maxY) {
         this.minX = minX;
         this.minY = minY;
         this.maxX = maxX;
         this.maxY = maxY;
     }
 
-    public Rectangle(Vec2i min, Vec2i max) {
+    public RectangleI(Vec2i min, Vec2i max) {
         this(min.x, min.y, max.x, max.y);
     }
 
-    public boolean contains(Rectangle other) {
+    public boolean contains(RectangleI other) {
         return containsClosed(other.minX, other.minY) && containsClosed(other.maxX, other.maxY);
     }
 
@@ -33,7 +33,7 @@ public class Rectangle {
         return minX <= x && x <= maxX && minY <= y && y <= maxY;
     }
 
-    public boolean disjoint(Rectangle other) {
+    public boolean disjoint(RectangleI other) {
         return minX >= other.maxX || other.minX >= maxX || minY >= other.maxY || other.minY >= maxY;
     }
 

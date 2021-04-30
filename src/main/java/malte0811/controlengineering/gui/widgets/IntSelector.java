@@ -3,6 +3,7 @@ package malte0811.controlengineering.gui.widgets;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.gui.StackedScreen;
+import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.gui.widget.BasicSlider;
 import malte0811.controlengineering.gui.widget.ColorPicker16;
 import net.minecraft.client.gui.widget.button.Button;
@@ -11,8 +12,6 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nonnull;
 import java.util.function.IntConsumer;
-
-import static malte0811.controlengineering.gui.widgets.BusSignalSelector.DONE_KEY;
 
 public class IntSelector extends StackedScreen {
     private final IntConsumer select;
@@ -40,7 +39,7 @@ public class IntSelector extends StackedScreen {
         addButton(lineSelect);
         addButton(new Button(
                 width / 2 - 64, height / 2 + ColorPicker16.SIZE / 2 + 20, 128, 20,
-                new TranslationTextComponent(DONE_KEY), $ -> closeScreen()
+                new TranslationTextComponent(DataProviderScreen.DONE_KEY), $ -> closeScreen()
         ));
     }
 

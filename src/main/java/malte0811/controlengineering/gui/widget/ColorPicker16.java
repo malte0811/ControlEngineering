@@ -17,10 +17,11 @@ public class ColorPicker16 extends Widget {
     public static final int SIZE = NUM_COLS * GRID_SIZE;
     public static final int TITLE_SPACE = 10;
 
-    private DyeColor selected = null;
+    private DyeColor selected;
 
-    public ColorPicker16(int x, int y, ITextComponent title) {
+    public ColorPicker16(int x, int y, ITextComponent title, @Nullable DyeColor initial) {
         super(x, y, SIZE, SIZE + TITLE_SPACE, title);
+        selected = initial;
     }
 
     @Override

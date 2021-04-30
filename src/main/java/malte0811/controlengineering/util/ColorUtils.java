@@ -4,11 +4,11 @@ import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 
 public class ColorUtils {
     public static int halfColor(int inColor) {
-        return (inColor >>> 1) & 0x7f7f7f7f;
+        return ((inColor >>> 1) & 0x7f7f7f7f) | 0xff000000;
     }
 
     public static int fractionalColor(int colorIn, double factor) {
-        return applyBytewise(colorIn, i -> (int) (factor * i));
+        return applyBytewise(colorIn, i -> (int) (factor * i)) | 0xff000000;
     }
 
     public static int inverseColor(int colorIn) {
@@ -25,11 +25,15 @@ public class ColorUtils {
         return out;
     }
 
-    public static float[] unpackColorNoAlpha(int color) {
-        return new float[]{
-                BitUtils.getBits(color, 24, 8) / 255F,
-                BitUtils.getBits(color, 16, 8) / 255F,
-                BitUtils.getBits(color, 8, 8) / 255F,
-        };
+    public static int getRed(int color) {
+        return BitUtils.getBits(color, 16, 8);
+    }
+
+    public static int getGreen(int color) {
+        return BitUtils.getBits(color, 8, 8);
+    }
+
+    public static int getBlue(int color) {
+        return BitUtils.getBits(color, 0, 8);
     }
 }

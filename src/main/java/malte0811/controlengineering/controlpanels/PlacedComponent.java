@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.util.math.Matrix4;
+import malte0811.controlengineering.util.math.RectangleD;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.item.ItemUseContext;
@@ -62,6 +63,10 @@ public class PlacedComponent extends SelectionShapes {
         return pos.add(component.getType().getSize());
     }
 
+    public RectangleD getOutline() {
+        return new RectangleD(getPosMin(), getPosMax());
+    }
+
     @Nullable
     public AxisAlignedBB getSelectionShape() {
         return shape.get();
@@ -111,26 +116,11 @@ public class PlacedComponent extends SelectionShapes {
     }
 
     public boolean disjoint(PlacedComponent other) {
-        final Vec2d max = getPosMax();
-        final Vec2d min = getPosMin();
-        final Vec2d otherMax = other.getPosMax();
-        final Vec2d otherMin = other.getPosMin();
-        for (int axis = 0; axis < 2; ++axis) {
-            if (max.get(axis) <= otherMin.get(axis) || otherMax.get(axis) <= min.get(axis)) {
-                return true;
-            }
-        }
-        return false;
+        return getOutline().disjoint(other.getOutline());
     }
 
     public boolean isWithinPanel() {
-        final Vec2d max = getPosMax();
-        for (int axis = 0; axis < 2; ++axis) {
-            if (pos.get(axis) < 0 || max.get(axis) > 16) {
-                return false;
-            }
-        }
-        return true;
+        return new RectangleD(0, 0, 16, 16).contains(getOutline());
     }
 
     @Override

@@ -9,7 +9,7 @@ import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
-import malte0811.controlengineering.util.math.Rectangle;
+import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
 
@@ -22,7 +22,7 @@ import java.util.List;
 public class Schematic {
     public static final int GLOBAL_MIN = -512;
     public static final int GLOBAL_MAX = 512;
-    public static final Rectangle BOUNDARY = new Rectangle(GLOBAL_MIN, GLOBAL_MIN, GLOBAL_MAX, GLOBAL_MAX);
+    public static final RectangleI BOUNDARY = new RectangleI(GLOBAL_MIN, GLOBAL_MIN, GLOBAL_MAX, GLOBAL_MAX);
 
     public static final Codec<Schematic> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(

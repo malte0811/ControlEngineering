@@ -2,6 +2,7 @@ package malte0811.controlengineering.controlpanels.components;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
@@ -12,9 +13,15 @@ import net.minecraft.util.math.AxisAlignedBB;
 import javax.annotation.Nullable;
 
 public class Button extends PanelComponentType<ColorAndSignal, Boolean> {
+    public static final String TRANSLATION_KEY = ControlEngineering.MODID + ".component.button";
 
     public Button() {
-        super(ColorAndSignal.DEFAULT, false, ColorAndSignal.CODEC, Codec.BOOL, new Vec2i(1, 1));
+        super(
+                ColorAndSignal.DEFAULT, false,
+                ColorAndSignal.CODEC, Codec.BOOL,
+                new Vec2i(1, 1),
+                TRANSLATION_KEY
+        );
     }
 
     @Override

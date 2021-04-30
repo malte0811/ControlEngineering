@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CNCInstructionParser {
-    private static final char ESCAPE = '\\';
-    private static final char COMPONENT_SEPARATOR = ';';
-    private static final char QUOTATION_MARK = '"';
+    public static final char ESCAPE = '\\';
+    public static final char COMPONENT_SEPARATOR = ';';
+    public static final char QUOTATION_MARK = '"';
 
     public static ParserResult parse(String input) {
         int pos = 0;

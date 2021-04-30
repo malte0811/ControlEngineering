@@ -3,7 +3,7 @@ package malte0811.controlengineering.logic.schematic.symbol;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import malte0811.controlengineering.util.math.Rectangle;
+import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
 
@@ -37,8 +37,8 @@ public class PlacedSymbol {
         return pos;
     }
 
-    public Rectangle getShape() {
-        return new Rectangle(getPosition(), getMaxPoint());
+    public RectangleI getShape() {
+        return new RectangleI(getPosition(), getMaxPoint());
     }
 
     public boolean canCoexist(PlacedSymbol other) {

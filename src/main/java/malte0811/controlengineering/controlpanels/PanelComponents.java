@@ -1,6 +1,8 @@
 package malte0811.controlengineering.controlpanels;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.controlpanels.components.Button;
 import malte0811.controlengineering.controlpanels.components.Indicator;
@@ -8,12 +10,10 @@ import malte0811.controlengineering.util.typereg.TypedRegistry;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
 
 public class PanelComponents {
     public static final TypedRegistry<PanelComponentType<?, ?>> REGISTRY = new TypedRegistry<>();
-    private static final Map<String, ResourceLocation> CREATION_KEY = new HashMap<>();
+    private static final BiMap<String, ResourceLocation> CREATION_KEY = HashBiMap.create();
     public static final Button BUTTON = register("button", new Button());
     public static final Indicator INDICATOR = register("indicator", new Indicator());
 
@@ -25,6 +25,10 @@ public class PanelComponents {
 
     public static PanelComponentType<?, ?> getType(ResourceLocation id) {
         return Preconditions.checkNotNull(REGISTRY.get(id));
+    }
+
+    public static String getCreationKey(PanelComponentType<?, ?> type) {
+        return CREATION_KEY.inverse().get(type.getRegistryName());
     }
 
     @Nullable

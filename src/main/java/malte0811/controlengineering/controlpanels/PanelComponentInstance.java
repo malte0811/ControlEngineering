@@ -6,6 +6,7 @@ import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 import net.minecraft.util.ActionResultType;
 
+import java.util.List;
 import java.util.Objects;
 
 public final class PanelComponentInstance<Config, State> extends TypedInstance<Pair<Config, State>, PanelComponentType<Config, State>> {
@@ -15,6 +16,10 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
 
     public PanelComponentInstance(PanelComponentType<Config, State> type, Pair<Config, State> state) {
         super(type, state);
+    }
+
+    public PanelComponentInstance(PanelComponentType<Config, State> type, Config config, State state) {
+        super(type, Pair.of(config, state));
     }
 
     public ActionResultType onClick() {
@@ -63,5 +68,13 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
     @Override
     public int hashCode() {
         return Objects.hash(getType(), getConfig(), getState());
+    }
+
+    public List<String> toCNCStrings() {
+        return getType().toCNCStrings(getConfig());
+    }
+
+    public void setConfig(Config newConfig) {
+        currentState = Pair.of(newConfig, getState());
     }
 }
