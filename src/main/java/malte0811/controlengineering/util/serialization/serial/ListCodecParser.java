@@ -7,10 +7,9 @@ import com.mojang.serialization.DataResult;
 import malte0811.controlengineering.util.serialization.ListBasedCodec;
 
 import java.util.List;
-import java.util.Queue;
 import java.util.stream.Collectors;
 
-public class ListCodecParser<T> extends StringCodecParser<T> {
+public class ListCodecParser<T> extends SerialCodecParser<T> {
     private final List<ParserField<T, ?>> fields;
 
     public ListCodecParser(ListBasedCodec<T> codec) {
@@ -21,7 +20,7 @@ public class ListCodecParser<T> extends StringCodecParser<T> {
     }
 
     @Override
-    protected DataResult<JsonElement> toJson(Queue<String> parts) {
+    protected DataResult<JsonElement> toJson(SerialStorage parts) {
         JsonObject result = new JsonObject();
         for (ParserField<T, ?> f : fields) {
             DataResult<JsonElement> fieldValue = f.parser.toJson(parts);
@@ -36,7 +35,7 @@ public class ListCodecParser<T> extends StringCodecParser<T> {
     }
 
     @Override
-    protected void addTo(T in, List<String> parts) {
+    public void addTo(T in, SerialStorage parts) {
         for (ParserField<T, ?> f : fields) {
             f.addTo(in, parts);
         }
@@ -44,14 +43,14 @@ public class ListCodecParser<T> extends StringCodecParser<T> {
 
     private static class ParserField<T, T1> {
         private final ListBasedCodec.Field<T, T1> field;
-        private final StringCodecParser<T1> parser;
+        private final SerialCodecParser<T1> parser;
 
         private ParserField(ListBasedCodec.Field<T, T1> field) {
             this.field = field;
-            this.parser = StringCodecParser.getParser(field.getFieldCodec());
+            this.parser = SerialCodecParser.getParser(field.getFieldCodec());
         }
 
-        private void addTo(T in, List<String> parts) {
+        private void addTo(T in, SerialStorage parts) {
             parser.addTo(field.getGetter().apply(in), parts);
         }
     }

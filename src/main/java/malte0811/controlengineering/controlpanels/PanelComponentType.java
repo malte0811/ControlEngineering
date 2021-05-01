@@ -6,7 +6,7 @@ import com.mojang.serialization.DataResult;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.serialization.Codecs;
-import malte0811.controlengineering.util.serialization.serial.StringCodecParser;
+import malte0811.controlengineering.util.serialization.serial.SerialCodecParser;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -16,7 +16,7 @@ import java.util.List;
 
 public abstract class PanelComponentType<Config, State> extends TypedRegistryEntry<Pair<Config, State>> {
     private final Vec2i size;
-    private final StringCodecParser<Config> configParser;
+    private final SerialCodecParser<Config> configParser;
     private final String translationKey;
 
     protected PanelComponentType(
@@ -27,7 +27,7 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
     ) {
         super(Pair.of(defaultConfig, intitialState), Codecs.safePair(codecConfig, codecState));
         this.size = size;
-        this.configParser = StringCodecParser.getParser(codecConfig);
+        this.configParser = SerialCodecParser.getParser(codecConfig);
         this.translationKey = translationKey;
     }
 
@@ -42,6 +42,10 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
 
     public DataResult<PanelComponentInstance<Config, State>> newInstance(List<String> data) {
         return configParser.parse(data).map(this::newInstance);
+    }
+
+    public SerialCodecParser<Config> getConfigParser() {
+        return configParser;
     }
 
     public List<String> toCNCStrings(Config config) {
