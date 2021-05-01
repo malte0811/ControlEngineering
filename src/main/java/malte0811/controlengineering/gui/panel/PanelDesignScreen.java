@@ -3,6 +3,9 @@ package malte0811.controlengineering.gui.panel;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.gui.StackedScreen;
+import malte0811.controlengineering.util.GuiUtil;
+import malte0811.controlengineering.util.math.Vec2d;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.StringTextComponent;
 
@@ -35,4 +38,15 @@ public class PanelDesignScreen extends StackedScreen {
 
     @Override
     protected void renderForeground(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {}
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        final Vec2d mouse = GuiUtil.getMousePosition();
+        for (Widget button : buttons) {
+            if (button.isMouseOver(mouse.x, mouse.y)) {
+                return button.keyPressed(keyCode, scanCode, modifiers);
+            }
+        }
+        return false;
+    }
 }

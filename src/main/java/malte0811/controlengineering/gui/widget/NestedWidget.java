@@ -78,4 +78,19 @@ public abstract class NestedWidget extends Widget implements INestedGuiEventHand
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
         return INestedGuiEventHandler.super.mouseScrolled(mouseX, mouseY, delta);
     }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        return INestedGuiEventHandler.super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        return INestedGuiEventHandler.super.keyReleased(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        return INestedGuiEventHandler.super.charTyped(codePoint, modifiers);
+    }
 }

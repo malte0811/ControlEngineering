@@ -17,9 +17,6 @@ import malte0811.controlengineering.util.GuiUtil;
 import malte0811.controlengineering.util.TextUtil;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
-import net.minecraft.client.MainWindow;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.MouseHelper;
 import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.IReorderingProcessor;
@@ -291,12 +288,7 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
                     return true;
                 }
             } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
-                MouseHelper helper = Minecraft.getInstance().mouseHelper;
-                MainWindow window = Minecraft.getInstance().getMainWindow();
-                final Vec2d mousePos = getMousePosition(
-                        helper.getMouseX() * window.getScaledWidth() / (double) window.getWidth(),
-                        helper.getMouseY() * window.getScaledHeight() / (double) window.getHeight()
-                );
+                final Vec2d mousePos = getMousePosition(GuiUtil.getMousePosition());
                 if (schematic.removeOneContaining(mousePos)) {
                     sendToServer(new Delete(mousePos));
                     return true;
@@ -330,6 +322,10 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
                 this.height - TOTAL_BORDER,
                 0xff3362ac
         );
+    }
+
+    private Vec2d getMousePosition(Vec2d screenPos) {
+        return getMousePosition(screenPos.x, screenPos.y);
     }
 
     private Vec2d getMousePosition(double mouseX, double mouseY) {

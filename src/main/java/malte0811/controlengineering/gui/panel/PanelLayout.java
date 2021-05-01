@@ -7,10 +7,13 @@ import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
+import malte0811.controlengineering.util.GuiUtil;
+import malte0811.controlengineering.util.math.TransformUtil;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.glfw.GLFW;
 
@@ -39,6 +42,10 @@ public class PanelLayout extends Widget {
         blit(transform, 0, 0, 0, width, height, texture);
         transform.scale((float) getPixelSize(), (float) getPixelSize(), 1);
         GuiRenderTarget target = new GuiRenderTarget($ -> true);
+        transform.translate(0, 0, 2);
+        transform.rotate(new Quaternion(-90, 0, 0, true));
+        TransformUtil.shear(transform, .1f, .1f);
+        transform.scale(1, -1, 1);
         for (PlacedComponent comp : components) {
             renderComponent(comp, transform, target);
         }
@@ -53,8 +60,7 @@ public class PanelLayout extends Widget {
 
     private void renderComponent(PlacedComponent comp, MatrixStack transform, GuiRenderTarget target) {
         transform.push();
-        transform.translate(comp.getPosMin().x, comp.getPosMin().y, 0);
-        GuiRenderTarget.setupTopView(transform);
+        transform.translate(comp.getPosMin().x, 0, comp.getPosMin().y);
         ComponentRenderers.render(target, comp.getComponent(), transform);
         transform.pop();
     }
@@ -63,22 +69,45 @@ public class PanelLayout extends Widget {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             if (placing == null) {
-                return false;
-            }
-            final double placingX = getGriddedPanelPos(mouseX, x);
-            final double placingY = getGriddedPanelPos(mouseY, y);
-            //TODO disjointness and "within panel" checks
-            components.add(new PlacedComponent(placing, new Vec2d(placingX, placingY)));
-            placing = null;
-            return true;
-        } else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-            final double panelX = getPanelPos(mouseX, x);
-            final double panelY = getPanelPos(mouseY, y);
-            for (PlacedComponent p : components) {
-                if (p.getOutline().containsClosed(panelX, panelY)) {
-                    configure(p.getComponent());
+                final int hovered = getHoveredIndex(mouseX, mouseY);
+                if (hovered >= 0) {
+                    placing = components.remove(hovered).getComponent();
                     return true;
                 }
+                return false;
+            } else {
+                final double placingX = getGriddedPanelPos(mouseX, x);
+                final double placingY = getGriddedPanelPos(mouseY, y);
+                PlacedComponent newComponent = new PlacedComponent(placing, new Vec2d(placingX, placingY));
+                if (!newComponent.isWithinPanel()) {
+                    return false;
+                }
+                for (PlacedComponent existing : components) {
+                    if (!existing.disjoint(newComponent)) {
+                        return false;
+                    }
+                }
+                components.add(newComponent);
+                placing = null;
+                return true;
+            }
+        } else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+            final int hovered = getHoveredIndex(mouseX, mouseY);
+            if (hovered >= 0) {
+                configure(components.get(hovered).getComponent());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_DELETE) {
+            final int hovered = getHoveredIndex(GuiUtil.getMousePosition());
+            if (hovered >= 0) {
+                components.remove(hovered);
+                return true;
             }
         }
         return false;
@@ -91,6 +120,22 @@ public class PanelLayout extends Widget {
         if (screen != null) {
             Minecraft.getInstance().displayGuiScreen(screen);
         }
+    }
+
+    private int getHoveredIndex(Vec2d mouse) {
+        return getHoveredIndex(mouse.x, mouse.y);
+    }
+
+    private int getHoveredIndex(double mouseX, double mouseY) {
+        final double panelX = getPanelPos(mouseX, x);
+        final double panelY = getPanelPos(mouseY, y);
+        for (int i = 0; i < components.size(); i++) {
+            PlacedComponent p = components.get(i);
+            if (p.getOutline().containsClosed(panelX, panelY)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private double getPanelPos(double mouse, int base) {

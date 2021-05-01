@@ -11,14 +11,11 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.vector.Quaternion;
 import org.lwjgl.opengl.GL11;
 
 import java.util.function.Predicate;
 
 public class GuiRenderTarget extends DynamicRenderTarget {
-    public static final Quaternion VIEW_ROTATION = new Quaternion(-100, 0, 1, true);
-
     public GuiRenderTarget(Predicate<TargetType> doRender) {
         super(Util.make(() -> {
             BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
@@ -31,23 +28,6 @@ public class GuiRenderTarget extends DynamicRenderTarget {
         GuiRenderTarget target = new GuiRenderTarget($ -> true);
         ComponentRenderers.render(target, comp, transform);
         target.done();
-    }
-
-    public static void renderTopView(
-            PanelComponentInstance<?, ?> comp, MatrixStack transform, double x, double y, float pixelSize
-    ) {
-        transform.push();
-        transform.translate(x, y, 0);
-        transform.scale(pixelSize, pixelSize, 1);
-        setupTopView(transform);
-        renderSingleComponent(comp, transform);
-        transform.pop();
-    }
-
-    public static void setupTopView(MatrixStack transform) {
-        transform.scale(1, 1, 0.01f);
-        transform.translate(0, 0, 2);
-        transform.rotate(VIEW_ROTATION);
     }
 
     public void done() {

@@ -2,6 +2,10 @@ package malte0811.controlengineering.util;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import malte0811.controlengineering.util.math.Vec2d;
+import net.minecraft.client.MainWindow;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.MouseHelper;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
@@ -28,5 +32,14 @@ public class GuiUtil {
         WorldVertexBufferUploader.draw(bufferbuilder);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
+    }
+
+    public static Vec2d getMousePosition() {
+        MouseHelper helper = Minecraft.getInstance().mouseHelper;
+        MainWindow window = Minecraft.getInstance().getMainWindow();
+        return new Vec2d(
+                helper.getMouseX() * window.getScaledWidth() / (double) window.getWidth(),
+                helper.getMouseY() * window.getScaledHeight() / (double) window.getHeight()
+        );
     }
 }
