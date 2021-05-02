@@ -6,3 +6,4 @@
 - More panel components
 - More cells
 - Sequencer (see Design.md)
+- Costs for panel components

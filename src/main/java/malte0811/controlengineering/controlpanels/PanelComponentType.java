@@ -8,6 +8,7 @@ import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.serialization.Codecs;
 import malte0811.controlengineering.util.serialization.serial.SerialCodecParser;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.AxisAlignedBB;
 
@@ -38,6 +39,11 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
 
     public PanelComponentInstance<Config, State> newInstance(Config config) {
         return new PanelComponentInstance<>(this, Pair.of(config, getInitialState().getSecond()));
+    }
+
+    @Nullable
+    public PanelComponentInstance<Config, State> newInstance(PacketBuffer from) {
+        return configParser.parse(from).map(this::newInstance).result().orElse(null);
     }
 
     public DataResult<PanelComponentInstance<Config, State>> newInstance(List<String> data) {

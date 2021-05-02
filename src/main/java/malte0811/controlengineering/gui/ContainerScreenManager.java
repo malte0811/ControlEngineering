@@ -2,6 +2,8 @@ package malte0811.controlengineering.gui;
 
 import malte0811.controlengineering.gui.logic.LogicDesignContainer;
 import malte0811.controlengineering.gui.logic.LogicDesignScreen;
+import malte0811.controlengineering.gui.panel.PanelDesignScreen;
+import malte0811.controlengineering.gui.panel.PanelLayoutContainer;
 import malte0811.controlengineering.gui.tape.TeletypeContainer;
 import malte0811.controlengineering.gui.tape.TeletypeScreen;
 import net.minecraft.client.Minecraft;
@@ -21,6 +23,9 @@ public class ContainerScreenManager {
         );
         ScreenManager.<LogicDesignContainer, LogicDesignScreen>registerFactory(
                 CEContainers.LOGIC_DESIGN.get(), (container, inv, title) -> new LogicDesignScreen(container, title)
+        );
+        ScreenManager.<PanelLayoutContainer, PanelDesignScreen>registerFactory(
+                CEContainers.PANEL_LAYOUT.get(), (container, inv, title) -> new PanelDesignScreen(container, title)
         );
     }
 

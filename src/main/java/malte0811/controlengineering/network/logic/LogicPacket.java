@@ -5,8 +5,6 @@ import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.logic.LogicDesignContainer;
 import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.network.SimplePacket;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkDirection;
@@ -45,19 +43,10 @@ public class LogicPacket extends SimplePacket {
     }
 
     private void processOnClient() {
-        Screen currentScreen = Minecraft.getInstance().currentScreen;
-        if (!(currentScreen instanceof StackedScreen)) {
-            return;
-        }
-        while (currentScreen != null && !(currentScreen instanceof LogicDesignScreen)) {
-            currentScreen = ((StackedScreen) currentScreen).getPreviousInStack();
-        }
+        LogicDesignScreen currentScreen = StackedScreen.findInstanceOf(LogicDesignScreen.class);
         if (currentScreen != null) {
-            packet.process(
-                    ((LogicDesignScreen) currentScreen).getSchematic(),
-                    ((LogicDesignScreen) currentScreen)::setSchematic
-            );
-            ((LogicDesignScreen) currentScreen).updateErrors();
+            packet.process(currentScreen.getSchematic(), currentScreen::setSchematic);
+            currentScreen.updateErrors();
         }
     }
 }

@@ -10,6 +10,7 @@ import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.INBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -46,6 +47,21 @@ public class PlacedComponent extends SelectionShapes {
                 return scale(compShape.offset(pos.x, 0, pos.y), 1 / 16d);
             }
         });
+    }
+
+    @Nullable
+    public static PlacedComponent readWithoutState(PacketBuffer from) {
+        Vec2d pos = new Vec2d(from);
+        PanelComponentInstance<?, ?> instance = PanelComponentInstance.readFrom(from);
+        if (instance == null) {
+            return null;
+        }
+        return new PlacedComponent(instance, pos);
+    }
+
+    public void writeToWithoutState(PacketBuffer buffer) {
+        pos.write(buffer);
+        getComponent().writeToWithoutState(buffer);
     }
 
     @Nonnull
@@ -88,8 +104,8 @@ public class PlacedComponent extends SelectionShapes {
     }
 
     @Override
-    public @Nullable
-    VoxelShape mainShape() {
+    @Nullable
+    public VoxelShape mainShape() {
         AxisAlignedBB selectionShape = getSelectionShape();
         if (selectionShape != null) {
             return VoxelShapes.create(selectionShape);
@@ -146,5 +162,15 @@ public class PlacedComponent extends SelectionShapes {
 
     public static INBT writeListToNBT(List<PlacedComponent> components) {
         return Codecs.encode(Codec.list(CODEC), components);
+    }
+
+    public static int getIndexAt(List<PlacedComponent> components, double x, double y) {
+        for (int i = 0; i < components.size(); i++) {
+            PlacedComponent p = components.get(i);
+            if (p.getOutline().containsClosed(x, y)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

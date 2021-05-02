@@ -1,38 +1,37 @@
-package malte0811.controlengineering.network.logic;
+package malte0811.controlengineering.network.panellayout;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import malte0811.controlengineering.logic.schematic.Schematic;
+import malte0811.controlengineering.controlpanels.PlacedComponent;
 import net.minecraft.network.PacketBuffer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
-public abstract class LogicSubPacket {
-    static final List<Function<PacketBuffer, ? extends LogicSubPacket>> FROM_BYTES = new ArrayList<>();
-    static final Object2IntMap<Class<? extends LogicSubPacket>> BY_TYPE = new Object2IntOpenHashMap<>();
+public abstract class PanelSubPacket {
+    static final List<Function<PacketBuffer, ? extends PanelSubPacket>> FROM_BYTES = new ArrayList<>();
+    static final Object2IntMap<Class<? extends PanelSubPacket>> BY_TYPE = new Object2IntOpenHashMap<>();
     private static boolean initialized = false;
 
     public static void init() {
         if (initialized) {
             return;
         }
-        initialized = true;
-        register(FullSync.class, FullSync::new);
-        register(AddSymbol.class, AddSymbol::new);
-        register(AddWire.class, AddWire::new);
         register(Delete.class, Delete::new);
+        register(Add.class, Add::new);
+        register(FullSync.class, FullSync::new);
+        register(Replace.class, Replace::new);
+        initialized = true;
     }
 
-    private static <T extends LogicSubPacket>
+    private static <T extends PanelSubPacket>
     void register(Class<T> type, Function<PacketBuffer, T> construct) {
         BY_TYPE.put(type, FROM_BYTES.size());
         FROM_BYTES.add(construct);
     }
 
-    protected static LogicSubPacket read(PacketBuffer buffer) {
+    protected static PanelSubPacket read(PacketBuffer buffer) {
         init();
         return FROM_BYTES.get(buffer.readVarInt()).apply(buffer);
     }
@@ -45,7 +44,7 @@ public abstract class LogicSubPacket {
 
     protected abstract void write(PacketBuffer out);
 
-    protected abstract void process(Schematic applyTo, Consumer<Schematic> replace);
+    public abstract boolean process(List<PlacedComponent> allComponents);
 
     public boolean allowSendingToServer() {
         return true;

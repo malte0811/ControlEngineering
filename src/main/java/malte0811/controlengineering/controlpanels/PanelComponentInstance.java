@@ -4,8 +4,11 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.util.typereg.TypedInstance;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ActionResultType;
+import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,6 +25,21 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
         super(type, Pair.of(config, state));
     }
 
+    @Nullable
+    public static PanelComponentInstance<?, ?> readFrom(PacketBuffer buffer) {
+        ResourceLocation typeName;
+        try {
+            typeName = buffer.readResourceLocation();
+        } catch (Exception x) {
+            return null;
+        }
+        PanelComponentType<?, ?> type = PanelComponents.REGISTRY.get(typeName);
+        if (type == null) {
+            return null;
+        }
+        return type.newInstance(buffer);
+    }
+
     public ActionResultType onClick() {
         Pair<ActionResultType, State> clickResult = getType().click(getConfig(), getState());
         currentState = Pair.of(getConfig(), clickResult.getSecond());
@@ -34,6 +52,11 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
 
     public Config getConfig() {
         return currentState.getFirst();
+    }
+
+    public void writeToWithoutState(PacketBuffer buffer) {
+        buffer.writeResourceLocation(getType().getRegistryName());
+        getType().getConfigParser().writeToBuffer(getConfig(), buffer);
     }
 
     public State getState() {

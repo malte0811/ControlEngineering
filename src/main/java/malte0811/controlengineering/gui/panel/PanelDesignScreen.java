@@ -5,20 +5,22 @@ import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.util.GuiUtil;
 import malte0811.controlengineering.util.math.Vec2d;
+import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.List;
 
-public class PanelDesignScreen extends StackedScreen {
+public class PanelDesignScreen extends StackedScreen implements IHasContainer<PanelLayoutContainer> {
     private static final int BORDER = 20;
-    private final List<PlacedComponent> components = new ArrayList<>();
+    @Nonnull
+    private final PanelLayoutContainer container;
 
-    public PanelDesignScreen() {
-        super(new StringTextComponent(""));
+    public PanelDesignScreen(PanelLayoutContainer container, ITextComponent title) {
+        super(title);
+        this.container = container;
     }
 
     @Override
@@ -31,7 +33,7 @@ public class PanelDesignScreen extends StackedScreen {
         final int usedWidth = selectorWidth + panelSize;
         final int offset = (width - usedWidth) / 2;
         final int panelX = selectorWidth + offset;
-        PanelLayout panelLayout = new PanelLayout(panelX, BORDER, panelSize, components);
+        PanelLayout panelLayout = new PanelLayout(panelX, BORDER, panelSize, container.getComponents());
         addButton(panelLayout);
         addButton(new ComponentSelector(offset, BORDER, selectorWidth, panelSize, panelLayout::setPlacingComponent));
     }
@@ -44,9 +46,23 @@ public class PanelDesignScreen extends StackedScreen {
         final Vec2d mouse = GuiUtil.getMousePosition();
         for (Widget button : buttons) {
             if (button.isMouseOver(mouse.x, mouse.y)) {
-                return button.keyPressed(keyCode, scanCode, modifiers);
+                if (button.keyPressed(keyCode, scanCode, modifiers)) {
+                    return true;
+                } else {
+                    break;
+                }
             }
         }
-        return false;
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    public List<PlacedComponent> getComponents() {
+        return container.getComponents();
+    }
+
+    @Nonnull
+    @Override
+    public PanelLayoutContainer getContainer() {
+        return container;
     }
 }

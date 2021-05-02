@@ -72,4 +72,16 @@ public abstract class StackedScreen extends Screen {
     public StackedScreen getPreviousInStack() {
         return previousInStack;
     }
+
+    @Nullable
+    public static <T extends StackedScreen> T findInstanceOf(Class<T> type) {
+        Screen currentScreen = Minecraft.getInstance().currentScreen;
+        if (!(currentScreen instanceof StackedScreen)) {
+            return null;
+        }
+        while (currentScreen != null && !type.isAssignableFrom(currentScreen.getClass())) {
+            currentScreen = ((StackedScreen) currentScreen).getPreviousInStack();
+        }
+        return type.cast(currentScreen);
+    }
 }

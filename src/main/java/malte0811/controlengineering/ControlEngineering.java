@@ -14,6 +14,7 @@ import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.network.AddTTYData;
 import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.logic.LogicPacket;
+import malte0811.controlengineering.network.panellayout.PanelPacket;
 import malte0811.controlengineering.temp.ImprovedLocalRSHandler;
 import malte0811.controlengineering.tiles.CETileEntities;
 import net.minecraft.item.ItemGroup;
@@ -79,6 +80,7 @@ public class ControlEngineering {
         int id = 0;
         registerPacket(id++, AddTTYData.class, AddTTYData::new, NetworkDirection.PLAY_TO_SERVER);
         registerPacket(id++, LogicPacket.class, LogicPacket::new);
+        registerPacket(id++, PanelPacket.class, PanelPacket::new);
     }
 
     private <T extends SimplePacket> void registerPacket(
