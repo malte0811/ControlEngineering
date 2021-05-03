@@ -2,12 +2,11 @@ package malte0811.controlengineering;
 
 import blusunrize.immersiveengineering.api.Lib;
 import blusunrize.immersiveengineering.data.blockstates.ConnectorBlockBuilder;
-import blusunrize.immersiveengineering.data.models.ConnectorBuilder;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.JsonObject;
-import malte0811.controlengineering.blocks.BusInterfaceBlock;
 import malte0811.controlengineering.blocks.CEBlocks;
+import malte0811.controlengineering.blocks.bus.BusInterfaceBlock;
+import malte0811.controlengineering.blocks.bus.BusRelayBlock;
+import malte0811.controlengineering.blocks.bus.LineAccessBlock;
 import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
@@ -18,7 +17,6 @@ import malte0811.controlengineering.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.modelbuilder.LogicCabinetBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderState;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.state.Property;
@@ -33,7 +31,6 @@ import net.minecraftforge.client.model.generators.loaders.CompositeModelBuilder;
 import net.minecraftforge.client.model.generators.loaders.OBJLoaderBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 
 public class BlockstateGenerator extends BlockStateProvider {
@@ -41,17 +38,22 @@ public class BlockstateGenerator extends BlockStateProvider {
             new ModelFile.UncheckedModelFile(new ResourceLocation(Lib.MODID, "block/ie_empty"))
     );
 
-    public BlockstateGenerator(
-            DataGenerator gen,
-            ExistingFileHelper exFileHelper
-    ) {
+    public BlockstateGenerator(DataGenerator gen, ExistingFileHelper exFileHelper) {
         super(gen, ControlEngineering.MODID, exFileHelper);
     }
 
     @Override
     protected void registerStatesAndModels() {
-        dummyIIC(CEBlocks.BUS_RELAY.get());
-        dummyIIC(CEBlocks.LINE_ACCESS.get());
+        ConnectorBlockBuilder.builder(models(), getVariantBuilder(CEBlocks.BUS_RELAY.get()), ($1, $2) -> {})
+                .rotationData(BusRelayBlock.FACING, 90)
+                .fixedModel(obj("bus_relay.obj"))
+                .layers(RenderType.getSolid())
+                .build();
+        ConnectorBlockBuilder.builder(models(), getVariantBuilder(CEBlocks.LINE_ACCESS.get()), ($1, $2) -> {})
+                .rotationData(LineAccessBlock.FACING, 0)
+                .fixedModel(obj("line_access.obj"))
+                .layers(RenderType.getCutout())
+                .build();
         ConnectorBlockBuilder.builder(models(), getVariantBuilder(CEBlocks.BUS_INTERFACE.get()), ($1, $2) -> {})
                 .rotationData(BusInterfaceBlock.FACING, 90)
                 .fixedModel(obj("bus_interface.obj"))
@@ -110,27 +112,6 @@ public class BlockstateGenerator extends BlockStateProvider {
 
     private ResourceLocation forgeLoc(String path) {
         return new ResourceLocation("forge", path);
-    }
-
-    private void dummyIIC(Block b) {
-        JsonObject baseJson = new JsonObject();
-        baseJson.addProperty("parent", mcLoc("block/dirt").toString());
-        ModelFile busRelayModel = models().getBuilder("dummy_iic")
-                .customLoader(ConnectorBuilder::begin)
-                .baseModel(models().getExistingFile(mcLoc("block/dirt")))
-                .layers(ImmutableList.of("solid"))
-                .end();
-        simpleBlock(b, busRelayModel);
-    }
-
-    private String getName(RenderState state) {
-        try {
-            Field f = RenderState.class.getDeclaredField("name");
-            f.setAccessible(true);
-            return (String) f.get(state);
-        } catch (Exception var3) {
-            throw new RuntimeException(var3);
-        }
     }
 
     private void panelModel() {

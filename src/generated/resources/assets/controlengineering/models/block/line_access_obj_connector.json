@@ -1,0 +1,7 @@
+{
+  "loader": "immersiveengineering:connector",
+  "base_model": "controlengineering:block/line_access_obj",
+  "layers": [
+    "cutout"
+  ]
+}

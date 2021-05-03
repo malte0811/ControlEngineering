@@ -5,8 +5,8 @@ import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
 import blusunrize.immersiveengineering.api.wires.LocalWireNetwork;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
-import malte0811.controlengineering.blocks.BusInterfaceBlock;
 import malte0811.controlengineering.blocks.INeighborChangeListener;
+import malte0811.controlengineering.blocks.bus.BusInterfaceBlock;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusConnector;
 import malte0811.controlengineering.bus.IBusInterface;
@@ -56,7 +56,7 @@ public class BusInterfaceTile extends CEIICTileEntity implements IBusConnector, 
     @Override
     public Vector3d getConnectionOffset(@Nonnull Connection con, ConnectionPoint here) {
         return new Vector3d(0.5, 0.5, 0.5)
-                .add(Vector3d.copy(getFacing().getDirectionVec()).scale(1.5 / 16));
+                .add(Vector3d.copy(getFacing().getDirectionVec()).scale(1. / 16));
     }
 
     private Collection<IBusInterface> getConnectedTile() {

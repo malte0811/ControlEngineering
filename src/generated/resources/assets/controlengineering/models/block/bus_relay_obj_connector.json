@@ -1,6 +1,6 @@
 {
   "loader": "immersiveengineering:connector",
-  "base_model": "minecraft:block/dirt",
+  "base_model": "controlengineering:block/bus_relay_obj",
   "layers": [
     "solid"
   ]

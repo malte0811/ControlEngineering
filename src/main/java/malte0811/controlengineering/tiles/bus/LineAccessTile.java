@@ -8,6 +8,7 @@ import blusunrize.immersiveengineering.api.wires.WireType;
 import blusunrize.immersiveengineering.api.wires.redstone.IRedstoneConnector;
 import blusunrize.immersiveengineering.api.wires.redstone.RedstoneNetworkHandler;
 import com.google.common.collect.ImmutableList;
+import malte0811.controlengineering.blocks.bus.LineAccessBlock;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusConnector;
@@ -17,6 +18,7 @@ import malte0811.controlengineering.tiles.CEIICTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
@@ -32,9 +34,8 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
     private static final int REDSTONE_ID = 0;
     private static final int BUS_ID = 1;
 
-    private int selectedLine;
+    public int selectedLine;
     private BusLine lastLineToRS = new BusLine();
-    private BusLine lastLineFromRS = new BusLine();
     private ConnectionPoint redstonePoint;
     private ConnectionPoint busPoint;
 
@@ -55,19 +56,20 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
     }
 
     @Override
-    public void setWorldAndPos(World worldIn, BlockPos pos) {
+    public void setWorldAndPos(@Nonnull World worldIn, @Nonnull BlockPos pos) {
         super.setWorldAndPos(worldIn, pos);
         reinitConnectionPoints();
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT nbt) {
+    public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
         super.read(state, nbt);
         selectedLine = nbt.getInt("selectedLine");
     }
 
+    @Nonnull
     @Override
-    public CompoundNBT write(CompoundNBT nbt) {
+    public CompoundNBT write(@Nonnull CompoundNBT nbt) {
         nbt = super.write(nbt);
         nbt.putInt("selectedLine", selectedLine);
         return nbt;
@@ -102,17 +104,24 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
     /*GENERAL IIC*/
     @Override
     public Vector3d getConnectionOffset(@Nonnull Connection con, ConnectionPoint here) {
+        final double offset;
         if (here.getIndex() == REDSTONE_ID) {
-            return new Vector3d(0.5, 0.25, 0.5);
+            offset = .25;
         } else {
-            return new Vector3d(0.5, 0.75, 0.5);
+            offset = -.25;
         }
+        return new Vector3d(0.5, 7 / 16., 0.5).add(
+                Vector3d.copy(getBlockState().get(LineAccessBlock.FACING).getDirectionVec())
+                        .scale(offset)
+        );
     }
 
     @Nullable
     @Override
     public ConnectionPoint getTargetedPoint(TargetingInfo info, Vector3i offset) {
-        if (info.hitY > 0.5) {
+        Direction facing = getBlockState().get(LineAccessBlock.FACING);
+        Vector3i normal = facing.getDirectionVec();
+        if (normal.getX() * (info.hitX - .5) + normal.getY() * (info.hitY - .5) + normal.getZ() * (info.hitZ - .5) < 0) {
             return busPoint;
         } else {
             return redstonePoint;

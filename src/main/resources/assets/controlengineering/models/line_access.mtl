@@ -1,0 +1,6 @@
+newmtl BusConnector
+map_Kd controlengineering:block/bus_interface
+newmtl Base
+map_Kd controlengineering:block/line_access
+newmtl RedstoneConnector
+map_Kd immersiveengineering:block/connector/connector_bundled

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/block",
+  "loader": "forge:obj",
+  "model": "controlengineering:models/line_access.obj",
+  "detectCullableFaces": false,
+  "flip-v": true
+}

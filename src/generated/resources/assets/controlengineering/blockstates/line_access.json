@@ -1,7 +1,23 @@
 {
   "variants": {
-    "": {
-      "model": "controlengineering:block/dummy_iic"
+    "facing=north": {
+      "model": "controlengineering:block/line_access_obj_connector",
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=south": {
+      "model": "controlengineering:block/line_access_obj_connector",
+      "uvlock": true
+    },
+    "facing=west": {
+      "model": "controlengineering:block/line_access_obj_connector",
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=east": {
+      "model": "controlengineering:block/line_access_obj_connector",
+      "y": 270,
+      "uvlock": true
     }
   }
 }

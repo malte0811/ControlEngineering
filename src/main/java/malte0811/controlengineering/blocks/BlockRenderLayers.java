@@ -9,6 +9,7 @@ public class BlockRenderLayers {
         setLayers(CEBlocks.BUS_RELAY.get(), RenderType.getSolid());
         setLayers(CEBlocks.TELETYPE.get(), RenderType.getCutout());
         setLayers(CEBlocks.LOGIC_CABINET.get(), RenderType.getSolid(), RenderType.getTranslucent());
+        setLayers(CEBlocks.LINE_ACCESS.get(), RenderType.getSolid(), RenderType.getCutout());
     }
 
     private static void setLayers(Block b, RenderType... types) {
