@@ -8,7 +8,6 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.client.render.tape.TapeDrive;
 import malte0811.controlengineering.client.render.target.DynamicRenderTarget;
-import malte0811.controlengineering.client.render.target.TargetType;
 import malte0811.controlengineering.client.render.utils.ModelRenderUtils;
 import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath;
 import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath.Node;
@@ -34,7 +33,6 @@ import net.minecraft.util.math.vector.Vector3d;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
     //TODO reset?
@@ -107,7 +105,7 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
             finalWrapped.pos(16, 0, 0).tex(maxU, minV).endVertex();
         }
         ComponentRenderers.renderAll(new DynamicRenderTarget(
-                builder, light, overlay, Predicate.isEqual(TargetType.DYNAMIC)
+                builder, light, overlay, $ -> true
         ), tile.getCurrentPlacedComponents(), transform);
     }
 
@@ -133,7 +131,7 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
             PanelCNCTile tile, IRenderTypeBuffer buffer, MatrixStack transform, int light, int overlay, double ticks
     ) {
         Vector3d currentPos;
-        if (tile.getCurrentJob() != null) {
+        if (tile.getCurrentJob() != null && !tile.hasFailed()) {
             //TODO cache path!
             currentPos = createPathFor(tile.getCurrentJob()).getPosAt(ticks);
         } else {

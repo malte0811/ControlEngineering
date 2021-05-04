@@ -1,4 +1,3 @@
-- Sprite for RS latch
 - Add wire and tube costs for schematics
 - Manual :(
 - Various models and textures
@@ -6,4 +5,4 @@
 - More panel components
 - More cells
 - Sequencer (see Design.md)
-- Costs for panel components
+- Recipes

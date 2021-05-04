@@ -17,10 +17,7 @@ import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.logic.model.DynamicLogicModel;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
-import malte0811.controlengineering.util.CachedValue;
-import malte0811.controlengineering.util.Clearable;
-import malte0811.controlengineering.util.ItemUtil;
-import malte0811.controlengineering.util.ShapeUtils;
+import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.serialization.Codecs;
@@ -38,7 +35,6 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
@@ -266,13 +262,6 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
         return selectionShapes.get();
     }
 
-    private void markDirtyAndSync() {
-        markDirty();
-        if (world.getChunkProvider() instanceof ServerChunkProvider) {
-            ((ServerChunkProvider) world.getChunkProvider()).markBlockChanged(pos);
-        }
-    }
-
     private static SelectionShapes createSelectionShapes(Direction d, LogicCabinetTile tile, boolean upper) {
         List<SelectionShapes> subshapes = new ArrayList<>(1);
         DirectionalShapeProvider baseShape = upper ? LogicCabinetBlock.TOP_SHAPE : LogicCabinetBlock.BOTTOM_SHAPE;
@@ -299,14 +288,14 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
                 if (clockItem != null) {
                     ItemUtil.giveOrDrop(ctx.getPlayer(), new ItemStack(clockItem.get()));
                     tile.clock = ClockTypes.NEVER.newInstance();
-                    tile.markDirtyAndSync();
+                    TileUtil.markDirtyAndSync(tile);
                 } else {
                     ItemStack item = ctx.getItem();
                     ClockGenerator<?> newClock = ClockTypes.REGISTRY.get(item.getItem().getRegistryName());
                     if (newClock != null) {
                         tile.clock = newClock.newInstance();
                         item.shrink(1);
-                        tile.markDirtyAndSync();
+                        TileUtil.markDirtyAndSync(tile);
                     }
                 }
             }
@@ -337,7 +326,7 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
                 if (oldSchematic != null) {
                     ItemUtil.giveOrDrop(ctx.getPlayer(), PCBStackItem.forSchematic(oldSchematic.getFirst()));
                 }
-                tile.markDirtyAndSync();
+                TileUtil.markDirtyAndSync(tile);
             }
             return ActionResultType.SUCCESS;
         });

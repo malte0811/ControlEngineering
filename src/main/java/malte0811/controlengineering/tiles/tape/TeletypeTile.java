@@ -118,7 +118,7 @@ public class TeletypeTile extends TileEntity implements SelectionShapeOwner {
         }));
         return new ListShapes(
                 TeletypeBlock.SHAPE_PROVIDER.apply(d),
-                new Matrix4(d),
+                Matrix4.inverseFacing(d),
                 subshapes,
                 ctx -> {
                     CEBlocks.TELETYPE.get().openContainer(

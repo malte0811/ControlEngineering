@@ -14,15 +14,12 @@ import malte0811.controlengineering.controlpanels.PanelSelectionShapes;
 import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.util.Clearable;
-import malte0811.controlengineering.util.RaytraceUtils;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -153,18 +150,6 @@ public class ControlPanelTile extends TileEntity implements IBusInterface, Selec
 
     private BusState getTotalState() {
         return stateHandler.getTotalState();
-    }
-
-    public ActionResultType onRightClick(PlayerEntity player, BlockState state) {
-        RayTraceContext raytraceCtx = RaytraceUtils.create(player, 0);
-        Optional<PlacedComponent> targeted = getTargetedComponent(raytraceCtx);
-        if (targeted.isPresent()) {
-            ActionResultType result = targeted.get().onClick();
-            if (!world.isRemote) {
-            }
-            return result;
-        }
-        return ActionResultType.PASS;
     }
 
     @Override

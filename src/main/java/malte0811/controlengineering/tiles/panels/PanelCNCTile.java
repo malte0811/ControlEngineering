@@ -1,5 +1,6 @@
 package malte0811.controlengineering.tiles.panels;
 
+import blusunrize.immersiveengineering.api.utils.CapabilityReference;
 import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
@@ -11,8 +12,7 @@ import malte0811.controlengineering.controlpanels.cnc.CNCInstructionParser;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PanelTopItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
-import malte0811.controlengineering.util.BitUtils;
-import malte0811.controlengineering.util.CachedValue;
+import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.serialization.NBTIO;
 import net.minecraft.block.BlockState;
@@ -28,8 +28,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.util.Constants.BlockFlags;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,13 +58,22 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
     );
     private int currentTicksInJob;
     private boolean hasPanel;
+    private boolean failed = false;
     private final List<PlacedComponent> currentPlacedComponents = new ArrayList<>();
+    private final List<CapabilityReference<IItemHandler>> neighborInventories = Util.make(
+            new ArrayList<>(),
+            list -> {
+                for (Direction d : DirectionUtils.BY_HORIZONTAL_INDEX) {
+                    list.add(CapabilityReference.forNeighbor(this, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d));
+                }
+            }
+    );
 
     private final CachedValue<Direction, SelectionShapes> selectionShapes = new CachedValue<>(
             () -> getBlockState().get(PanelCNCBlock.FACING),
             facing -> new ListShapes(
                     PanelCNCBlock.SHAPE,
-                    new Matrix4(facing),
+                    Matrix4.inverseFacing(facing),
                     ImmutableList.of(
                             new SingleShape(
                                     createPixelRelative(1, 0, 1, 15, 2, 15),
@@ -95,6 +107,7 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
                 hasPanel = false;
                 currentPlacedComponents.clear();
                 currentTicksInJob = 0;
+                failed = false;
                 world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
             }
             return ActionResultType.SUCCESS;
@@ -150,8 +163,16 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
             int nextComponent = currentPlacedComponents.size();
             CNCJob job = currentJob.get();
             if (nextComponent < job.getTotalComponents()) {
-                if (currentTicksInJob >= job.getTickPlacingComponent().getInt(nextComponent)) {
-                    currentPlacedComponents.add(job.getComponents().get(nextComponent));
+                if (!world.isRemote && currentTicksInJob >= job.getTickPlacingComponent().getInt(nextComponent)) {
+                    PlacedComponent componentToPlace = job.getComponents().get(nextComponent);
+                    if (!ItemUtil.tryConsumeItemsFrom(
+                            componentToPlace.getComponent().getType().getCost(), neighborInventories
+                    )) {
+                        failed = true;
+                    } else {
+                        currentPlacedComponents.add(componentToPlace);
+                    }
+                    TileUtil.markDirtyAndSync(this);
                 }
             }
         }
@@ -159,12 +180,12 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
 
     private boolean hasFinishedJob() {
         CNCJob job = currentJob.get();
-        return job != null && currentTicksInJob >= job.getTotalTicks();
+        return job != null && (failed || currentTicksInJob >= job.getTotalTicks());
     }
 
     private boolean isJobRunning() {
         CNCJob job = currentJob.get();
-        return hasPanel && job != null && currentTicksInJob < job.getTotalTicks();
+        return hasPanel && job != null && !failed && currentTicksInJob < job.getTotalTicks();
     }
 
     @Override
@@ -209,8 +230,9 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
         CNCJob job = currentJob.get();
         if (job != null) {
             int numComponents = 0;
+            final int lastTickToConsider = currentTicksInJob - (failed ? 1 : 0);
             while (numComponents < job.getTotalComponents() &&
-                    job.getTickPlacingComponent().getInt(numComponents) < currentTicksInJob) {
+                    job.getTickPlacingComponent().getInt(numComponents) <= lastTickToConsider) {
                 currentPlacedComponents.add(job.getComponents().get(numComponents));
                 ++numComponents;
             }
@@ -221,6 +243,7 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
         insertedTape = io.handle("tape", insertedTape);
         currentTicksInJob = io.handle("currentTick", currentTicksInJob);
         hasPanel = io.handle("hasPanel", hasPanel);
+        failed = io.handle("failed", failed);
     }
 
     @Nonnull
@@ -238,5 +261,9 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
         read(getBlockState(), pkt.getNbtCompound());
+    }
+
+    public boolean hasFailed() {
+        return failed;
     }
 }

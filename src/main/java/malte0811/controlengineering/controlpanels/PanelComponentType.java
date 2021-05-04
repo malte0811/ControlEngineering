@@ -1,5 +1,7 @@
 package malte0811.controlengineering.controlpanels;
 
+import blusunrize.immersiveengineering.api.crafting.IngredientWithSize;
+import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -11,7 +13,9 @@ import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.common.util.Lazy;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -66,17 +70,21 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
 
     public abstract Pair<ActionResultType, State> click(Config config, State oldState);
 
-    @Nullable
-    protected abstract AxisAlignedBB createSelectionShape();
+    protected abstract double getSelectionHeight();
 
-    private AxisAlignedBB selectionShape;
+    private final Lazy<AxisAlignedBB> selectionShape = Lazy.of(() -> {
+        final double height = getSelectionHeight();
+        if (height >= 0) {
+            final Vec2i size = getSize();
+            return new AxisAlignedBB(0, 0, 0, size.x, height, size.y);
+        } else {
+            return null;
+        }
+    });
 
     @Nullable
     public AxisAlignedBB getSelectionShape() {
-        if (selectionShape == null) {
-            selectionShape = createSelectionShape();
-        }
-        return selectionShape;
+        return selectionShape.get();
     }
 
     public Vec2i getSize() {
@@ -86,4 +94,18 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
     public String getTranslationKey() {
         return translationKey;
     }
+
+    private List<IngredientWithSize> cost;
+
+    public final List<IngredientWithSize> getCost() {
+        if (cost == null) {
+            cost = makeCostList();
+            Preconditions.checkNotNull(cost);
+        }
+        return cost;
+    }
+
+    // TODO data driven/IRecipe-based?
+    @Nonnull
+    protected abstract List<IngredientWithSize> makeCostList();
 }

@@ -1,5 +1,7 @@
 package malte0811.controlengineering.controlpanels.components;
 
+import blusunrize.immersiveengineering.api.crafting.IngredientWithSize;
+import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import malte0811.controlengineering.ControlEngineering;
@@ -7,9 +9,10 @@ import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.common.Tags;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
+import java.util.List;
 
 public class Indicator extends PanelComponentType<ColorAndSignal, Integer> {
     public static final String TRANSLATION_KEY = ControlEngineering.MODID + ".component.indicator";
@@ -38,10 +41,18 @@ public class Indicator extends PanelComponentType<ColorAndSignal, Integer> {
         return oldState;
     }
 
-    @Nullable
     @Override
-    protected AxisAlignedBB createSelectionShape() {
-        return null;
+    protected double getSelectionHeight() {
+        return -1;
+    }
+
+    @Nonnull
+    @Override
+    protected List<IngredientWithSize> makeCostList() {
+        return ImmutableList.of(
+                new IngredientWithSize(Tags.Items.DYES),
+                new IngredientWithSize(Tags.Items.DUSTS_GLOWSTONE)
+        );
     }
 
     @Override

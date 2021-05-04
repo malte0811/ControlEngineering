@@ -48,7 +48,7 @@ public class LogicWorkbenchTile extends TileEntity implements SelectionShapeOwne
                     );
                     return new ListShapes(
                             baseShape,
-                            new Matrix4(facing),
+                            Matrix4.inverseFacing(facing),
                             ImmutableList.<SelectionShapes>of(
                                     new SingleShape(LogicWorkbenchBlock.BURNER, create),
                                     new SingleShape(LogicWorkbenchBlock.DRAWERS_TOP_RIGHT, drawers)
