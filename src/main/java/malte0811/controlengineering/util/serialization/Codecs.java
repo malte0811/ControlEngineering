@@ -12,6 +12,7 @@ import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.Direction;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Codecs {
@@ -72,5 +73,9 @@ public class Codecs {
         } else {
             return result;
         }
+    }
+
+    public static <T> Optional<T> readOptional(Codec<T> codec, INBT data) {
+        return read(codec, data).result();
     }
 }

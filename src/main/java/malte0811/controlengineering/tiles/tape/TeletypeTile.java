@@ -13,7 +13,9 @@ import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.ItemUtil;
 import malte0811.controlengineering.util.math.Matrix4;
+import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -28,10 +30,7 @@ import java.util.List;
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
 public class TeletypeTile extends TileEntity implements SelectionShapeOwner {
-    private static final String WRITTEN_KEY = "writtenBytes";
-    private static final String AVAILABLE_KEY = "available";
-    private ByteList written = new ByteArrayList();
-    private int available = 0;
+    private TeletypeState state = new TeletypeState(new ByteArrayList(), 0);
 
     public TeletypeTile(TileEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
@@ -40,45 +39,15 @@ public class TeletypeTile extends TileEntity implements SelectionShapeOwner {
     @Override
     public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
         super.read(state, nbt);
-        written = new ByteArrayList(nbt.getByteArray(WRITTEN_KEY));
-        available = nbt.getInt(AVAILABLE_KEY);
+        this.state = Codecs.readOptional(TeletypeState.CODEC, nbt.get("state")).orElseGet(TeletypeState::new);
     }
 
     @Nonnull
     @Override
     public CompoundNBT write(@Nonnull CompoundNBT compound) {
         compound = super.write(compound);
-        compound.putByteArray(WRITTEN_KEY, written.toByteArray());
-        compound.putInt(AVAILABLE_KEY, available);
+        compound.put("state", Codecs.encode(TeletypeState.CODEC, state));
         return compound;
-    }
-
-    @Nonnull
-    @Override
-    public CompoundNBT getUpdateTag() {
-        //TODO only sync last X bytes?
-        return write(super.getUpdateTag());
-    }
-
-    @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
-        read(state, tag);
-    }
-
-    public void type(byte[] typed) {
-        if (available > 0) {
-            int actuallyTyped = Math.min(available, typed.length);
-            written.addElements(written.size(), typed, 0, actuallyTyped);
-            available -= actuallyTyped;
-        }
-    }
-
-    public byte[] getTypedBytes() {
-        return written.toByteArray();
-    }
-
-    public int getRemainingBytes() {
-        return available;
     }
 
     private final CachedValue<Direction, SelectionShapes> selectionShapes = new CachedValue<>(
@@ -90,32 +59,41 @@ public class TeletypeTile extends TileEntity implements SelectionShapeOwner {
         return selectionShapes.get();
     }
 
+    private ActionResultType removeWrittenClick(PlayerEntity player) {
+        ByteList written = state.getData();
+        if (!written.isEmpty() && player != null) {
+            ItemUtil.giveOrDrop(player, PunchedTapeItem.withBytes(written.toByteArray()));
+            written.clear();
+            return ActionResultType.SUCCESS;
+        } else {
+            return ActionResultType.FAIL;
+        }
+    }
+
+    private ActionResultType removeOrAddClearTape(PlayerEntity player, ItemStack item) {
+        final int length = EmptyTapeItem.getLength(item);
+        if (length > 0) {
+            //TODO limit?
+            state.addAvailable(length);
+            item.shrink(1);
+        } else if (state.getAvailable() > 0 && player != null) {
+            ItemUtil.giveOrDrop(player, EmptyTapeItem.withLength(state.getAvailable()));
+            state.setAvailable(0);
+        }
+        return ActionResultType.SUCCESS;
+    }
+
     private static SelectionShapes createSelectionShapes(Direction d, TeletypeTile tile) {
         List<SelectionShapes> subshapes = new ArrayList<>(2);
         // Punched tape output
-        subshapes.add(new SingleShape(createPixelRelative(2, 6, 1, 6, 10, 5), ctx -> {
-            if (!tile.written.isEmpty() && ctx.getPlayer() != null) {
-                ItemUtil.giveOrDrop(ctx.getPlayer(), PunchedTapeItem.withBytes(tile.written.toByteArray()));
-                tile.written.clear();
-                return ActionResultType.SUCCESS;
-            } else {
-                return ActionResultType.FAIL;
-            }
-        }));
+        subshapes.add(new SingleShape(
+                createPixelRelative(2, 6, 1, 6, 10, 5), ctx -> tile.removeWrittenClick(ctx.getPlayer())
+        ));
         // Add clear tape to input/take it from input
-        subshapes.add(new SingleShape(createPixelRelative(11, 6, 2, 15, 9, 4), ctx -> {
-            ItemStack item = ctx.getItem();
-            final int length = EmptyTapeItem.getLength(item);
-            if (length > 0) {
-                //TODO limit?
-                tile.available += length;
-                item.shrink(1);
-            } else if (tile.available > 0 && ctx.getPlayer() != null) {
-                ItemUtil.giveOrDrop(ctx.getPlayer(), EmptyTapeItem.withLength(tile.available));
-                tile.available = 0;
-            }
-            return ActionResultType.SUCCESS;
-        }));
+        subshapes.add(new SingleShape(
+                createPixelRelative(11, 6, 2, 15, 9, 4),
+                ctx -> tile.removeOrAddClearTape(ctx.getPlayer(), ctx.getItem())
+        ));
         return new ListShapes(
                 TeletypeBlock.SHAPE_PROVIDER.apply(d),
                 Matrix4.inverseFacing(d),
@@ -127,5 +105,9 @@ public class TeletypeTile extends TileEntity implements SelectionShapeOwner {
                     return ActionResultType.SUCCESS;
                 }
         );
+    }
+
+    public TeletypeState getState() {
+        return state;
     }
 }

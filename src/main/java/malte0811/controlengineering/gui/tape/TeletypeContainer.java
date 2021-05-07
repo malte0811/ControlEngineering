@@ -1,41 +1,44 @@
 package malte0811.controlengineering.gui.tape;
 
-import malte0811.controlengineering.blocks.CEBlocks;
+import malte0811.controlengineering.gui.CEContainer;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.gui.ContainerScreenManager;
+import malte0811.controlengineering.network.SimplePacket;
+import malte0811.controlengineering.network.tty.FullSync;
+import malte0811.controlengineering.network.tty.TTYPacket;
+import malte0811.controlengineering.network.tty.TTYSubPacket;
+import malte0811.controlengineering.tiles.tape.TeletypeState;
 import malte0811.controlengineering.tiles.tape.TeletypeTile;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
-import java.util.Optional;
-
-public class TeletypeContainer extends Container {
-    private final IWorldPosCallable pos;
+public class TeletypeContainer extends CEContainer<TTYSubPacket> {
+    private final TeletypeState state;
 
     public TeletypeContainer(int id, PacketBuffer data) {
         this(id, ContainerScreenManager.readWorldPos(data));
     }
 
     public TeletypeContainer(int id, IWorldPosCallable pos) {
-        super(CEContainers.TELETYPE.get(), id);
-        this.pos = pos;
+        super(CEContainers.TELETYPE.get(), pos, id);
+        state = pos.apply(World::getTileEntity)
+                .filter(t -> t instanceof TeletypeTile)
+                .map(t -> ((TeletypeTile) t).getState())
+                .orElseGet(TeletypeState::new);
     }
 
     @Override
-    public boolean canInteractWith(@Nonnull PlayerEntity playerIn) {
-        return isWithinUsableDistance(pos, playerIn, CEBlocks.TELETYPE.get());
+    protected SimplePacket makePacket(TTYSubPacket data) {
+        return new TTYPacket(data);
     }
 
-    public Optional<TeletypeTile> getTeletype() {
-        return pos.apply(World::getTileEntity)
-                .map(te -> te instanceof TeletypeTile ? (TeletypeTile) te : null);
+    @Override
+    protected TTYSubPacket getInitialSync() {
+        return new FullSync(state.getAvailable(), state.getData().toByteArray());
     }
 
-    public void typeAll(byte[] typed) {
-        getTeletype().ifPresent(tile -> tile.type(typed));
+    public TeletypeState getState() {
+        return state;
     }
 }
