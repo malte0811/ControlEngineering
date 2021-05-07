@@ -79,8 +79,7 @@ public class CNCInstructionParser {
             return DataResult.error("Invalid position: " + xcp.getMessage());
         }
         DataResult<? extends PanelComponentInstance<?, ?>> component = type.newInstance(tokens.subList(
-                3,
-                tokens.size()
+                3, tokens.size()
         ));
         if (component.error().isPresent()) {
             return DataResult.error(component.error().get().message());

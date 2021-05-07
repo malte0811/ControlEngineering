@@ -39,8 +39,8 @@ public class PanelTransform {
         panelBottomToWorld.translate(0.5, 0.5, 0.5);
         panelBottomToWorld.rotateFacing(blockData.top, 1);
         panelBottomToWorld.rotate(-Math.PI / 2, 1, 0, 0);
-        if (blockData.top == Direction.DOWN && blockData.front.getAxis() == Direction.Axis.Z) {
-            panelBottomToWorld.rotateFacing(blockData.front.getOpposite(), 1);
+        if (blockData.top == Direction.DOWN) {
+            panelBottomToWorld.rotateFacing(blockData.front, -1);
         } else {
             panelBottomToWorld.rotateFacing(blockData.front, 1);
         }
@@ -53,8 +53,14 @@ public class PanelTransform {
         panelTopToWorld.multiply(getPanelBottomToWorld());
         panelTopToWorld.translate(0, borderHeight, 0);
         panelTopToWorld.rotate(radians, 0, 0, 1);
+        panelTopToWorld.translate(0.5, 0, 0.5);
+        panelTopToWorld.rotate(Math.PI / 2, 0, 1, 0);
+        panelTopToWorld.translate(-0.5, 0, -0.5);
 
         worldToPanelTop = new Matrix4();
+        worldToPanelTop.translate(0.5, 0, 0.5);
+        worldToPanelTop.rotate(-Math.PI / 2, 0, 1, 0);
+        worldToPanelTop.translate(-0.5, 0, -0.5);
         worldToPanelTop.rotate(-radians, 0, 0, 1);
         worldToPanelTop.translate(0, -borderHeight, 0);
         //TODO deduplicate?
@@ -139,15 +145,18 @@ public class PanelTransform {
         for (int i = 0; i < 4; ++i) {
             topVertices[i] = getPanelTopToWorld().apply(topVertices[i]);
         }
+        Vector3d temp = topVertices[0];
+        System.arraycopy(topVertices, 1, topVertices, 0, topVertices.length - 1);
+        topVertices[topVertices.length - 1] = temp;
         return topVertices;
     }
 
     public static Vector3d[] layerVertices(double xMax) {
         return new Vector3d[]{
                 new Vector3d(0, 0, 0),
-                new Vector3d(xMax, 0, 0),
-                new Vector3d(xMax, 0, 1),
-                new Vector3d(0, 0, 1),
+                new Vector3d(1, 0, 0),
+                new Vector3d(1, 0, xMax),
+                new Vector3d(0, 0, xMax),
         };
     }
 
