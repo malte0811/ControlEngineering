@@ -19,12 +19,11 @@ public class ItemModels extends ItemModelProvider {
     protected void registerModels() {
         addItemModel("tty_tape_clean", CEItems.EMPTY_TAPE);
         addItemModel("tty_tape_punched", CEItems.PUNCHED_TAPE);
+        addItemModel("wirecoil_bus", CEItems.BUS_WIRE_COIL);
+        addItemModel("logic_pcbs", CEItems.PCB_STACK);
         getBuilder(name(CEItems.PANEL_TOP))
                 .customLoader(DynamicModelBuilder.customLoader(ModelLoaders.PANEL_TOP_ITEM))
                 .end();
-        //getBuilder(name(CEItems.CONTROL_PANEL.get()))
-        //        .customLoader(DynamicModelBuilder.customLoader(ModelLoaders.PANEL_MODEL))
-        //        .end();
         CEItems.CLOCK_GENERATORS.forEach((rl, item) -> addItemModel(rl.getPath().replace('_', '/'), item));
     }
 

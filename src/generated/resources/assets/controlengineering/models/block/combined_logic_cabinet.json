@@ -2,7 +2,7 @@
   "loader": "forge:composite",
   "parts": {
     "static": {
-      "parent": "minecraft:block/block",
+      "parent": "controlengineering:transform/block_half_size",
       "loader": "forge:obj",
       "model": "controlengineering:models/logic_cabinet/chassis.obj",
       "detectCullableFaces": false,

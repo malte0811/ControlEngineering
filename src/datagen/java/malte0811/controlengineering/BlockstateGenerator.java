@@ -30,6 +30,7 @@ import net.minecraftforge.client.model.generators.VariantBlockStateBuilder.Parti
 import net.minecraftforge.client.model.generators.loaders.CompositeModelBuilder;
 import net.minecraftforge.client.model.generators.loaders.OBJLoaderBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.fml.RegistryObject;
 
 import java.util.Map;
 
@@ -44,74 +45,21 @@ public class BlockstateGenerator extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        ConnectorBlockBuilder.builder(models(), getVariantBuilder(CEBlocks.BUS_RELAY.get()), ($1, $2) -> {})
-                .rotationData(BusRelayBlock.FACING, 90)
-                .fixedModel(obj("bus_relay.obj"))
-                .layers(RenderType.getSolid())
-                .build();
-        ConnectorBlockBuilder.builder(models(), getVariantBuilder(CEBlocks.LINE_ACCESS.get()), ($1, $2) -> {})
-                .rotationData(LineAccessBlock.FACING, 0)
-                .fixedModel(obj("line_access.obj"))
-                .layers(RenderType.getCutout())
-                .build();
-        ConnectorBlockBuilder.builder(models(), getVariantBuilder(CEBlocks.BUS_INTERFACE.get()), ($1, $2) -> {})
-                .rotationData(BusInterfaceBlock.FACING, 90)
-                .fixedModel(obj("bus_interface.obj"))
-                .layers(RenderType.getSolid())
-                .build();
+        registerConnector(
+                obj("bus_relay.obj"), CEBlocks.BUS_RELAY, 90, RenderType.getSolid(), BusRelayBlock.FACING
+        );
+        registerConnector(
+                obj("line_access.obj"), CEBlocks.LINE_ACCESS, 0, RenderType.getCutout(), LineAccessBlock.FACING
+        );
+        registerConnector(
+                obj("bus_interface.obj"), CEBlocks.BUS_INTERFACE, 90, RenderType.getSolid(), BusInterfaceBlock.FACING
+        );
 
         panelModel();
-        horizontalRotated(CEBlocks.TELETYPE.get(), TeletypeBlock.FACING, obj("typewriter.obj"));
-        horizontalRotated(CEBlocks.PANEL_CNC.get(), PanelCNCBlock.FACING, obj("panel_cnc.obj"));
-        BlockModelBuilder logicModel = models().getBuilder("combined_logic_cabinet")
-                .customLoader(CompositeModelBuilder::begin)
-                .submodel("static", obj("logic_cabinet/chassis.obj"))
-                .submodel("dynamic", models().getBuilder("dynamic_logic_cabinet")
-                        .customLoader(LogicCabinetBuilder::begin)
-                        .board(obj("logic_cabinet/board.obj"))
-                        .tube(obj("logic_cabinet/tube.obj"))
-                        .end())
-                .end();
-        horizontalRotated(
-                CEBlocks.LOGIC_CABINET.get(),
-                LogicCabinetBlock.FACING,
-                logicModel,
-                ImmutableMap.of(LogicCabinetBlock.HEIGHT, 0)
-        );
-        horizontalRotated(
-                CEBlocks.LOGIC_CABINET.get(),
-                LogicCabinetBlock.FACING,
-                EMPTY_MODEL.model,
-                ImmutableMap.of(LogicCabinetBlock.HEIGHT, 1)
-        );
-        for (LogicWorkbenchBlock.Offset offset : LogicWorkbenchBlock.Offset.values()) {
-            ModelFile model;
-            if (offset == LogicWorkbenchBlock.Offset.ORIGIN) {
-                model = obj("logic_cabinet/workbench.obj");
-            } else {
-                model = EMPTY_MODEL.model;
-            }
-            horizontalRotated(
-                    CEBlocks.LOGIC_WORKBENCH.get(),
-                    LogicWorkbenchBlock.FACING,
-                    model,
-                    ImmutableMap.of(LogicWorkbenchBlock.OFFSET, offset)
-            );
-        }
-    }
-
-    private BlockModelBuilder obj(String objFile) {
-        return models()
-                .withExistingParent(objFile.replace('.', '_'), mcLoc("block"))
-                .customLoader(OBJLoaderBuilder::begin)
-                .modelLocation(addModelsPrefix(modLoc(objFile)))
-                .flipV(true)
-                .detectCullableFaces(false)
-                .end();
-    }
-
-    private ResourceLocation forgeLoc(String path) {
-        return new ResourceLocation("forge", path);
+        horizontalRotated(CEBlocks.TELETYPE, TeletypeBlock.FACING, obj("typewriter.obj"));
+        horizontalRotated(CEBlocks.PANEL_CNC, PanelCNCBlock.FACING, obj("panel_cnc.obj"));
+        logicCabinetModel();
+        logicWorkbenchModel();
     }
 
     private void panelModel() {
@@ -129,15 +77,98 @@ public class BlockstateGenerator extends BlockStateProvider {
         itemModels().getBuilder(ItemModels.name(CEBlocks.CONTROL_PANEL)).parent(topModel);
     }
 
-    private void horizontalRotated(Block b, Property<Direction> facing, ModelFile model) {
+    private void logicCabinetModel() {
+        BlockModelBuilder chassis = obj("logic_cabinet/chassis.obj", modLoc("transform/block_half_size"));
+        BlockModelBuilder logicModel = models().getBuilder("combined_logic_cabinet")
+                .customLoader(CompositeModelBuilder::begin)
+                .submodel("static", chassis)
+                .submodel("dynamic", models().getBuilder("dynamic_logic_cabinet")
+                        .customLoader(LogicCabinetBuilder::begin)
+                        .board(obj("logic_cabinet/board.obj"))
+                        .tube(obj("logic_cabinet/tube.obj"))
+                        .end())
+                .end();
+        horizontalRotated(
+                CEBlocks.LOGIC_CABINET,
+                LogicCabinetBlock.FACING,
+                logicModel,
+                ImmutableMap.of(LogicCabinetBlock.HEIGHT, 0)
+        );
+        horizontalRotated(
+                CEBlocks.LOGIC_CABINET,
+                LogicCabinetBlock.FACING,
+                EMPTY_MODEL.model,
+                ImmutableMap.of(LogicCabinetBlock.HEIGHT, 1)
+        );
+        itemModels().getBuilder(ItemModels.name(CEBlocks.LOGIC_CABINET))
+                .parent(chassis);
+    }
+
+    private void logicWorkbenchModel() {
+        ModelFile workbenchModel = obj("logic_cabinet/workbench.obj", modLoc("transform/block_half_size"));
+        for (LogicWorkbenchBlock.Offset offset : LogicWorkbenchBlock.Offset.values()) {
+            ModelFile model;
+            if (offset == LogicWorkbenchBlock.Offset.ORIGIN) {
+                model = workbenchModel;
+            } else {
+                model = EMPTY_MODEL.model;
+            }
+            horizontalRotated(
+                    CEBlocks.LOGIC_WORKBENCH,
+                    LogicWorkbenchBlock.FACING,
+                    model,
+                    ImmutableMap.of(LogicWorkbenchBlock.OFFSET, offset)
+            );
+        }
+        itemModels().getBuilder(ItemModels.name(CEBlocks.LOGIC_WORKBENCH))
+                .parent(workbenchModel);
+    }
+
+    private BlockModelBuilder obj(String objFile) {
+        return obj(objFile, mcLoc("block"));
+    }
+
+    private BlockModelBuilder obj(String objFile, ResourceLocation parent) {
+        return models()
+                .withExistingParent(objFile.replace('.', '_'), parent)
+                .customLoader(OBJLoaderBuilder::begin)
+                .modelLocation(addModelsPrefix(modLoc(objFile)))
+                .flipV(true)
+                .detectCullableFaces(false)
+                .end();
+    }
+
+    private void registerConnector(
+            ModelFile mainModel,
+            RegistryObject<? extends Block> block,
+            int xForHorizontal,
+            RenderType layer,
+            Property<Direction> facing
+    ) {
+        ConnectorBlockBuilder.builder(models(), getVariantBuilder(block.get()), ($1, $2) -> {})
+                .rotationData(facing, xForHorizontal)
+                .fixedModel(mainModel)
+                .layers(layer)
+                .build();
+        itemModels().getBuilder(ItemModels.name(block)).parent(mainModel);
+    }
+
+    private ResourceLocation forgeLoc(String path) {
+        return new ResourceLocation("forge", path);
+    }
+
+    private void horizontalRotated(RegistryObject<? extends Block> b, Property<Direction> facing, ModelFile model) {
         horizontalRotated(b, facing, model, ImmutableMap.of());
     }
 
     private void horizontalRotated(
-            Block b, Property<Direction> facing, ModelFile model, Map<Property<?>, Comparable<?>> additional
+            RegistryObject<? extends Block> b,
+            Property<Direction> facing,
+            ModelFile model,
+            Map<Property<?>, Comparable<?>> additional
     ) {
         for (Direction d : DirectionUtils.BY_HORIZONTAL_INDEX) {
-            PartialBlockstate partial = getVariantBuilder(b)
+            PartialBlockstate partial = getVariantBuilder(b.get())
                     .partialState()
                     .with(facing, d);
             for (Map.Entry<Property<?>, Comparable<?>> entry : additional.entrySet()) {
@@ -148,6 +179,7 @@ public class BlockstateGenerator extends BlockStateProvider {
                     .modelFile(model)
                     .addModel();
         }
+        itemModels().getBuilder(ItemModels.name(b)).parent(model);
     }
 
     private <T extends Comparable<T>>

@@ -40,6 +40,7 @@ public class LangGenerator extends LanguageProvider {
         addItem(CEItems.PANEL_TOP, "Panel Top");
         //TODO?
         addItem(CEItems.PCB_STACK, "Logic Circuit Boards");
+        addItem(CEItems.BUS_WIRE_COIL, "Bus Wire Coil");
 
         addBlock(CEBlocks.LOGIC_CABINET, "Logic Cabinet");
         addBlock(CEBlocks.LOGIC_WORKBENCH, "Logic Workbench");
@@ -49,6 +50,8 @@ public class LangGenerator extends LanguageProvider {
 
         add(Constants.PUNCHED_TAPE_BYTES, "Characters: %d");
         add(Constants.EMPTY_TAPE_BYTES, "Length: %d characters");
+
+        add("itemGroup." + ControlEngineering.MODID, "Control Engineering");
 
         addCells();
         addPanelComponents();
