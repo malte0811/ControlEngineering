@@ -20,7 +20,7 @@ public abstract class TTYSubPacket {
         }
         register(FullSync.class, FullSync::new);
         register(TypeChar.class, TypeChar::new);
-        //TODO backspace
+        register(Backspace.class, Backspace::new);
         initialized = true;
     }
 

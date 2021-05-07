@@ -33,8 +33,10 @@ public class TTYPacket extends SimplePacket {
             Preconditions.checkState(packet.allowSendingToServer());
             Container activeContainer = ctx.getSender().openContainer;
             if (activeContainer instanceof TeletypeContainer) {
-                packet.process(((TeletypeContainer) activeContainer).getState());
-                ((TeletypeContainer) activeContainer).sendToListeningPlayersExcept(ctx.getSender(), packet);
+                TeletypeContainer ttyContainer = (TeletypeContainer) activeContainer;
+                packet.process(ttyContainer.getState());
+                ttyContainer.sendToListeningPlayersExcept(ctx.getSender(), packet);
+                ttyContainer.markDirty();
             }
         } else {
             processOnClient();
@@ -45,6 +47,7 @@ public class TTYPacket extends SimplePacket {
         Screen openScreen = Minecraft.getInstance().currentScreen;
         if (openScreen instanceof TeletypeScreen) {
             packet.process(((TeletypeScreen) openScreen).getState());
+            ((TeletypeScreen) openScreen).updateData();
         }
     }
 }

@@ -1,6 +1,5 @@
 package malte0811.controlengineering.tiles.tape;
 
-import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.bytes.ByteList;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
@@ -30,7 +29,7 @@ import java.util.List;
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
 public class TeletypeTile extends TileEntity implements SelectionShapeOwner {
-    private TeletypeState state = new TeletypeState(new ByteArrayList(), 0);
+    private TeletypeState state = new TeletypeState();
 
     public TeletypeTile(TileEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);

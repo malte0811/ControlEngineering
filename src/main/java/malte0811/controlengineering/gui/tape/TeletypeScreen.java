@@ -5,6 +5,7 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.gui.widgets.Keyboard;
 import malte0811.controlengineering.gui.widgets.KeyboardButton;
+import malte0811.controlengineering.network.tty.Backspace;
 import malte0811.controlengineering.network.tty.TTYPacket;
 import malte0811.controlengineering.network.tty.TTYSubPacket;
 import malte0811.controlengineering.network.tty.TypeChar;
@@ -13,6 +14,7 @@ import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 
@@ -113,12 +115,10 @@ public class TeletypeScreen extends Screen implements IHasContainer<TeletypeCont
     }
 
     private void type(byte newChar) {
-        if (processAndSend(new TypeChar(newChar))) {
-            updateData();
-        }
+        processAndSend(new TypeChar(newChar));
     }
 
-    private void updateData() {
+    public void updateData() {
         tapeRender.setData(getBytes());
     }
 
@@ -130,6 +130,14 @@ public class TeletypeScreen extends Screen implements IHasContainer<TeletypeCont
         } else {
             return false;
         }
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
+            return processAndSend(new Backspace());
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Nonnull
@@ -144,6 +152,7 @@ public class TeletypeScreen extends Screen implements IHasContainer<TeletypeCont
 
     private boolean processAndSend(TTYSubPacket packet) {
         if (packet.process(state)) {
+            updateData();
             ControlEngineering.NETWORK.sendToServer(new TTYPacket(packet));
             return true;
         } else {
