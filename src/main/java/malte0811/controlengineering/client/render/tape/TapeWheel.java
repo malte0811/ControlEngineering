@@ -7,14 +7,12 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.mojang.datafixers.util.Pair;
+import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.util.math.Vec2d;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SpriteAwareVertexBuilder;
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Quaternion;
 
 import java.util.List;
@@ -24,13 +22,8 @@ public class TapeWheel {
     private static final int NUM_CORNERS = 6;
     private static final double TAPE_WIDTH = 1;
     private static final List<Vec2d> CORNERS_NORMALIZED;
-    private static final ResettableLazy<TextureAtlasSprite> TEXTURE = new ResettableLazy<>(() -> {
-        AtlasTexture atlas = Minecraft.getInstance().getModelManager().getAtlasTexture(
-                PlayerContainer.LOCATION_BLOCKS_TEXTURE
-        );
-        //TODO this should be a custom sprite
-        return atlas.getSprite(new ResourceLocation("block/white_wool"));
-    });
+    //TODO this should be a custom sprite
+    private static final ResettableLazy<TextureAtlasSprite> TEXTURE = new ResettableLazy<>(QuadBuilder::getWhiteTexture);
     private static final List<Pair<Integer, Double>> offsetAndHeight = ImmutableList.of(
             Pair.of(0, 0.),
             Pair.of(1, 0.),
@@ -158,7 +151,11 @@ public class TapeWheel {
     }
 
     private float toUV(double pmMaxRadiusRelative) {
-        return (float) (0.5 * (1 + pmMaxRadiusRelative / maxRenderRadius));
+        return MathHelper.clamp(
+                (float) (0.5 * (1 + pmMaxRadiusRelative / maxRenderRadius)),
+                1e-3f,
+                1 - 1e-3f
+        );
     }
 
     public void setRadius(double radius) {
