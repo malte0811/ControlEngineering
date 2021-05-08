@@ -100,10 +100,9 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
             if (!hasFinishedJob()) {
                 return ActionResultType.FAIL;
             }
-            if (!world.isRemote) {
+            if (!world.isRemote && ctx.getPlayer() != null) {
                 ItemStack result = PanelTopItem.createWithComponents(currentPlacedComponents);
-                Vector3d dropPos = Vector3d.copyCentered(pos);
-                InventoryHelper.spawnItemStack(world, dropPos.x, dropPos.y, dropPos.z, result);
+                ItemUtil.giveOrDrop(ctx.getPlayer(), result);
                 hasPanel = false;
                 currentPlacedComponents.clear();
                 currentTicksInJob = 0;
@@ -147,8 +146,7 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
             if (!world.isRemote) {
                 ItemStack result = PunchedTapeItem.withBytes(insertedTape);
                 insertedTape = new byte[0];
-                Vector3d dropPos = Vector3d.copyCentered(pos);
-                InventoryHelper.spawnItemStack(world, dropPos.x, dropPos.y, dropPos.z, result);
+                ItemUtil.giveOrDrop(ctx.getPlayer(), result);
                 world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
             }
             return ActionResultType.SUCCESS;

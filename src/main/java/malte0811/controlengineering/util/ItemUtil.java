@@ -3,6 +3,7 @@ package malte0811.controlengineering.util;
 import blusunrize.immersiveengineering.api.crafting.IngredientWithSize;
 import blusunrize.immersiveengineering.api.utils.CapabilityReference;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraftforge.items.IItemHandler;
@@ -17,6 +18,8 @@ public class ItemUtil {
     public static void giveOrDrop(PlayerEntity player, ItemStack stack) {
         if (!player.inventory.addItemStackToInventory(stack)) {
             player.dropItem(stack, false);
+        } else  {
+            player.container.detectAndSendChanges();
         }
     }
 
