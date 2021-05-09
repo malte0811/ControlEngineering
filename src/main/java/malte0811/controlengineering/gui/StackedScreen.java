@@ -51,8 +51,8 @@ public abstract class StackedScreen extends Screen {
             renderBackground(matrixStack);
         }
         renderCustomBackground(matrixStack, mouseX, mouseY, partialTicks);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
         renderForeground(matrixStack, mouseX, mouseY, partialTicks);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     @Override

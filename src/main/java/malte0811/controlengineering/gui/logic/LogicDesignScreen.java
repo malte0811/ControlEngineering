@@ -51,6 +51,7 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
     private Vec2i currentWireStart = null;
     @Nullable
     private SymbolInstance<?> placingSymbol = null;
+    private boolean resetAfterPlacingSymbol = false;
     private List<ConnectedPin> errors = ImmutableList.of();
     private boolean errorsShown = false;
     private float minScale = 0.5F;
@@ -71,7 +72,10 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         if (!container.readOnly) {
             addButton(new Button(
                     TOTAL_BORDER, TOTAL_BORDER, 20, 20, new StringTextComponent("C"),
-                    btn -> minecraft.displayGuiScreen(new CellSelectionScreen(s -> placingSymbol = s)),
+                    btn -> minecraft.displayGuiScreen(new CellSelectionScreen(s -> {
+                        placingSymbol = s;
+                        resetAfterPlacingSymbol = false;
+                    })),
                     makeTooltip(() -> COMPONENTS_KEY)
             ));
             addButton(new Button(
@@ -143,14 +147,12 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
                 ITextComponent toShow = hovered.getSymbol().getName();
                 List<IReorderingProcessor> tooltip = new ArrayList<>();
                 tooltip.add(toShow.func_241878_f());
-                for (SymbolPin pin : hovered.getSymbol().getPins()) {
-                    if (new ConnectedPin(hovered, pin).getShape().containsClosed(schematicMouse)) {
-                        tooltip.add(
-                                new TranslationTextComponent(PIN_KEY, pin.getPinName())
-                                        .mergeStyle(TextFormatting.GRAY)
-                                        .func_241878_f()
-                        );
-                    }
+                for (SymbolPin pin : getHoveredPins(hovered, schematicMouse)) {
+                    tooltip.add(
+                            new TranslationTextComponent(PIN_KEY, pin.getPinName())
+                                    .mergeStyle(TextFormatting.GRAY)
+                                    .func_241878_f()
+                    );
                 }
                 List<IFormattableTextComponent> extra = hovered.getSymbol().getExtraDesc();
                 for (IFormattableTextComponent extraLine : extra) {
@@ -159,6 +161,16 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
                 renderTooltip(transform, tooltip, mouseX, mouseY);
             }
         }
+    }
+
+    private List<SymbolPin> getHoveredPins(PlacedSymbol hovered, Vec2d schematicMouse) {
+        List<SymbolPin> result = new ArrayList<>();
+        for (SymbolPin pin : hovered.getSymbol().getPins()) {
+            if (new ConnectedPin(hovered, pin).getShape().containsClosed(schematicMouse)) {
+                result.add(pin);
+            }
+        }
+        return result;
     }
 
     private void drawErrors(MatrixStack transform) {
@@ -200,7 +212,7 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
     private double mouseXDown;
     private double mouseYDown;
     // Start at true: We don't want to consider a release if there wasn't a click before it
-    private boolean clickConsumedAsDrag = true;
+    private boolean clickWasConsumed = true;
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -209,7 +221,7 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         }
         mouseXDown = mouseX;
         mouseYDown = mouseY;
-        clickConsumedAsDrag = false;
+        clickWasConsumed = false;
         return false;
     }
 
@@ -218,16 +230,19 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         if (super.mouseReleased(mouseX, mouseY, button) || container.readOnly) {
             return true;
         }
-        if (clickConsumedAsDrag) {
+        if (clickWasConsumed) {
             return false;
         }
-        clickConsumedAsDrag = true;
+        clickWasConsumed = true;
         final Vec2d mousePos = getMousePosition(mouseX, mouseY);
         PlacedSymbol placed = getPlacingSymbol(mousePos);
         if (placed != null) {
             if (schematic.getChecker().canAdd(placed)) {
                 schematic.addSymbol(placed);
                 sendToServer(new AddSymbol(placed));
+                if (resetAfterPlacingSymbol) {
+                    placingSymbol = null;
+                }
             }
         } else {
             WireSegment placedWire = getPlacingSegment(mousePos);
@@ -242,7 +257,16 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
                     }
                 }
             } else {
-                currentWireStart = mousePos.floor();
+                final PlacedSymbol hovered = schematic.getSymbolAt(mousePos);
+                if (hovered != null &&
+                        getHoveredPins(hovered, mousePos).isEmpty() &&
+                        schematic.removeOneContaining(mousePos)) {
+                    sendToServer(new Delete(mousePos));
+                    placingSymbol = hovered.getSymbol();
+                    resetAfterPlacingSymbol = true;
+                } else {
+                    currentWireStart = mousePos.floor();
+                }
             }
         }
         return true;
@@ -253,13 +277,13 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         if (super.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
             return true;
         }
-        if (!clickConsumedAsDrag && !(Math.abs(mouseX - mouseXDown) > 1) && !(Math.abs(mouseY - mouseYDown) > 1)) {
+        if (!clickWasConsumed && !(Math.abs(mouseX - mouseXDown) > 1) && !(Math.abs(mouseY - mouseYDown) > 1)) {
             return false;
         }
         centerX -= dragX / currentScale;
         centerY -= dragY / currentScale;
         clampView();
-        clickConsumedAsDrag = true;
+        clickWasConsumed = true;
         return true;
     }
 
