@@ -2,6 +2,7 @@ package malte0811.controlengineering.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
 
@@ -33,6 +34,9 @@ public abstract class StackedScreen extends Screen {
     @Override
     public void closeScreen() {
         minecraft.displayGuiScreen(previousInStack);
+        if (this instanceof IHasContainer<?> && previousInStack == null) {
+            minecraft.player.closeScreen();
+        }
     }
 
     @Override
