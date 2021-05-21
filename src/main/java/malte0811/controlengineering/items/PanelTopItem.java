@@ -2,7 +2,11 @@ package malte0811.controlengineering.items;
 
 import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.blocks.panels.PanelOrientation;
+import malte0811.controlengineering.controlpanels.PanelData;
+import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
+import malte0811.controlengineering.controlpanels.model.PanelItemRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -12,8 +16,16 @@ import net.minecraftforge.common.util.Constants;
 import java.util.List;
 
 public class PanelTopItem extends Item {
+    private static final PanelTransform FLAT_PANEL = new PanelTransform(0, 0, PanelOrientation.UP_NORTH);
+
     public PanelTopItem() {
-        super(new Item.Properties().group(ControlEngineering.ITEM_GROUP));
+        super(
+                new Item.Properties().group(ControlEngineering.ITEM_GROUP)
+                        //TODO server?
+                        .setISTER(() -> () -> new PanelItemRenderer(
+                                is -> new PanelData(getComponentsOn(is), FLAT_PANEL)
+                        ))
+        );
     }
 
     public static boolean isEmptyPanelTop(ItemStack candidate) {

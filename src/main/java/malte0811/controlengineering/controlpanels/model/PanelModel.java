@@ -3,21 +3,16 @@ package malte0811.controlengineering.controlpanels.model;
 import blusunrize.immersiveengineering.api.utils.client.CombinedModelData;
 import blusunrize.immersiveengineering.api.utils.client.SinglePropertyModelData;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
-import malte0811.controlengineering.blocks.panels.PanelOrientation;
-import malte0811.controlengineering.client.render.PanelModelCache;
-import malte0811.controlengineering.client.render.PanelRenderer;
-import malte0811.controlengineering.client.render.target.TargetType;
+import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.controlpanels.PanelData;
+import malte0811.controlengineering.controlpanels.renders.PanelRenderer;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockDisplayReader;
@@ -33,8 +28,12 @@ import java.util.Random;
 public class PanelModel implements IBakedModel {
     private static final ModelProperty<PanelData> COMPONENTS = new ModelProperty<>($ -> true);
 
-    private final ItemOverrideList overrideList = new OverrideList();
-    private final PanelModelCache CACHED_MODELS = new PanelModelCache(TargetType.STATIC::equals);
+    private final PanelModelCache CACHED_MODELS = new PanelModelCache(MixedModel.SOLID_STATIC);
+    private final ItemCameraTransforms transforms;
+
+    public PanelModel(ItemCameraTransforms transforms) {
+        this.transforms = transforms;
+    }
 
     @Nonnull
     @Override
@@ -47,7 +46,7 @@ public class PanelModel implements IBakedModel {
     public List<BakedQuad> getQuads(
             @Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData
     ) {
-        return CACHED_MODELS.getModel(extraData.getData(COMPONENTS)).getQuads(state, side, rand, extraData);
+        return CACHED_MODELS.getStaticModel(extraData.getData(COMPONENTS)).getQuads(state, side, rand, extraData);
     }
 
     @Nonnull
@@ -82,7 +81,7 @@ public class PanelModel implements IBakedModel {
 
     @Override
     public boolean isBuiltInRenderer() {
-        return false;
+        return true;
     }
 
     @Nonnull
@@ -93,26 +92,14 @@ public class PanelModel implements IBakedModel {
 
     @Nonnull
     @Override
-    public ItemOverrideList getOverrides() {
-        return overrideList;
+    @SuppressWarnings("deprecation")
+    public ItemCameraTransforms getItemCameraTransforms() {
+        return transforms;
     }
 
-    private static class OverrideList extends ItemOverrideList {
-        private final PanelModelCache ITEM_MODELS = new PanelModelCache($ -> true);
-
-        @Nullable
-        @Override
-        public IBakedModel getOverrideModel(
-                @Nonnull IBakedModel model,
-                @Nonnull ItemStack stack,
-                @Nullable ClientWorld world,
-                @Nullable LivingEntity livingEntity
-        ) {
-            CompoundNBT tag = stack.getTag();
-            if (tag == null) {
-                tag = new CompoundNBT();
-            }
-            return ITEM_MODELS.getModel(new PanelData(tag, PanelOrientation.UP_NORTH));
-        }
+    @Nonnull
+    @Override
+    public ItemOverrideList getOverrides() {
+        return ItemOverrideList.EMPTY;
     }
 }

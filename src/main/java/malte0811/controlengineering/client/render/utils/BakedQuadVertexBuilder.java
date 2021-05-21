@@ -1,65 +1,58 @@
-package malte0811.controlengineering.client.render.target;
+package malte0811.controlengineering.client.render.utils;
 
-import com.google.common.collect.ImmutableList;
-import malte0811.controlengineering.util.DirectionUtils;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.vector.Vector2f;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.math.vector.Vector4f;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.client.model.pipeline.IVertexConsumer;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
 
-public class StaticRenderTarget extends RenderTarget {
-    public static final Map<Direction, List<BakedQuad>> EMPTY_LISTS_ON_ALL_SIDES;
-
-    static {
-        EMPTY_LISTS_ON_ALL_SIDES = new EnumMap<>(Direction.class);
-        for (Direction d : DirectionUtils.VALUES) {
-            EMPTY_LISTS_ON_ALL_SIDES.put(d, ImmutableList.of());
-        }
-    }
-
-    // Existing quads
-    private final List<BakedQuad> quads = new ArrayList<>();
-    // Current quad
-    private BakedQuadBuilder builder;
+public class BakedQuadVertexBuilder extends TransformingVertexBuilder {
+    private final TextureAtlasSprite sprite;
+    private final List<BakedQuad> quads;
+    private BakedQuadBuilder builder = null;
     private int nextVertex = 0;
 
-    public StaticRenderTarget(Predicate<TargetType> doRender) {
-        super(doRender, 0, 0);
+    public BakedQuadVertexBuilder(
+            TextureAtlasSprite sprite, MatrixStack transform, List<BakedQuad> quads
+    ) {
+        super(null, transform);
+        this.sprite = sprite;
+        this.quads = quads;
     }
 
     @Override
-    protected void addVertex(
-            Vector4f pos, Vector3f normal,
-            float red, float green, float blue, float alpha,
-            float texU, float texV, int overlayUV, int lightmapUV
-    ) {
+    public void endVertex() {
         if (builder == null) {
-            builder = new BakedQuadBuilder(getTexture());
-            builder.setQuadTint(0);
-            builder.setQuadOrientation(Direction.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
-            builder.setApplyDiffuseLighting(true);
+            builder = new BakedQuadBuilder(sprite);
         }
-        putVertex(builder, normal, pos, new Vector4f(red, green, blue, alpha), texU, texV);
+        Vector3d pos = this.pos.read();
+        Vector2f uv = this.uv.read();
+        Vector3f normal = this.normal.read();
+        putVertex(
+                builder,
+                normal,
+                new Vector4f((float) pos.x, (float) pos.y, (float) pos.z, 0),
+                color.read(),
+                sprite.getInterpolatedU(uv.x), sprite.getInterpolatedV(uv.y)
+        );
+        this.lightmap.read();
+        this.overlay.read();
         ++nextVertex;
-        if (nextVertex >= 4) {
+        if (nextVertex == 4) {
             nextVertex = 0;
+            builder.setQuadOrientation(Direction.getFacingFromVector(normal.getX(), normal.getY(), normal.getZ()));
             quads.add(builder.build());
             builder = null;
         }
-    }
-
-    public List<BakedQuad> getQuads() {
-        return quads;
     }
 
     private static void putVertex(

@@ -16,12 +16,12 @@ import java.util.function.Consumer;
 //TODO copied from IE
 public class TransformingVertexBuilder extends DelegatingVertexBuilder<TransformingVertexBuilder> {
     private final MatrixStack transform;
-    ObjectWithGlobal<Vector2f> uv = new ObjectWithGlobal<>();
-    ObjectWithGlobal<Vector3d> pos = new ObjectWithGlobal<>();
-    ObjectWithGlobal<Vec2i> overlay = new ObjectWithGlobal<>();
-    ObjectWithGlobal<Vec2i> lightmap = new ObjectWithGlobal<>();
-    ObjectWithGlobal<Vector3f> normal = new ObjectWithGlobal<>();
-    ObjectWithGlobal<Vector4f> color = new ObjectWithGlobal<>();
+    protected final ObjectWithGlobal<Vector2f> uv = new ObjectWithGlobal<>();
+    protected final ObjectWithGlobal<Vector3d> pos = new ObjectWithGlobal<>();
+    protected final ObjectWithGlobal<Vec2i> overlay = new ObjectWithGlobal<>();
+    protected final ObjectWithGlobal<Vec2i> lightmap = new ObjectWithGlobal<>();
+    protected final ObjectWithGlobal<Vector3f> normal = new ObjectWithGlobal<>();
+    protected final ObjectWithGlobal<Vector4f> color = new ObjectWithGlobal<>();
 
     public TransformingVertexBuilder(IVertexBuilder base, MatrixStack transform) {
         super(base);
@@ -142,14 +142,15 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
         }
     }
 
-    private static class ObjectWithGlobal<T> {
+    protected static class ObjectWithGlobal<T> {
         @Nullable
-        T obj;
-        boolean isGlobal;
+        private T obj;
+        private boolean isGlobal;
 
         public void putData(T newVal) {
-            Preconditions.checkState(obj == null);
-            obj = newVal;
+            if (!isGlobal) {
+                obj = newVal;
+            }
         }
 
         public void setGlobal(@Nullable T obj) {

@@ -2,20 +2,17 @@ package malte0811.controlengineering.gui.panel;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.client.render.PanelRenderer;
 import malte0811.controlengineering.controlpanels.PanelComponentInstance;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
-import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
+import malte0811.controlengineering.controlpanels.renders.PanelRenderer;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.network.panellayout.*;
 import malte0811.controlengineering.util.GuiUtil;
-import malte0811.controlengineering.util.math.TransformUtil;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.glfw.GLFW;
 
@@ -43,6 +40,8 @@ public class PanelLayout extends Widget {
         transform.translate(x, y, 0);
         blit(transform, 0, 0, 0, width, height, texture);
         transform.scale((float) getPixelSize(), (float) getPixelSize(), 1);
+        /*
+        TODO
         GuiRenderTarget target = new GuiRenderTarget($ -> true);
         transform.translate(0, 0, 2);
         transform.rotate(new Quaternion(-90, 0, 0, true));
@@ -57,13 +56,7 @@ public class PanelLayout extends Widget {
             renderComponent(new PlacedComponent(placing, new Vec2d(placingX, placingY)), transform, target);
         }
         target.done();
-        transform.pop();
-    }
-
-    private void renderComponent(PlacedComponent comp, MatrixStack transform, GuiRenderTarget target) {
-        transform.push();
-        transform.translate(comp.getPosMin().x, 0, comp.getPosMin().y);
-        ComponentRenderers.render(target, comp.getComponent(), transform);
+         */
         transform.pop();
     }
 

@@ -1,16 +1,16 @@
 package malte0811.controlengineering.client.render.target;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.util.BitUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.math.vector.Vector4f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -98,24 +98,17 @@ public class QuadBuilder {
         return this;
     }
 
-    public void writeTo(MatrixStack transform, RenderTarget target, TargetType type) {
-        if (!target.isEnabled(type)) {
-            return;
-        }
+    public void writeTo(IVertexBuilder target) {
         TextureAtlasSprite sprite = this.sprite == null ? getWhiteTexture() : this.sprite;
-        target.setTexture(sprite);
         Vector3d normalD = this.normal == null ? automaticNormal() : this.normal;
         Vector3f normal = new Vector3f(normalD);
-        MatrixStack.Entry last = transform.getLast();
-        normal.transform(last.getNormal());
         for (Vertex v : vertices) {
-            Vector4f posF = new Vector4f((float) v.position.x, (float) v.position.y, (float) v.position.z, 1);
-            posF.transform(last.getMatrix());
-            posF.perspectiveDivide();
             target.addVertex(
-                    posF, normal, red, green, blue, alpha,
+                    (float) v.position.x, (float) v.position.y, (float) v.position.z,
+                    red, green, blue, alpha,
                     sprite.getInterpolatedU(16 * v.spriteU), sprite.getInterpolatedV(16 * v.spriteV),
-                    blockLightOverride
+                    OverlayTexture.NO_OVERLAY, blockLightOverride.orElse(0),
+                    normal.getX(), normal.getY(), normal.getZ()
             );
         }
     }

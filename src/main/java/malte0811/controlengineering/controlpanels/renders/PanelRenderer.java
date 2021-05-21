@@ -1,27 +1,22 @@
-package malte0811.controlengineering.client.render;
+package malte0811.controlengineering.controlpanels.renders;
 
-import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
-import malte0811.controlengineering.client.render.target.TargetType;
+import malte0811.controlengineering.client.render.target.MixedModel;
+import malte0811.controlengineering.controlpanels.model.PanelModelCache;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.data.EmptyModelData;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 public class PanelRenderer extends TileEntityRenderer<ControlPanelTile> {
     public static final ResourceLocation PANEL_TEXTURE_LOC = new ResourceLocation(
@@ -35,13 +30,11 @@ public class PanelRenderer extends TileEntityRenderer<ControlPanelTile> {
                     .getAtlasTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE)
                     .getSprite(PANEL_TEXTURE_LOC)
     );
-    private final PanelModelCache CACHED_MODELS = new PanelModelCache(TargetType.DYNAMIC::equals);
+    private final PanelModelCache CACHED_MODELS = new PanelModelCache(MixedModel.SOLID_STATIC);
 
     public PanelRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
     }
-
-    private static final float[] ONES = {1, 1, 1, 1};
 
     @Override
     public void render(
@@ -60,14 +53,6 @@ public class PanelRenderer extends TileEntityRenderer<ControlPanelTile> {
         if (tile == null) {
             return;
         }
-        IVertexBuilder builder = buffer.getBuffer(RenderType.getSolid());
-        List<BakedQuad> quads = CACHED_MODELS.getModel(tile.getData())
-                .getQuads(null, null, ApiUtils.RANDOM, EmptyModelData.INSTANCE);
-        final int[] lights = {combinedLight, combinedLight, combinedLight, combinedLight};
-        for (BakedQuad q : quads) {
-            builder.addQuad(
-                    transform.getLast(), q, ONES, 1, 1, 1, lights, combinedOverlay, true
-            );
-        }
+        CACHED_MODELS.getMixedModel(tile.getData()).renderTo(buffer, transform, combinedLight, combinedOverlay);
     }
 }

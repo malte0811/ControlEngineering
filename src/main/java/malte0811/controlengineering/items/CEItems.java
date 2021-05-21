@@ -6,9 +6,12 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
+import malte0811.controlengineering.controlpanels.PanelData;
+import malte0811.controlengineering.controlpanels.model.PanelItemRenderer;
 import malte0811.controlengineering.logic.clock.ClockGenerator;
 import malte0811.controlengineering.logic.clock.ClockTypes;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.RegistryObject;
@@ -38,7 +41,16 @@ public class CEItems {
     private static final RegistryObject<CEBlockItem<Direction>> BUS_RELAY = blockItemCE(CEBlocks.BUS_RELAY);
     private static final RegistryObject<CEBlockItem<Direction>> BUS_INTERFACE = blockItemCE(CEBlocks.BUS_INTERFACE);
     private static final RegistryObject<CEBlockItem<Direction>> LINE_ACCESS = blockItemCE(CEBlocks.LINE_ACCESS);
-    private static final RegistryObject<CEBlockItem<PanelOrientation>> CONTROL_PANEL = blockItemCE(CEBlocks.CONTROL_PANEL);
+    private static final RegistryObject<CEBlockItem<PanelOrientation>> CONTROL_PANEL = blockItemCE(
+            //TODO move somewhere else
+            CEBlocks.CONTROL_PANEL, simpleItemProperties().setISTER(() -> () -> new PanelItemRenderer(is -> {
+                CompoundNBT tag = is.getTag();
+                if (tag == null) {
+                    tag = new CompoundNBT();
+                }
+                return new PanelData(tag, PanelOrientation.UP_NORTH);
+            }))
+    );
     private static final RegistryObject<CEBlockItem<Direction>> TELETYPE = blockItemCE(CEBlocks.TELETYPE);
     private static final RegistryObject<CEBlockItem<Direction>> PANEL_CNC = blockItemCE(CEBlocks.PANEL_CNC);
     private static final RegistryObject<CEBlockItem<Direction>> LOGIC_CABINET = blockItemCE(CEBlocks.LOGIC_CABINET);
@@ -46,7 +58,14 @@ public class CEItems {
     private static final RegistryObject<CEBlockItem<Unit>> PANEL_DESIGNER = blockItemCE(CEBlocks.PANEL_DESIGNER);
 
     private static <T> RegistryObject<CEBlockItem<T>> blockItemCE(RegistryObject<? extends CEBlock<T, ?>> block) {
-        return REGISTER.register(block.getId().getPath(), () -> new CEBlockItem<>(block.get(), simpleItemProperties()));
+        return blockItemCE(block, simpleItemProperties());
+    }
+
+    private static <T> RegistryObject<CEBlockItem<T>> blockItemCE(
+            RegistryObject<? extends CEBlock<T, ?>> block,
+            Item.Properties properties
+    ) {
+        return REGISTER.register(block.getId().getPath(), () -> new CEBlockItem<>(block.get(), properties));
     }
 
     private static Item.Properties simpleItemProperties() {

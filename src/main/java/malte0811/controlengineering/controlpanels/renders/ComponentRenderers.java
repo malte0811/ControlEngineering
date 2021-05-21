@@ -1,11 +1,12 @@
 package malte0811.controlengineering.controlpanels.renders;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import malte0811.controlengineering.client.render.target.RenderTarget;
+import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.controlpanels.PanelComponentInstance;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
+import net.minecraft.client.renderer.RenderType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,18 +31,24 @@ public class ComponentRenderers {
         return (ComponentRenderer<Config, State>) RENDERS.get(type);
     }
 
-    public static void renderAll(RenderTarget target, List<PlacedComponent> components, MatrixStack transform) {
+    public static MixedModel renderAll(
+            List<PlacedComponent> components,
+            MatrixStack transform,
+            RenderType... staticTypes
+    ) {
+        MixedModel result = new MixedModel(staticTypes);
         for (PlacedComponent component : components) {
             transform.push();
             transform.translate(component.getPosMin().x, 0, component.getPosMin().y);
-            ComponentRenderers.render(target, component.getComponent(), transform);
+            render(result, component.getComponent(), transform);
             transform.pop();
         }
+        return result;
     }
 
     public static <Config, State> void render(
-            RenderTarget builder, PanelComponentInstance<Config, State> instance, MatrixStack transform
+            MixedModel out, PanelComponentInstance<Config, State> instance, MatrixStack transform
     ) {
-        getRenderer(instance.getType()).render(builder, instance.getConfig(), instance.getState(), transform);
+        getRenderer(instance.getType()).render(out, instance.getConfig(), instance.getState(), transform);
     }
 }

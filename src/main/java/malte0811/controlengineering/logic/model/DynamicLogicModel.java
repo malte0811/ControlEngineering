@@ -4,8 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
-import malte0811.controlengineering.client.render.target.StaticRenderTarget;
-import malte0811.controlengineering.client.render.target.TargetType;
+import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.model.*;
@@ -71,9 +70,9 @@ public class DynamicLogicModel implements IBakedModel {
                 bakery, spriteGetter, modelTransform, new ResourceLocation(ControlEngineering.MODID, "temp")
         ).getQuads(null, null, RANDOM, EmptyModelData.INSTANCE).get(0).getSprite();
 
-        StaticRenderTarget target = new StaticRenderTarget($ -> true);
         MatrixStack transform = new MatrixStack();
         modelTransform.getRotation().blockCenterToCorner().push(transform);
+        List<BakedQuad> quads = new ArrayList<>();
         new QuadBuilder(
                 new Vector3d(1, 0.375, 0.625),
                 new Vector3d(1, 0.375, 0.375),
@@ -82,9 +81,8 @@ public class DynamicLogicModel implements IBakedModel {
         ).setSprite(particles)
                 .setUCoords(15 / 16f, 15 / 16f, 1, 1)
                 .setVCoords(0, 1 / 16f, 1 / 16f, 0)
-                .setNormal(new Vector3d(1, 0, 0))
-                .writeTo(transform, target, TargetType.STATIC);
-        this.clockQuad = target.getQuads().get(0);
+                .writeTo(new BakedQuadVertexBuilder(particles, transform, quads));
+        this.clockQuad = quads.get(0);
     }
 
     @Nonnull

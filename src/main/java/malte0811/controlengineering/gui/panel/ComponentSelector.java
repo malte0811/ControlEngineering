@@ -98,7 +98,7 @@ public class ComponentSelector extends Widget {
             transform.scale(16, 16, 1);
             transform.rotate(new Quaternion(30, 45, 180, true));
             mc.textureManager.bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
-            GuiRenderTarget.renderSingleComponent(type.newInstance(), transform);
+            //TODO GuiRenderTarget.renderSingleComponent(type.newInstance(), transform);
         }
 
         transform.pop();

@@ -74,7 +74,6 @@ public class BlockstateGenerator extends BlockStateProvider {
                 .partialState()
                 .with(PanelBlock.IS_BASE, false)
                 .setModels(new ConfiguredModel(topModel));
-        itemModels().getBuilder(ItemModels.name(CEBlocks.CONTROL_PANEL)).parent(topModel);
     }
 
     private void logicCabinetModel() {

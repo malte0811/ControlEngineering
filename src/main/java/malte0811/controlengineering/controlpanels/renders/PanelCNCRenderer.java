@@ -1,4 +1,4 @@
-package malte0811.controlengineering.client.render;
+package malte0811.controlengineering.controlpanels.renders;
 
 import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.google.common.base.Preconditions;
@@ -7,13 +7,11 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.client.render.tape.TapeDrive;
-import malte0811.controlengineering.client.render.target.DynamicRenderTarget;
 import malte0811.controlengineering.client.render.utils.ModelRenderUtils;
 import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath;
 import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath.Node;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
-import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.tiles.panels.CNCJob;
 import malte0811.controlengineering.tiles.panels.PanelCNCTile;
 import malte0811.controlengineering.util.math.Vec2d;
@@ -104,9 +102,9 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
             finalWrapped.pos(16, 0, 16).tex(maxU, maxV).endVertex();
             finalWrapped.pos(16, 0, 0).tex(maxU, minV).endVertex();
         }
-        ComponentRenderers.renderAll(new DynamicRenderTarget(
-                builder, light, overlay, $ -> true
-        ), tile.getCurrentPlacedComponents(), transform);
+        //TODO cache?
+        ComponentRenderers.renderAll(tile.getCurrentPlacedComponents(), new MatrixStack())
+                .renderTo(buffers, transform, light, overlay);
     }
 
     private void renderTape(

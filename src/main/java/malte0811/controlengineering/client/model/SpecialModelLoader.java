@@ -21,10 +21,17 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class SpecialModelLoader implements IModelLoader<SpecialModelLoader.SpecialModelGeometry> {
-    private final Supplier<? extends IBakedModel> modelMaker;
+    private final Function<ItemCameraTransforms, ? extends IBakedModel> modelMaker;
     private final Collection<RenderMaterial> materials;
 
     public SpecialModelLoader(Supplier<? extends IBakedModel> modelMaker, ResourceLocation... materials) {
+        this($ -> modelMaker.get(), materials);
+    }
+
+    public SpecialModelLoader(
+            Function<ItemCameraTransforms, ? extends IBakedModel> modelMaker,
+            ResourceLocation... materials
+    ) {
         this.modelMaker = modelMaker;
         this.materials = Arrays.stream(materials)
                 .map(rl -> new RenderMaterial(PlayerContainer.LOCATION_BLOCKS_TEXTURE, rl))
@@ -53,7 +60,7 @@ public class SpecialModelLoader implements IModelLoader<SpecialModelLoader.Speci
                 ItemOverrideList overrides,
                 ResourceLocation modelLocation
         ) {
-            return modelMaker.get();
+            return modelMaker.apply(owner.getCameraTransforms());
         }
 
         @Override

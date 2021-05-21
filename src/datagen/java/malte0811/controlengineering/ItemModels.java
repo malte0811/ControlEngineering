@@ -1,5 +1,6 @@
 package malte0811.controlengineering;
 
+import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.modelbuilder.DynamicModelBuilder;
@@ -21,8 +22,11 @@ public class ItemModels extends ItemModelProvider {
         addItemModel("tty_tape_punched", CEItems.PUNCHED_TAPE);
         addItemModel("wirecoil_bus", CEItems.BUS_WIRE_COIL);
         addItemModel("logic_pcbs", CEItems.PCB_STACK);
-        getBuilder(name(CEItems.PANEL_TOP))
-                .customLoader(DynamicModelBuilder.customLoader(ModelLoaders.PANEL_TOP_ITEM))
+        withExistingParent(name(CEItems.PANEL_TOP), modLoc("transform/panel_top_base"))
+                .customLoader(DynamicModelBuilder.customLoader(ModelLoaders.PANEL_MODEL))
+                .end();
+        withExistingParent(ItemModels.name(CEBlocks.CONTROL_PANEL), modLoc("transform/panel_base"))
+                .customLoader(DynamicModelBuilder.customLoader(ModelLoaders.PANEL_MODEL))
                 .end();
         CEItems.CLOCK_GENERATORS.forEach((rl, item) -> addItemModel(rl.getPath().replace('_', '/'), item));
     }
