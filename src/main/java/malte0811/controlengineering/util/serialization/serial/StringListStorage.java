@@ -45,7 +45,7 @@ public class StringListStorage implements SerialStorage {
 
     @Override
     public void writeString(String value) {
-        data.push(value);
+        data.add(value);
     }
 
     @Override
