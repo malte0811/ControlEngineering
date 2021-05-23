@@ -18,6 +18,7 @@ public class ComponentRenderers {
     public static void init() {
         register(PanelComponents.BUTTON, new ButtonRender());
         register(PanelComponents.INDICATOR, new IndicatorRender());
+        register(PanelComponents.LABEL, new LabelRender());
     }
 
     public static <Config, State> void register(

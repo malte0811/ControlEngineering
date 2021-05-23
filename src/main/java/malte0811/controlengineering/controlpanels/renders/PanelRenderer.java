@@ -53,6 +53,8 @@ public class PanelRenderer extends TileEntityRenderer<ControlPanelTile> {
         if (tile == null) {
             return;
         }
-        CACHED_MODELS.getMixedModel(tile.getData()).renderTo(buffer, transform, combinedLight, combinedOverlay);
+        //CACHED_MODELS
+        new PanelModelCache(MixedModel.SOLID_STATIC)
+                .getMixedModel(tile.getData()).renderTo(buffer, transform, combinedLight, combinedOverlay);
     }
 }

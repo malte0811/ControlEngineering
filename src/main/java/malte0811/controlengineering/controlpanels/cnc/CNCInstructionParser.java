@@ -142,11 +142,15 @@ public class CNCInstructionParser {
         }
         StringBuilder result = new StringBuilder();
         final boolean untilQuotationMarks = input.charAt(start) == QUOTATION_MARK;
+        if (untilQuotationMarks) {
+            ++start;
+        }
         boolean isEscaped = false;
-        while (start < input.length() && !shouldStop(input.charAt(start), untilQuotationMarks)) {
+        while (start < input.length() && (isEscaped || !shouldStop(input.charAt(start), untilQuotationMarks))) {
             final char next = input.charAt(start);
             if (isEscaped || next != ESCAPE) {
                 result.append(next);
+                isEscaped = false;
             } else {
                 isEscaped = true;
             }
@@ -156,7 +160,7 @@ public class CNCInstructionParser {
             // Ended before proper token end
             return null;
         }
-        if (untilQuotationMarks) {
+        if (!untilQuotationMarks && start < input.length() && !Character.isWhitespace(input.charAt(start))) {
             result.append(input.charAt(start));
         }
         ++start;

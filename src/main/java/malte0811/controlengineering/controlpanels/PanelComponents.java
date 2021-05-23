@@ -6,6 +6,7 @@ import com.google.common.collect.HashBiMap;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.controlpanels.components.Button;
 import malte0811.controlengineering.controlpanels.components.Indicator;
+import malte0811.controlengineering.controlpanels.components.Label;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import net.minecraft.util.ResourceLocation;
 
@@ -16,6 +17,7 @@ public class PanelComponents {
     private static final BiMap<String, ResourceLocation> CREATION_KEY = HashBiMap.create();
     public static final Button BUTTON = register("button", new Button());
     public static final Indicator INDICATOR = register("indicator", new Indicator());
+    public static final Label LABEL = register("label", new Label());
 
     private static <T extends PanelComponentType<?, ?>> T register(String path, T type) {
         ResourceLocation nameRL = new ResourceLocation(ControlEngineering.MODID, path);

@@ -6,6 +6,7 @@ import malte0811.controlengineering.controlpanels.PlacedComponent;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CNCInstructionGenerator {
     private static final NumberFormat FORMAT = new DecimalFormat("#.##");
@@ -22,10 +23,26 @@ public class CNCInstructionGenerator {
                     .append(' ')
                     .append(FORMAT.format(comp.getPosMin().y));
             for (String field : comp.getComponent().toCNCStrings()) {
-                //TODO escape "field" properly
-                result.append(' ').append(field);
+                result.append(' ').append(escape(field));
             }
         }
         return result.toString();
+    }
+
+    private static String escape(String raw) {
+        String escaped = raw.chars().mapToObj(i -> {
+            if (i == '\\') {
+                return "\\\\";
+            } else if (i == '"') {
+                return "\\\"";
+            } else {
+                return "" + (char) i;
+            }
+        }).collect(Collectors.joining());
+        if (escaped.chars().anyMatch(Character::isWhitespace)) {
+            return "\"" + escaped + "\"";
+        } else {
+            return escaped;
+        }
     }
 }

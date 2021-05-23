@@ -72,10 +72,10 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
 
     protected abstract double getSelectionHeight();
 
-    private final Lazy<AxisAlignedBB> selectionShape = Lazy.of(() -> {
+    private final Lazy<AxisAlignedBB> defaultSelectionShape = Lazy.of(() -> {
         final double height = getSelectionHeight();
         if (height >= 0) {
-            final Vec2i size = getSize();
+            final Vec2i size = getSize(getInitialState().getFirst());
             return new AxisAlignedBB(0, 0, 0, size.x, height, size.y);
         } else {
             return null;
@@ -84,10 +84,10 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
 
     @Nullable
     public AxisAlignedBB getSelectionShape() {
-        return selectionShape.get();
+        return defaultSelectionShape.get();
     }
 
-    public Vec2i getSize() {
+    public Vec2i getSize(Config config) {
         return size;
     }
 

@@ -3,6 +3,7 @@ package malte0811.controlengineering.controlpanels;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusState;
+import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ActionResultType;
@@ -99,5 +100,14 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
 
     public void setConfig(Config newConfig) {
         currentState = Pair.of(newConfig, getState());
+    }
+
+    public Vec2i getSize() {
+        return getType().getSize(getConfig());
+    }
+
+    @Override
+    public String toString() {
+        return "type=" + getType() + ";config=" + getConfig() + ";state=" + getState();
     }
 }

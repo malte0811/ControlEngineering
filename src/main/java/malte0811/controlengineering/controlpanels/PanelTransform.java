@@ -186,7 +186,7 @@ public class PanelTransform {
         }
 
         private TileTransformData() {
-            this(0.25F, (float) Math.toDegrees(Math.atan(0.5)));
+            this(0.25F, (float) -Math.toDegrees(Math.atan(0.5)));
         }
 
         @Override

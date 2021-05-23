@@ -6,8 +6,10 @@ import malte0811.controlengineering.controlpanels.PanelComponentInstance;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.components.ColorAndSignal;
+import malte0811.controlengineering.util.ServerFontWidth;
 import malte0811.controlengineering.util.math.Vec2d;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class CNCInstructionParserTest {
@@ -32,6 +34,13 @@ public class CNCInstructionParserTest {
     ) {
         Assert.assertTrue(result.isError());
         Assert.assertEquals(ImmutableList.copyOf(expected), result.getComponents());
+    }
+
+    @BeforeClass
+    public static void preload() {
+        //Load all classes before the actual tests since some have slow static init
+        CNCInstructionParser.parse(button(1, 2) + ";" + indicator(2, 3));
+        ServerFontWidth.constantWidthForTesting(1);
     }
 
     @Test
@@ -90,6 +99,22 @@ public class CNCInstructionParserTest {
                 button(3, 1) + ";" + indicator(3, 1)
         );
         assertFailure(result, new PlacedComponent(BUTTON, new Vec2d(3, 1)));
+    }
+
+    @Test
+    public void testQuotedString() {
+        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse("label 1 1 \"This is a test\"");
+        assertSuccess(
+                result, new PlacedComponent(PanelComponents.LABEL.newInstance("This is a test"), new Vec2d(1, 1))
+        );
+    }
+
+    @Test
+    public void testUnquotedString() {
+        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse("label 1 1 test");
+        assertSuccess(
+                result, new PlacedComponent(PanelComponents.LABEL.newInstance("test"), new Vec2d(1, 1))
+        );
     }
 
     private static String button(double x, double y) {

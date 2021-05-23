@@ -6,7 +6,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.IStringSerializable;
 
 import java.util.Locale;
-import java.util.StringJoiner;
 
 public enum PanelOrientation implements IStringSerializable {
     //Placed on the ceiling
@@ -20,7 +19,7 @@ public enum PanelOrientation implements IStringSerializable {
     UP_SOUTH(Direction.UP, Direction.SOUTH),
     UP_WEST(Direction.UP, Direction.WEST),
     //Placed on the wall
-    NORTH(Direction.NORTH, Direction.NORTH),
+    NORTH(Direction.NORTH, Direction.SOUTH),
     EAST(Direction.EAST, NORTH.front),
     SOUTH(Direction.SOUTH, NORTH.front),
     WEST(Direction.WEST, NORTH.front),

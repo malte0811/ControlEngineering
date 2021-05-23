@@ -23,7 +23,7 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
         Direction top = ctx.getFace();
         Direction front;
         if (top.getAxis() == Direction.Axis.Y) {
-            front = ctx.getPlacementHorizontalFacing().getOpposite();
+            front = ctx.getPlacementHorizontalFacing();
         } else {
             front = PanelOrientation.HORIZONTAL_FRONT;
         }

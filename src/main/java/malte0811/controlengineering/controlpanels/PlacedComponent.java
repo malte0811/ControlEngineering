@@ -21,6 +21,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 public class PlacedComponent extends SelectionShapes {
     public static final Codec<PlacedComponent> CODEC = RecordCodecBuilder.create(
@@ -76,7 +77,7 @@ public class PlacedComponent extends SelectionShapes {
 
     @Nonnull
     public Vec2d getPosMax() {
-        return pos.add(component.getType().getSize());
+        return pos.add(component.getSize());
     }
 
     public RectangleD getOutline() {
@@ -86,10 +87,6 @@ public class PlacedComponent extends SelectionShapes {
     @Nullable
     public AxisAlignedBB getSelectionShape() {
         return shape.get();
-    }
-
-    public ActionResultType onClick() {
-        return component.onClick();
     }
 
     private static AxisAlignedBB scale(AxisAlignedBB in, double scale) {
@@ -172,5 +169,13 @@ public class PlacedComponent extends SelectionShapes {
             }
         }
         return -1;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", PlacedComponent.class.getSimpleName() + "[", "]")
+                .add("component=" + component)
+                .add("pos=" + pos)
+                .toString();
     }
 }

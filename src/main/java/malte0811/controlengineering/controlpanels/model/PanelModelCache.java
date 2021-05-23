@@ -58,6 +58,11 @@ public class PanelModelCache {
         return getFromCache(componentModels, list);
     }
 
+    public void clear() {
+        cachedStaticModels.invalidateAll();
+        componentModels.invalidateAll();
+    }
+
     private static <T> T getFromCache(LoadingCache<PanelData, T> cache, @Nullable PanelData list) {
         if (list == null) {
             list = new PanelData();
