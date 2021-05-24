@@ -5,7 +5,7 @@ import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
-import malte0811.controlengineering.controlpanels.components.ColorAndSignal;
+import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.util.ColorUtils;
 import net.minecraft.util.math.vector.Vector3d;
 

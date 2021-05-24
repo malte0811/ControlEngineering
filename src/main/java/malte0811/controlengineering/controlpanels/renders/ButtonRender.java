@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.client.render.target.RenderUtils;
-import malte0811.controlengineering.controlpanels.components.ColorAndSignal;
+import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.util.ColorUtils;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.client.renderer.RenderType;

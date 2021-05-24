@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.vector.Matrix4f;
 
 public class GuiUtil {
-    public static void fill(MatrixStack transform, float minX, float minY, float maxX, float maxY, int color) {
+    public static void fill(MatrixStack transform, double minX, double minY, double maxX, double maxY, int color) {
         Matrix4f matrix = transform.getLast().getMatrix();
         float alpha = (float) (color >> 24 & 255) / 255.0F;
         float red = (float) (color >> 16 & 255) / 255.0F;
@@ -24,10 +24,10 @@ public class GuiUtil {
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        bufferbuilder.pos(matrix, minX, maxY, 0.0F).color(red, green, blue, alpha).endVertex();
-        bufferbuilder.pos(matrix, maxX, maxY, 0.0F).color(red, green, blue, alpha).endVertex();
-        bufferbuilder.pos(matrix, maxX, minY, 0.0F).color(red, green, blue, alpha).endVertex();
-        bufferbuilder.pos(matrix, minX, minY, 0.0F).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(matrix, (float) minX, (float) maxY, 0.0F).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(matrix, (float) maxX, (float) maxY, 0.0F).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(matrix, (float) maxX, (float) minY, 0.0F).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(matrix, (float) minX, (float) minY, 0.0F).color(red, green, blue, alpha).endVertex();
         bufferbuilder.finishDrawing();
         WorldVertexBufferUploader.draw(bufferbuilder);
         RenderSystem.enableTexture();

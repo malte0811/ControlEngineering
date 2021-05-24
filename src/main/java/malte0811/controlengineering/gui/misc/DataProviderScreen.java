@@ -3,7 +3,8 @@ package malte0811.controlengineering.gui.misc;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusSignalRef;
-import malte0811.controlengineering.controlpanels.components.ColorAndSignal;
+import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
+import malte0811.controlengineering.controlpanels.components.config.ColorAndText;
 import malte0811.controlengineering.gui.StackedScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
@@ -26,6 +27,7 @@ public class DataProviderScreen<T> extends StackedScreen {
     static {
         registerFactory(BusSignalRef.class, BusSignalSelector::new);
         registerFactory(ColorAndSignal.class, ColorAndSignalWidget::new);
+        registerFactory(ColorAndText.class, ColorAndTextWidget::new);
     }
 
     @Nullable

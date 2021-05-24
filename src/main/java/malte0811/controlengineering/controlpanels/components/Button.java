@@ -8,7 +8,8 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
-import malte0811.controlengineering.util.math.Vec2i;
+import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
+import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ActionResultType;
@@ -24,7 +25,7 @@ public class Button extends PanelComponentType<ColorAndSignal, Boolean> {
         super(
                 ColorAndSignal.DEFAULT, false,
                 ColorAndSignal.CODEC, Codec.BOOL,
-                new Vec2i(1, 1),
+                new Vec2d(1, 1),
                 TRANSLATION_KEY
         );
     }

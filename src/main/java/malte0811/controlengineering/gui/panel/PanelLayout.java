@@ -2,17 +2,25 @@ package malte0811.controlengineering.gui.panel;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.controlpanels.PanelComponentInstance;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
+import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.controlpanels.renders.PanelRenderer;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.network.panellayout.*;
 import malte0811.controlengineering.util.GuiUtil;
+import malte0811.controlengineering.util.math.TransformUtil;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.glfw.GLFW;
 
@@ -40,23 +48,22 @@ public class PanelLayout extends Widget {
         transform.translate(x, y, 0);
         blit(transform, 0, 0, 0, width, height, texture);
         transform.scale((float) getPixelSize(), (float) getPixelSize(), 1);
-        /*
-        TODO
-        GuiRenderTarget target = new GuiRenderTarget($ -> true);
         transform.translate(0, 0, 2);
         transform.rotate(new Quaternion(-90, 0, 0, true));
         TransformUtil.shear(transform, .1f, .1f);
         transform.scale(1, -1, 1);
-        for (PlacedComponent comp : components) {
-            renderComponent(comp, transform, target);
-        }
+        MixedModel model = ComponentRenderers.renderAll(components, transform);
         if (placing != null) {
             final double placingX = getGriddedPanelPos(mouseX, x);
             final double placingY = getGriddedPanelPos(mouseY, y);
-            renderComponent(new PlacedComponent(placing, new Vec2d(placingX, placingY)), transform, target);
+            transform.push();
+            transform.translate(placingX, 0, placingY);
+            ComponentRenderers.render(model, placing, transform);
+            transform.pop();
         }
-        target.done();
-         */
+        IRenderTypeBuffer.Impl impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+        model.renderTo(impl, new MatrixStack(), LightTexture.packLight(15, 15), OverlayTexture.NO_OVERLAY);
+        impl.finish();
         transform.pop();
     }
 

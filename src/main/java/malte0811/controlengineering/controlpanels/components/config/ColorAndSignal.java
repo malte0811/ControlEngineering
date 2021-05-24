@@ -1,4 +1,4 @@
-package malte0811.controlengineering.controlpanels.components;
+package malte0811.controlengineering.controlpanels.components.config;
 
 import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusSignalRef;

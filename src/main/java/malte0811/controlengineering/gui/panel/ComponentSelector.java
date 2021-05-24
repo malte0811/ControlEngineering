@@ -2,13 +2,20 @@ package malte0811.controlengineering.gui.panel;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import malte0811.controlengineering.client.render.target.MixedModel;
+import malte0811.controlengineering.controlpanels.PanelComponentInstance;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
+import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
+import malte0811.controlengineering.util.math.TransformUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.text.StringTextComponent;
@@ -94,11 +101,19 @@ public class ComponentSelector extends Widget {
             String name = I18n.format(type.getTranslationKey());
             mc.fontRenderer.drawString(transform, name, (colWidth - mc.fontRenderer.getStringWidth(name)) / 2f, 0, 0);
 
-            transform.translate(colWidth / 2., (actualRowHeight + mc.fontRenderer.FONT_HEIGHT + 10) / 2., 0);
-            transform.scale(16, 16, 1);
-            transform.rotate(new Quaternion(30, 45, 180, true));
-            mc.textureManager.bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
-            //TODO GuiRenderTarget.renderSingleComponent(type.newInstance(), transform);
+            transform.translate(colWidth / 2., (actualRowHeight + mc.fontRenderer.FONT_HEIGHT) / 2., 0);
+            transform.scale(16, 16, .01f);
+            PanelComponentInstance<?, ?> instance = type.newInstance();
+            transform.translate(-instance.getSize().x / 2f, -instance.getSize().y / 2f, 0);
+            transform.rotate(new Quaternion(-90, 0, 0, true));
+            TransformUtil.shear(transform, .1f, .1f);
+            transform.scale(1, -1, 1);
+            //TODO cache?
+            MixedModel model = new MixedModel();
+            ComponentRenderers.render(model, instance, transform);
+            IRenderTypeBuffer.Impl impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+            model.renderTo(impl, new MatrixStack(), LightTexture.packLight(15, 15), OverlayTexture.NO_OVERLAY);
+            impl.finish();
         }
 
         transform.pop();

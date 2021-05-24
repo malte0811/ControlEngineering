@@ -5,7 +5,8 @@ import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.controlpanels.PanelComponentInstance;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
-import malte0811.controlengineering.controlpanels.components.ColorAndSignal;
+import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
+import malte0811.controlengineering.controlpanels.components.config.ColorAndText;
 import malte0811.controlengineering.util.ServerFontWidth;
 import malte0811.controlengineering.util.math.Vec2d;
 import org.junit.Assert;
@@ -103,17 +104,22 @@ public class CNCInstructionParserTest {
 
     @Test
     public void testQuotedString() {
-        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse("label 1 1 \"This is a test\"");
+        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse("label 1 1 ff \"This is a test\"");
         assertSuccess(
-                result, new PlacedComponent(PanelComponents.LABEL.newInstance("This is a test"), new Vec2d(1, 1))
+                result,
+                new PlacedComponent(
+                        PanelComponents.LABEL.newInstance(new ColorAndText(0xff, "This is a test")),
+                        new Vec2d(1, 1)
+                )
         );
     }
 
     @Test
     public void testUnquotedString() {
-        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse("label 1 1 test");
+        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse("label 1 1 0 test");
         assertSuccess(
-                result, new PlacedComponent(PanelComponents.LABEL.newInstance("test"), new Vec2d(1, 1))
+                result,
+                new PlacedComponent(PanelComponents.LABEL.newInstance(new ColorAndText(0, "test")), new Vec2d(1, 1))
         );
     }
 

@@ -1,7 +1,7 @@
 package malte0811.controlengineering.gui.misc;
 
 import malte0811.controlengineering.bus.BusSignalRef;
-import malte0811.controlengineering.controlpanels.components.ColorAndSignal;
+import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.gui.widget.ColorSelector;
 
 import javax.annotation.Nullable;

@@ -6,7 +6,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import malte0811.controlengineering.bus.BusState;
-import malte0811.controlengineering.util.math.Vec2i;
+import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.serialization.Codecs;
 import malte0811.controlengineering.util.serialization.serial.SerialCodecParser;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
@@ -20,14 +20,14 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public abstract class PanelComponentType<Config, State> extends TypedRegistryEntry<Pair<Config, State>> {
-    private final Vec2i size;
+    private final Vec2d size;
     private final SerialCodecParser<Config> configParser;
     private final String translationKey;
 
     protected PanelComponentType(
             Config defaultConfig, State intitialState,
             Codec<Config> codecConfig, Codec<State> codecState,
-            Vec2i size,
+            Vec2d size,
             String translationKey
     ) {
         super(Pair.of(defaultConfig, intitialState), Codecs.safePair(codecConfig, codecState));
@@ -75,7 +75,7 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
     private final Lazy<AxisAlignedBB> defaultSelectionShape = Lazy.of(() -> {
         final double height = getSelectionHeight();
         if (height >= 0) {
-            final Vec2i size = getSize(getInitialState().getFirst());
+            final Vec2d size = getSize(getInitialState().getFirst());
             return new AxisAlignedBB(0, 0, 0, size.x, height, size.y);
         } else {
             return null;
@@ -87,7 +87,7 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
         return defaultSelectionShape.get();
     }
 
-    public Vec2i getSize(Config config) {
+    public Vec2d getSize(Config config) {
         return size;
     }
 
