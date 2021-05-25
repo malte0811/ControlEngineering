@@ -6,10 +6,8 @@ import malte0811.controlengineering.blocks.shapes.DirectionalShapeProvider;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.bus.BusInterfaceTile;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.Property;
 import net.minecraft.state.StateContainer;
@@ -31,7 +29,7 @@ public class BusInterfaceBlock extends CEBlock<Direction, BusInterfaceTile> {
 
     public BusInterfaceBlock() {
         super(
-                AbstractBlock.Properties.create(Material.IRON),
+                defaultPropertiesNotSolid(),
                 BlockPropertyPlacement.sixDirectional(FACING),
                 new DirectionalShapeProvider(FromBlockFunction.getProperty(FACING), NORTH_SHAPE),
                 CETileEntities.BUS_INTERFACE

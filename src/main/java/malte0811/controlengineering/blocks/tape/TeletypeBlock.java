@@ -10,7 +10,6 @@ import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.tape.TeletypeTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.state.Property;
@@ -39,7 +38,7 @@ public class TeletypeBlock extends CEBlock<Direction, TeletypeTile> {
 
     public TeletypeBlock() {
         super(
-                Properties.create(Material.IRON).notSolid(),
+                defaultPropertiesNotSolid(),
                 BlockPropertyPlacement.horizontal(FACING),
                 SHAPE_PROVIDER,
                 CETileEntities.TELETYPE

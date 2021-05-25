@@ -7,7 +7,6 @@ import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.panels.PanelCNCTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.state.Property;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -34,7 +33,7 @@ public class PanelCNCBlock extends CEBlock<Direction, PanelCNCTile> {
 
     public PanelCNCBlock() {
         super(
-                Properties.create(Material.IRON).notSolid(),
+                defaultPropertiesNotSolid(),
                 BlockPropertyPlacement.horizontal(FACING),
                 FromBlockFunction.constant(SHAPE),
                 CETileEntities.PANEL_CNC

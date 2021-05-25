@@ -6,9 +6,8 @@ import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.gui.CustomDataContainerProvider;
 import malte0811.controlengineering.util.RaytraceUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.*;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -158,5 +157,15 @@ public abstract class CEBlock<PlacementData, Tile extends TileEntity> extends Bl
     public BlockPos getMainBlock(BlockState state, TileEntity te) {
         Pair<PlacementData, BlockPos> data = placementBehavior.getPlacementDataAndOffset(state, te);
         return te.getPos().subtract(data.getSecond());
+    }
+
+    protected static AbstractBlock.Properties defaultProperties() {
+        return Properties.create(Material.IRON)
+                .hardnessAndResistance(3, 15)
+                .sound(SoundType.METAL);
+    }
+
+    protected static AbstractBlock.Properties defaultPropertiesNotSolid() {
+        return defaultProperties().notSolid().setOpaque(($1, $2, $3) -> false).variableOpacity();
     }
 }

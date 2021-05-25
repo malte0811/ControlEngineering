@@ -8,7 +8,6 @@ import malte0811.controlengineering.gui.panel.PanelLayoutContainer;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.panels.PanelDesignerTile;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
@@ -27,7 +26,7 @@ import javax.annotation.Nullable;
 public class PanelDesignerBlock extends CEBlock<Unit, PanelDesignerTile> {
     public PanelDesignerBlock() {
         super(
-                Properties.create(Material.IRON),
+                defaultProperties(),
                 PlacementBehavior.simple(CEBlocks.PANEL_DESIGNER),
                 (state, world, pos) -> VoxelShapes.fullCube(),
                 CETileEntities.PANEL_DESIGNER

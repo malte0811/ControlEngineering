@@ -3,10 +3,8 @@ package malte0811.controlengineering.blocks.panels;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -20,10 +18,7 @@ public class PanelBlock extends CEBlock<PanelOrientation, ControlPanelTile> {
 
     public PanelBlock() {
         super(
-                AbstractBlock.Properties.create(Material.IRON)
-                        .notSolid()
-                        .hardnessAndResistance(2, 6)
-                        .variableOpacity(),
+                defaultPropertiesNotSolid(),
                 new PanelPlacementBehavior(),
                 CachedPanelShape.create(),
                 CETileEntities.CONTROL_PANEL

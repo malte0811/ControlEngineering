@@ -9,7 +9,6 @@ import malte0811.controlengineering.tiles.bus.BusRelayTile;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.Property;
 import net.minecraft.state.StateContainer;
@@ -31,7 +30,7 @@ public class BusRelayBlock extends CEBlock<Direction, BusRelayTile> {
 
     public BusRelayBlock() {
         super(
-                Properties.create(Material.IRON),
+                defaultPropertiesNotSolid(),
                 BlockPropertyPlacement.sixDirectional(FACING),
                 new DirectionalShapeProvider(FromBlockFunction.getProperty(FACING), NORTH_SHAPE),
                 CETileEntities.BUS_RELAY

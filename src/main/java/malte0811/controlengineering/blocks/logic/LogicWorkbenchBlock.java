@@ -10,7 +10,6 @@ import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.logic.LogicWorkbenchTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.Property;
@@ -70,7 +69,7 @@ public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> 
 
     public LogicWorkbenchBlock() {
         super(
-                Properties.create(Material.IRON).notSolid().setOpaque(($1, $2, $3) -> false),
+                defaultPropertiesNotSolid(),
                 new HorizontalStructurePlacement<>(FACING, OFFSET, Offset::getOffset),
                 SHAPE,
                 CETileEntities.LOGIC_WORKBENCH

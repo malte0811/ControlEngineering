@@ -11,7 +11,6 @@ import malte0811.controlengineering.tiles.bus.LineAccessTile;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.DirectionProperty;
@@ -47,7 +46,7 @@ public class LineAccessBlock extends CEBlock<Direction, LineAccessTile> {
 
     public LineAccessBlock() {
         super(
-                Properties.create(Material.IRON),
+                defaultPropertiesNotSolid(),
                 BlockPropertyPlacement.horizontal(FACING),
                 new DirectionalShapeProvider(FromBlockFunction.getProperty(FACING), NORTH_SHAPE),
                 CETileEntities.LINE_ACCESS

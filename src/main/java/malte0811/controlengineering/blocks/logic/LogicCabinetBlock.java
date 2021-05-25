@@ -8,7 +8,6 @@ import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.logic.LogicCabinetTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
@@ -43,7 +42,7 @@ public class LogicCabinetBlock extends CEBlock<Direction, LogicCabinetTile> {
 
     public LogicCabinetBlock() {
         super(
-                Properties.create(Material.IRON).notSolid().setOpaque(($1, $2, $3) -> false),
+                defaultPropertiesNotSolid(),
                 HorizontalStructurePlacement.column(FACING, HEIGHT),
                 FromBlockFunction.either((state, world, pos) -> state.get(HEIGHT) > 0, BOTTOM_SHAPE, TOP_SHAPE),
                 CETileEntities.LOGIC_CABINET
