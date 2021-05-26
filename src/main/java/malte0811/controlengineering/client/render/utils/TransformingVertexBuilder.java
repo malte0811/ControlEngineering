@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 
 //TODO copied from IE
 public class TransformingVertexBuilder extends DelegatingVertexBuilder<TransformingVertexBuilder> {
-    private final MatrixStack transform;
+    protected final MatrixStack transform;
     protected final ObjectWithGlobal<Vector2f> uv = new ObjectWithGlobal<>();
     protected final ObjectWithGlobal<Vector3d> pos = new ObjectWithGlobal<>();
     protected final ObjectWithGlobal<Vec2i> overlay = new ObjectWithGlobal<>();

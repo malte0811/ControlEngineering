@@ -20,6 +20,7 @@ public class BakedQuadVertexBuilder extends TransformingVertexBuilder {
     private final List<BakedQuad> quads;
     private BakedQuadBuilder builder = null;
     private int nextVertex = 0;
+    private boolean interpolateUV = true;
 
     public BakedQuadVertexBuilder(
             TextureAtlasSprite sprite, MatrixStack transform, List<BakedQuad> quads
@@ -29,20 +30,27 @@ public class BakedQuadVertexBuilder extends TransformingVertexBuilder {
         this.quads = quads;
     }
 
+    public BakedQuadVertexBuilder dontInterpolateUV() {
+        interpolateUV = false;
+        return this;
+    }
+
     @Override
     public void endVertex() {
         if (builder == null) {
             builder = new BakedQuadBuilder(sprite);
         }
         Vector3d pos = this.pos.read();
+        Vector4f transformedPos = new Vector4f((float) pos.x, (float) pos.y, (float) pos.z, 1);
+        transformedPos.transform(transform.getLast().getMatrix());
+        transformedPos.perspectiveDivide();
         Vector2f uv = this.uv.read();
         Vector3f normal = this.normal.read();
+        normal.transform(transform.getLast().getNormal());
         putVertex(
-                builder,
-                normal,
-                new Vector4f((float) pos.x, (float) pos.y, (float) pos.z, 0),
-                color.read(),
-                sprite.getInterpolatedU(uv.x), sprite.getInterpolatedV(uv.y)
+                builder, normal, transformedPos, color.read(),
+                interpolateUV ? sprite.getInterpolatedU(uv.x) : uv.x,
+                interpolateUV ? sprite.getInterpolatedV(uv.y) : uv.y
         );
         this.lightmap.read();
         this.overlay.read();

@@ -81,7 +81,7 @@ public class DynamicLogicModel implements IBakedModel {
         ).setSprite(particles)
                 .setUCoords(15 / 16f, 15 / 16f, 1, 1)
                 .setVCoords(0, 1 / 16f, 1 / 16f, 0)
-                .writeTo(new BakedQuadVertexBuilder(particles, transform, quads));
+                .writeTo(new BakedQuadVertexBuilder(particles, transform, quads).dontInterpolateUV());
         this.clockQuad = quads.get(0);
     }
 
