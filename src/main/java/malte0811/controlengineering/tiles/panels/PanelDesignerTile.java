@@ -3,17 +3,17 @@ package malte0811.controlengineering.tiles.panels;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
+import malte0811.controlengineering.tiles.base.CETileEntity;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PanelDesignerTile extends TileEntity {
+public class PanelDesignerTile extends CETileEntity {
     private static final Codec<List<PlacedComponent>> COMPONENTS_CODEC = Codec.list(PlacedComponent.CODEC);
 
     private List<PlacedComponent> components = new ArrayList<>();

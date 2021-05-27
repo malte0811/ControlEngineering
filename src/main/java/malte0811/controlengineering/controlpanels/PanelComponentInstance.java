@@ -74,8 +74,9 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
         return new PanelComponentInstance<>(type, (Pair<Config, State>) state);
     }
 
-    public PanelComponentInstance<?, ?> copy() {
-        return new PanelComponentInstance<>(getType(), getCurrentState());
+    public PanelComponentInstance<?, ?> copy(boolean clearState) {
+        State stateToUse = clearState ? getType().getInitialState().getSecond() : getState();
+        return new PanelComponentInstance<>(getType(), Pair.of(getConfig(), stateToUse));
     }
 
     @Override

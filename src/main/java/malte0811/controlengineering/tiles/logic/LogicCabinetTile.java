@@ -17,6 +17,9 @@ import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.logic.model.DynamicLogicModel;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
+import malte0811.controlengineering.tiles.base.CETileEntity;
+import malte0811.controlengineering.tiles.base.IExtraDropTile;
+import malte0811.controlengineering.tiles.base.IHasMaster;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import malte0811.controlengineering.util.math.Matrix4;
@@ -48,9 +51,10 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
-public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner, IBusInterface, ITickableTileEntity,
-        ISchematicTile {
+public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwner, IBusInterface, ITickableTileEntity,
+        ISchematicTile, IExtraDropTile, IHasMaster {
     private final CEEnergyStorage energy = new CEEnergyStorage(2048, 2 * 128, 128);
     @Nullable
     private Pair<Schematic, BusConnectedCircuit> circuit;
@@ -66,14 +70,14 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
 
     @Override
     public void tick() {
-        if (world.isRemote || isUpper()) {
+        if (world.isRemote || isUpper(getBlockState())) {
             return;
         }
         //TODO less? config?
         if (circuit == null || energy.extractOrTrue(128) || world.getGameTime() % 2 != 0) {
             return;
         }
-        final Direction facing = getFacing();
+        final Direction facing = getFacing(getBlockState());
         final Direction clockFace = facing.rotateYCCW();
         boolean rsIn = world.getRedstonePower(pos.offset(clockFace), clockFace.getOpposite()) > 0;
         if (!clock.tick(rsIn)) {
@@ -180,7 +184,7 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
 
     @Override
     public boolean canConnect(Direction fromSide) {
-        return fromSide == getFacing().rotateY();
+        return fromSide == getFacing(getBlockState()).rotateY();
     }
 
     private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(energy::insertOnlyView);
@@ -190,7 +194,7 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
     public <T> LazyOptional<T> getCapability(
             @Nonnull Capability<T> cap, @Nullable Direction side
     ) {
-        if (cap == CapabilityEnergy.ENERGY && side == getFacing()) {
+        if (cap == CapabilityEnergy.ENERGY && side == getFacing(getBlockState())) {
             return energyCap.cast();
         }
         return super.getCapability(cap, side);
@@ -235,26 +239,17 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
         }
     }
 
-    private Direction getFacing() {
-        return getBlockState().get(LogicCabinetBlock.FACING);
+    private static Direction getFacing(BlockState state) {
+        return state.get(LogicCabinetBlock.FACING);
     }
 
-    private boolean isUpper() {
-        return getBlockState().get(LogicCabinetBlock.HEIGHT) != 0;
+    private static boolean isUpper(BlockState state) {
+        return state.get(LogicCabinetBlock.HEIGHT) != 0;
     }
 
-    private final CachedValue<Pair<Direction, Boolean>, SelectionShapes> selectionShapes = new CachedValue<>(
-            () -> Pair.of(getFacing(), isUpper()),
-            f -> {
-                LogicCabinetTile tile = this;
-                if (f.getSecond()) {
-                    TileEntity below = world.getTileEntity(pos.down());
-                    if (below instanceof LogicCabinetTile) {
-                        tile = (LogicCabinetTile) below;
-                    }
-                }
-                return createSelectionShapes(f.getFirst(), tile, f.getSecond());
-            }
+    private final CachedValue<BlockState, SelectionShapes> selectionShapes = new CachedValue<>(
+            this::getBlockState,
+            state -> createSelectionShapes(getFacing(state), computeMasterTile(state), isUpper(state))
     );
 
     @Override
@@ -357,6 +352,32 @@ public class LogicCabinetTile extends TileEntity implements SelectionShapeOwner,
         } else {
             // should never happen(?)
             return new Schematic();
+        }
+    }
+
+    @Override
+    public void getExtraDrops(Consumer<ItemStack> dropper) {
+        if (circuit != null) {
+            dropper.accept(PCBStackItem.forSchematic(circuit.getFirst()));
+        }
+        RegistryObject<Item> clockItem = CEItems.CLOCK_GENERATORS.get(clock.getType().getRegistryName());
+        if (clockItem != null) {
+            dropper.accept(clockItem.get().getDefaultInstance());
+        }
+    }
+
+    @Nullable
+    @Override
+    public LogicCabinetTile computeMasterTile(BlockState stateHere) {
+        if (isUpper(stateHere)) {
+            TileEntity below = world.getTileEntity(pos.down());
+            if (below instanceof LogicCabinetTile) {
+                return (LogicCabinetTile) below;
+            } else {
+                return null;
+            }
+        } else {
+            return this;
         }
     }
 }

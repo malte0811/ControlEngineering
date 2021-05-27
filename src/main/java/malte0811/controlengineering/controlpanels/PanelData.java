@@ -45,10 +45,10 @@ public class PanelData {
         return components;
     }
 
-    public PanelData copy() {
+    public PanelData copy(boolean clearState) {
         List<PlacedComponent> copiedComponents = new ArrayList<>(components.size());
         for (PlacedComponent component : components) {
-            copiedComponents.add(component.copy());
+            copiedComponents.add(component.copy(clearState));
         }
         return new PanelData(copiedComponents, getTransform());
     }

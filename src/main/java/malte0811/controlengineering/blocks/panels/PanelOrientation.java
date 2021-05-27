@@ -19,7 +19,7 @@ public enum PanelOrientation implements IStringSerializable {
     UP_SOUTH(Direction.UP, Direction.SOUTH),
     UP_WEST(Direction.UP, Direction.WEST),
     //Placed on the wall
-    NORTH(Direction.NORTH, Direction.SOUTH),
+    NORTH(Direction.NORTH, Direction.NORTH),
     EAST(Direction.EAST, NORTH.front),
     SOUTH(Direction.SOUTH, NORTH.front),
     WEST(Direction.WEST, NORTH.front),

@@ -9,6 +9,9 @@ import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.blocks.tape.TeletypeBlock;
 import malte0811.controlengineering.items.EmptyTapeItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
+import malte0811.controlengineering.tiles.base.CETileEntity;
+import malte0811.controlengineering.tiles.base.IExtraDropTile;
+import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.ItemUtil;
 import malte0811.controlengineering.util.math.Matrix4;
@@ -17,18 +20,19 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class TeletypeTile extends TileEntity implements SelectionShapeOwner {
+public class TeletypeTile extends CETileEntity implements SelectionShapeOwner, IExtraDropTile {
     private TeletypeState state = new TeletypeState();
 
     public TeletypeTile(TileEntityType<?> tileEntityTypeIn) {
@@ -108,5 +112,18 @@ public class TeletypeTile extends TileEntity implements SelectionShapeOwner {
 
     public TeletypeState getState() {
         return state;
+    }
+
+    @Override
+    public void getExtraDrops(Consumer<ItemStack> dropper) {
+        if (state.getAvailable() > 0) {
+            dropper.accept(EmptyTapeItem.withLength(state.getAvailable()));
+        }
+        if (!state.getData().isEmpty() || state.getErased() > 0) {
+            byte[] bytes = new byte[state.getData().size() + state.getErased()];
+            System.arraycopy(state.getData().toByteArray(), 0, bytes, 0, state.getData().size());
+            Arrays.fill(bytes, state.getData().size(), bytes.length, BitUtils.fixParity((byte) 0xff));
+            dropper.accept(PunchedTapeItem.withBytes(bytes));
+        }
     }
 }

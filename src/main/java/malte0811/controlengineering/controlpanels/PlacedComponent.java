@@ -149,8 +149,8 @@ public class PlacedComponent extends SelectionShapes {
         return Objects.hash(component, pos);
     }
 
-    public PlacedComponent copy() {
-        return new PlacedComponent(component.copy(), pos);
+    public PlacedComponent copy(boolean clearState) {
+        return new PlacedComponent(component.copy(clearState), pos);
     }
 
     public static List<PlacedComponent> readListFromNBT(INBT list) {

@@ -22,7 +22,9 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
     public PanelOrientation getPlacementData(BlockItemUseContext ctx) {
         Direction top = ctx.getFace();
         Direction front;
-        if (top.getAxis() == Direction.Axis.Y) {
+        if (top == Direction.UP) {
+            front = ctx.getPlacementHorizontalFacing().getOpposite();
+        } else if (top == Direction.DOWN) {
             front = ctx.getPlacementHorizontalFacing();
         } else {
             front = PanelOrientation.HORIZONTAL_FRONT;

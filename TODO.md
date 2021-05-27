@@ -7,3 +7,5 @@
 - Sequencer (see Design.md)
 - Recipes
 - Loot tables
+- Tape splicing
+- 

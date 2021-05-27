@@ -12,24 +12,23 @@ import malte0811.controlengineering.controlpanels.cnc.CNCInstructionParser;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PanelTopItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
+import malte0811.controlengineering.tiles.base.CETileEntity;
+import malte0811.controlengineering.tiles.base.IExtraDropTile;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.serialization.NBTIO;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.util.Constants.BlockFlags;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -39,10 +38,11 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITickableTileEntity {
+public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, ITickableTileEntity, IExtraDropTile {
     @Nonnull
     private byte[] insertedTape = new byte[0];
     private final CachedValue<byte[], CNCJob> currentJob = new CachedValue<>(
@@ -263,5 +263,15 @@ public class PanelCNCTile extends TileEntity implements SelectionShapeOwner, ITi
 
     public boolean hasFailed() {
         return failed;
+    }
+
+    @Override
+    public void getExtraDrops(Consumer<ItemStack> dropper) {
+        if (insertedTape.length > 0) {
+            dropper.accept(PunchedTapeItem.withBytes(insertedTape));
+        }
+        if (hasPanel) {
+            dropper.accept(PanelTopItem.createWithComponents(currentPlacedComponents));
+        }
     }
 }

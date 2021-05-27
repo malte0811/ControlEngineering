@@ -5,6 +5,7 @@ import malte0811.controlengineering.blocks.placement.PlacementBehavior;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.gui.CustomDataContainerProvider;
+import malte0811.controlengineering.tiles.base.IHasMaster;
 import malte0811.controlengineering.util.RaytraceUtils;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
@@ -56,6 +57,9 @@ public abstract class CEBlock<PlacementData, Tile extends TileEntity> extends Bl
             boolean isMoving
     ) {
         TileEntity te = worldIn.getTileEntity(pos);
+        if (te instanceof IHasMaster) {
+            ((IHasMaster) te).setCachedMaster(((IHasMaster) te).computeMasterTile(state));
+        }
         Pair<PlacementData, BlockPos> dataAndOffset = placementBehavior.getPlacementDataAndOffset(state, te);
         super.onReplaced(state, worldIn, pos, newState, isMoving);
         for (BlockPos offset : placementBehavior.getPlacementOffsets(dataAndOffset.getFirst())) {

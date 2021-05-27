@@ -12,6 +12,7 @@ import malte0811.controlengineering.items.PCBStackItem;
 import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
+import malte0811.controlengineering.tiles.base.CETileEntity;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.ItemUtil;
 import malte0811.controlengineering.util.math.Matrix4;
@@ -31,7 +32,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class LogicWorkbenchTile extends TileEntity implements SelectionShapeOwner, ISchematicTile {
+public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOwner, ISchematicTile {
     private Schematic schematic = new Schematic();
     private final CachedValue<BlockState, SelectionShapes> shapes = new CachedValue<>(
             this::getBlockState,

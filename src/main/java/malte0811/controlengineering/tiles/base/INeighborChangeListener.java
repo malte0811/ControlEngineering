@@ -1,4 +1,4 @@
-package malte0811.controlengineering.blocks;
+package malte0811.controlengineering.tiles.base;
 
 import net.minecraft.util.math.BlockPos;
 

@@ -70,7 +70,7 @@ public class PanelModelCache {
         try {
             T result = cache.getIfPresent(list);
             if (result == null) {
-                result = cache.get(list.copy());
+                result = cache.get(list.copy(false));
             }
             return result;
         } catch (ExecutionException e) {

@@ -13,12 +13,13 @@ import malte0811.controlengineering.controlpanels.PanelData;
 import malte0811.controlengineering.controlpanels.PanelSelectionShapes;
 import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
+import malte0811.controlengineering.tiles.base.CETileEntity;
+import malte0811.controlengineering.tiles.base.IHasMaster;
 import malte0811.controlengineering.util.Clearable;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -28,11 +29,12 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ControlPanelTile extends TileEntity implements IBusInterface, SelectionShapeOwner {
+public class ControlPanelTile extends CETileEntity implements IBusInterface, SelectionShapeOwner, IHasMaster {
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private List<PlacedComponent> components = new ArrayList<>();
     private PanelTransform transform = new PanelTransform(
@@ -202,7 +204,13 @@ public class ControlPanelTile extends TileEntity implements IBusInterface, Selec
     }
 
     public PanelData getData() {
-        return new PanelData(getComponents(), getTransform());
+        return new PanelData(this);
+    }
+
+    @Nullable
+    @Override
+    public ControlPanelTile computeMasterTile(BlockState stateHere) {
+        return PanelBlock.getBase(world, stateHere, pos);
     }
 
     public enum SyncType {
