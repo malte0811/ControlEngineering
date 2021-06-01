@@ -49,7 +49,11 @@ public abstract class StackedScreen extends Screen {
     ) {
         if (previousInStack != null) {
             // Pretend the mouse is off-screen to stop button highlighting
+            matrixStack.push();
+            matrixStack.translate(0, 0, -1);
+            matrixStack.scale(1, 1, 0.01f);
             previousInStack.renderWithPrevious(matrixStack, -1, -1, partialTicks, false);
+            matrixStack.pop();
         }
         if (isTop) {
             renderBackground(matrixStack);

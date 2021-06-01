@@ -11,6 +11,7 @@ import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
+import malte0811.controlengineering.blocks.panels.PanelDesignerBlock;
 import malte0811.controlengineering.blocks.tape.TeletypeBlock;
 import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.modelbuilder.DynamicModelBuilder;
@@ -59,7 +60,18 @@ public class BlockstateGenerator extends BlockStateProvider {
         horizontalRotated(CEBlocks.TELETYPE, TeletypeBlock.FACING, obj("typewriter.obj"));
         horizontalRotated(CEBlocks.PANEL_CNC, PanelCNCBlock.FACING, obj("panel_cnc.obj"));
         logicCabinetModel();
-        logicWorkbenchModel();
+        rotatedWithOffset(
+                CEBlocks.LOGIC_WORKBENCH,
+                obj("logic_cabinet/workbench.obj", modLoc("transform/block_half_size")),
+                LogicWorkbenchBlock.Offset.ORIGIN, LogicWorkbenchBlock.OFFSET,
+                LogicWorkbenchBlock.FACING
+        );
+        rotatedWithOffset(
+                CEBlocks.PANEL_DESIGNER,
+                obj("panel_designer.obj", modLoc("transform/block_half_size")),
+                PanelDesignerBlock.Offset.ORIGIN, PanelDesignerBlock.OFFSET,
+                PanelDesignerBlock.FACING
+        );
     }
 
     private void panelModel() {
@@ -103,24 +115,23 @@ public class BlockstateGenerator extends BlockStateProvider {
                 .parent(chassis);
     }
 
-    private void logicWorkbenchModel() {
-        ModelFile workbenchModel = obj("logic_cabinet/workbench.obj", modLoc("transform/block_half_size"));
-        for (LogicWorkbenchBlock.Offset offset : LogicWorkbenchBlock.Offset.values()) {
+    private <T extends Comparable<T>> void rotatedWithOffset(
+            RegistryObject<? extends Block> b,
+            ModelFile mainModel,
+            T baseOffset, Property<T> offsetProp,
+            Property<Direction> facing
+    ) {
+        for (T offset : offsetProp.getAllowedValues()) {
             ModelFile model;
-            if (offset == LogicWorkbenchBlock.Offset.ORIGIN) {
-                model = workbenchModel;
+            if (offset == baseOffset) {
+                model = mainModel;
             } else {
                 model = EMPTY_MODEL.model;
             }
-            horizontalRotated(
-                    CEBlocks.LOGIC_WORKBENCH,
-                    LogicWorkbenchBlock.FACING,
-                    model,
-                    ImmutableMap.of(LogicWorkbenchBlock.OFFSET, offset)
-            );
+            horizontalRotated(b, facing, model, ImmutableMap.of(offsetProp, offset));
         }
-        itemModels().getBuilder(ItemModels.name(CEBlocks.LOGIC_WORKBENCH))
-                .parent(workbenchModel);
+        itemModels().getBuilder(ItemModels.name(b))
+                .parent(mainModel);
     }
 
     private BlockModelBuilder obj(String objFile) {

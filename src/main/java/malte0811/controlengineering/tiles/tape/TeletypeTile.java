@@ -23,6 +23,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.shapes.VoxelShape;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -33,6 +34,9 @@ import java.util.function.Consumer;
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
 public class TeletypeTile extends CETileEntity implements SelectionShapeOwner, IExtraDropTile {
+    public static final VoxelShape INPUT_SHAPE = createPixelRelative(11, 6, 2, 15, 9, 4);
+    public static final VoxelShape OUTPUT_SHAPE = createPixelRelative(2, 6, 1, 6, 10, 5);
+
     private TeletypeState state = new TeletypeState();
 
     public TeletypeTile(TileEntityType<?> tileEntityTypeIn) {
@@ -90,11 +94,11 @@ public class TeletypeTile extends CETileEntity implements SelectionShapeOwner, I
         List<SelectionShapes> subshapes = new ArrayList<>(2);
         // Punched tape output
         subshapes.add(new SingleShape(
-                createPixelRelative(2, 6, 1, 6, 10, 5), ctx -> tile.removeWrittenClick(ctx.getPlayer())
+                OUTPUT_SHAPE, ctx -> tile.removeWrittenClick(ctx.getPlayer())
         ));
         // Add clear tape to input/take it from input
         subshapes.add(new SingleShape(
-                createPixelRelative(11, 6, 2, 15, 9, 4),
+                INPUT_SHAPE,
                 ctx -> tile.removeOrAddClearTape(ctx.getPlayer(), ctx.getItem())
         ));
         return new ListShapes(

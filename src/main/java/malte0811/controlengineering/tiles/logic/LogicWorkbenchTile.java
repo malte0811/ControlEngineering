@@ -50,7 +50,7 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
                     return new ListShapes(
                             baseShape,
                             Matrix4.inverseFacing(facing),
-                            ImmutableList.<SelectionShapes>of(
+                            ImmutableList.of(
                                     new SingleShape(LogicWorkbenchBlock.BURNER, create),
                                     new SingleShape(LogicWorkbenchBlock.DRAWERS_TOP_RIGHT, drawers)
                             ),

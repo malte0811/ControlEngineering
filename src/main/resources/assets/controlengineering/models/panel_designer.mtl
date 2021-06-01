@@ -1,0 +1,4 @@
+newmtl tty
+map_Kd controlengineering:block/typewriter
+newmtl panel_designer
+map_Kd controlengineering:block/panel_designer

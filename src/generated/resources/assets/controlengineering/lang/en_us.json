@@ -6,6 +6,7 @@
   "block.controlengineering.logic_cabinet": "Logic Cabinet",
   "block.controlengineering.logic_workbench": "Logic Workbench",
   "block.controlengineering.panel_cnc": "Control Panel CNC",
+  "block.controlengineering.panel_designer": "Panel Designer",
   "block.controlengineering.teletype": "Teletype",
   "cell.controlengineering.and2.name": "2-input AND",
   "cell.controlengineering.and3.name": "3-input AND",
