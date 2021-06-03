@@ -1,6 +1,5 @@
 package malte0811.controlengineering.tiles.tape;
 
-import it.unimi.dsi.fastutil.bytes.ByteList;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
@@ -13,11 +12,9 @@ import malte0811.controlengineering.tiles.base.CETileEntity;
 import malte0811.controlengineering.tiles.base.IExtraDropTile;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
-import malte0811.controlengineering.util.ItemUtil;
 import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
@@ -66,40 +63,15 @@ public class TeletypeTile extends CETileEntity implements SelectionShapeOwner, I
         return selectionShapes.get();
     }
 
-    private ActionResultType removeWrittenClick(PlayerEntity player) {
-        ByteList written = state.getData();
-        if (!written.isEmpty() && player != null) {
-            ItemUtil.giveOrDrop(player, PunchedTapeItem.withBytes(written.toByteArray()));
-            written.clear();
-            return ActionResultType.SUCCESS;
-        } else {
-            return ActionResultType.FAIL;
-        }
-    }
-
-    private ActionResultType removeOrAddClearTape(PlayerEntity player, ItemStack item) {
-        final int length = EmptyTapeItem.getLength(item);
-        if (length > 0) {
-            //TODO limit?
-            state.addAvailable(length);
-            item.shrink(1);
-        } else if (state.getAvailable() > 0 && player != null) {
-            ItemUtil.giveOrDrop(player, EmptyTapeItem.withLength(state.getAvailable()));
-            state.setAvailable(0);
-        }
-        return ActionResultType.SUCCESS;
-    }
-
     private static SelectionShapes createSelectionShapes(Direction d, TeletypeTile tile) {
         List<SelectionShapes> subshapes = new ArrayList<>(2);
         // Punched tape output
         subshapes.add(new SingleShape(
-                OUTPUT_SHAPE, ctx -> tile.removeWrittenClick(ctx.getPlayer())
+                OUTPUT_SHAPE, ctx -> tile.getState().removeWrittenTape(ctx.getPlayer())
         ));
         // Add clear tape to input/take it from input
         subshapes.add(new SingleShape(
-                INPUT_SHAPE,
-                ctx -> tile.removeOrAddClearTape(ctx.getPlayer(), ctx.getItem())
+                INPUT_SHAPE, ctx -> tile.getState().removeOrAddClearTape(ctx.getPlayer(), ctx.getItem())
         ));
         return new ListShapes(
                 TeletypeBlock.SHAPE_PROVIDER.apply(d),

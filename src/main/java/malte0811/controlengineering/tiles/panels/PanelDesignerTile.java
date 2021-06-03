@@ -2,6 +2,7 @@ package malte0811.controlengineering.tiles.panels;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelDesignerBlock;
 import malte0811.controlengineering.blocks.panels.PanelDesignerBlock.Offset;
@@ -10,8 +11,11 @@ import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
+import malte0811.controlengineering.controlpanels.cnc.CNCInstructionGenerator;
 import malte0811.controlengineering.tiles.base.CETileEntity;
+import malte0811.controlengineering.tiles.tape.TeletypeState;
 import malte0811.controlengineering.tiles.tape.TeletypeTile;
+import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.serialization.Codecs;
@@ -57,10 +61,10 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
                             state, PanelDesignerTile::writeTape
                     );
                     Function<ItemUseContext, ActionResultType> addTape = makeInteraction(
-                            state, PanelDesignerTile::addTape
+                            state, (t, ctx) -> t.state.removeOrAddClearTape(ctx.getPlayer(), ctx.getItem())
                     );
                     Function<ItemUseContext, ActionResultType> takeTape = makeInteraction(
-                            state, PanelDesignerTile::takeTape
+                            state, (t, ctx) -> t.state.removeWrittenTape(ctx.getPlayer())
                     );
                     return new ListShapes(
                             baseShape,
@@ -79,6 +83,7 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
     );
 
     private List<PlacedComponent> components = new ArrayList<>();
+    private TeletypeState state;
 
     public PanelDesignerTile(TileEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
@@ -107,8 +112,9 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
     public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
         super.read(state, nbt);
         components = new ArrayList<>(
-                Codecs.read(COMPONENTS_CODEC, nbt.get("components")).result().orElse(ImmutableList.of())
+                Codecs.readOptional(COMPONENTS_CODEC, nbt.get("components")).orElse(ImmutableList.of())
         );
+        this.state = Codecs.readOptional(TeletypeState.CODEC, nbt.get("state")).orElseGet(TeletypeState::new);
     }
 
     @Nonnull
@@ -116,6 +122,7 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
     public CompoundNBT write(@Nonnull CompoundNBT compound) {
         compound = super.write(compound);
         compound.put("components", Codecs.encode(COMPONENTS_CODEC, components));
+        compound.put("state", Codecs.encode(TeletypeState.CODEC, state));
         return compound;
     }
 
@@ -131,17 +138,10 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
     }
 
     private ActionResultType writeTape(ItemUseContext ctx) {
-        //TODO implement
-        return ActionResultType.SUCCESS;
-    }
-
-    private ActionResultType addTape(ItemUseContext ctx) {
-        //TODO implement
-        return ActionResultType.SUCCESS;
-    }
-
-    private ActionResultType takeTape(ItemUseContext ctx) {
-        //TODO implement
+        final String instructions = CNCInstructionGenerator.toInstructions(components);
+        final byte[] bytes = BitUtils.toBytesWithParity(instructions);
+        //TODO handle incomplete writes?
+        state.tryTypeAll(new ByteArrayList(bytes, 0, bytes.length));
         return ActionResultType.SUCCESS;
     }
 }

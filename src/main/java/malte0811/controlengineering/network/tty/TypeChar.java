@@ -1,7 +1,6 @@
 package malte0811.controlengineering.network.tty;
 
 import malte0811.controlengineering.tiles.tape.TeletypeState;
-import malte0811.controlengineering.util.BitUtils;
 import net.minecraft.network.PacketBuffer;
 
 public class TypeChar extends TTYSubPacket {
@@ -22,16 +21,6 @@ public class TypeChar extends TTYSubPacket {
 
     @Override
     public boolean process(TeletypeState state) {
-        if (state.getAvailable() <= 0 && state.getErased() <= 0) {
-            return false;
-        }
-        if (state.getErased() > 0) {
-            state.setErased(state.getErased() - 1);
-            state.getData().add(BitUtils.fixParity((byte) 0xff));
-        } else {
-            state.setAvailable(state.getAvailable() - 1);
-            state.getData().add(BitUtils.fixParity(typed));
-        }
-        return true;
+        return state.tryTypeChar(typed);
     }
 }
