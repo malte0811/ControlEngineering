@@ -4,10 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
-import malte0811.controlengineering.logic.cells.LeafcellType;
-import malte0811.controlengineering.logic.cells.Pin;
-import malte0811.controlengineering.logic.cells.PinDirection;
-import malte0811.controlengineering.logic.cells.SignalType;
+import malte0811.controlengineering.logic.cells.*;
 
 import java.util.Random;
 
@@ -28,7 +25,9 @@ public class RSLatch extends LeafcellType<Boolean> {
                         Q, new Pin(SignalType.DIGITAL, PinDirection.DELAYED_OUTPUT),
                         NOT_Q, new Pin(SignalType.DIGITAL, PinDirection.DELAYED_OUTPUT)
                 ),
-                false, Codec.BOOL, 5
+                false,
+                Codec.BOOL,
+                new CellCost(5, 4.5)
         );
     }
 

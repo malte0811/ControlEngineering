@@ -1,8 +1,10 @@
 package malte0811.controlengineering.logic.cells.impl;
 
+import blusunrize.immersiveengineering.api.tool.LogicCircuitHandler;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
+import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.logic.cells.Pin;
 import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
@@ -12,15 +14,24 @@ public class AssociativeFunctionCell extends StatelessCell {
     private final DoubleBiFunction func;
     private final double baseState;
 
-    public AssociativeFunctionCell(int numInputs, IBooleanFunction func, boolean baseState, int numTubes) {
-        this(numInputs, (a, b) -> debool(func.apply(bool(a), bool(b))), debool(baseState), numTubes);
+    public AssociativeFunctionCell(int numInputs, LogicCircuitHandler.LogicCircuitOperator func, boolean baseState) {
+        this(
+                numInputs,
+                (a, b) -> func.apply(new boolean[]{a, b}),
+                baseState,
+                CellCost.matchingIECosts(func, numInputs)
+        );
     }
 
-    public AssociativeFunctionCell(int numInputs, DoubleBiFunction func, double baseState, int numTubes) {
+    public AssociativeFunctionCell(int numInputs, IBooleanFunction func, boolean baseState, CellCost cost) {
+        this(numInputs, (a, b) -> debool(func.apply(bool(a), bool(b))), debool(baseState), cost);
+    }
+
+    public AssociativeFunctionCell(int numInputs, DoubleBiFunction func, double baseState, CellCost cost) {
         super(
                 Pin.numbered(numInputs, "in", SignalType.DIGITAL, PinDirection.INPUT),
                 ImmutableMap.of(DEFAULT_OUT_NAME, new Pin(SignalType.DIGITAL, PinDirection.OUTPUT)),
-                numTubes
+                cost
         );
         this.func = func;
         this.baseState = baseState;

@@ -1,7 +1,6 @@
 package malte0811.controlengineering.items;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.util.Unit;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.CEBlocks;
@@ -55,7 +54,7 @@ public class CEItems {
     private static final RegistryObject<CEBlockItem<Direction>> PANEL_CNC = blockItemCE(CEBlocks.PANEL_CNC);
     private static final RegistryObject<CEBlockItem<Direction>> LOGIC_CABINET = blockItemCE(CEBlocks.LOGIC_CABINET);
     private static final RegistryObject<CEBlockItem<Direction>> LOGIC_WORKBENCH = blockItemCE(CEBlocks.LOGIC_WORKBENCH);
-    private static final RegistryObject<CEBlockItem<Unit>> PANEL_DESIGNER = blockItemCE(CEBlocks.PANEL_DESIGNER);
+    private static final RegistryObject<CEBlockItem<Direction>> PANEL_DESIGNER = blockItemCE(CEBlocks.PANEL_DESIGNER);
 
     private static <T> RegistryObject<CEBlockItem<T>> blockItemCE(RegistryObject<? extends CEBlock<T, ?>> block) {
         return blockItemCE(block, simpleItemProperties());

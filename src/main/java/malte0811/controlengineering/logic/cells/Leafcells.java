@@ -3,30 +3,25 @@ package malte0811.controlengineering.logic.cells;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.cells.impl.*;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.shapes.IBooleanFunction;
 
+import static blusunrize.immersiveengineering.api.tool.LogicCircuitHandler.LogicCircuitOperator;
 
 public class Leafcells {
-    // TODO adjust tube count to what IE will use, add scaling
-    public static final AssociativeFunctionCell AND2 = new AssociativeFunctionCell(2, IBooleanFunction.AND, true, 3);
-    public static final AssociativeFunctionCell AND3 = new AssociativeFunctionCell(3, IBooleanFunction.AND, true, 4);
-    public static final AssociativeFunctionCell OR2 = new AssociativeFunctionCell(2, IBooleanFunction.OR, false, 3);
-    public static final AssociativeFunctionCell OR3 = new AssociativeFunctionCell(3, IBooleanFunction.OR, false, 4);
-    public static final AssociativeFunctionCell XOR2 = new AssociativeFunctionCell(
-            2, IBooleanFunction.NOT_SAME, false, 5
-    );
-    public static final AssociativeFunctionCell XOR3 = new AssociativeFunctionCell(
-            3, IBooleanFunction.NOT_SAME, false, 8
-    );
-    public static final AssociativeFunctionCell NAND2 = new InvertedAssociativeCell(2, IBooleanFunction.AND, true, 1);
-    public static final AssociativeFunctionCell NAND3 = new InvertedAssociativeCell(3, IBooleanFunction.AND, true, 2);
-    public static final AssociativeFunctionCell NOR2 = new InvertedAssociativeCell(2, IBooleanFunction.OR, false, 1);
-    public static final AssociativeFunctionCell NOR3 = new InvertedAssociativeCell(3, IBooleanFunction.OR, false, 2);
+    public static final AssociativeFunctionCell AND2 = new AssociativeFunctionCell(2, LogicCircuitOperator.AND, true);
+    public static final AssociativeFunctionCell AND3 = new AssociativeFunctionCell(3, LogicCircuitOperator.AND, true);
+    public static final AssociativeFunctionCell OR2 = new AssociativeFunctionCell(2, LogicCircuitOperator.OR, false);
+    public static final AssociativeFunctionCell OR3 = new AssociativeFunctionCell(3, LogicCircuitOperator.OR, false);
+    public static final AssociativeFunctionCell XOR2 = new AssociativeFunctionCell(2, LogicCircuitOperator.XOR, false);
+    public static final AssociativeFunctionCell XOR3 = new AssociativeFunctionCell(3, LogicCircuitOperator.XOR, false);
+    public static final AssociativeFunctionCell NAND2 = new InvertedAssociativeCell(2, LogicCircuitOperator.AND, true);
+    public static final AssociativeFunctionCell NAND3 = new InvertedAssociativeCell(3, LogicCircuitOperator.AND, true);
+    public static final AssociativeFunctionCell NOR2 = new InvertedAssociativeCell(2, LogicCircuitOperator.OR, false);
+    public static final AssociativeFunctionCell NOR3 = new InvertedAssociativeCell(3, LogicCircuitOperator.OR, false);
     public static final NotCell NOT = new NotCell();
     public static final RSLatch RS_LATCH = new RSLatch();
     public static final SchmittTrigger SCHMITT_TRIGGER = new SchmittTrigger();
-    public static final DelayCell DELAY_LINE = new DelayCell(SignalType.ANALOG, 2);
-    public static final DelayCell D_LATCH = new DelayCell(SignalType.DIGITAL, 2);
+    public static final DelayCell DELAY_LINE = new DelayCell(SignalType.ANALOG, 2, 10);
+    public static final DelayCell D_LATCH = new DelayCell(SignalType.DIGITAL, 3, 3);
     public static final Digitizer DIGITIZER = new Digitizer();
     public static final Comparator COMPARATOR = new Comparator();
 

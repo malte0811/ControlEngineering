@@ -3,6 +3,7 @@ package malte0811.controlengineering.logic.cells.impl;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
+import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.logic.cells.Pin;
 import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
@@ -12,7 +13,7 @@ public class Digitizer extends StatelessCell {
         super(
                 ImmutableMap.of(DEFAULT_IN_NAME, new Pin(SignalType.ANALOG, PinDirection.INPUT)),
                 ImmutableMap.of(DEFAULT_OUT_NAME, new Pin(SignalType.DIGITAL, PinDirection.OUTPUT)),
-                1
+                new CellCost(1, 1)
         );
     }
 

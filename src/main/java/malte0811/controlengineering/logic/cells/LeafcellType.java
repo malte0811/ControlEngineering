@@ -21,21 +21,21 @@ public abstract class LeafcellType<State> extends TypedRegistryEntry<State> {
 
     private final Map<String, Pin> inputPins;
     private final Map<String, Pin> outputPins;
-    private final double numTubes;
+    private final CellCost cost;
 
     protected LeafcellType(
             Map<String, Pin> inputPins,
             Map<String, Pin> outputPins,
             State initialState,
             Codec<State> stateCodec,
-            int numTubes
+            CellCost cost
     ) {
         super(initialState, stateCodec);
         Preconditions.checkArgument(inputPins.values().stream().noneMatch(p -> p.getDirection().isOutput()));
         Preconditions.checkArgument(outputPins.values().stream().allMatch(p -> p.getDirection().isOutput()));
         this.inputPins = inputPins;
         this.outputPins = outputPins;
-        this.numTubes = numTubes;
+        this.cost = cost;
     }
 
     @Override
@@ -55,8 +55,8 @@ public abstract class LeafcellType<State> extends TypedRegistryEntry<State> {
         return outputPins;
     }
 
-    public double getNumTubes() {
-        return numTubes;
+    public CellCost getCost() {
+        return cost;
     }
 
     protected static boolean bool(double value) {

@@ -9,7 +9,7 @@ version="v"
 displayName="Control Engineering"
 authors="malte0811"
 description='''
-An addon for Imersive Engineering providing control panels and "logic boxes"
+An addon for Immersive Engineering providing control panels and "logic boxes"
 '''
 [[dependencies.controlengineering]]
     modId="immersiveengineering"

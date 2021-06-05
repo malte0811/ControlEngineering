@@ -1,5 +1,6 @@
 package malte0811.controlengineering.tiles.logic;
 
+import blusunrize.immersiveengineering.api.IETags;
 import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
@@ -18,8 +19,10 @@ import malte0811.controlengineering.util.ItemUtil;
 import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tags.ITag;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
@@ -33,15 +36,25 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOwner, ISchematicTile {
+    private static final ITag<Item> TUBES = IETags.circuitLogic;
+    //TODO solder?
+    //TODO add utility tag
+    private static final ITag<Item> WIRE = IETags.copperWire;
+
     private Schematic schematic = new Schematic();
+    private final CircuitIngredientDrawer tubeStorage = new CircuitIngredientDrawer(TUBES);
+    private final CircuitIngredientDrawer wireStorage = new CircuitIngredientDrawer(WIRE);
     private final CachedValue<BlockState, SelectionShapes> shapes = new CachedValue<>(
             this::getBlockState,
             state -> {
                 LogicWorkbenchBlock.Offset offset = state.get(LogicWorkbenchBlock.OFFSET);
                 Direction facing = state.get(LogicWorkbenchBlock.FACING);
                 VoxelShape baseShape = LogicWorkbenchBlock.SHAPE.apply(offset, facing);
-                Function<ItemUseContext, ActionResultType> drawers = makeInteraction(
-                        state, LogicWorkbenchTile::handleDrawerClick
+                Function<ItemUseContext, ActionResultType> wireDrawer = makeInteraction(
+                        state, makeDrawerClick(t -> t.wireStorage)
+                );
+                Function<ItemUseContext, ActionResultType> tubeDrawer = makeInteraction(
+                        state, makeDrawerClick(t -> t.tubeStorage)
                 );
                 if (offset == LogicWorkbenchBlock.Offset.TOP_RIGHT) {
                     Function<ItemUseContext, ActionResultType> create = makeInteraction(
@@ -52,12 +65,20 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
                             Matrix4.inverseFacing(facing),
                             ImmutableList.of(
                                     new SingleShape(LogicWorkbenchBlock.BURNER, create),
-                                    new SingleShape(LogicWorkbenchBlock.DRAWERS_TOP_RIGHT, drawers)
+                                    new SingleShape(LogicWorkbenchBlock.WIRE_DRAWER_TOP_RIGHT, wireDrawer)
                             ),
                             $ -> ActionResultType.PASS
                     );
                 } else if (offset == LogicWorkbenchBlock.Offset.TOP_LEFT) {
-                    return new SingleShape(baseShape, drawers);
+                    return new ListShapes(
+                            baseShape,
+                            Matrix4.inverseFacing(facing),
+                            ImmutableList.of(
+                                    new SingleShape(LogicWorkbenchBlock.TUBE_DRAWER, tubeDrawer),
+                                    new SingleShape(LogicWorkbenchBlock.WIRE_DRAWER, wireDrawer)
+                            ),
+                            $ -> ActionResultType.PASS
+                    );
                 } else {
                     return new SingleShape(baseShape, makeInteraction(state, LogicWorkbenchTile::handleMainClick));
                 }
@@ -91,6 +112,8 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
     @Override
     public CompoundNBT write(@Nonnull CompoundNBT compound) {
         compound.put("schematic", Codecs.encode(Schematic.CODEC, schematic));
+        compound.put("tubes", tubeStorage.write());
+        compound.put("wires", wireStorage.write());
         return super.write(compound);
     }
 
@@ -98,12 +121,13 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
     public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
         super.read(state, nbt);
         schematic = Codecs.readOrNull(Schematic.CODEC, nbt.get("schematic"));
+        tubeStorage.read(nbt.getCompound("tubes"));
+        wireStorage.read(nbt.getCompound("wires"));
         if (schematic == null) {
             schematic = new Schematic();
         }
     }
 
-    //TODO only pass the relevant and correct parts of ctx
     private ActionResultType handleMainClick(ItemUseContext ctx) {
         if (!world.isRemote) {
             CEBlocks.LOGIC_WORKBENCH.get().openContainer(
@@ -126,17 +150,24 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
         if (numBoards > ctx.getItem().getCount()) {
             return ActionResultType.FAIL;
         }
-        //TODO check and consume tubes and wiring, maybe even steiner tree stuff at some point
+        final int numWires = circuit.get().getWireLength();
         if (!world.isRemote) {
-            ctx.getItem().shrink(numBoards);
-            ItemUtil.giveOrDrop(ctx.getPlayer(), PCBStackItem.forSchematic(schematic));
+            if (tubeStorage.canConsume(numTubes) && wireStorage.canConsume(numWires)) {
+                tubeStorage.consume(numTubes);
+                wireStorage.consume(numWires);
+                ctx.getItem().shrink(numBoards);
+                ItemUtil.giveOrDrop(ctx.getPlayer(), PCBStackItem.forSchematic(schematic));
+            } else {
+                //TODO show message
+            }
         }
         return ActionResultType.SUCCESS;
     }
 
-    private ActionResultType handleDrawerClick(ItemUseContext ctx) {
-        //TODO
-        return ActionResultType.FAIL;
+    private static BiFunction<LogicWorkbenchTile, ItemUseContext, ActionResultType> makeDrawerClick(
+            Function<LogicWorkbenchTile, CircuitIngredientDrawer> getDrawer
+    ) {
+        return (tile, ctx) -> getDrawer.apply(tile).interact(ctx);
     }
 
     @Override

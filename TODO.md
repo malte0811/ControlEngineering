@@ -8,3 +8,4 @@
 - Recipes
 - Loot tables
 - Tape splicing
+- Display requirements vs stored count in logic design screen

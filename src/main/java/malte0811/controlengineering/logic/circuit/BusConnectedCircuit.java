@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
+import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.nbt.CompoundNBT;
@@ -12,6 +13,7 @@ import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.ToDoubleFunction;
 
 public class BusConnectedCircuit {
 
@@ -104,10 +106,23 @@ public class BusConnectedCircuit {
         return outputValues;
     }
 
-    public int getNumTubes() {
+    private int getTotalCost(ToDoubleFunction<CellCost> individualCost) {
         return MathHelper.ceil(getCircuit()
                 .getCellTypes()
-                .mapToDouble(LeafcellType::getNumTubes)
+                .map(LeafcellType::getCost)
+                .mapToDouble(individualCost)
                 .sum());
+    }
+
+    public int getNumTubes() {
+        return getTotalCost(CellCost::getNumTubes);
+    }
+
+    public int getWireLength() {
+        return getTotalCost(CellCost::getWireLength);
+    }
+
+    public int getSolderAmount() {
+        return getTotalCost(CellCost::getSolderAmount);
     }
 }

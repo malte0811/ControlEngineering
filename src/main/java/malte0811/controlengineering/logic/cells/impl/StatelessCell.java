@@ -3,14 +3,15 @@ package malte0811.controlengineering.logic.cells.impl;
 import com.mojang.datafixers.util.Unit;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
 
 import java.util.Map;
 
 public abstract class StatelessCell extends LeafcellType<Unit> {
-    protected StatelessCell(Map<String, Pin> inputPins, Map<String, Pin> outputPins, int numTubes) {
-        super(inputPins, outputPins, Unit.INSTANCE, Codec.unit(Unit.INSTANCE), numTubes);
+    protected StatelessCell(Map<String, Pin> inputPins, Map<String, Pin> outputPins, CellCost cost) {
+        super(inputPins, outputPins, Unit.INSTANCE, Codec.unit(Unit.INSTANCE), cost);
     }
 
     @Override

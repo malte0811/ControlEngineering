@@ -41,11 +41,10 @@ public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> 
             createPixelRelative(11, 0, 3, 13, 6, 5),
             createPixelRelative(9, 4.5, 3.5, 11, 5.5, 4.5)
     );
-    private static final VoxelShape DRAWERS_TOP = VoxelShapes.or(
-            createPixelRelative(2, 0, 2, 10, 8, 8),
-            createPixelRelative(12, 0, 2, 20, 8, 8)
-    );
-    public static final VoxelShape DRAWERS_TOP_RIGHT = DRAWERS_TOP.withOffset(-1, 0, 0);
+    public static final VoxelShape TUBE_DRAWER = createPixelRelative(2, 0, 2, 10, 8, 8);
+    public static final VoxelShape WIRE_DRAWER = createPixelRelative(12, 0, 2, 20, 8, 8);
+    private static final VoxelShape DRAWERS_TOP = VoxelShapes.or(TUBE_DRAWER, WIRE_DRAWER);
+    public static final VoxelShape WIRE_DRAWER_TOP_RIGHT = WIRE_DRAWER.withOffset(-1, 0, 0);
 
     public static final HorizontalWithExtraShape<Offset> SHAPE = new HorizontalWithExtraShape<>(
             FromBlockFunction.getProperty(OFFSET),
@@ -63,7 +62,7 @@ public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> 
                     .put(Offset.FRONT_RIGHT, VoxelShapes.or(TABLE_TOP, LEG_RIGHT_FRONT))
                     .put(Offset.BACK_RIGHT, VoxelShapes.or(TABLE_TOP, LEG_RIGHT_BACK))
                     .put(Offset.TOP_LEFT, DRAWERS_TOP)
-                    .put(Offset.TOP_RIGHT, VoxelShapes.or(BURNER, DRAWERS_TOP_RIGHT))
+                    .put(Offset.TOP_RIGHT, VoxelShapes.or(BURNER, WIRE_DRAWER_TOP_RIGHT))
                     .build()
     );
 
