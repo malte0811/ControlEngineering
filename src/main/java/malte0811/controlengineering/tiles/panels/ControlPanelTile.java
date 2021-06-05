@@ -18,21 +18,15 @@ import malte0811.controlengineering.tiles.base.IHasMaster;
 import malte0811.controlengineering.util.Clearable;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class ControlPanelTile extends CETileEntity implements IBusInterface, SelectionShapeOwner, IHasMaster {
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
@@ -97,49 +91,21 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
         }
     }
 
-    @Nonnull
     @Override
-    public CompoundNBT write(@Nonnull CompoundNBT compound) {
-        CompoundNBT encoded = super.write(compound);
-        encoded.merge(new PanelData(this).toNBT());
-        return encoded;
+    protected CompoundNBT writeSyncedData(CompoundNBT out) {
+        out.merge(new PanelData(this).toNBT());
+        return out;
     }
 
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        CompoundNBT nbttagcompound = new CompoundNBT();
-        write(nbttagcompound);
-        return new SUpdateTileEntityPacket(this.pos, 3, nbttagcompound);
-    }
-
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        read(getBlockState(), pkt.getNbtCompound());
+    @Override
+    protected void readSyncedData(CompoundNBT in) {
+        readComponentsAndTransform(in, getBlockState().get(PanelOrientation.PROPERTY));
     }
 
     @Nonnull
     @Override
-    public CompoundNBT getUpdateTag() {
-        return write(new CompoundNBT());
-    }
-
-    public Optional<PlacedComponent> getTargetedComponent(RayTraceContext ctx) {
-        BlockPos topPos = pos.offset(getBlockState().get(PanelOrientation.PROPERTY).top);
-        RayTraceContext topCtx = getTransform().toPanelRay(ctx.getStartVec(), ctx.getEndVec(), topPos);
-        Optional<PlacedComponent> closest = Optional.empty();
-        double minDistanceSq = Double.POSITIVE_INFINITY;
-        for (PlacedComponent comp : getComponents()) {
-            final AxisAlignedBB selectionShape = comp.getSelectionShape();
-            if (selectionShape != null) {
-                final Optional<Vector3d> result = selectionShape.rayTrace(topCtx.getStartVec(), topCtx.getEndVec());
-                if (result.isPresent()) {
-                    final double distanceSq = result.get().squareDistanceTo(topCtx.getStartVec());
-                    if (distanceSq < minDistanceSq) {
-                        minDistanceSq = distanceSq;
-                        closest = Optional.of(comp);
-                    }
-                }
-            }
-        }
-        return closest;
+    public CompoundNBT write(@Nonnull CompoundNBT compound) {
+        return writeSyncedData(compound);
     }
 
     public List<PlacedComponent> getComponents() {

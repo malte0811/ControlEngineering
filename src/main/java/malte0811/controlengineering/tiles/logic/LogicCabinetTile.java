@@ -30,8 +30,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -116,13 +114,15 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
         return compound;
     }
 
-    private CompoundNBT writeDynamicSyncNBT(CompoundNBT result) {
+    @Override
+    protected CompoundNBT writeSyncedData(CompoundNBT result) {
         result.putBoolean("hasClock", clock.getType().isActiveClock());
         result.putInt("numTubes", numTubes);
         return result;
     }
 
-    private void readDynamicSyncNBT(CompoundNBT tag) {
+    @Override
+    protected void readSyncedData(CompoundNBT tag) {
         if (tag.getBoolean("hasClock"))
             clock = ClockTypes.ALWAYS_ON.newInstance();
         else
@@ -132,29 +132,6 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
         world.notifyBlockUpdate(
                 pos, getBlockState(), getBlockState(), Constants.BlockFlags.DEFAULT
         );
-    }
-
-    @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
-        super.handleUpdateTag(state, tag);
-        readDynamicSyncNBT(tag);
-    }
-
-    @Nonnull
-    @Override
-    public CompoundNBT getUpdateTag() {
-        return writeDynamicSyncNBT(super.getUpdateTag());
-    }
-
-    @Nullable
-    @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, -1, writeDynamicSyncNBT(new CompoundNBT()));
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        readDynamicSyncNBT(pkt.getNbtCompound());
     }
 
     @Nonnull

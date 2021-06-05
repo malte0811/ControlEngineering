@@ -16,14 +16,11 @@ import malte0811.controlengineering.tiles.base.CETileEntity;
 import malte0811.controlengineering.tiles.base.IExtraDropTile;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.math.Matrix4;
-import malte0811.controlengineering.util.serialization.NBTIO;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
@@ -216,14 +213,22 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
     @Override
     public CompoundNBT write(@Nonnull CompoundNBT compound) {
         super.write(compound);
-        serialize(NBTIO.writer(compound));
+        writeSyncedData(compound);
         return compound;
     }
 
     @Override
     public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
         super.read(state, nbt);
-        serialize(NBTIO.reader(nbt));
+        readSyncedData(nbt);
+    }
+
+    @Override
+    protected void readSyncedData(CompoundNBT in) {
+        in.putByteArray("tape", insertedTape);
+        in.putInt("currentTick", currentTicksInJob);
+        in.putBoolean("hasPanel", hasPanel);
+        in.putBoolean("failed", failed);
         currentPlacedComponents.clear();
         CNCJob job = currentJob.get();
         if (job != null) {
@@ -237,28 +242,13 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
         }
     }
 
-    private void serialize(NBTIO io) {
-        insertedTape = io.handle("tape", insertedTape);
-        currentTicksInJob = io.handle("currentTick", currentTicksInJob);
-        hasPanel = io.handle("hasPanel", hasPanel);
-        failed = io.handle("failed", failed);
-    }
-
-    @Nonnull
     @Override
-    public CompoundNBT getUpdateTag() {
-        return write(new CompoundNBT());
-    }
-
-    @Nullable
-    @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, -1, getUpdateTag());
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        read(getBlockState(), pkt.getNbtCompound());
+    protected CompoundNBT writeSyncedData(CompoundNBT compound) {
+        insertedTape = compound.getByteArray("tape");
+        currentTicksInJob = compound.getInt("currentTick");
+        hasPanel = compound.getBoolean("hasPanel");
+        failed = compound.getBoolean("failed");
+        return compound;
     }
 
     public boolean hasFailed() {

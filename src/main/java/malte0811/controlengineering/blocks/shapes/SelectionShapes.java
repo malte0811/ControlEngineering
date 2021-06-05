@@ -15,8 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 public abstract class SelectionShapes {
+    private Supplier<String> getText = () -> null;
+
     @Nullable
     public abstract VoxelShape mainShape();
 
@@ -25,6 +28,16 @@ public abstract class SelectionShapes {
 
     @Nonnull
     public abstract List<? extends SelectionShapes> innerShapes();
+
+    @Nullable
+    public final String getOverlayText() {
+        return getText.get();
+    }
+
+    public SelectionShapes setTextGetter(Supplier<String> getText) {
+        this.getText = getText;
+        return this;
+    }
 
     public abstract ActionResultType onUse(ItemUseContext ctx, ActionResultType defaultType);
 

@@ -16,6 +16,7 @@ import malte0811.controlengineering.logic.schematic.SchematicChecker;
 import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.ConstantSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.IOSymbol;
+import malte0811.controlengineering.tiles.logic.LogicWorkbenchTile;
 import malte0811.controlengineering.util.Constants;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
@@ -117,6 +118,9 @@ public class LangGenerator extends LanguageProvider {
         add(ColorSelector.RED, "Red: %d");
         add(ColorSelector.GREEN, "Green: %d");
         add(ColorSelector.BLUE, "Blue: %d");
+
+        add(LogicWorkbenchTile.TUBES_EMPTY_KEY, "Vacuum tube storage: Empty");
+        add(LogicWorkbenchTile.WIRES_EMPTY_KEY, "Wire storage: Empty");
     }
 
     private void add(LeafcellType<?> type, String name) {

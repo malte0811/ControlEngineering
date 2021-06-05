@@ -14,27 +14,33 @@ public class CircuitIngredientDrawer {
     private static final int CAPACITY = 64;
 
     private final ITag<Item> filter;
+    private final String emptyKey;
     private ItemStack stored = ItemStack.EMPTY;
 
-    public CircuitIngredientDrawer(ITag<Item> filter) {
+    public CircuitIngredientDrawer(ITag<Item> filter, String emptyKey) {
         this.filter = filter;
+        this.emptyKey = emptyKey;
     }
 
     public ActionResultType interact(ItemUseContext ctx) {
         final ItemStack held = ctx.getItem();
         if (held.getItem().isIn(filter) && canCombine(stored, held)) {
-            final int toAdd = Math.min(held.getCount(), CAPACITY - stored.getCount());
-            if (stored.isEmpty()) {
-                stored = held.copy();
-                stored.setCount(toAdd);
-            } else {
-                stored.grow(toAdd);
+            if (!ctx.getWorld().isRemote) {
+                final int toAdd = Math.min(held.getCount(), CAPACITY - stored.getCount());
+                if (stored.isEmpty()) {
+                    stored = held.copy();
+                    stored.setCount(toAdd);
+                } else {
+                    stored.grow(toAdd);
+                }
+                held.shrink(toAdd);
             }
-            held.shrink(toAdd);
             return ActionResultType.SUCCESS;
         } else if (!stored.isEmpty() && ctx.getPlayer() != null) {
-            ItemUtil.giveOrDrop(ctx.getPlayer(), stored);
-            stored = ItemStack.EMPTY;
+            if (!ctx.getWorld().isRemote) {
+                ItemUtil.giveOrDrop(ctx.getPlayer(), stored);
+                stored = ItemStack.EMPTY;
+            }
             return ActionResultType.SUCCESS;
         }
         return ActionResultType.PASS;
@@ -74,5 +80,9 @@ public class CircuitIngredientDrawer {
 
     public CompoundNBT write() {
         return stored.write(new CompoundNBT());
+    }
+
+    public String getEmptyKey() {
+        return emptyKey;
     }
 }

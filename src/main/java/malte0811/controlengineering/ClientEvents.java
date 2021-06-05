@@ -28,6 +28,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = ControlEngineering.MODID, value = Dist.CLIENT, bus = Bus.FORGE)
@@ -36,42 +38,69 @@ public class ClientEvents {
     public static void renderSelectionShape(DrawHighlightEvent.HighlightBlock ev) {
         BlockRayTraceResult target = ev.getTarget();
         BlockPos highlighted = target.getPos();
-        Minecraft mc = Minecraft.getInstance();
-        World world = mc.world;
-        PlayerEntity player = mc.player;
-        if (world == null || player == null) {
-            return;
-        }
-        TileEntity te = world.getTileEntity(highlighted);
-        //TODO fix panels
-        if (te instanceof SelectionShapeOwner) {
-            List<? extends SelectionShapes> selectedStack = ((SelectionShapeOwner) te).getShape()
-                    .getTargeted(RaytraceUtils.create(player, ev.getPartialTicks(), Vector3d.copy(highlighted)));
-            if (!selectedStack.isEmpty()) {
-                MatrixStack transform = ev.getMatrix();
-                transform.push();
-                Vector3d projectedView = Vector3d.copy(highlighted).subtract(ev.getInfo().getProjectedView());
-                transform.translate(projectedView.x, projectedView.y, projectedView.z);
-                IVertexBuilder builder = ev.getBuffers().getBuffer(RenderType.getLines());
-                final int pushCount = selectedStack.size() - 1;
-                for (int i = 0; i < pushCount; ++i) {
-                    SelectionShapes nonTopShape = selectedStack.get(i);
-                    if (nonTopShape.shouldRenderNonTop()) {
-                        renderShape(transform, nonTopShape, builder);
-                    }
-                    nonTopShape.outerToInnerPosition()
-                            .toTransformationMatrix()
-                            //TODO cache?
-                            .inverse()
-                            .push(transform);
+        List<? extends SelectionShapes> selectedStack = getSelectedStack();
+        if (selectedStack != null) {
+            MatrixStack transform = ev.getMatrix();
+            transform.push();
+            Vector3d projectedView = Vector3d.copy(highlighted).subtract(ev.getInfo().getProjectedView());
+            transform.translate(projectedView.x, projectedView.y, projectedView.z);
+            IVertexBuilder builder = ev.getBuffers().getBuffer(RenderType.getLines());
+            final int pushCount = selectedStack.size() - 1;
+            for (int i = 0; i < pushCount; ++i) {
+                SelectionShapes nonTopShape = selectedStack.get(i);
+                if (nonTopShape.shouldRenderNonTop()) {
+                    renderShape(transform, nonTopShape, builder);
                 }
-                renderShape(transform, selectedStack.get(pushCount), builder);
-                for (int i = 0; i < pushCount; ++i) {
-                    transform.pop();
-                }
+                nonTopShape.outerToInnerPosition()
+                        .toTransformationMatrix()
+                        //TODO cache?
+                        .inverse()
+                        .push(transform);
+            }
+            renderShape(transform, selectedStack.get(pushCount), builder);
+            for (int i = 0; i < pushCount; ++i) {
                 transform.pop();
             }
+            transform.pop();
             ev.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRenderOverlayPost(RenderGameOverlayEvent.Post event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) {
+            return;
+        }
+        final ItemStack held = mc.player.getHeldItem(Hand.MAIN_HAND);
+        final RayTraceResult mop = mc.objectMouseOver;
+        if (!(mop instanceof BlockRayTraceResult)) {
+            return;
+        }
+        List<String> lines = new ArrayList<>();
+        final BlockPos pos = ((BlockRayTraceResult) mop).getPos();
+        final TileEntity te = mc.player.world.getTileEntity(pos);
+        if (te instanceof LineAccessTile && held.getToolTypes().contains(LineAccessBlock.SCREWDRIVER_TOOL)) {
+            final int line = ((LineAccessTile) te).selectedLine;
+            lines.add(I18n.format(BusSignalSelector.BUS_LINE_INDEX_KEY, line));
+        }
+        List<? extends SelectionShapes> shapeStack = getSelectedStack();
+        if (shapeStack != null) {
+            for (int i = shapeStack.size() - 1; i >= 0; i--) {
+                final String line = shapeStack.get(i).getOverlayText();
+                if (line != null) {
+                    lines.add(line);
+                }
+            }
+        }
+        for (int i = 0; i < lines.size(); ++i) {
+            mc.fontRenderer.drawString(
+                    event.getMatrixStack(),
+                    lines.get(i),
+                    mc.getMainWindow().getScaledWidth() / 2f + 8,
+                    mc.getMainWindow().getScaledHeight() / 2f + 8 + i * (mc.fontRenderer.FONT_HEIGHT + 2),
+                    -1
+            );
         }
     }
 
@@ -89,31 +118,28 @@ public class ClientEvents {
                 .endVertex();
     }
 
-    @SubscribeEvent
-    public static void onRenderOverlayPost(RenderGameOverlayEvent.Post event) {
+    @Nullable
+    private static List<? extends SelectionShapes> getSelectedStack() {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null) {
-            return;
-        }
-        final ItemStack held = mc.player.getHeldItem(Hand.MAIN_HAND);
-        if (!held.getToolTypes().contains(LineAccessBlock.SCREWDRIVER_TOOL)) {
-            return;
-        }
         final RayTraceResult mop = mc.objectMouseOver;
-        if (mop instanceof BlockRayTraceResult) {
-            final BlockPos pos = ((BlockRayTraceResult) mop).getPos();
-            final TileEntity te = mc.player.world.getTileEntity(pos);
-            if (te instanceof LineAccessTile) {
-                final int line = ((LineAccessTile) te).selectedLine;
-                final String text = I18n.format(BusSignalSelector.BUS_LINE_INDEX_KEY, line);
-                mc.fontRenderer.drawString(
-                        event.getMatrixStack(),
-                        text,
-                        mc.getMainWindow().getScaledWidth() / 2f + 8,
-                        mc.getMainWindow().getScaledHeight() / 2f + 8,
-                        -1
-                );
+        if (!(mop instanceof BlockRayTraceResult)) {
+            return null;
+        }
+        BlockRayTraceResult target = (BlockRayTraceResult) mop;
+        BlockPos highlighted = target.getPos();
+        World world = mc.world;
+        PlayerEntity player = mc.player;
+        if (world == null || player == null) {
+            return null;
+        }
+        TileEntity te = world.getTileEntity(highlighted);
+        if (te instanceof SelectionShapeOwner) {
+            List<? extends SelectionShapes> selectedStack = ((SelectionShapeOwner) te).getShape()
+                    .getTargeted(RaytraceUtils.create(player, mc.getRenderPartialTicks(), Vector3d.copy(highlighted)));
+            if (!selectedStack.isEmpty()) {
+                return selectedStack;
             }
         }
+        return null;
     }
 }
