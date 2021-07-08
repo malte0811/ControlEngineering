@@ -10,11 +10,14 @@ import malte0811.controlengineering.network.logic.FullSync;
 import malte0811.controlengineering.network.logic.LogicPacket;
 import malte0811.controlengineering.network.logic.LogicSubPacket;
 import malte0811.controlengineering.tiles.logic.ISchematicTile;
+import malte0811.controlengineering.tiles.logic.LogicWorkbenchTile;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+
+import java.util.Optional;
 
 public class LogicDesignContainer extends CEContainer<LogicSubPacket> {
     public final boolean readOnly;
@@ -39,11 +42,19 @@ public class LogicDesignContainer extends CEContainer<LogicSubPacket> {
         );
     }
 
+    public Optional<LogicWorkbenchTile.AvailableIngredients> getAvailableIngredients() {
+        return getTile(LogicWorkbenchTile.class).map(LogicWorkbenchTile::getCosts);
+    }
+
     public Schematic getSchematic() {
-        return pos.apply(World::getTileEntity)
-                .map(te -> te instanceof ISchematicTile ? (ISchematicTile) te : null)
+        return getTile(ISchematicTile.class)
                 .map(ISchematicTile::getSchematic)
                 .orElseThrow(RuntimeException::new);
+    }
+
+    private <T> Optional<T> getTile(Class<T> tileType) {
+        return pos.apply(World::getTileEntity)
+                .map(te -> tileType.isAssignableFrom(te.getClass()) ? tileType.cast(te) : null);
     }
 
     @Override

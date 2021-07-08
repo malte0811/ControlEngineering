@@ -9,6 +9,7 @@ import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.items.CEItems;
+import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.logic.LogicPacket;
@@ -63,6 +64,7 @@ public class ControlEngineering {
         modBus.addListener(this::setup);
         modBus.addListener(this::loadComplete);
         Leafcells.init();
+        IEItemRefs.init();
     }
 
     public void setup(FMLCommonSetupEvent ev) {

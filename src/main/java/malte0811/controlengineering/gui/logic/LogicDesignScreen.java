@@ -1,10 +1,12 @@
 package malte0811.controlengineering.gui.logic;
 
+import blusunrize.lib.manual.ManualUtils;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.StackedScreen;
+import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.logic.schematic.ConnectedPin;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
@@ -13,12 +15,18 @@ import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
 import malte0811.controlengineering.network.logic.*;
+import malte0811.controlengineering.tiles.logic.LogicCabinetTile;
+import malte0811.controlengineering.tiles.logic.LogicWorkbenchTile.AvailableIngredients;
 import malte0811.controlengineering.util.GuiUtil;
 import malte0811.controlengineering.util.TextUtil;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.*;
@@ -130,6 +138,7 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         RenderSystem.disableScissor();
 
         matrixStack.pop();
+        renderIngredients(matrixStack);
         renderTooltip(matrixStack, mouseX, mouseY, mousePos, currentError.orElse(null));
     }
 
@@ -161,6 +170,48 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
                 renderTooltip(transform, tooltip, mouseX, mouseY);
             }
         }
+    }
+
+    private void renderIngredients(MatrixStack transform) {
+        Optional<AvailableIngredients> stored = container.getAvailableIngredients();
+        transform.push();
+        transform.translate(width - TOTAL_BORDER - 17, height - TOTAL_BORDER - 17, 0);
+        final int numTubes = schematic.getNumTubes();
+        final int numWires = schematic.getWireLength();
+        final int numBoards = LogicCabinetTile.getNumBoardsFor(numTubes);
+        renderIngredient(transform, null, numBoards, IEItemRefs.CIRCUIT_BOARD);
+        transform.translate(0, -16, 0);
+        renderIngredient(
+                transform, stored.map(AvailableIngredients::getAvailableTubes).orElse(null), numTubes, IEItemRefs.TUBE
+        );
+        transform.translate(0, -16, 0);
+        //TODO fix default
+        renderIngredient(
+                transform, stored.map(AvailableIngredients::getAvailableWires).orElse(null), numWires, IEItemRefs.WIRE
+        );
+        transform.pop();
+    }
+
+    private void renderIngredient(
+            MatrixStack transform, @Nullable ItemStack available, int required, Supplier<Item> defaultItem
+    ) {
+        IFormattableTextComponent info;
+        if (available != null) {
+            info = new StringTextComponent(Math.min(available.getCount(), required) + " / " + required);
+            if (available.getCount() < required) {
+                info.mergeStyle(TextFormatting.RED);
+            }
+        } else {
+            info = new StringTextComponent(Integer.toString(required));
+        }
+        info.appendString(" x ");
+        final FontRenderer font = Minecraft.getInstance().fontRenderer;
+        final int width = font.getStringPropertyWidth(info);
+        font.drawText(transform, info, -width, (16 - font.FONT_HEIGHT) / 2f, -1);
+        if (available == null || available.isEmpty()) {
+            available = defaultItem.get().getDefaultInstance();
+        }
+        ManualUtils.renderItemStack(transform, available, 0, 0, false);
     }
 
     private List<SymbolPin> getHoveredPins(PlacedSymbol hovered, Vec2d schematicMouse) {

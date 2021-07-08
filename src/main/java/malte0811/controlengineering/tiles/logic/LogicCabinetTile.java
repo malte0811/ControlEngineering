@@ -35,6 +35,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.common.capabilities.Capability;
@@ -53,6 +54,9 @@ import java.util.function.Consumer;
 
 public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwner, IBusInterface, ITickableTileEntity,
         ISchematicTile, IExtraDropTile, IHasMaster {
+    public static final int MAX_NUM_BOARDS = 4;
+    public static final int NUM_TUBES_PER_BOARD = 16;
+
     private final CEEnergyStorage energy = new CEEnergyStorage(2048, 2 * 128, 128);
     @Nullable
     private Pair<Schematic, BusConnectedCircuit> circuit;
@@ -64,6 +68,10 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
 
     public LogicCabinetTile(TileEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
+    }
+
+    public static int getNumBoardsFor(int numTubes) {
+        return MathHelper.ceil(numTubes / (double) NUM_TUBES_PER_BOARD);
     }
 
     @Override

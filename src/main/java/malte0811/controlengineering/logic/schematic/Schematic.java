@@ -8,16 +8,21 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import malte0811.controlengineering.logic.cells.CellCost;
+import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
+import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
+import net.minecraft.util.math.MathHelper;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.ToDoubleFunction;
 
 public class Schematic {
     public static final int GLOBAL_MIN = -512;
@@ -142,5 +147,28 @@ public class Schematic {
         return checker;
     }
 
+    private int getTotalCost(ToDoubleFunction<CellCost> individualCost) {
+        double sum = 0.0;
+        for (PlacedSymbol placedSymbol : getSymbols()) {
+            SchematicSymbol<?> s = placedSymbol.getSymbol().getType();
+            if (s instanceof CellSymbol) {
+                CellSymbol cellSymbol = (CellSymbol) s;
+                CellCost cost = cellSymbol.getCellType().getCost();
+                sum += individualCost.applyAsDouble(cost);
+            }
+        }
+        return MathHelper.ceil(sum);
+    }
 
+    public int getNumTubes() {
+        return getTotalCost(CellCost::getNumTubes);
+    }
+
+    public int getWireLength() {
+        return getTotalCost(CellCost::getWireLength);
+    }
+
+    public int getSolderAmount() {
+        return getTotalCost(CellCost::getSolderAmount);
+    }
 }

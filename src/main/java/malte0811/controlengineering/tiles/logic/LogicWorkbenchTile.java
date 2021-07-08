@@ -22,6 +22,7 @@ import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tags.ITag;
@@ -31,6 +32,7 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
@@ -42,6 +44,10 @@ import java.util.function.Function;
 public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOwner, ISchematicTile {
     public static final String TUBES_EMPTY_KEY = ControlEngineering.MODID + ".gui.tubesEmpty";
     public static final String WIRES_EMPTY_KEY = ControlEngineering.MODID + ".gui.wiresEmpty";
+    public static final String MORE_BOARDS_THAN_MAX = ControlEngineering.MODID + ".gui.moreThanMaxBoards";
+    public static final String TOO_FEW_BOARDS_HELD = ControlEngineering.MODID + ".gui.needMoreBoards";
+    public static final String TOO_FEW_WIRES = ControlEngineering.MODID + ".gui.needMoreWires";
+    public static final String TOO_FEW_TUBES = ControlEngineering.MODID + ".gui.needMoreTubes";
 
     private static final ITag<Item> TUBES = IETags.circuitLogic;
     //TODO solder?
@@ -172,23 +178,42 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
             return ActionResultType.FAIL;
         }
         final int numTubes = circuit.get().getNumTubes();
-        final int numBoards = (numTubes + 15) / 16;
-        if (numBoards > ctx.getItem().getCount()) {
+        final int numBoards = LogicCabinetTile.getNumBoardsFor(numTubes);
+        if (numBoards > LogicCabinetTile.MAX_NUM_BOARDS) {
+            ctx.getPlayer().sendStatusMessage(
+                    new TranslationTextComponent(MORE_BOARDS_THAN_MAX, numBoards, LogicCabinetTile.MAX_NUM_BOARDS),
+                    true
+            );
+            return ActionResultType.FAIL;
+        } else if (numBoards > ctx.getItem().getCount()) {
+            ctx.getPlayer().sendStatusMessage(new TranslationTextComponent(TOO_FEW_BOARDS_HELD, numBoards), true);
             return ActionResultType.FAIL;
         }
         final int numWires = circuit.get().getWireLength();
         if (!world.isRemote) {
-            if (tubeStorage.canConsume(numTubes) && wireStorage.canConsume(numWires)) {
+            final boolean enoughTubes = tubeStorage.canConsume(numTubes);
+            final boolean enoughWires = wireStorage.canConsume(numWires);
+            if (enoughTubes && enoughWires) {
                 tubeStorage.consume(numTubes);
                 wireStorage.consume(numWires);
                 ctx.getItem().shrink(numBoards);
                 world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.DEFAULT);
                 ItemUtil.giveOrDrop(ctx.getPlayer(), PCBStackItem.forSchematic(schematic));
+            } else if (!enoughTubes) {
+                ctx.getPlayer().sendStatusMessage(new TranslationTextComponent(TOO_FEW_TUBES, numTubes), true);
             } else {
-                //TODO show message
+                ctx.getPlayer().sendStatusMessage(new TranslationTextComponent(TOO_FEW_WIRES, numWires), true);
             }
         }
         return ActionResultType.SUCCESS;
+    }
+
+    public CircuitIngredientDrawer getTubeStorage() {
+        return tubeStorage;
+    }
+
+    public CircuitIngredientDrawer getWireStorage() {
+        return wireStorage;
     }
 
     private SelectionShapes makeDrawerShape(
@@ -221,5 +246,27 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
     @Override
     public Schematic getSchematic() {
         return schematic;
+    }
+
+    public AvailableIngredients getCosts() {
+        return new AvailableIngredients(this);
+    }
+
+    public static class AvailableIngredients {
+        private final ItemStack availableTubes;
+        private final ItemStack availableWires;
+
+        public AvailableIngredients(LogicWorkbenchTile tile) {
+            this.availableTubes = tile.getTubeStorage().getStored();
+            this.availableWires = tile.getWireStorage().getStored();
+        }
+
+        public ItemStack getAvailableTubes() {
+            return availableTubes;
+        }
+
+        public ItemStack getAvailableWires() {
+            return availableWires;
+        }
     }
 }

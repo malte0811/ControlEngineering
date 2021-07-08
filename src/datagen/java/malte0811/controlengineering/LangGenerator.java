@@ -121,6 +121,13 @@ public class LangGenerator extends LanguageProvider {
 
         add(LogicWorkbenchTile.TUBES_EMPTY_KEY, "Vacuum tube storage: Empty");
         add(LogicWorkbenchTile.WIRES_EMPTY_KEY, "Wire storage: Empty");
+        add(
+                LogicWorkbenchTile.MORE_BOARDS_THAN_MAX,
+                "Circuit would need %d circuit boards, but only %d fit in the logic cabinet"
+        );
+        add(LogicWorkbenchTile.TOO_FEW_BOARDS_HELD, "%d circuit boards are required");
+        add(LogicWorkbenchTile.TOO_FEW_WIRES, "%d wires are required");
+        add(LogicWorkbenchTile.TOO_FEW_TUBES, "%d vacuum tubes are required");
     }
 
     private void add(LeafcellType<?> type, String name) {
