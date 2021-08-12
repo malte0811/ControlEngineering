@@ -51,7 +51,8 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
                     return null;
                 }
             },
-            Arrays::equals
+            Arrays::equals,
+            b -> Arrays.copyOf(b, b.length)
     );
     private int currentTicksInJob;
     private boolean hasPanel;

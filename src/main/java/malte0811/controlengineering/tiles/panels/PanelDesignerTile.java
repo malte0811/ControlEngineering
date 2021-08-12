@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwner {
     private static final Codec<List<PlacedComponent>> COMPONENTS_CODEC = Codec.list(PlacedComponent.CODEC);
@@ -81,12 +82,18 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
                 }
             }
     );
+    private final CachedValue<List<PlacedComponent>, Integer> requiredLength;
 
     private List<PlacedComponent> components = new ArrayList<>();
-    private TeletypeState state;
+    private TeletypeState state = new TeletypeState();
 
     public PanelDesignerTile(TileEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
+        requiredLength = new CachedValue<>(
+                () -> components,
+                l -> CNCInstructionGenerator.toInstructions(l).length(),
+                l -> l.stream().map(c -> c.copy(false)).collect(Collectors.toList())
+        );
     }
 
     private Function<ItemUseContext, ActionResultType> makeInteraction(
@@ -137,11 +144,18 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
         return ActionResultType.SUCCESS;
     }
 
+    public int getLengthRequired() {
+        return requiredLength.get();
+    }
+
     private ActionResultType writeTape(ItemUseContext ctx) {
         final String instructions = CNCInstructionGenerator.toInstructions(components);
         final byte[] bytes = BitUtils.toBytesWithParity(instructions);
-        //TODO handle incomplete writes?
         state.tryTypeAll(new ByteArrayList(bytes, 0, bytes.length));
         return ActionResultType.SUCCESS;
+    }
+
+    public TeletypeState getTTY() {
+        return state;
     }
 }

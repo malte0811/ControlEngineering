@@ -6,6 +6,7 @@ import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.gui.misc.BusSignalSelector;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
+import malte0811.controlengineering.gui.panel.PanelDesignScreen;
 import malte0811.controlengineering.gui.widget.ColorSelector;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.logic.cells.LeafcellType;
@@ -128,6 +129,8 @@ public class LangGenerator extends LanguageProvider {
         add(LogicWorkbenchTile.TOO_FEW_BOARDS_HELD, "%d circuit boards are required");
         add(LogicWorkbenchTile.TOO_FEW_WIRES, "%d wires are required");
         add(LogicWorkbenchTile.TOO_FEW_TUBES, "%d vacuum tubes are required");
+
+        add(PanelDesignScreen.REQUIRED_VS_AVAILABLE_TAPE, "%d characters required / %d available");
     }
 
     private void add(LeafcellType<?> type, String name) {

@@ -49,6 +49,7 @@
   "controlengineering.gui.outputPin": "Output pin",
   "controlengineering.gui.pin": "Pin: %d",
   "controlengineering.gui.red": "Red: %d",
+  "controlengineering.gui.reqVsAvTape": "%d characters required / %d available",
   "controlengineering.gui.signalColor": "Signal color",
   "controlengineering.gui.symbolIntersection": "Symbol would intersect with other symbols",
   "controlengineering.gui.symbolOutsideBoundary": "Symbol would be outside of schematic boundary",

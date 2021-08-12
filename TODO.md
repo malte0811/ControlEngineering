@@ -1,11 +1,9 @@
-- Add wire and tube costs for schematics
 - Manual :(
 - Various models and textures
-- GUI for panel creation (tape-based is cool but annoying)
 - More panel components
 - More cells
 - Sequencer (see Design.md)
 - Recipes
 - Loot tables
 - Tape splicing
-- Display requirements vs stored count in logic design screen
+- Panel height/angle options

@@ -16,13 +16,12 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class PanelLayoutContainer extends CEContainer<PanelSubPacket> {
-    private final List<PlacedComponent> components;
+    private final PanelDesignerTile designerTile;
 
     public PanelLayoutContainer(IWorldPosCallable pos, int id) {
         super(CEContainers.PANEL_LAYOUT.get(), pos, id);
-        components = pos.apply(World::getTileEntity)
+        designerTile = pos.apply(World::getTileEntity)
                 .map(te -> te instanceof PanelDesignerTile ? (PanelDesignerTile) te : null)
-                .map(PanelDesignerTile::getComponents)
                 .orElseThrow(RuntimeException::new);
     }
 
@@ -32,7 +31,7 @@ public class PanelLayoutContainer extends CEContainer<PanelSubPacket> {
 
     @Override
     protected PanelSubPacket getInitialSync() {
-        return new FullSync(components);
+        return new FullSync(designerTile.getComponents());
     }
 
     @Override
@@ -41,6 +40,14 @@ public class PanelLayoutContainer extends CEContainer<PanelSubPacket> {
     }
 
     public List<PlacedComponent> getComponents() {
-        return components;
+        return designerTile.getComponents();
+    }
+
+    public int getRequiredTapeLength() {
+        return designerTile.getLengthRequired();
+    }
+
+    public int getAvailableTapeLength() {
+        return designerTile.getTTY().getAvailable();
     }
 }
