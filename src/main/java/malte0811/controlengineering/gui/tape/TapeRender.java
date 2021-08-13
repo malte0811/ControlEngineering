@@ -31,8 +31,8 @@ public class TapeRender {
     private static final int TAPE_COLOR = 0xffcea1a2;
     private static final int HOLE_WIDTH = 3;
     private static final int HOLE_HEIGHT = 2;
-    private static final int CHAR_DISTANCE = HOLE_WIDTH + 3;
-    private final int TAPE_WIDTH = 29;
+    public static final int CHAR_DISTANCE = HOLE_WIDTH + 3;
+    public static final int TAPE_WIDTH = 29;
     private static final int[] HOLE_OFFSETS = {
             0, 3, 6,
             11, 14, 17, 20, 23
@@ -56,6 +56,7 @@ public class TapeRender {
         matrixStack.push();
         matrixStack.translate(xStart, 0, 0);
         renderHoles(matrixStack, shownBytes);
+        matrixStack.translate(-1.5, 0, 0);
         renderChars(matrixStack, shownBytes);
         renderRSAndColor(matrixStack, shownBytes);
         matrixStack.pop();
@@ -79,15 +80,15 @@ public class TapeRender {
 
     private void renderChars(MatrixStack matrixStack, byte[] shownBytes) {
         double vOffset = yStart + TAPE_WIDTH + 1 + font.get().FONT_HEIGHT / 2.;
-        forEachRow(matrixStack, shownBytes, 8, vOffset, (transform, currentByte) -> {
+        final int delta = 8;
+        forEachRow(matrixStack, shownBytes, delta, vOffset, (transform, currentByte) -> {
                     char asChar = (char) BitUtils.clearParity(currentByte);
                     if (asChar <= ' ' || asChar >= 0x7f) {
                         asChar = '.';
                     }
                     String toPrint = String.valueOf(asChar);
-                    int width = font.get().getStringWidth(toPrint);
-                    int distToNext = CHAR_DISTANCE * 2;
-                    int centerOffset = (distToNext - width) / 2;
+                    float width = font.get().getCharacterManager().func_238350_a_(toPrint);
+                    float centerOffset = (delta - width) / 2f;
                     int color = -1;
                     if (!BitUtils.isCorrectParity(currentByte)) {
                         color &= 0xff_00_00;

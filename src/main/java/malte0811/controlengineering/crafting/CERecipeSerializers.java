@@ -15,4 +15,7 @@ public class CERecipeSerializers {
     public static final RegistryObject<SpecialRecipeSerializer<PanelRecipe>> PANEL_RECIPE = REGISTER.register(
             "panel", () -> new SpecialRecipeSerializer<>(PanelRecipe::new)
     );
+    public static final RegistryObject<GlueTapeSerializer> GLUE_TAPE = REGISTER.register(
+            "glue_tape", GlueTapeSerializer::new
+    );
 }

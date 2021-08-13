@@ -108,6 +108,6 @@ public class TeletypeState {
     }
 
     public boolean tryTypeChar(byte typed) {
-        return tryTypeAll(ByteLists.singleton(typed)) >= 1;
+        return tryTypeAll(ByteLists.singleton(BitUtils.fixParity(typed))) >= 1;
     }
 }

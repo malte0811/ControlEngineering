@@ -5,5 +5,4 @@
 - Sequencer (see Design.md)
 - Recipes
 - Loot tables
-- Tape splicing
 - Panel height/angle options

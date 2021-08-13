@@ -37,7 +37,7 @@ public class PunchedTapeItem extends Item {
     }
 
     public static ItemStack withBytes(byte[] bytes) {
-        ItemStack result = new ItemStack(CEItems.PUNCHED_TAPE.get());
+        ItemStack result = CEItems.PUNCHED_TAPE.get().getDefaultInstance();
         setBytes(result, bytes);
         return result;
     }
@@ -74,7 +74,7 @@ public class PunchedTapeItem extends Item {
         ItemStack stack = playerIn.getHeldItem(handIn);
         if (worldIn.isRemote) {
             //TODO name tapes?
-            Minecraft.getInstance().displayGuiScreen(new ViewTapeScreen("Tape", getBytes(stack)));
+            Minecraft.getInstance().displayGuiScreen(new ViewTapeScreen("Tape", getBytes(stack), handIn));
         }
         return new ActionResult<>(ActionResultType.SUCCESS, stack);
     }
