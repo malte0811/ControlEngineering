@@ -1,17 +1,17 @@
-package malte0811.controlengineering.network.tty;
+package malte0811.controlengineering.network.keypunch;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import malte0811.controlengineering.tiles.tape.TeletypeState;
+import malte0811.controlengineering.tiles.tape.KeypunchState;
 import net.minecraft.network.PacketBuffer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class TTYSubPacket {
-    static final List<Function<PacketBuffer, ? extends TTYSubPacket>> FROM_BYTES = new ArrayList<>();
-    static final Object2IntMap<Class<? extends TTYSubPacket>> BY_TYPE = new Object2IntOpenHashMap<>();
+public abstract class KeypunchSubPacket {
+    static final List<Function<PacketBuffer, ? extends KeypunchSubPacket>> FROM_BYTES = new ArrayList<>();
+    static final Object2IntMap<Class<? extends KeypunchSubPacket>> BY_TYPE = new Object2IntOpenHashMap<>();
     private static boolean initialized = false;
 
     public static void init() {
@@ -24,13 +24,13 @@ public abstract class TTYSubPacket {
         initialized = true;
     }
 
-    private static <T extends TTYSubPacket>
+    private static <T extends KeypunchSubPacket>
     void register(Class<T> type, Function<PacketBuffer, T> construct) {
         BY_TYPE.put(type, FROM_BYTES.size());
         FROM_BYTES.add(construct);
     }
 
-    protected static TTYSubPacket read(PacketBuffer buffer) {
+    protected static KeypunchSubPacket read(PacketBuffer buffer) {
         init();
         return FROM_BYTES.get(buffer.readVarInt()).apply(buffer);
     }
@@ -43,7 +43,7 @@ public abstract class TTYSubPacket {
 
     protected abstract void write(PacketBuffer out);
 
-    public abstract boolean process(TeletypeState state);
+    public abstract boolean process(KeypunchState state);
 
     public boolean allowSendingToServer() {
         return true;

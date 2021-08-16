@@ -12,7 +12,7 @@ import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.panels.PanelDesignerBlock;
-import malte0811.controlengineering.blocks.tape.TeletypeBlock;
+import malte0811.controlengineering.blocks.tape.KeypunchBlock;
 import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.modelbuilder.LogicCabinetBuilder;
@@ -57,7 +57,7 @@ public class BlockstateGenerator extends BlockStateProvider {
         );
 
         panelModel();
-        horizontalRotated(CEBlocks.TELETYPE, TeletypeBlock.FACING, obj("typewriter.obj"));
+        horizontalRotated(CEBlocks.KEYPUNCH, KeypunchBlock.FACING, obj("keypunch.obj"));
         horizontalRotated(CEBlocks.PANEL_CNC, PanelCNCBlock.FACING, obj("panel_cnc.obj"));
         logicCabinetModel();
         rotatedWithOffset(

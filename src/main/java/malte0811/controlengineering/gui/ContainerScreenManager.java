@@ -4,8 +4,8 @@ import malte0811.controlengineering.gui.logic.LogicDesignContainer;
 import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignScreen;
 import malte0811.controlengineering.gui.panel.PanelLayoutContainer;
-import malte0811.controlengineering.gui.tape.TeletypeContainer;
-import malte0811.controlengineering.gui.tape.TeletypeScreen;
+import malte0811.controlengineering.gui.tape.KeypunchContainer;
+import malte0811.controlengineering.gui.tape.KeypunchScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.network.PacketBuffer;
@@ -18,8 +18,8 @@ public class ContainerScreenManager {
     // actually *needs* to like my code, so it wins
     @SuppressWarnings("RedundantTypeArguments")
     public static void registerScreens() {
-        ScreenManager.<TeletypeContainer, TeletypeScreen>registerFactory(
-                CEContainers.TELETYPE.get(), (container, inv, title) -> new TeletypeScreen(container, title)
+        ScreenManager.<KeypunchContainer, KeypunchScreen>registerFactory(
+                CEContainers.KEYPUNCH.get(), (container, inv, title) -> new KeypunchScreen(container, title)
         );
         ScreenManager.<LogicDesignContainer, LogicDesignScreen>registerFactory(
                 CEContainers.LOGIC_DESIGN.get(), (container, inv, title) -> new LogicDesignScreen(container, title)

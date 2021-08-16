@@ -1,9 +1,9 @@
-package malte0811.controlengineering.network.tty;
+package malte0811.controlengineering.network.keypunch;
 
-import malte0811.controlengineering.tiles.tape.TeletypeState;
+import malte0811.controlengineering.tiles.tape.KeypunchState;
 import net.minecraft.network.PacketBuffer;
 
-public class FullSync extends TTYSubPacket {
+public class FullSync extends KeypunchSubPacket {
     private final int numAvailable;
     private final byte[] typed;
 
@@ -23,7 +23,7 @@ public class FullSync extends TTYSubPacket {
     }
 
     @Override
-    public boolean process(TeletypeState state) {
+    public boolean process(KeypunchState state) {
         state.setAvailable(numAvailable);
         state.getData().clear();
         state.getData().addElements(0, typed);

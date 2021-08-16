@@ -8,7 +8,7 @@ import net.minecraftforge.fml.RegistryObject;
 public class BlockRenderLayers {
     public static void init() {
         setLayers(CEBlocks.BUS_RELAY, RenderType.getSolid());
-        setLayers(CEBlocks.TELETYPE, RenderType.getCutout());
+        setLayers(CEBlocks.KEYPUNCH, RenderType.getCutout());
         setLayers(CEBlocks.PANEL_DESIGNER, RenderType.getCutout());
         setLayers(CEBlocks.LOGIC_CABINET, RenderType.getSolid(), RenderType.getTranslucent());
         setLayers(CEBlocks.LINE_ACCESS, RenderType.getSolid(), RenderType.getCutout());

@@ -17,28 +17,28 @@ import net.minecraft.util.ActionResultType;
 import java.util.Arrays;
 import java.util.List;
 
-public class TeletypeState {
-    public static final Codec<TeletypeState> CODEC = RecordCodecBuilder.create(
+public class KeypunchState {
+    public static final Codec<KeypunchState> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
-                    Codec.BYTE.listOf().fieldOf("data").forGetter(TeletypeState::getData),
-                    Codec.INT.fieldOf("available").forGetter(TeletypeState::getAvailable),
-                    Codec.INT.fieldOf("numErased").forGetter(TeletypeState::getErased)
-            ).apply(inst, TeletypeState::new)
+                    Codec.BYTE.listOf().fieldOf("data").forGetter(KeypunchState::getData),
+                    Codec.INT.fieldOf("available").forGetter(KeypunchState::getAvailable),
+                    Codec.INT.fieldOf("numErased").forGetter(KeypunchState::getErased)
+            ).apply(inst, KeypunchState::new)
     );
 
     private final ByteList data;
     private int available;
     private int numErased;
 
-    public TeletypeState() {
+    public KeypunchState() {
         this(ImmutableList.of(), 0, 0);
     }
 
-    public TeletypeState(List<Byte> data, int available, int numErased) {
+    public KeypunchState(List<Byte> data, int available, int numErased) {
         this(new ByteArrayList(data), available, numErased);
     }
 
-    public TeletypeState(ByteList data, int available, int numErased) {
+    public KeypunchState(ByteList data, int available, int numErased) {
         this.data = data;
         this.available = available;
         this.numErased = numErased;

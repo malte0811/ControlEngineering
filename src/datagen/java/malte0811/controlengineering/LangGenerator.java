@@ -34,8 +34,7 @@ public class LangGenerator extends LanguageProvider {
         addBlock(CEBlocks.BUS_RELAY, "Bus Relay");
         addBlock(CEBlocks.LINE_ACCESS, "Line Access");
         addBlock(CEBlocks.PANEL_CNC, "Control Panel CNC");
-        //TODO change?
-        addBlock(CEBlocks.TELETYPE, "Teletype");
+        addBlock(CEBlocks.KEYPUNCH, "Keyboard Perforator");
         addBlock(CEBlocks.PANEL_DESIGNER, "Panel Designer");
 
         addItem(CEItems.EMPTY_TAPE, "Empty Tape");

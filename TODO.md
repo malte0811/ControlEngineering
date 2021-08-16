@@ -1,8 +1,8 @@
 - Manual :(
-- Various models and textures
 - More panel components
 - More cells
 - Sequencer (see Design.md)
 - Recipes
 - Loot tables
 - Panel height/angle options
+- Energy requirements for panel creation

@@ -3,7 +3,7 @@ package malte0811.controlengineering.gui;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.logic.LogicDesignContainer;
 import malte0811.controlengineering.gui.panel.PanelLayoutContainer;
-import malte0811.controlengineering.gui.tape.TeletypeContainer;
+import malte0811.controlengineering.gui.tape.KeypunchContainer;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.network.PacketBuffer;
@@ -20,8 +20,8 @@ public class CEContainers {
             ForgeRegistries.CONTAINERS, ControlEngineering.MODID
     );
 
-    public static final RegistryObject<ContainerType<TeletypeContainer>> TELETYPE = REGISTER.register(
-            "teletype", createNoInv(TeletypeContainer::new)
+    public static final RegistryObject<ContainerType<KeypunchContainer>> KEYPUNCH = REGISTER.register(
+            "keypunch", createNoInv(KeypunchContainer::new)
     );
 
     public static final RegistryObject<ContainerType<LogicDesignContainer>> LOGIC_DESIGN = REGISTER.register(

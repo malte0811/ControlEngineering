@@ -5,11 +5,11 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.gui.widgets.Keyboard;
 import malte0811.controlengineering.gui.widgets.KeyboardButton;
-import malte0811.controlengineering.network.tty.Backspace;
-import malte0811.controlengineering.network.tty.TTYPacket;
-import malte0811.controlengineering.network.tty.TTYSubPacket;
-import malte0811.controlengineering.network.tty.TypeChar;
-import malte0811.controlengineering.tiles.tape.TeletypeState;
+import malte0811.controlengineering.network.keypunch.Backspace;
+import malte0811.controlengineering.network.keypunch.KeypunchPacket;
+import malte0811.controlengineering.network.keypunch.KeypunchSubPacket;
+import malte0811.controlengineering.network.keypunch.TypeChar;
+import malte0811.controlengineering.tiles.tape.KeypunchState;
 import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
@@ -18,7 +18,7 @@ import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 
-public class TeletypeScreen extends Screen implements IHasContainer<TeletypeContainer> {
+public class KeypunchScreen extends Screen implements IHasContainer<KeypunchContainer> {
     private static final int KEY_SIZE = 20;
     private static final int NUM_VISIBLE_CHARS = 23;
     // TODO review once a sound exists
@@ -26,20 +26,20 @@ public class TeletypeScreen extends Screen implements IHasContainer<TeletypeCont
     private static final int MIN_CHAR_DELAY = 1000 / MAX_CHARS_PER_SECOND;
     public static final ResourceLocation TEXTURE = new ResourceLocation(
             ControlEngineering.MODID,
-            "textures/gui/teletype.png"
+            "textures/gui/keypunch.png"
     );
     private static final SubTexture MAIN_SCREEN = new SubTexture(TEXTURE, 0, 0, 256, 79);
     private static final SubTexture SMALL_KEY = new SubTexture(TEXTURE, 0, 128, 16, 144);
     private static final SubTexture CAPS_KEY = new SubTexture(TEXTURE, 0, 144, 32, 160);
     private static final SubTexture SPACE_KEY = new SubTexture(TEXTURE, 0, 160, 128, 176);
 
-    private final TeletypeContainer container;
-    private final TeletypeState state;
+    private final KeypunchContainer container;
+    private final KeypunchState state;
     private final TapeRender tapeRender;
 
     private boolean isCapsLock;
 
-    public TeletypeScreen(TeletypeContainer container, ITextComponent title) {
+    public KeypunchScreen(KeypunchContainer container, ITextComponent title) {
         super(title);
         this.container = container;
         this.state = container.getState();
@@ -142,18 +142,18 @@ public class TeletypeScreen extends Screen implements IHasContainer<TeletypeCont
 
     @Nonnull
     @Override
-    public TeletypeContainer getContainer() {
+    public KeypunchContainer getContainer() {
         return container;
     }
 
-    public TeletypeState getState() {
+    public KeypunchState getState() {
         return state;
     }
 
-    private boolean processAndSend(TTYSubPacket packet) {
+    private boolean processAndSend(KeypunchSubPacket packet) {
         if (packet.process(state)) {
             updateData();
-            ControlEngineering.NETWORK.sendToServer(new TTYPacket(packet));
+            ControlEngineering.NETWORK.sendToServer(new KeypunchPacket(packet));
             return true;
         } else {
             return false;

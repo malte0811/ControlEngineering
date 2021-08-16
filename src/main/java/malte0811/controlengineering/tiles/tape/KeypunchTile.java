@@ -5,7 +5,7 @@ import malte0811.controlengineering.blocks.shapes.ListShapes;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
-import malte0811.controlengineering.blocks.tape.TeletypeBlock;
+import malte0811.controlengineering.blocks.tape.KeypunchBlock;
 import malte0811.controlengineering.items.EmptyTapeItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.tiles.base.CETileEntity;
@@ -30,32 +30,32 @@ import java.util.function.Consumer;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class TeletypeTile extends CETileEntity implements SelectionShapeOwner, IExtraDropTile {
+public class KeypunchTile extends CETileEntity implements SelectionShapeOwner, IExtraDropTile {
     public static final VoxelShape INPUT_SHAPE = createPixelRelative(11, 6, 2, 15, 9, 4);
     public static final VoxelShape OUTPUT_SHAPE = createPixelRelative(2, 6, 1, 6, 10, 5);
 
-    private TeletypeState state = new TeletypeState();
+    private KeypunchState state = new KeypunchState();
 
-    public TeletypeTile(TileEntityType<?> tileEntityTypeIn) {
+    public KeypunchTile(TileEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
     }
 
     @Override
     public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
         super.read(state, nbt);
-        this.state = Codecs.readOptional(TeletypeState.CODEC, nbt.get("state")).orElseGet(TeletypeState::new);
+        this.state = Codecs.readOptional(KeypunchState.CODEC, nbt.get("state")).orElseGet(KeypunchState::new);
     }
 
     @Nonnull
     @Override
     public CompoundNBT write(@Nonnull CompoundNBT compound) {
         compound = super.write(compound);
-        compound.put("state", Codecs.encode(TeletypeState.CODEC, state));
+        compound.put("state", Codecs.encode(KeypunchState.CODEC, state));
         return compound;
     }
 
     private final CachedValue<Direction, SelectionShapes> selectionShapes = new CachedValue<>(
-            () -> getBlockState().get(TeletypeBlock.FACING), f -> createSelectionShapes(f, this)
+            () -> getBlockState().get(KeypunchBlock.FACING), f -> createSelectionShapes(f, this)
     );
 
     @Override
@@ -63,7 +63,7 @@ public class TeletypeTile extends CETileEntity implements SelectionShapeOwner, I
         return selectionShapes.get();
     }
 
-    private static SelectionShapes createSelectionShapes(Direction d, TeletypeTile tile) {
+    private static SelectionShapes createSelectionShapes(Direction d, KeypunchTile tile) {
         List<SelectionShapes> subshapes = new ArrayList<>(2);
         // Punched tape output
         subshapes.add(new SingleShape(
@@ -74,11 +74,11 @@ public class TeletypeTile extends CETileEntity implements SelectionShapeOwner, I
                 INPUT_SHAPE, ctx -> tile.getState().removeOrAddClearTape(ctx.getPlayer(), ctx.getItem())
         ));
         return new ListShapes(
-                TeletypeBlock.SHAPE_PROVIDER.apply(d),
+                KeypunchBlock.SHAPE_PROVIDER.apply(d),
                 Matrix4.inverseFacing(d),
                 subshapes,
                 ctx -> {
-                    CEBlocks.TELETYPE.get().openContainer(
+                    CEBlocks.KEYPUNCH.get().openContainer(
                             ctx.getPlayer(), tile.getBlockState(), ctx.getWorld(), ctx.getPos()
                     );
                     return ActionResultType.SUCCESS;
@@ -86,7 +86,7 @@ public class TeletypeTile extends CETileEntity implements SelectionShapeOwner, I
         );
     }
 
-    public TeletypeState getState() {
+    public KeypunchState getState() {
         return state;
     }
 

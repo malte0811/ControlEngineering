@@ -27,7 +27,7 @@ public class BlockLootGenerator extends LootGenerator {
         // panel designer => ???????
         registerSelfDropping(CEBlocks.LOGIC_CABINET, tileDrop());
         registerSelfDropping(CEBlocks.PANEL_CNC, tileDrop());
-        registerSelfDropping(CEBlocks.TELETYPE, tileDrop());
+        registerSelfDropping(CEBlocks.KEYPUNCH, tileDrop());
         register(CEBlocks.CONTROL_PANEL, createPoolBuilder().addEntry(PanelDropEntry.builder()));
         registerAllRemainingAsDefault();
     }

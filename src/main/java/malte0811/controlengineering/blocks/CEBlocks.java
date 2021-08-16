@@ -9,7 +9,7 @@ import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.panels.PanelDesignerBlock;
-import malte0811.controlengineering.blocks.tape.TeletypeBlock;
+import malte0811.controlengineering.blocks.tape.KeypunchBlock;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -39,7 +39,7 @@ public class CEBlocks {
             "panel_designer", PanelDesignerBlock::new
     );
 
-    public static final RegistryObject<TeletypeBlock> TELETYPE = REGISTER.register("teletype", TeletypeBlock::new);
+    public static final RegistryObject<KeypunchBlock> KEYPUNCH = REGISTER.register("keypunch", KeypunchBlock::new);
 
     public static final RegistryObject<LogicCabinetBlock> LOGIC_CABINET = REGISTER.register(
             "logic_cabinet",

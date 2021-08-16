@@ -13,9 +13,9 @@ import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.network.CutTapePacket;
 import malte0811.controlengineering.network.SimplePacket;
+import malte0811.controlengineering.network.keypunch.KeypunchPacket;
 import malte0811.controlengineering.network.logic.LogicPacket;
 import malte0811.controlengineering.network.panellayout.PanelPacket;
-import malte0811.controlengineering.network.tty.TTYPacket;
 import malte0811.controlengineering.temp.ImprovedLocalRSHandler;
 import malte0811.controlengineering.tiles.CETileEntities;
 import net.minecraft.item.ItemGroup;
@@ -80,7 +80,7 @@ public class ControlEngineering {
 
     private void registerPackets() {
         int id = 0;
-        registerPacket(id++, TTYPacket.class, TTYPacket::new);
+        registerPacket(id++, KeypunchPacket.class, KeypunchPacket::new);
         registerPacket(id++, LogicPacket.class, LogicPacket::new);
         registerPacket(id++, PanelPacket.class, PanelPacket::new);
         registerPacket(id++, CutTapePacket.class, CutTapePacket::new, NetworkDirection.PLAY_TO_SERVER);

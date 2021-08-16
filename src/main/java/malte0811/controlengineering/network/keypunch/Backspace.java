@@ -1,9 +1,9 @@
-package malte0811.controlengineering.network.tty;
+package malte0811.controlengineering.network.keypunch;
 
-import malte0811.controlengineering.tiles.tape.TeletypeState;
+import malte0811.controlengineering.tiles.tape.KeypunchState;
 import net.minecraft.network.PacketBuffer;
 
-public class Backspace extends TTYSubPacket {
+public class Backspace extends KeypunchSubPacket {
     public Backspace() {}
 
     public Backspace(PacketBuffer b) {}
@@ -12,7 +12,7 @@ public class Backspace extends TTYSubPacket {
     protected void write(PacketBuffer out) {}
 
     @Override
-    public boolean process(TeletypeState state) {
+    public boolean process(KeypunchState state) {
         if (state.getData().isEmpty()) {
             return false;
         }

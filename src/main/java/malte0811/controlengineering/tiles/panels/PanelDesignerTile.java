@@ -13,8 +13,8 @@ import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.cnc.CNCInstructionGenerator;
 import malte0811.controlengineering.tiles.base.CETileEntity;
-import malte0811.controlengineering.tiles.tape.TeletypeState;
-import malte0811.controlengineering.tiles.tape.TeletypeTile;
+import malte0811.controlengineering.tiles.tape.KeypunchState;
+import malte0811.controlengineering.tiles.tape.KeypunchTile;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.math.Matrix4;
@@ -72,8 +72,8 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
                             Matrix4.inverseFacing(facing),
                             ImmutableList.of(
                                     new SingleShape(PanelDesignerBlock.BUTTON, writeTape),
-                                    new SingleShape(TeletypeTile.INPUT_SHAPE, addTape),
-                                    new SingleShape(TeletypeTile.OUTPUT_SHAPE, takeTape)
+                                    new SingleShape(KeypunchTile.INPUT_SHAPE, addTape),
+                                    new SingleShape(KeypunchTile.OUTPUT_SHAPE, takeTape)
                             ),
                             $ -> ActionResultType.PASS
                     );
@@ -85,7 +85,7 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
     private final CachedValue<List<PlacedComponent>, Integer> requiredLength;
 
     private List<PlacedComponent> components = new ArrayList<>();
-    private TeletypeState state = new TeletypeState();
+    private KeypunchState state = new KeypunchState();
 
     public PanelDesignerTile(TileEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
@@ -121,7 +121,7 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
         components = new ArrayList<>(
                 Codecs.readOptional(COMPONENTS_CODEC, nbt.get("components")).orElse(ImmutableList.of())
         );
-        this.state = Codecs.readOptional(TeletypeState.CODEC, nbt.get("state")).orElseGet(TeletypeState::new);
+        this.state = Codecs.readOptional(KeypunchState.CODEC, nbt.get("state")).orElseGet(KeypunchState::new);
     }
 
     @Nonnull
@@ -129,7 +129,7 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
     public CompoundNBT write(@Nonnull CompoundNBT compound) {
         compound = super.write(compound);
         compound.put("components", Codecs.encode(COMPONENTS_CODEC, components));
-        compound.put("state", Codecs.encode(TeletypeState.CODEC, state));
+        compound.put("state", Codecs.encode(KeypunchState.CODEC, state));
         return compound;
     }
 
@@ -155,7 +155,7 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
         return ActionResultType.SUCCESS;
     }
 
-    public TeletypeState getTTY() {
+    public KeypunchState getTTY() {
         return state;
     }
 }

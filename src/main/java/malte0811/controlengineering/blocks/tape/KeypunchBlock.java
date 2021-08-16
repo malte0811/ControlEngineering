@@ -5,9 +5,9 @@ import malte0811.controlengineering.blocks.placement.BlockPropertyPlacement;
 import malte0811.controlengineering.blocks.shapes.CachedShape;
 import malte0811.controlengineering.blocks.shapes.DirectionalShapeProvider;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
-import malte0811.controlengineering.gui.tape.TeletypeContainer;
+import malte0811.controlengineering.gui.tape.KeypunchContainer;
 import malte0811.controlengineering.tiles.CETileEntities;
-import malte0811.controlengineering.tiles.tape.TeletypeTile;
+import malte0811.controlengineering.tiles.tape.KeypunchTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -26,7 +26,8 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TeletypeBlock extends CEBlock<Direction, TeletypeTile> {
+public class KeypunchBlock extends CEBlock<Direction, KeypunchTile> {
+    public static final String CONTAINER_NAME = "screen.controlengineering.keypunch";
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     private static final VoxelShape BASE_SHAPE = VoxelShapes.or(
             makeCuboidShape(0, 0, 0, 16, 10, 8),
@@ -36,12 +37,12 @@ public class TeletypeBlock extends CEBlock<Direction, TeletypeTile> {
             FromBlockFunction.getProperty(FACING), BASE_SHAPE
     );
 
-    public TeletypeBlock() {
+    public KeypunchBlock() {
         super(
                 defaultPropertiesNotSolid(),
                 BlockPropertyPlacement.horizontal(FACING),
                 SHAPE_PROVIDER,
-                CETileEntities.TELETYPE
+                CETileEntities.KEYPUNCH
         );
     }
 
@@ -57,8 +58,8 @@ public class TeletypeBlock extends CEBlock<Direction, TeletypeTile> {
             @Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos
     ) {
         return new SimpleNamedContainerProvider(
-                (id, inv, player) -> new TeletypeContainer(id, IWorldPosCallable.of(worldIn, pos)),
-                new TranslationTextComponent("screen.controlengineering.teletype")
+                (id, inv, player) -> new KeypunchContainer(id, IWorldPosCallable.of(worldIn, pos)),
+                new TranslationTextComponent(CONTAINER_NAME)
         );
     }
 }

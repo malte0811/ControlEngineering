@@ -12,8 +12,6 @@ Working title: Control engineering
      - Extracts one RS wire
    - Bus Interface connector
      - Bus equivalent of Bundled RS connector from IE
-   - Bus remapper?
-     - Takes two bus wires, possibly of different width, allow arbitrary lines to be connected
  
 #### Control panels
  - Components
@@ -24,7 +22,7 @@ Working title: Control engineering
  - Access to signals is only possible locally
    - Using Bus Interface Connector
  - Creation: Using text-based format on paper tape
-   - Concept: `BUTTON X 5 Y 3 COLOR FF00FF LATCHING YES\n`
+   - Concept: `BUTTON X 5 Y 3 COLOR FF00FF LATCHING YES;`
    - CNC mill with integrated pick+place for actual creation
    - Solves the problem of creating multiple of the same panel (hard to impossible in 1.12)
    - Probably will need to implement a nice UI for it later on...

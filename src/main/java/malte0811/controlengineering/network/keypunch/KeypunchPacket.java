@@ -1,8 +1,8 @@
-package malte0811.controlengineering.network.tty;
+package malte0811.controlengineering.network.keypunch;
 
 import com.google.common.base.Preconditions;
-import malte0811.controlengineering.gui.tape.TeletypeContainer;
-import malte0811.controlengineering.gui.tape.TeletypeScreen;
+import malte0811.controlengineering.gui.tape.KeypunchContainer;
+import malte0811.controlengineering.gui.tape.KeypunchScreen;
 import malte0811.controlengineering.network.SimplePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -11,14 +11,14 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-public class TTYPacket extends SimplePacket {
-    private final TTYSubPacket packet;
+public class KeypunchPacket extends SimplePacket {
+    private final KeypunchSubPacket packet;
 
-    public TTYPacket(PacketBuffer buffer) {
-        this(TTYSubPacket.read(buffer));
+    public KeypunchPacket(PacketBuffer buffer) {
+        this(KeypunchSubPacket.read(buffer));
     }
 
-    public TTYPacket(TTYSubPacket data) {
+    public KeypunchPacket(KeypunchSubPacket data) {
         this.packet = data;
     }
 
@@ -32,8 +32,8 @@ public class TTYPacket extends SimplePacket {
         if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             Preconditions.checkState(packet.allowSendingToServer());
             Container activeContainer = ctx.getSender().openContainer;
-            if (activeContainer instanceof TeletypeContainer) {
-                TeletypeContainer ttyContainer = (TeletypeContainer) activeContainer;
+            if (activeContainer instanceof KeypunchContainer) {
+                KeypunchContainer ttyContainer = (KeypunchContainer) activeContainer;
                 packet.process(ttyContainer.getState());
                 ttyContainer.sendToListeningPlayersExcept(ctx.getSender(), packet);
                 ttyContainer.markDirty();
@@ -45,9 +45,9 @@ public class TTYPacket extends SimplePacket {
 
     private void processOnClient() {
         Screen openScreen = Minecraft.getInstance().currentScreen;
-        if (openScreen instanceof TeletypeScreen) {
-            packet.process(((TeletypeScreen) openScreen).getState());
-            ((TeletypeScreen) openScreen).updateData();
+        if (openScreen instanceof KeypunchScreen) {
+            packet.process(((KeypunchScreen) openScreen).getState());
+            ((KeypunchScreen) openScreen).updateData();
         }
     }
 }

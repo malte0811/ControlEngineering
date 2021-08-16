@@ -11,7 +11,7 @@ import malte0811.controlengineering.tiles.logic.LogicWorkbenchTile;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import malte0811.controlengineering.tiles.panels.PanelCNCTile;
 import malte0811.controlengineering.tiles.panels.PanelDesignerTile;
-import malte0811.controlengineering.tiles.tape.TeletypeTile;
+import malte0811.controlengineering.tiles.tape.KeypunchTile;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -30,48 +30,39 @@ public class CETileEntities {
     );
 
     public static RegistryObject<TileEntityType<BusRelayTile>> BUS_RELAY = REGISTER.register(
-            "bus_relay",
-            createTileType(BusRelayTile::new, CEBlocks.BUS_RELAY)
+            "bus_relay", createTileType(BusRelayTile::new, CEBlocks.BUS_RELAY)
     );
 
     public static RegistryObject<TileEntityType<BusInterfaceTile>> BUS_INTERFACE = REGISTER.register(
-            "bus_interface",
-            createTileType(BusInterfaceTile::new, CEBlocks.BUS_INTERFACE)
+            "bus_interface", createTileType(BusInterfaceTile::new, CEBlocks.BUS_INTERFACE)
     );
 
     public static RegistryObject<TileEntityType<LineAccessTile>> LINE_ACCESS = REGISTER.register(
-            "line_access",
-            createTileType(LineAccessTile::new, CEBlocks.LINE_ACCESS)
+            "line_access", createTileType(LineAccessTile::new, CEBlocks.LINE_ACCESS)
     );
 
     public static RegistryObject<TileEntityType<ControlPanelTile>> CONTROL_PANEL = REGISTER.register(
-            "control_panel",
-            createTileType(ControlPanelTile::new, CEBlocks.CONTROL_PANEL)
+            "control_panel", createTileType(ControlPanelTile::new, CEBlocks.CONTROL_PANEL)
     );
 
     public static RegistryObject<TileEntityType<PanelCNCTile>> PANEL_CNC = REGISTER.register(
-            "panel_cnc",
-            createTileType(PanelCNCTile::new, CEBlocks.PANEL_CNC)
+            "panel_cnc", createTileType(PanelCNCTile::new, CEBlocks.PANEL_CNC)
     );
 
     public static RegistryObject<TileEntityType<PanelDesignerTile>> PANEL_DESIGNER = REGISTER.register(
-            "panel_designer",
-            createTileType(PanelDesignerTile::new, CEBlocks.PANEL_DESIGNER)
+            "panel_designer", createTileType(PanelDesignerTile::new, CEBlocks.PANEL_DESIGNER)
     );
 
-    public static RegistryObject<TileEntityType<TeletypeTile>> TELETYPE = REGISTER.register(
-            "teletype",
-            createTileType(TeletypeTile::new, CEBlocks.TELETYPE)
+    public static RegistryObject<TileEntityType<KeypunchTile>> KEYPUNCH = REGISTER.register(
+            "keypunch", createTileType(KeypunchTile::new, CEBlocks.KEYPUNCH)
     );
 
     public static RegistryObject<TileEntityType<LogicCabinetTile>> LOGIC_CABINET = REGISTER.register(
-            "logic_cabinet",
-            createTileType(LogicCabinetTile::new, CEBlocks.LOGIC_CABINET)
+            "logic_cabinet", createTileType(LogicCabinetTile::new, CEBlocks.LOGIC_CABINET)
     );
 
     public static RegistryObject<TileEntityType<LogicWorkbenchTile>> LOGIC_WORKBENCH = REGISTER.register(
-            "logic_workbench",
-            createTileType(LogicWorkbenchTile::new, CEBlocks.LOGIC_WORKBENCH)
+            "logic_workbench", createTileType(LogicWorkbenchTile::new, CEBlocks.LOGIC_WORKBENCH)
     );
 
     private static <T extends TileEntity> Supplier<TileEntityType<T>> createTileType(

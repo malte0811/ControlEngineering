@@ -1,9 +1,9 @@
-package malte0811.controlengineering.network.tty;
+package malte0811.controlengineering.network.keypunch;
 
-import malte0811.controlengineering.tiles.tape.TeletypeState;
+import malte0811.controlengineering.tiles.tape.KeypunchState;
 import net.minecraft.network.PacketBuffer;
 
-public class TypeChar extends TTYSubPacket {
+public class TypeChar extends KeypunchSubPacket {
     private final byte typed;
 
     public TypeChar(PacketBuffer buffer) {
@@ -20,7 +20,7 @@ public class TypeChar extends TTYSubPacket {
     }
 
     @Override
-    public boolean process(TeletypeState state) {
+    public boolean process(KeypunchState state) {
         return state.tryTypeChar(typed);
     }
 }

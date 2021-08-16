@@ -6,7 +6,7 @@ import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.HorizontalStructurePlacement;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.HorizontalWithExtraShape;
-import malte0811.controlengineering.blocks.tape.TeletypeBlock;
+import malte0811.controlengineering.blocks.tape.KeypunchBlock;
 import malte0811.controlengineering.gui.panel.PanelLayoutContainer;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.panels.PanelDesignerTile;
@@ -50,7 +50,7 @@ public class PanelDesignerBlock extends CEBlock<Direction, PanelDesignerTile> {
             createPixelRelative(0, 0, 0, 16, 16, 1),
             createPixelRelative(0, 8, 0, 16, 16, 12)
     );
-    public static final VoxelShape TTY_BASE_SHAPE = TeletypeBlock.SHAPE_PROVIDER.apply(Direction.NORTH);
+    public static final VoxelShape TTY_BASE_SHAPE = KeypunchBlock.SHAPE_PROVIDER.apply(Direction.NORTH);
     private static final VoxelShape TOP_BACK_SHAPE = VoxelShapes.or(
             TTY_BASE_SHAPE,
             createPixelRelative(0, 8, 8, 16, 16, 16),
