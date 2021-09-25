@@ -1,10 +1,11 @@
-package malte0811.controlengineering;
+package malte0811.controlengineering.datagen;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.util.ServerFontWidth;
 import net.minecraft.client.gui.fonts.providers.IGlyphProvider;
 import net.minecraft.client.gui.fonts.providers.TextureGlyphProvider;

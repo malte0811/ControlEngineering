@@ -1,8 +1,9 @@
-package malte0811.controlengineering;
+package malte0811.controlengineering.datagen;
 
 import blusunrize.immersiveengineering.api.Lib;
 import blusunrize.immersiveengineering.data.blockstates.ConnectorBlockBuilder;
 import com.google.common.collect.ImmutableMap;
+import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.bus.BusInterfaceBlock;
 import malte0811.controlengineering.blocks.bus.BusRelayBlock;
@@ -14,8 +15,8 @@ import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.panels.PanelDesignerBlock;
 import malte0811.controlengineering.blocks.tape.KeypunchBlock;
 import malte0811.controlengineering.client.ModelLoaders;
-import malte0811.controlengineering.modelbuilder.DynamicModelBuilder;
-import malte0811.controlengineering.modelbuilder.LogicCabinetBuilder;
+import malte0811.controlengineering.datagen.modelbuilder.DynamicModelBuilder;
+import malte0811.controlengineering.datagen.modelbuilder.LogicCabinetBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderType;

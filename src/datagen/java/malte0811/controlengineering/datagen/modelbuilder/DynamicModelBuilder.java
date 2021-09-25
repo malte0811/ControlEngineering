@@ -1,4 +1,4 @@
-package malte0811.controlengineering.modelbuilder;
+package malte0811.controlengineering.datagen.modelbuilder;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.CustomLoaderBuilder;

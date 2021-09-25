@@ -5,4 +5,5 @@
 - Recipes
 - Loot tables
 - Panel height/angle options
-- Energy requirements for panel creation
+- Energy requirements for panel layout/creation
+- Tape-to-book machine (Tape printer or similar)

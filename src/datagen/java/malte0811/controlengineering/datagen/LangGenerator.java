@@ -1,5 +1,6 @@
-package malte0811.controlengineering;
+package malte0811.controlengineering.datagen;
 
+import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;

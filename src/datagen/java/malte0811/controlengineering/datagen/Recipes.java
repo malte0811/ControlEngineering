@@ -1,7 +1,8 @@
-package malte0811.controlengineering;
+package malte0811.controlengineering.datagen;
 
+import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
-import malte0811.controlengineering.recipes.GlueTapeBuilder;
+import malte0811.controlengineering.datagen.recipes.GlueTapeBuilder;
 import net.minecraft.data.CustomRecipeBuilder;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;

@@ -1,4 +1,4 @@
-package malte0811.controlengineering;
+package malte0811.controlengineering.datagen;
 
 import blusunrize.immersiveengineering.data.loot.LootGenerator;
 import malte0811.controlengineering.blocks.CEBlocks;

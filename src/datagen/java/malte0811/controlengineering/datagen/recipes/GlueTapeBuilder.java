@@ -1,4 +1,4 @@
-package malte0811.controlengineering.recipes;
+package malte0811.controlengineering.datagen.recipes;
 
 import com.google.gson.JsonObject;
 import malte0811.controlengineering.ControlEngineering;

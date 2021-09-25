@@ -1,5 +1,6 @@
-package malte0811.controlengineering;
+package malte0811.controlengineering.datagen;
 
+import malte0811.controlengineering.ControlEngineering;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;

@@ -1,4 +1,4 @@
-package malte0811.controlengineering.modelbuilder;
+package malte0811.controlengineering.datagen.modelbuilder;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;

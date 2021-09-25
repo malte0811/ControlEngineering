@@ -1,9 +1,10 @@
-package malte0811.controlengineering;
+package malte0811.controlengineering.datagen;
 
+import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.client.ModelLoaders;
+import malte0811.controlengineering.datagen.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.items.CEItems;
-import malte0811.controlengineering.modelbuilder.DynamicModelBuilder;
 import net.minecraft.util.IItemProvider;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
