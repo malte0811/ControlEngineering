@@ -14,6 +14,7 @@ import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.serialization.Codecs;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResult;
@@ -21,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,14 +37,14 @@ public class KeypunchTile extends CETileEntity implements SelectionShapeOwner, I
 
     private KeypunchState state = new KeypunchState();
 
-    public KeypunchTile(BlockEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public KeypunchTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
 
     @Override
-    public void load(@Nonnull BlockState state, @Nonnull CompoundTag nbt) {
-        super.load(state, nbt);
-        this.state = Codecs.readOptional(KeypunchState.CODEC, nbt.get("state")).orElseGet(KeypunchState::new);
+    public void load(@Nonnull CompoundTag nbt) {
+        super.load(nbt);
+        state = Codecs.readOptional(KeypunchState.CODEC, nbt.get("state")).orElseGet(KeypunchState::new);
     }
 
     @Nonnull

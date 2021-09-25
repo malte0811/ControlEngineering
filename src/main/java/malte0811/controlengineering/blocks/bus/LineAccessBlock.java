@@ -1,6 +1,6 @@
 package malte0811.controlengineering.blocks.bus;
 
-import blusunrize.immersiveengineering.api.Lib;
+import blusunrize.immersiveengineering.api.IETags;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.BlockPropertyPlacement;
 import malte0811.controlengineering.blocks.shapes.DirectionalShapeProvider;
@@ -25,7 +25,6 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nonnull;
 
@@ -42,7 +41,6 @@ public class LineAccessBlock extends CEBlock<Direction, LineAccessTile> {
             createPixelRelative(5, 2, 9, 11, 5, 15),
             createPixelRelative(6, 5, 10, 10, 9, 14)
     );
-    public static final ToolType SCREWDRIVER_TOOL = ToolType.get(Lib.MODID + "_screwdriver");
 
     public LineAccessBlock() {
         super(
@@ -70,10 +68,9 @@ public class LineAccessBlock extends CEBlock<Direction, LineAccessTile> {
             @Nonnull BlockHitResult hit
     ) {
         ItemStack held = player.getItemInHand(handIn);
-        if (held.getToolTypes().contains(SCREWDRIVER_TOOL)) {
+        if (held.is(IETags.screwdrivers)) {
             BlockEntity te = worldIn.getBlockEntity(pos);
-            if (te instanceof LineAccessTile) {
-                LineAccessTile lineTile = (LineAccessTile) te;
+            if (te instanceof LineAccessTile lineTile) {
                 lineTile.selectedLine = (lineTile.selectedLine + 1) % BusWireType.NUM_LINES;
                 return InteractionResult.SUCCESS;
             }

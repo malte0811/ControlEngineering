@@ -1,7 +1,7 @@
 package malte0811.controlengineering.gui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
@@ -66,7 +66,7 @@ public class SubTexture {
     }
 
     public void blit(PoseStack transform, int x, int y) {
-        Minecraft.getInstance().getTextureManager().bind(getMainTexture());
+        RenderSystem.setShaderTexture(0, getMainTexture());
         Screen.blit(
                 transform, x, y, getWidth(), getHeight(), getMinU(), getMinV(), getWidth(), getHeight(),
                 mainSize, mainSize

@@ -95,8 +95,8 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
             }
     );
 
-    public LogicWorkbenchTile(BlockEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public LogicWorkbenchTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
 
     private Function<UseOnContext, InteractionResult> makeInteraction(
@@ -153,8 +153,8 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
     }
 
     @Override
-    public void load(@Nonnull BlockState state, @Nonnull CompoundTag nbt) {
-        super.load(state, nbt);
+    public void load(@Nonnull CompoundTag nbt) {
+        super.load(nbt);
         schematic = Codecs.readOrNull(Schematic.CODEC, nbt.get("schematic"));
         readSyncedData(nbt);
         if (schematic == null) {

@@ -7,8 +7,8 @@ import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.network.SimplePacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkDirection;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public class LogicPacket extends SimplePacket {
     private final LogicSubPacket packet;

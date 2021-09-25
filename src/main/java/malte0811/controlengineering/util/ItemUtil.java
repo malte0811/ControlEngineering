@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ItemUtil {
     public static void giveOrDrop(Player player, ItemStack stack) {
-        if (!player.inventory.add(stack)) {
+        if (!player.getInventory().add(stack)) {
             player.drop(stack, false);
         } else  {
             player.inventoryMenu.broadcastChanges();

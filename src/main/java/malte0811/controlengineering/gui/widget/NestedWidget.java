@@ -1,12 +1,14 @@
 package malte0811.controlengineering.gui.widget;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.TextComponent;
-import com.mojang.blaze3d.vertex.PoseStack;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,5 +93,10 @@ public abstract class NestedWidget extends AbstractWidget implements ContainerEv
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
         return ContainerEventHandler.super.charTyped(codePoint, modifiers);
+    }
+
+    @Override
+    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {
+        //TODO?
     }
 }

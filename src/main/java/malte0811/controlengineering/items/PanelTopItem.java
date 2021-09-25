@@ -7,25 +7,32 @@ import malte0811.controlengineering.controlpanels.PanelData;
 import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.model.PanelItemRenderer;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.IItemRenderProperties;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class PanelTopItem extends Item {
     private static final PanelTransform FLAT_PANEL = new PanelTransform(0, 0, PanelOrientation.UP_NORTH);
 
     public PanelTopItem() {
-        super(
-                new Item.Properties().tab(ControlEngineering.ITEM_GROUP)
-                        //TODO server?
-                        .setISTER(() -> () -> new PanelItemRenderer(
-                                is -> new PanelData(getComponentsOn(is), FLAT_PANEL)
-                        ))
-        );
+        super(new Item.Properties().tab(ControlEngineering.ITEM_GROUP));
+    }
+
+    @Override
+    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
+        consumer.accept(new IItemRenderProperties() {
+            @Override
+            public BlockEntityWithoutLevelRenderer getItemStackRenderer() {
+                return new PanelItemRenderer(is -> new PanelData(getComponentsOn(is), FLAT_PANEL));
+            }
+        });
     }
 
     public static boolean isEmptyPanelTop(ItemStack candidate) {

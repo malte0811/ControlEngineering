@@ -3,7 +3,7 @@ package malte0811.controlengineering.items;
 import blusunrize.immersiveengineering.api.Lib;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class IEItemRefs {

@@ -13,12 +13,14 @@ import malte0811.controlengineering.util.math.TransformUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -148,5 +150,10 @@ public class ComponentSelector extends AbstractWidget {
         } else {
             return available.get(index);
         }
+    }
+
+    @Override
+    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {
+        //TODO?
     }
 }

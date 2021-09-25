@@ -13,6 +13,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+
 import java.util.Collection;
 
 public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientation> {
@@ -83,7 +84,7 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
             if (nbt == null || nbt.isEmpty()) {
                 nbt = te.save(new CompoundTag());
             }
-            ((ControlPanelTile) te).readComponentsAndTransform(nbt, data);
+            ((ControlPanelTile) te).readComponentsAndTransform(nbt);
         }
     }
 }

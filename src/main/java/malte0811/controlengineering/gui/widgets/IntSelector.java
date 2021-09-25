@@ -1,5 +1,6 @@
 package malte0811.controlengineering.gui.widgets;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
@@ -8,8 +9,8 @@ import malte0811.controlengineering.gui.widget.ColorPicker16;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+
 import javax.annotation.Nonnull;
-import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.function.IntConsumer;
 
 public class IntSelector extends StackedScreen {
@@ -35,8 +36,8 @@ public class IntSelector extends StackedScreen {
                 BusLine.MAX_VALID_VALUE,
                 translationKey
         );
-        addButton(lineSelect);
-        addButton(new Button(
+        addRenderableWidget(lineSelect);
+        addRenderableWidget(new Button(
                 width / 2 - 64, height / 2 + ColorPicker16.SIZE / 2 + 20, 128, 20,
                 new TranslatableComponent(DataProviderScreen.DONE_KEY), $ -> onClose()
         ));

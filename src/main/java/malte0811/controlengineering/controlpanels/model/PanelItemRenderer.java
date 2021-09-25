@@ -1,14 +1,16 @@
 package malte0811.controlengineering.controlpanels.model;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.controlpanels.PanelData;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.world.item.ItemStack;
+
 import javax.annotation.Nonnull;
-import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.function.Function;
 
 public class PanelItemRenderer extends BlockEntityWithoutLevelRenderer {
@@ -17,6 +19,7 @@ public class PanelItemRenderer extends BlockEntityWithoutLevelRenderer {
     private final Function<ItemStack, PanelData> getData;
 
     public PanelItemRenderer(Function<ItemStack, PanelData> getData) {
+        super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
         this.getData = getData;
     }
 

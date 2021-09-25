@@ -26,11 +26,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
@@ -83,7 +79,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     protected void init() {
         super.init();
         if (!container.readOnly) {
-            addButton(new Button(
+            addRenderableWidget(new Button(
                     TOTAL_BORDER, TOTAL_BORDER, 20, 20, new TextComponent("C"),
                     btn -> minecraft.setScreen(new CellSelectionScreen(s -> {
                         placingSymbol = s;
@@ -91,7 +87,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                     })),
                     makeTooltip(() -> COMPONENTS_KEY)
             ));
-            addButton(new Button(
+            addRenderableWidget(new Button(
                     TOTAL_BORDER, TOTAL_BORDER + 20, 20, 20, new TextComponent("E"),
                     btn -> {
                         errorsShown = !errorsShown;

@@ -18,7 +18,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+
 import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -29,8 +31,8 @@ import java.util.Map;
 public class BusInterfaceTile extends CEIICTileEntity implements IBusConnector, INeighborChangeListener {
     private final Map<Direction, Pair<WeakReference<IBusInterface>, Runnable>> clearers = new EnumMap<>(Direction.class);
 
-    public BusInterfaceTile(BlockEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public BusInterfaceTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
 
     @Override

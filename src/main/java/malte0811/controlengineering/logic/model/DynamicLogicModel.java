@@ -11,19 +11,15 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.model.ModelTransformComposition;
-import net.minecraftforge.client.model.SimpleModelTransform;
+import net.minecraftforge.client.model.CompositeModelState;
+import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
@@ -74,7 +70,7 @@ public class DynamicLogicModel implements BakedModel {
         this.modelTransform = modelTransform;
         particles = board.bake(
                 bakery, spriteGetter, modelTransform, new ResourceLocation(ControlEngineering.MODID, "temp")
-        ).getQuads(null, null, RANDOM, EmptyModelData.INSTANCE).get(0).func_187508_a();
+        ).getQuads(null, null, RANDOM, EmptyModelData.INSTANCE).get(0).getSprite();
 
         PoseStack transform = new PoseStack();
         modelTransform.getRotation().blockCenterToCorner().push(transform);
@@ -184,12 +180,12 @@ public class DynamicLogicModel implements BakedModel {
         }
 
         private List<BakedQuad> translated(UnbakedModel model, Vector3f offset) {
-            ModelState offsetTransform = new SimpleModelTransform(new Transformation(
+            ModelState offsetTransform = new SimpleModelState(new Transformation(
                     offset, null, null, null
             ));
             ResourceLocation dummy = new ResourceLocation(ControlEngineering.MODID, "dynamic");
             BakedModel baked = model.bake(
-                    bakery, spriteGetter, new ModelTransformComposition(modelTransform, offsetTransform), dummy
+                    bakery, spriteGetter, new CompositeModelState(modelTransform, offsetTransform), dummy
             );
             if (baked == null) {
                 return ImmutableList.of();

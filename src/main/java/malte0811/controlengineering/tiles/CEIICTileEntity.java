@@ -5,18 +5,20 @@ import blusunrize.immersiveengineering.api.wires.Connection;
 import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
 import blusunrize.immersiveengineering.api.wires.IImmersiveConnectable;
 import blusunrize.immersiveengineering.api.wires.WireType;
-import blusunrize.immersiveengineering.api.wires.impl.ImmersiveConnectableTileEntity;
+import blusunrize.immersiveengineering.api.wires.impl.ImmersiveConnectableBlockEntity;
 import com.google.common.collect.ImmutableSet;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+
+import javax.annotation.Nullable;
 import java.util.Collection;
 
-public abstract class CEIICTileEntity extends ImmersiveConnectableTileEntity {
+public abstract class CEIICTileEntity extends ImmersiveConnectableBlockEntity {
 
-    public CEIICTileEntity(BlockEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public CEIICTileEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
 
     @Override
@@ -51,5 +53,10 @@ public abstract class CEIICTileEntity extends ImmersiveConnectableTileEntity {
     @Override
     public Collection<ConnectionPoint> getConnectionPoints() {
         return ImmutableSet.of(new ConnectionPoint(worldPosition, 0));
+    }
+
+    @Override
+    public final BlockPos getPosition() {
+        return getBlockPos();
     }
 }

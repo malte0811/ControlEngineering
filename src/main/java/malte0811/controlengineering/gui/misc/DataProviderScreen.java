@@ -1,5 +1,6 @@
 package malte0811.controlengineering.gui.misc;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
@@ -8,9 +9,9 @@ import malte0811.controlengineering.gui.StackedScreen;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -62,8 +63,8 @@ public class DataProviderScreen<T> extends StackedScreen {
         final int xMin = (width - providerTemp.getWidth()) / 2;
         final int yMin = (height - providerTemp.getHeight()) / 2;
         provider = factory.create(initial, xMin, yMin);
-        addButton(provider);
-        addButton(new Button(
+        addRenderableWidget(provider);
+        addRenderableWidget(new Button(
                 xMin, yMin + provider.getHeight(), provider.getWidth(), 20, new TranslatableComponent(DONE_KEY),
                 $ -> onClose()
         ));

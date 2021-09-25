@@ -1,18 +1,18 @@
 package malte0811.controlengineering.gui.panel;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.util.GuiUtil;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
+
 import javax.annotation.Nonnull;
-import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.List;
 
 public class PanelDesignScreen extends StackedScreen implements MenuAccess<PanelLayoutContainer> {
@@ -40,8 +40,8 @@ public class PanelDesignScreen extends StackedScreen implements MenuAccess<Panel
         this.panelLayoutXMin = selectorWidth + offset;
         this.panelLayoutYMax = BORDER + panelSize;
         PanelLayout panelLayout = new PanelLayout(panelLayoutXMin, BORDER, panelSize, container.getComponents());
-        addButton(panelLayout);
-        addButton(new ComponentSelector(offset, BORDER, selectorWidth, panelSize, panelLayout::setPlacingComponent));
+        addRenderableWidget(panelLayout);
+        addRenderableWidget(new ComponentSelector(offset, BORDER, selectorWidth, panelSize, panelLayout::setPlacingComponent));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class PanelDesignScreen extends StackedScreen implements MenuAccess<Panel
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         final Vec2d mouse = GuiUtil.getMousePosition();
-        for (AbstractWidget button : buttons) {
+        for (var button : children()) {
             if (button.isMouseOver(mouse.x, mouse.y)) {
                 if (button.keyPressed(keyCode, scanCode, modifiers)) {
                     return true;

@@ -7,7 +7,7 @@ import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
 import malte0811.controlengineering.ControlEngineering;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,7 +21,6 @@ public class ServerFontWidth {
         if (widths == null) {
             try {
                 Resource resource = ServerLifecycleHooks.getCurrentServer()
-                        .getDataPackRegistries()
                         .getResourceManager()
                         .getResource(new ResourceLocation(ControlEngineering.MODID, FILE_NAME));
                 JsonElement json = new JsonParser().parse(new InputStreamReader(resource.getInputStream()));

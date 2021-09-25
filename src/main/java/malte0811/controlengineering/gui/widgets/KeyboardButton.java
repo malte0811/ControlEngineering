@@ -9,6 +9,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+
 import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 
@@ -38,7 +39,7 @@ public class KeyboardButton extends Button {
     @Override
     public void render(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.getTextureManager().bind(this.texture.getMainTexture());
+        RenderSystem.setShaderTexture(0, this.texture.getMainTexture());
         RenderSystem.enableDepthTest();
         texture.blit(matrixStack, x, y);
         drawCenteredString(

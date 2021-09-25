@@ -1,5 +1,6 @@
 package malte0811.controlengineering.gui.tape;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.gui.widgets.Keyboard;
@@ -14,7 +15,7 @@ import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
-import com.mojang.blaze3d.vertex.PoseStack;
+
 import javax.annotation.Nonnull;
 
 public class KeypunchScreen extends Screen implements MenuAccess<KeypunchContainer> {
@@ -54,15 +55,15 @@ public class KeypunchScreen extends Screen implements MenuAccess<KeypunchContain
             final char[] rowChars = Keyboard.ROWS[row].chars.toCharArray();
             for (int col = 0; col < rowChars.length; col++) {
                 final int x = getKeyX(Keyboard.ROWS[row].relativeStartOffset + col);
-                addButton(new KeyboardButton(
+                addRenderableWidget(new KeyboardButton(
                         x, y, c -> type((byte) c), SMALL_KEY, rowChars[col], () -> isCapsLock
                 ));
             }
         }
-        addButton(CAPS_KEY.createButton(
+        addRenderableWidget(CAPS_KEY.createButton(
                 getKeyX(Keyboard.CAPSLOCK_START), getRowY(Keyboard.CAPSLOCK_ROW), btn -> isCapsLock = !isCapsLock
         ));
-        addButton(SPACE_KEY.createButton(
+        addRenderableWidget(SPACE_KEY.createButton(
                 (this.width - SPACE_KEY.getWidth()) / 2, getRowY(Keyboard.SPACE_ROW), btn -> type((byte) ' ')
         ));
     }

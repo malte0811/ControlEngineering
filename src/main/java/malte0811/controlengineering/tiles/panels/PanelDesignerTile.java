@@ -28,6 +28,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,8 +87,8 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
     private List<PlacedComponent> components = new ArrayList<>();
     private KeypunchState state = new KeypunchState();
 
-    public PanelDesignerTile(BlockEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public PanelDesignerTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
         requiredLength = new CachedValue<>(
                 () -> components,
                 l -> CNCInstructionGenerator.toInstructions(l).length(),
@@ -115,8 +116,8 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
     }
 
     @Override
-    public void load(@Nonnull BlockState state, @Nonnull CompoundTag nbt) {
-        super.load(state, nbt);
+    public void load(@Nonnull CompoundTag nbt) {
+        super.load(nbt);
         components = new ArrayList<>(
                 Codecs.readOptional(COMPONENTS_CODEC, nbt.get("components")).orElse(ImmutableList.of())
         );

@@ -1,7 +1,6 @@
 package malte0811.controlengineering.tiles.base;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -9,11 +8,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public abstract class CETileEntity extends BlockEntity implements IHasMasterBase {
     private BlockEntity cachedMaster;
 
-    public CETileEntity(BlockEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public CETileEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
 
     @Override
@@ -33,8 +35,8 @@ public abstract class CETileEntity extends BlockEntity implements IHasMasterBase
     protected void readSyncedData(CompoundTag in) {}
 
     @Override
-    public void handleUpdateTag(BlockState state, CompoundTag tag) {
-        super.handleUpdateTag(state, tag);
+    public void handleUpdateTag(CompoundTag tag) {
+        super.handleUpdateTag(tag);
         readSyncedData(tag);
     }
 

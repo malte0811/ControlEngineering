@@ -19,19 +19,20 @@ import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.Vec3;
+
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PanelCNCRenderer extends BlockEntityRenderer<PanelCNCTile> {
+public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCTile> {
     //TODO reset?
     private static final ResettableLazy<TextureAtlasSprite> MODEL_TEXTURE = new ResettableLazy<>(
             () -> {
@@ -47,8 +48,7 @@ public class PanelCNCRenderer extends BlockEntityRenderer<PanelCNCTile> {
     private static final double HEAD_WORK_HEIGHT = -1;
     private static final Vec3 HEAD_IDLE = new Vec3(8 - HEAD_SIZE / 2, 5, 8 - HEAD_SIZE / 2);
 
-    public PanelCNCRenderer(BlockEntityRenderDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
+    public PanelCNCRenderer(BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override

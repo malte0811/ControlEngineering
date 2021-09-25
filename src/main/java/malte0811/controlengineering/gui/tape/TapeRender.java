@@ -1,12 +1,7 @@
 package malte0811.controlengineering.gui.tape;
 
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
@@ -20,7 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.RedStoneWireBlock;
-import org.lwjgl.opengl.GL11;
 
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -115,7 +109,7 @@ public class TapeRender {
         TextureAtlasSprite white = QuadBuilder.getWhiteTexture();
         forEachRow(matrixStack, shownBytes, 1, vOffset + CHAR_DISTANCE + 2, (transform, currentByte) -> {
             final DyeColor color = RedstoneTapeUtils.getColor(currentByte);
-            blitWithColor(transform, 0, 1, 1, white, color.getColorValue());
+            blitWithColor(transform, 0, 1, 1, white, color.getTextColor());
         });
     }
 
@@ -141,7 +135,7 @@ public class TapeRender {
     ) {
         Matrix4f matrix = m.last().pose();
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
         TransformingVertexBuilder inner = new TransformingVertexBuilder(bufferbuilder);
         inner.setColor(color | (0xff << 24));
         final float minU = texture.getU0();
@@ -153,7 +147,6 @@ public class TapeRender {
         inner.vertex(matrix, x + width, 0, 0).uv(maxU, minV).endVertex();
         inner.vertex(matrix, x, 0, 0).uv(minU, minV).endVertex();
         bufferbuilder.end();
-        RenderSystem.enableAlphaTest();
         BufferUploader.end(bufferbuilder);
     }
 }

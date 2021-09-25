@@ -8,8 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkDirection;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public class KeypunchPacket extends SimplePacket {
     private final KeypunchSubPacket packet;
@@ -32,11 +32,10 @@ public class KeypunchPacket extends SimplePacket {
         if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             Preconditions.checkState(packet.allowSendingToServer());
             AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
-            if (activeContainer instanceof KeypunchContainer) {
-                KeypunchContainer ttyContainer = (KeypunchContainer) activeContainer;
-                packet.process(ttyContainer.getState());
-                ttyContainer.sendToListeningPlayersExcept(ctx.getSender(), packet);
-                ttyContainer.markDirty();
+            if (activeContainer instanceof KeypunchContainer keypunch) {
+                packet.process(keypunch.getState());
+                keypunch.sendToListeningPlayersExcept(ctx.getSender(), packet);
+                keypunch.markDirty();
             }
         } else {
             processOnClient();

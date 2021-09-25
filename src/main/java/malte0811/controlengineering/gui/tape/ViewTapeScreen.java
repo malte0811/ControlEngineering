@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
+
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
@@ -44,12 +45,12 @@ public class ViewTapeScreen extends Screen {
         final int buttonWidth = 20;
         final int leftButtonX = FIRST_CHAR_X - 30 + (this.width - WIDTH) / 2;
         final int buttonY = FIRST_HOLE_Y + 3 + (this.height - HEIGHT) / 2;
-        addButton(new Button(
+        addRenderableWidget(new Button(
                 leftButtonX + 1, buttonY, buttonWidth, 20,
                 new TextComponent("<"),
                 btn -> incOffset()
         ));
-        addButton(new Button(
+        addRenderableWidget(new Button(
                 width - leftButtonX - buttonWidth + 1, buttonY, buttonWidth, 20,
                 new TextComponent(">"),
                 btn -> decOffset()
@@ -59,8 +60,8 @@ public class ViewTapeScreen extends Screen {
     @Override
     public void render(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.minecraft.getTextureManager().bind(BASE_SCREEN);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, BASE_SCREEN);
         int startX = (this.width - WIDTH) / 2;
         int startY = (this.height - HEIGHT) / 2;
         matrixStack.pushPose();

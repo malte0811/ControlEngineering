@@ -22,6 +22,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -41,8 +42,8 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
             i -> components.get(i).getComponent().updateTotalState(getTotalState())
     );
 
-    public ControlPanelTile(BlockEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public ControlPanelTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
         resetStateHandler();
     }
 
@@ -68,13 +69,13 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
     }
 
     @Override
-    public void load(@Nonnull BlockState state, @Nonnull CompoundTag nbt) {
-        super.load(state, nbt);
-        readComponentsAndTransform(nbt, state.getValue(PanelOrientation.PROPERTY));
+    public void load(@Nonnull CompoundTag nbt) {
+        super.load(nbt);
+        readComponentsAndTransform(nbt);
     }
 
-    public void readComponentsAndTransform(CompoundTag nbt, PanelOrientation orientation) {
-        final PanelData data = new PanelData(nbt, orientation);
+    public void readComponentsAndTransform(CompoundTag nbt) {
+        final PanelData data = new PanelData(nbt, getBlockState().getValue(PanelOrientation.PROPERTY));
         this.transform = data.getTransform();
         this.components = data.getComponents();
         if (level != null && !level.isClientSide) {
@@ -83,9 +84,9 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
     }
 
     @Override
-    public void setLevelAndPosition(@Nonnull Level world, @Nonnull BlockPos pos) {
-        super.setLevelAndPosition(world, pos);
-        if (!world.isClientSide) {
+    public void setLevel(@Nonnull Level pLevel) {
+        super.setLevel(pLevel);
+        if (!level.isClientSide) {
             resetStateHandler();
         }
     }
@@ -98,7 +99,7 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
 
     @Override
     protected void readSyncedData(CompoundTag in) {
-        readComponentsAndTransform(in, getBlockState().getValue(PanelOrientation.PROPERTY));
+        readComponentsAndTransform(in);
     }
 
     @Nonnull

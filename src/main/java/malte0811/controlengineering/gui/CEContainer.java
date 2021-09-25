@@ -6,21 +6,24 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fmllegacy.network.NetworkDirection;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+@Mod.EventBusSubscriber(modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public abstract class CEContainer<PacketType> extends AbstractContainerMenu {
-    private final List<ContainerListener> listeners = new ArrayList<>();
+    private final List<ServerPlayer> listeners = new ArrayList<>();
     protected final ContainerLevelAccess pos;
     @Nullable
     private final Block expectedBlock;
@@ -36,29 +39,12 @@ public abstract class CEContainer<PacketType> extends AbstractContainerMenu {
         return expectedBlock == null || stillValid(pos, playerIn, expectedBlock);
     }
 
-    public void sendToListeningPlayersExcept(@Nullable ContainerListener excluded, PacketType data) {
-        for (ContainerListener listener : listeners) {
-            if (listener != excluded && listener instanceof ServerPlayer) {
-                sendTo((ServerPlayer) listener, data);
+    public void sendToListeningPlayersExcept(@Nullable ServerPlayer excluded, PacketType data) {
+        for (var player : listeners) {
+            if (player != excluded) {
+                sendTo(player, data);
             }
         }
-    }
-
-    @Override
-    public void addSlotListener(@Nonnull ContainerListener listener) {
-        super.addSlotListener(listener);
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
-            if (listener instanceof ServerPlayer) {
-                sendTo((ServerPlayer) listener, getInitialSync());
-            }
-        }
-    }
-
-    @Override
-    public void removeSlotListener(@Nonnull ContainerListener listener) {
-        super.removeSlotListener(listener);
-        listeners.remove(listener);
     }
 
     protected final void sendTo(ServerPlayer listener, PacketType packet) {
@@ -73,5 +59,34 @@ public abstract class CEContainer<PacketType> extends AbstractContainerMenu {
 
     public void markDirty() {
         pos.evaluate(Level::getBlockEntity).ifPresent(BlockEntity::setChanged);
+    }
+
+    private void addListener(ServerPlayer serverPlayer) {
+        if (!listeners.contains(serverPlayer)) {
+            listeners.add(serverPlayer);
+            sendTo(serverPlayer, getInitialSync());
+        }
+    }
+
+    @SubscribeEvent
+    public static void openContainer(PlayerContainerEvent.Open ev) {
+        if (!(ev.getContainer() instanceof CEContainer<?> ceContainer)) {
+            return;
+        }
+        if (!(ev.getPlayer() instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+        ceContainer.addListener(serverPlayer);
+    }
+
+    @SubscribeEvent
+    public static void closeContainer(PlayerContainerEvent.Close ev) {
+        if (!(ev.getContainer() instanceof CEContainer<?> ceContainer)) {
+            return;
+        }
+        if (!(ev.getPlayer() instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+        ceContainer.listeners.remove(serverPlayer);
     }
 }

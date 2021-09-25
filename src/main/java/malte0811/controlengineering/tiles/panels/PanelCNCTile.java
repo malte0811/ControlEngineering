@@ -17,6 +17,7 @@ import malte0811.controlengineering.tiles.base.IExtraDropTile;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.math.Matrix4;
 import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResult;
@@ -24,7 +25,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.Constants.BlockFlags;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -39,7 +39,7 @@ import java.util.function.Consumer;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, TickableBlockEntity, IExtraDropTile {
+public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, IExtraDropTile {
     @Nonnull
     private byte[] insertedTape = new byte[0];
     private final CachedValue<byte[], CNCJob> currentJob = new CachedValue<>(
@@ -86,8 +86,8 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, T
             )
     );
 
-    public PanelCNCTile(BlockEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public PanelCNCTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
 
     private InteractionResult bottomClick(UseOnContext ctx) {
@@ -115,7 +115,7 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, T
                     hasPanel = true;
                     level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
                     Player player = ctx.getPlayer();
-                    if (player == null || !player.abilities.instabuild) {
+                    if (player == null || !player.getAbilities().instabuild) {
                         heldItem.shrink(1);
                     }
                 }
@@ -219,8 +219,8 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, T
     }
 
     @Override
-    public void load(@Nonnull BlockState state, @Nonnull CompoundTag nbt) {
-        super.load(state, nbt);
+    public void load(@Nonnull CompoundTag nbt) {
+        super.load(nbt);
         readSyncedData(nbt);
     }
 

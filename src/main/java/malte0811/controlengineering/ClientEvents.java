@@ -1,6 +1,9 @@
 package malte0811.controlengineering;
 
-import malte0811.controlengineering.blocks.bus.LineAccessBlock;
+import blusunrize.immersiveengineering.api.IETags;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.gui.misc.BusSignalSelector;
@@ -19,23 +22,20 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.DrawHighlightEvent;
+import net.minecraftforge.client.event.DrawSelectionEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
 import javax.annotation.Nullable;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = ControlEngineering.MODID, value = Dist.CLIENT, bus = Bus.FORGE)
 public class ClientEvents {
     @SubscribeEvent
-    public static void renderSelectionShape(DrawHighlightEvent.HighlightBlock ev) {
+    public static void renderSelectionShape(DrawSelectionEvent.HighlightBlock ev) {
         BlockHitResult target = ev.getTarget();
         BlockPos highlighted = target.getBlockPos();
         List<? extends SelectionShapes> selectedStack = getSelectedStack();
@@ -80,9 +80,8 @@ public class ClientEvents {
         List<String> lines = new ArrayList<>();
         final BlockPos pos = ((BlockHitResult) mop).getBlockPos();
         final BlockEntity te = mc.player.level.getBlockEntity(pos);
-        if (te instanceof LineAccessTile && held.getToolTypes().contains(LineAccessBlock.SCREWDRIVER_TOOL)) {
-            final int line = ((LineAccessTile) te).selectedLine;
-            lines.add(I18n.get(BusSignalSelector.BUS_LINE_INDEX_KEY, line));
+        if (te instanceof LineAccessTile access && held.is(IETags.screwdrivers)) {
+            lines.add(I18n.get(BusSignalSelector.BUS_LINE_INDEX_KEY, access.selectedLine));
         }
         List<? extends SelectionShapes> shapeStack = getSelectedStack();
         if (shapeStack != null) {

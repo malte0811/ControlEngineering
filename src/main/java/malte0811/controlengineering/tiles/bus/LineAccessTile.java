@@ -24,6 +24,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -38,8 +39,8 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
     private ConnectionPoint redstonePoint;
     private ConnectionPoint busPoint;
 
-    public LineAccessTile(BlockEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public LineAccessTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
         reinitConnectionPoints();
     }
 
@@ -49,20 +50,14 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
     }
 
     @Override
-    public void setPosition(@Nonnull BlockPos posIn) {
-        super.setPosition(posIn);
+    public void setLevel(Level world) {
+        super.setLevel(world);
         reinitConnectionPoints();
     }
 
     @Override
-    public void setLevelAndPosition(@Nonnull Level worldIn, @Nonnull BlockPos pos) {
-        super.setLevelAndPosition(worldIn, pos);
-        reinitConnectionPoints();
-    }
-
-    @Override
-    public void load(@Nonnull BlockState state, @Nonnull CompoundTag nbt) {
-        super.load(state, nbt);
+    public void load(@Nonnull CompoundTag nbt) {
+        super.load(nbt);
         selectedLine = nbt.getInt("selectedLine");
     }
 

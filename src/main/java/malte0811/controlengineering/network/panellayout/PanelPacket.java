@@ -7,8 +7,8 @@ import malte0811.controlengineering.gui.panel.PanelLayoutContainer;
 import malte0811.controlengineering.network.SimplePacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkDirection;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public class PanelPacket extends SimplePacket {
     private final PanelSubPacket packet;
@@ -31,10 +31,10 @@ public class PanelPacket extends SimplePacket {
         if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             Preconditions.checkState(packet.allowSendingToServer());
             AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
-            if (activeContainer instanceof PanelLayoutContainer) {
-                packet.process(((PanelLayoutContainer) activeContainer).getComponents());
-                ((PanelLayoutContainer) activeContainer).sendToListeningPlayersExcept(ctx.getSender(), packet);
-                ((PanelLayoutContainer) activeContainer).markDirty();
+            if (activeContainer instanceof PanelLayoutContainer panelContainer) {
+                packet.process(panelContainer.getComponents());
+                panelContainer.sendToListeningPlayersExcept(ctx.getSender(), packet);
+                panelContainer.markDirty();
             }
         } else {
             processOnClient();

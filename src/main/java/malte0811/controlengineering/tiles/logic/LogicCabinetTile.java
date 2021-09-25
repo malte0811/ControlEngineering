@@ -24,6 +24,7 @@ import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.serialization.Codecs;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,7 +35,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.client.model.data.IModelData;
@@ -43,7 +43,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fmllegacy.RegistryObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwner, IBusInterface, TickableBlockEntity,
+public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwner, IBusInterface,
         ISchematicTile, IExtraDropTile, IHasMaster {
     public static final int MAX_NUM_BOARDS = 4;
     public static final int NUM_TUBES_PER_BOARD = 16;
@@ -66,8 +66,8 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
     private int numTubes;
     private BusState currentBusState = BusState.EMPTY;
 
-    public LogicCabinetTile(BlockEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public LogicCabinetTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
 
     public static int getNumBoardsFor(int numTubes) {
@@ -96,8 +96,8 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
     }
 
     @Override
-    public void load(@Nonnull BlockState state, @Nonnull CompoundTag nbt) {
-        super.load(state, nbt);
+    public void load(@Nonnull CompoundTag nbt) {
+        super.load(nbt);
         clock = Codecs.readOrNull(ClockInstance.CODEC, nbt.getCompound("clock"));
         if (clock == null) {
             clock = ClockTypes.NEVER.newInstance();
@@ -186,7 +186,7 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
     }
 
     @Override
-    protected void invalidateCaps() {
+    public void invalidateCaps() {
         super.invalidateCaps();
         energyCap.invalidate();
     }

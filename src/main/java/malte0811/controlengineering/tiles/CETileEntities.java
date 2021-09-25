@@ -1,6 +1,7 @@
 package malte0811.controlengineering.tiles;
 
 import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.util.Function3;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.tiles.bus.BusInterfaceTile;
@@ -12,21 +13,22 @@ import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import malte0811.controlengineering.tiles.panels.PanelCNCTile;
 import malte0811.controlengineering.tiles.panels.PanelDesignerTile;
 import malte0811.controlengineering.tiles.tape.KeypunchTile;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class CETileEntities {
     public static final DeferredRegister<BlockEntityType<?>> REGISTER = DeferredRegister.create(
-            ForgeRegistries.TILE_ENTITIES, ControlEngineering.MODID
+            ForgeRegistries.BLOCK_ENTITIES, ControlEngineering.MODID
     );
 
     public static RegistryObject<BlockEntityType<BusRelayTile>> BUS_RELAY = REGISTER.register(
@@ -66,12 +68,12 @@ public class CETileEntities {
     );
 
     private static <T extends BlockEntity> Supplier<BlockEntityType<T>> createTileType(
-            Function<BlockEntityType<?>, T> createTE, RegistryObject<? extends Block> valid
+            Function3<BlockEntityType<?>, BlockPos, BlockState, T> createTE, RegistryObject<? extends Block> valid
     ) {
         return () -> {
             Mutable<BlockEntityType<T>> type = new MutableObject<>();
             type.setValue(new BlockEntityType<>(
-                    () -> createTE.apply(type.getValue()),
+                    (pos, state) -> createTE.apply(type.getValue(), pos, state),
                     ImmutableSet.of(valid.get()),
                     null
             ));

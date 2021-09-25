@@ -9,15 +9,16 @@ import malte0811.controlengineering.controlpanels.model.PanelModelCache;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.block.state.BlockState;
+
 import javax.annotation.Nonnull;
 
-public class PanelRenderer extends BlockEntityRenderer<ControlPanelTile> {
+public class PanelRenderer implements BlockEntityRenderer<ControlPanelTile> {
     public static final ResourceLocation PANEL_TEXTURE_LOC = new ResourceLocation(
             ControlEngineering.MODID,
             "block/control_panel"
@@ -31,8 +32,7 @@ public class PanelRenderer extends BlockEntityRenderer<ControlPanelTile> {
     );
     private final PanelModelCache CACHED_MODELS = new PanelModelCache(MixedModel.SOLID_STATIC);
 
-    public PanelRenderer(BlockEntityRenderDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
+    public PanelRenderer(BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override
@@ -52,8 +52,6 @@ public class PanelRenderer extends BlockEntityRenderer<ControlPanelTile> {
         if (tile == null) {
             return;
         }
-        //CACHED_MODELS
-        new PanelModelCache(MixedModel.SOLID_STATIC)
-                .getMixedModel(tile.getData()).renderTo(buffer, transform, combinedLight, combinedOverlay);
+        CACHED_MODELS.getMixedModel(tile.getData()).renderTo(buffer, transform, combinedLight, combinedOverlay);
     }
 }

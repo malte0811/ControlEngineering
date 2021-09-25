@@ -1,5 +1,8 @@
 package malte0811.controlengineering.gui.panel;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.math.Quaternion;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.controlpanels.PanelComponentInstance;
@@ -14,6 +17,7 @@ import malte0811.controlengineering.util.math.TransformUtil;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -22,9 +26,6 @@ import net.minecraft.network.chat.TextComponent;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.math.Quaternion;
 import java.util.List;
 
 public class PanelLayout extends AbstractWidget {
@@ -154,5 +155,10 @@ public class PanelLayout extends AbstractWidget {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {
+        // TODO?
     }
 }

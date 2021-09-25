@@ -1,12 +1,14 @@
 package malte0811.controlengineering.gui.widget;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.util.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
-import com.mojang.blaze3d.vertex.PoseStack;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -34,7 +36,7 @@ public class ColorPicker16 extends AbstractWidget {
             final int minY = y + (color.getId() / NUM_COLS) * GRID_SIZE + TITLE_SPACE;
             int border = 2;
             if (underCursor == color) {
-                final int inverse = ColorUtils.inverseColor(color.getColorValue());
+                final int inverse = ColorUtils.inverseColor(color.getTextColor());
                 fill(matrixStack, minX, minY, minX + GRID_SIZE, minY + GRID_SIZE, inverse);
                 if (selected == color) {
                     border = 1;
@@ -46,7 +48,7 @@ public class ColorPicker16 extends AbstractWidget {
                     matrixStack,
                     minX + border, minY + border,
                     minX + GRID_SIZE - border, minY + GRID_SIZE - border,
-                    0xff000000 | color.getColorValue()
+                    0xff000000 | color.getTextColor()
             );
         }
     }
@@ -79,5 +81,10 @@ public class ColorPicker16 extends AbstractWidget {
         }
         final int index = row * NUM_COLS + col;
         return DyeColor.byId(index);
+    }
+
+    @Override
+    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {
+        //TODO?
     }
 }

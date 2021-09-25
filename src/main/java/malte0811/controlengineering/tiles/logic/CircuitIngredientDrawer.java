@@ -7,6 +7,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
+
 import java.util.Objects;
 
 public class CircuitIngredientDrawer {
@@ -23,7 +24,7 @@ public class CircuitIngredientDrawer {
 
     public InteractionResult interact(UseOnContext ctx) {
         final ItemStack held = ctx.getItemInHand();
-        if (held.getItem().is(filter) && canCombine(stored, held)) {
+        if (held.is(filter) && canCombine(stored, held)) {
             if (!ctx.getLevel().isClientSide) {
                 final int toAdd = Math.min(held.getCount(), CAPACITY - stored.getCount());
                 if (stored.isEmpty()) {

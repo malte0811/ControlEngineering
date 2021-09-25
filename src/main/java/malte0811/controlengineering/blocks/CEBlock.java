@@ -18,6 +18,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -28,13 +29,13 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends Block {
+public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends Block implements EntityBlock {
     public final PlacementBehavior<PlacementData> placementBehavior;
     private final FromBlockFunction<VoxelShape> getShape;
     @Nullable
@@ -149,17 +150,12 @@ public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends B
 
     @Nullable
     @Override
-    public final BlockEntity createTileEntity(BlockState state, BlockGetter world) {
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         if (this.tileType != null) {
-            return this.tileType.get().create();
+            return this.tileType.get().create(pPos, pState);
         } else {
             return null;
         }
-    }
-
-    @Override
-    public final boolean hasTileEntity(BlockState state) {
-        return this.tileType != null;
     }
 
     public BlockPos getMainBlock(BlockState state, BlockEntity te) {

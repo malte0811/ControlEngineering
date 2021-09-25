@@ -15,6 +15,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.DyeColor;
+
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
@@ -38,7 +39,7 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
     public void renderCustom(PoseStack transform, int x, int y, @Nullable BusSignalRef state) {
         int color;
         if (state != null) {
-            color = DyeColor.byId(state.color).getColorValue();
+            color = DyeColor.byId(state.color).getTextColor();
         } else {
             color = 0;
         }
