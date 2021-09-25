@@ -2,8 +2,7 @@ package malte0811.controlengineering.network.panellayout;
 
 import com.google.common.base.Preconditions;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
-import net.minecraft.network.PacketBuffer;
-
+import net.minecraft.network.FriendlyByteBuf;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -15,12 +14,12 @@ public class Add extends PanelSubPacket {
         this.toPlace = toPlace;
     }
 
-    public Add(PacketBuffer buffer) {
+    public Add(FriendlyByteBuf buffer) {
         this(PlacedComponent.readWithoutState(buffer));
     }
 
     @Override
-    protected void write(PacketBuffer out) {
+    protected void write(FriendlyByteBuf out) {
         Preconditions.checkNotNull(toPlace);
         toPlace.writeToWithoutState(out);
     }

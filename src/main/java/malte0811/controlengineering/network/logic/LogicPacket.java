@@ -5,15 +5,15 @@ import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.logic.LogicDesignContainer;
 import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.network.SimplePacket;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 public class LogicPacket extends SimplePacket {
     private final LogicSubPacket packet;
 
-    public LogicPacket(PacketBuffer buffer) {
+    public LogicPacket(FriendlyByteBuf buffer) {
         this(LogicSubPacket.read(buffer));
     }
 
@@ -22,7 +22,7 @@ public class LogicPacket extends SimplePacket {
     }
 
     @Override
-    public void write(PacketBuffer out) {
+    public void write(FriendlyByteBuf out) {
         packet.writeFull(out);
     }
 
@@ -30,7 +30,7 @@ public class LogicPacket extends SimplePacket {
     protected void processOnThread(NetworkEvent.Context ctx) {
         if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             Preconditions.checkState(packet.allowSendingToServer());
-            Container activeContainer = ctx.getSender().openContainer;
+            AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
             if (activeContainer instanceof LogicDesignContainer && !((LogicDesignContainer) activeContainer).readOnly) {
                 packet.process(((LogicDesignContainer) activeContainer).getSchematic(), $ -> {
                     throw new RuntimeException();

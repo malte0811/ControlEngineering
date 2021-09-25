@@ -1,15 +1,14 @@
 package malte0811.controlengineering.gui.logic;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbols;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import javax.annotation.Nonnull;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -29,7 +28,7 @@ public class CellSelectionScreen extends StackedScreen {
     private SymbolInstance<?> selected;
 
     public CellSelectionScreen(Consumer<SymbolInstance<?>> select) {
-        super(new StringTextComponent("Cell selection"));
+        super(new TextComponent("Cell selection"));
         this.select = select;
         this.symbols = new ArrayList<>(SchematicSymbols.REGISTRY.getValues());
     }
@@ -39,7 +38,7 @@ public class CellSelectionScreen extends StackedScreen {
         super.init();
         xGrid = symbols.stream()
                 .mapToInt(symbol -> (int) Math.max(
-                        symbol.getXSize(), font.getStringPropertyWidth(symbol.getName()) / TEXT_SCALE
+                        symbol.getXSize(), font.width(symbol.getName()) / TEXT_SCALE
                 ))
                 .max()
                 .orElse(5) + 2;
@@ -52,9 +51,9 @@ public class CellSelectionScreen extends StackedScreen {
 
     @Override
     protected void renderForeground(
-            @Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks
+            @Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks
     ) {
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(BORDER_SIZE_X, BORDER_SIZE_Y, 0);
         matrixStack.scale(LogicDesignScreen.BASE_SCALE, LogicDesignScreen.BASE_SCALE, 1);
         int index = 0;
@@ -65,22 +64,22 @@ public class CellSelectionScreen extends StackedScreen {
                 final int yBase = row * yGrid + 1;
                 symbol.render(matrixStack, xBase, yBase + getTotalFontHeight(), null);
                 //TODO less push/pop's?
-                matrixStack.push();
+                matrixStack.pushPose();
                 matrixStack.translate(xBase, yBase, 0);
                 matrixStack.scale(1 / TEXT_SCALE, 1 / TEXT_SCALE, 1);
-                ITextComponent desc = symbol.getName();
-                final int offset = (int) ((symbol.getXSize() * TEXT_SCALE - font.getStringPropertyWidth(desc)) / 2);
-                font.drawText(matrixStack, desc, offset, 0, 0xff000000);
-                matrixStack.pop();
+                Component desc = symbol.getName();
+                final int offset = (int) ((symbol.getXSize() * TEXT_SCALE - font.width(desc)) / 2);
+                font.draw(matrixStack, desc, offset, 0, 0xff000000);
+                matrixStack.popPose();
                 ++index;
             }
         }
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override
     protected void renderCustomBackground(
-            @Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks
+            @Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks
     ) {
         super.renderCustomBackground(matrixStack, mouseX, mouseY, partialTicks);
         final int borderRenderSize = 5;
@@ -92,7 +91,7 @@ public class CellSelectionScreen extends StackedScreen {
                 this.height - BORDER_SIZE_Y + borderRenderSize,
                 BACKGROUND_COLOR
         );
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(BORDER_SIZE_X, BORDER_SIZE_Y, 0);
         matrixStack.scale(LogicDesignScreen.BASE_SCALE, LogicDesignScreen.BASE_SCALE, 1);
         final int selected = getSelectedIndex(mouseX, mouseY);
@@ -108,7 +107,7 @@ public class CellSelectionScreen extends StackedScreen {
                     SELECTED_COLOR
             );
         }
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override
@@ -130,7 +129,7 @@ public class CellSelectionScreen extends StackedScreen {
         super.tick();
         if (selected != null) {
             select.accept(selected);
-            closeScreen();
+            onClose();
         }
     }
 
@@ -149,6 +148,6 @@ public class CellSelectionScreen extends StackedScreen {
     }
 
     private int getTotalFontHeight() {
-        return (int) (Minecraft.getInstance().fontRenderer.FONT_HEIGHT / TEXT_SCALE + 1);
+        return (int) (Minecraft.getInstance().font.lineHeight / TEXT_SCALE + 1);
     }
 }

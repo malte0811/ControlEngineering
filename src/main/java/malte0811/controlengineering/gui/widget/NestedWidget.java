@@ -1,40 +1,39 @@
 package malte0811.controlengineering.gui.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.INestedGuiEventHandler;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.text.StringTextComponent;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.events.ContainerEventHandler;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.network.chat.TextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class NestedWidget extends Widget implements INestedGuiEventHandler {
-    private final List<Widget> subWidgets = new ArrayList<>();
+public abstract class NestedWidget extends AbstractWidget implements ContainerEventHandler {
+    private final List<AbstractWidget> subWidgets = new ArrayList<>();
     private boolean isDragging;
     @Nullable
-    private IGuiEventListener listener;
+    private GuiEventListener listener;
 
     public NestedWidget(int x, int y, int width, int height) {
-        super(x, y, width, height, StringTextComponent.EMPTY);
+        super(x, y, width, height, TextComponent.EMPTY);
     }
 
-    protected void addWidget(Widget newPart) {
+    protected void addWidget(AbstractWidget newPart) {
         subWidgets.add(newPart);
     }
 
     @Override
-    public void renderWidget(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        for (Widget w : subWidgets) {
-            w.renderWidget(matrixStack, mouseX, mouseY, partialTicks);
+    public void renderButton(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        for (AbstractWidget w : subWidgets) {
+            w.renderButton(matrixStack, mouseX, mouseY, partialTicks);
         }
     }
 
     @Nonnull
     @Override
-    public List<? extends IGuiEventListener> getEventListeners() {
+    public List<? extends GuiEventListener> children() {
         return subWidgets;
     }
 
@@ -50,47 +49,47 @@ public abstract class NestedWidget extends Widget implements INestedGuiEventHand
 
     @Nullable
     @Override
-    public IGuiEventListener getListener() {
+    public GuiEventListener getFocused() {
         return listener;
     }
 
     @Override
-    public void setListener(@Nullable IGuiEventListener listener) {
+    public void setFocused(@Nullable GuiEventListener listener) {
         this.listener = listener;
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return INestedGuiEventHandler.super.mouseClicked(mouseX, mouseY, button);
+        return ContainerEventHandler.super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        return INestedGuiEventHandler.super.mouseReleased(mouseX, mouseY, button);
+        return ContainerEventHandler.super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        return INestedGuiEventHandler.super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return ContainerEventHandler.super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        return INestedGuiEventHandler.super.mouseScrolled(mouseX, mouseY, delta);
+        return ContainerEventHandler.super.mouseScrolled(mouseX, mouseY, delta);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return INestedGuiEventHandler.super.keyPressed(keyCode, scanCode, modifiers);
+        return ContainerEventHandler.super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        return INestedGuiEventHandler.super.keyReleased(keyCode, scanCode, modifiers);
+        return ContainerEventHandler.super.keyReleased(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        return INestedGuiEventHandler.super.charTyped(codePoint, modifiers);
+        return ContainerEventHandler.super.charTyped(codePoint, modifiers);
     }
 }

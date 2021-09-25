@@ -19,16 +19,15 @@ import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.serialization.Codecs;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,11 +41,11 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
     private final CachedValue<BlockState, SelectionShapes> shapes = new CachedValue<>(
             this::getBlockState,
             state -> {
-                Offset offset = state.get(PanelDesignerBlock.OFFSET);
-                Direction facing = state.get(PanelDesignerBlock.FACING);
+                Offset offset = state.getValue(PanelDesignerBlock.OFFSET);
+                Direction facing = state.getValue(PanelDesignerBlock.FACING);
                 VoxelShape baseShape = PanelDesignerBlock.SHAPE.apply(offset, facing);
                 if (offset == Offset.ORIGIN) {
-                    Function<ItemUseContext, ActionResultType> openUI = makeInteraction(
+                    Function<UseOnContext, InteractionResult> openUI = makeInteraction(
                             state, PanelDesignerTile::openUI
                     );
                     return new ListShapes(
@@ -55,16 +54,16 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
                             ImmutableList.of(
                                     new SingleShape(PanelDesignerBlock.TABLE_TOP, openUI)
                             ),
-                            $ -> ActionResultType.PASS
+                            $ -> InteractionResult.PASS
                     );
                 } else if (offset == Offset.BACK_TOP) {
-                    Function<ItemUseContext, ActionResultType> writeTape = makeInteraction(
+                    Function<UseOnContext, InteractionResult> writeTape = makeInteraction(
                             state, PanelDesignerTile::writeTape
                     );
-                    Function<ItemUseContext, ActionResultType> addTape = makeInteraction(
-                            state, (t, ctx) -> t.state.removeOrAddClearTape(ctx.getPlayer(), ctx.getItem())
+                    Function<UseOnContext, InteractionResult> addTape = makeInteraction(
+                            state, (t, ctx) -> t.state.removeOrAddClearTape(ctx.getPlayer(), ctx.getItemInHand())
                     );
-                    Function<ItemUseContext, ActionResultType> takeTape = makeInteraction(
+                    Function<UseOnContext, InteractionResult> takeTape = makeInteraction(
                             state, (t, ctx) -> t.state.removeWrittenTape(ctx.getPlayer())
                     );
                     return new ListShapes(
@@ -75,10 +74,10 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
                                     new SingleShape(KeypunchTile.INPUT_SHAPE, addTape),
                                     new SingleShape(KeypunchTile.OUTPUT_SHAPE, takeTape)
                             ),
-                            $ -> ActionResultType.PASS
+                            $ -> InteractionResult.PASS
                     );
                 } else {
-                    return new SingleShape(baseShape, $ -> ActionResultType.PASS);
+                    return new SingleShape(baseShape, $ -> InteractionResult.PASS);
                 }
             }
     );
@@ -87,7 +86,7 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
     private List<PlacedComponent> components = new ArrayList<>();
     private KeypunchState state = new KeypunchState();
 
-    public PanelDesignerTile(TileEntityType<?> tileEntityTypeIn) {
+    public PanelDesignerTile(BlockEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
         requiredLength = new CachedValue<>(
                 () -> components,
@@ -96,16 +95,16 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
         );
     }
 
-    private Function<ItemUseContext, ActionResultType> makeInteraction(
-            BlockState state, BiFunction<PanelDesignerTile, ItemUseContext, ActionResultType> handler
+    private Function<UseOnContext, InteractionResult> makeInteraction(
+            BlockState state, BiFunction<PanelDesignerTile, UseOnContext, InteractionResult> handler
     ) {
         return ctx -> {
             BlockPos origin = CEBlocks.PANEL_DESIGNER.get().getMainBlock(state, this);
-            TileEntity atOrigin = world.getTileEntity(origin);
+            BlockEntity atOrigin = level.getBlockEntity(origin);
             if (atOrigin instanceof PanelDesignerTile) {
                 return handler.apply((PanelDesignerTile) atOrigin, ctx);
             } else {
-                return ActionResultType.FAIL;
+                return InteractionResult.FAIL;
             }
         };
     }
@@ -116,8 +115,8 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
     }
 
     @Override
-    public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
-        super.read(state, nbt);
+    public void load(@Nonnull BlockState state, @Nonnull CompoundTag nbt) {
+        super.load(state, nbt);
         components = new ArrayList<>(
                 Codecs.readOptional(COMPONENTS_CODEC, nbt.get("components")).orElse(ImmutableList.of())
         );
@@ -126,8 +125,8 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
 
     @Nonnull
     @Override
-    public CompoundNBT write(@Nonnull CompoundNBT compound) {
-        compound = super.write(compound);
+    public CompoundTag save(@Nonnull CompoundTag compound) {
+        compound = super.save(compound);
         compound.put("components", Codecs.encode(COMPONENTS_CODEC, components));
         compound.put("state", Codecs.encode(KeypunchState.CODEC, state));
         return compound;
@@ -137,22 +136,22 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
         return components;
     }
 
-    private ActionResultType openUI(ItemUseContext ctx) {
-        if (!world.isRemote) {
-            CEBlocks.PANEL_DESIGNER.get().openContainer(ctx.getPlayer(), getBlockState(), world, pos);
+    private InteractionResult openUI(UseOnContext ctx) {
+        if (!level.isClientSide) {
+            CEBlocks.PANEL_DESIGNER.get().openContainer(ctx.getPlayer(), getBlockState(), level, worldPosition);
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     public int getLengthRequired() {
         return requiredLength.get();
     }
 
-    private ActionResultType writeTape(ItemUseContext ctx) {
+    private InteractionResult writeTape(UseOnContext ctx) {
         final String instructions = CNCInstructionGenerator.toInstructions(components);
         final byte[] bytes = BitUtils.toBytesWithParity(instructions);
         state.tryTypeAll(new ByteArrayList(bytes, 0, bytes.length));
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     public KeypunchState getTTY() {

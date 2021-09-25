@@ -1,12 +1,11 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.WireSegment;
 import malte0811.controlengineering.util.GuiUtil;
 import malte0811.controlengineering.util.math.Vec2i;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.Objects;
 
 public class SymbolPin {
@@ -63,7 +62,7 @@ public class SymbolPin {
         return direction.isCombinatorialOutput();
     }
 
-    public void render(MatrixStack stack, int x, int y, int wireColor) {
+    public void render(PoseStack stack, int x, int y, int wireColor) {
         final Vec2i pinPos = getPosition();
         final int wirePixels = 1;
         final float wireXMin = pinPos.x + x + (isOutput() ? -wirePixels : WireSegment.WIRE_SPACE);

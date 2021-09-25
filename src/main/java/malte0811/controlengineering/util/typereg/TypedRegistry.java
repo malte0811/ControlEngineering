@@ -1,9 +1,8 @@
 package malte0811.controlengineering.util.typereg;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.util.ResourceLocation;
-
 import javax.annotation.Nullable;
+import net.minecraft.resources.ResourceLocation;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;

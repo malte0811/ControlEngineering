@@ -4,21 +4,20 @@ import blusunrize.immersiveengineering.api.utils.DirectionUtils;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.Property;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.Template;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 public class HorizontalStructurePlacement<T extends Comparable<T>> implements PlacementBehavior<Direction> {
     private final Property<Direction> facingProperty;
@@ -31,7 +30,7 @@ public class HorizontalStructurePlacement<T extends Comparable<T>> implements Pl
         this.facingProperty = facingProperty;
         this.offsetProperty = offsetProperty;
         this.getBaseOffset = HashBiMap.create();
-        for (T t : offsetProperty.getAllowedValues()) {
+        for (T t : offsetProperty.getPossibleValues()) {
             this.getBaseOffset.put(t, getBaseOffset.apply(t));
         }
     }
@@ -39,18 +38,18 @@ public class HorizontalStructurePlacement<T extends Comparable<T>> implements Pl
     public static HorizontalStructurePlacement<Integer> column(
             Property<Direction> facing, Property<Integer> columnHeight
     ) {
-        return new HorizontalStructurePlacement<>(facing, columnHeight, BlockPos.ZERO::up);
+        return new HorizontalStructurePlacement<>(facing, columnHeight, BlockPos.ZERO::above);
     }
 
     @Override
-    public Direction getPlacementData(BlockItemUseContext ctx) {
-        return ctx.getPlacementHorizontalFacing();
+    public Direction getPlacementData(BlockPlaceContext ctx) {
+        return ctx.getHorizontalDirection();
     }
 
     @Override
-    public Pair<Direction, BlockPos> getPlacementDataAndOffset(BlockState state, TileEntity te) {
-        T offset = state.get(this.offsetProperty);
-        Direction facing = state.get(this.facingProperty);
+    public Pair<Direction, BlockPos> getPlacementDataAndOffset(BlockState state, BlockEntity te) {
+        T offset = state.getValue(this.offsetProperty);
+        Direction facing = state.getValue(this.facingProperty);
         return Pair.of(facing, getPhysicalOffset(facing, offset));
     }
 
@@ -65,19 +64,19 @@ public class HorizontalStructurePlacement<T extends Comparable<T>> implements Pl
 
     @Override
     public BlockState getStateForOffset(Block owner, BlockPos physicalOffset, Direction data) {
-        return owner.getDefaultState()
-                .with(facingProperty, data)
-                .with(offsetProperty, getBaseOffset.inverse().get(getLogicalOffset(data, physicalOffset)));
+        return owner.defaultBlockState()
+                .setValue(facingProperty, data)
+                .setValue(offsetProperty, getBaseOffset.inverse().get(getLogicalOffset(data, physicalOffset)));
     }
 
     @Override
-    public boolean isValidAtOffset(BlockPos physicalOffset, BlockState state, TileEntity te, Direction data) {
+    public boolean isValidAtOffset(BlockPos physicalOffset, BlockState state, BlockEntity te, Direction data) {
         if (!state.hasProperty(facingProperty)
                 || !state.hasProperty(offsetProperty)
-                || state.get(facingProperty) != data) {
+                || state.getValue(facingProperty) != data) {
             return false;
         }
-        T logical = state.get(offsetProperty);
+        T logical = state.getValue(offsetProperty);
         BlockPos physical = getPhysicalOffset(data, logical);
         return physicalOffset.equals(physical);
     }
@@ -88,13 +87,13 @@ public class HorizontalStructurePlacement<T extends Comparable<T>> implements Pl
 
     private static BlockPos getPhysicalOffset(Direction facing, BlockPos logicalOffset) {
         Rotation rot = DirectionUtils.getRotationBetweenFacings(Direction.NORTH, facing);
-        PlacementSettings placeSet = new PlacementSettings().setRotation(rot);
-        return Template.transformedBlockPos(placeSet, logicalOffset);
+        StructurePlaceSettings placeSet = new StructurePlaceSettings().setRotation(rot);
+        return StructureTemplate.calculateRelativePosition(placeSet, logicalOffset);
     }
 
     private static BlockPos getLogicalOffset(Direction facing, BlockPos physicalOffset) {
         Rotation rot = DirectionUtils.getRotationBetweenFacings(facing, Direction.NORTH);
-        PlacementSettings placeSet = new PlacementSettings().setRotation(rot);
-        return Template.transformedBlockPos(placeSet, physicalOffset);
+        StructurePlaceSettings placeSet = new StructurePlaceSettings().setRotation(rot);
+        return StructureTemplate.calculateRelativePosition(placeSet, physicalOffset);
     }
 }

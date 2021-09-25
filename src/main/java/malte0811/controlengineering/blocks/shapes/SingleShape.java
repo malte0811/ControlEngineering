@@ -2,11 +2,10 @@ package malte0811.controlengineering.blocks.shapes;
 
 import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.util.math.Matrix4;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
@@ -14,14 +13,14 @@ import java.util.function.Function;
 
 public class SingleShape extends SelectionShapes {
     public static final SelectionShapes FULL_BLOCK = new SingleShape(
-            VoxelShapes.fullCube(),
-            $ -> ActionResultType.PASS
+            Shapes.block(),
+            $ -> InteractionResult.PASS
     );
 
     private final VoxelShape mainShape;
-    private final Function<ItemUseContext, ActionResultType> onClick;
+    private final Function<UseOnContext, InteractionResult> onClick;
 
-    public SingleShape(VoxelShape mainShape, Function<ItemUseContext, ActionResultType> onClick) {
+    public SingleShape(VoxelShape mainShape, Function<UseOnContext, InteractionResult> onClick) {
         this.mainShape = mainShape;
         this.onClick = onClick;
     }
@@ -45,7 +44,7 @@ public class SingleShape extends SelectionShapes {
     }
 
     @Override
-    public ActionResultType onUse(ItemUseContext ctx, ActionResultType defaultType) {
+    public InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType) {
         return onClick.apply(ctx);
     }
 }

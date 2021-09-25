@@ -1,15 +1,14 @@
 package malte0811.controlengineering.gui.widgets;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.chars.CharConsumer;
 import malte0811.controlengineering.gui.SubTexture;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 
@@ -28,7 +27,7 @@ public class KeyboardButton extends Button {
     ) {
         super(
                 x, y, texture.getWidth(), texture.getHeight(),
-                StringTextComponent.EMPTY,
+                TextComponent.EMPTY,
                 btn -> pressedAction.accept(((KeyboardButton) btn).getChar())
         );
         this.texture = texture;
@@ -37,14 +36,14 @@ public class KeyboardButton extends Button {
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.getTextureManager().bindTexture(this.texture.getMainTexture());
+        minecraft.getTextureManager().bind(this.texture.getMainTexture());
         RenderSystem.enableDepthTest();
         texture.blit(matrixStack, x, y);
         drawCenteredString(
                 matrixStack,
-                minecraft.fontRenderer,
+                minecraft.font,
                 this.getMessage(),
                 this.x + this.width / 2, this.y + (this.height - 8) / 2,
                 -1
@@ -53,8 +52,8 @@ public class KeyboardButton extends Button {
 
     @Nonnull
     @Override
-    public ITextComponent getMessage() {
-        return new StringTextComponent("" + getChar());
+    public Component getMessage() {
+        return new TextComponent("" + getChar());
     }
 
     public char getChar() {

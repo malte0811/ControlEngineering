@@ -1,31 +1,30 @@
 package malte0811.controlengineering.tiles.logic;
 
 import malte0811.controlengineering.util.ItemUtil;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tags.ITag;
-import net.minecraft.util.ActionResultType;
-
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import java.util.Objects;
 
 public class CircuitIngredientDrawer {
     private static final int CAPACITY = 64;
 
-    private final ITag<Item> filter;
+    private final Tag<Item> filter;
     private final String emptyKey;
     private ItemStack stored = ItemStack.EMPTY;
 
-    public CircuitIngredientDrawer(ITag<Item> filter, String emptyKey) {
+    public CircuitIngredientDrawer(Tag<Item> filter, String emptyKey) {
         this.filter = filter;
         this.emptyKey = emptyKey;
     }
 
-    public ActionResultType interact(ItemUseContext ctx) {
-        final ItemStack held = ctx.getItem();
-        if (held.getItem().isIn(filter) && canCombine(stored, held)) {
-            if (!ctx.getWorld().isRemote) {
+    public InteractionResult interact(UseOnContext ctx) {
+        final ItemStack held = ctx.getItemInHand();
+        if (held.getItem().is(filter) && canCombine(stored, held)) {
+            if (!ctx.getLevel().isClientSide) {
                 final int toAdd = Math.min(held.getCount(), CAPACITY - stored.getCount());
                 if (stored.isEmpty()) {
                     stored = held.copy();
@@ -35,15 +34,15 @@ public class CircuitIngredientDrawer {
                 }
                 held.shrink(toAdd);
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         } else if (!stored.isEmpty() && ctx.getPlayer() != null) {
-            if (!ctx.getWorld().isRemote) {
+            if (!ctx.getLevel().isClientSide) {
                 ItemUtil.giveOrDrop(ctx.getPlayer(), stored);
                 stored = ItemStack.EMPTY;
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 
     private static boolean canCombine(ItemStack existing, ItemStack added) {
@@ -74,12 +73,12 @@ public class CircuitIngredientDrawer {
         stored = ItemStack.EMPTY;
     }
 
-    public void read(CompoundNBT nbt) {
-        stored = ItemStack.read(nbt);
+    public void read(CompoundTag nbt) {
+        stored = ItemStack.of(nbt);
     }
 
-    public CompoundNBT write() {
-        return stored.write(new CompoundNBT());
+    public CompoundTag write() {
+        return stored.save(new CompoundTag());
     }
 
     public String getEmptyKey() {

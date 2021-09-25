@@ -5,11 +5,10 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.util.Util;
-
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import net.minecraft.Util;
 
 public class BasicCodecParser<T> extends SerialCodecParser<T> {
     public static final Codec<Integer> HEX_INT = Codec.INT.xmap(Function.identity(), Function.identity());

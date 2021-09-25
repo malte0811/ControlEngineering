@@ -1,63 +1,62 @@
 package malte0811.controlengineering.tiles.base;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
-public abstract class CETileEntity extends TileEntity implements IHasMasterBase {
-    private TileEntity cachedMaster;
+public abstract class CETileEntity extends BlockEntity implements IHasMasterBase {
+    private BlockEntity cachedMaster;
 
-    public CETileEntity(TileEntityType<?> tileEntityTypeIn) {
+    public CETileEntity(BlockEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
     }
 
     @Override
-    public void setCachedMaster(TileEntity newCachedMaster) {
+    public void setCachedMaster(BlockEntity newCachedMaster) {
         cachedMaster = newCachedMaster;
     }
 
     @Override
-    public TileEntity getCachedMaster() {
+    public BlockEntity getCachedMaster() {
         return cachedMaster;
     }
 
-    protected CompoundNBT writeSyncedData(CompoundNBT out) {
+    protected CompoundTag writeSyncedData(CompoundTag out) {
         return out;
     }
 
-    protected void readSyncedData(CompoundNBT in) {}
+    protected void readSyncedData(CompoundTag in) {}
 
     @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
+    public void handleUpdateTag(BlockState state, CompoundTag tag) {
         super.handleUpdateTag(state, tag);
         readSyncedData(tag);
     }
 
     @Nonnull
     @Override
-    public CompoundNBT getUpdateTag() {
+    public CompoundTag getUpdateTag() {
         return writeSyncedData(super.getUpdateTag());
     }
 
     @Nullable
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        CompoundNBT data = writeSyncedData(new CompoundNBT());
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        CompoundTag data = writeSyncedData(new CompoundTag());
         if (data.isEmpty()) {
             return super.getUpdatePacket();
         } else {
-            return new SUpdateTileEntityPacket(pos, -1, writeSyncedData(new CompoundNBT()));
+            return new ClientboundBlockEntityDataPacket(worldPosition, -1, writeSyncedData(new CompoundTag()));
         }
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        readSyncedData(pkt.getNbtCompound());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        readSyncedData(pkt.getTag());
     }
 }

@@ -3,10 +3,15 @@ package malte0811.controlengineering.logic.model;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.renderer.model.*;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.ModelLoader;
@@ -23,52 +28,52 @@ public class DynamicLogicModelLoader implements IModelLoader<DynamicLogicModelLo
     public static final String TUBE_KEY = "tube";
 
     @Override
-    public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {}
+    public void onResourceManagerReload(@Nonnull ResourceManager resourceManager) {}
 
     @Nonnull
     @Override
     public DynamicLogicGeometry read(
             @Nonnull JsonDeserializationContext deserializationContext, @Nonnull JsonObject modelContents
     ) {
-        IUnbakedModel boardModel = ModelLoader.defaultModelGetter().apply(
+        UnbakedModel boardModel = ModelLoader.defaultModelGetter().apply(
                 new ResourceLocation(modelContents.get(BOARD_KEY).getAsString())
         );
-        IUnbakedModel tubeModel = ModelLoader.defaultModelGetter().apply(
+        UnbakedModel tubeModel = ModelLoader.defaultModelGetter().apply(
                 new ResourceLocation(modelContents.get(TUBE_KEY).getAsString())
         );
         return new DynamicLogicGeometry(boardModel, tubeModel);
     }
 
     public static class DynamicLogicGeometry implements IModelGeometry<DynamicLogicGeometry> {
-        private final IUnbakedModel board;
-        private final IUnbakedModel tube;
+        private final UnbakedModel board;
+        private final UnbakedModel tube;
 
-        public DynamicLogicGeometry(IUnbakedModel board, IUnbakedModel tube) {
+        public DynamicLogicGeometry(UnbakedModel board, UnbakedModel tube) {
             this.board = board;
             this.tube = tube;
         }
 
         @Override
-        public IBakedModel bake(
+        public BakedModel bake(
                 IModelConfiguration owner,
                 ModelBakery bakery,
-                Function<RenderMaterial, TextureAtlasSprite> spriteGetter,
-                IModelTransform modelTransform,
-                ItemOverrideList overrides,
+                Function<Material, TextureAtlasSprite> spriteGetter,
+                ModelState modelTransform,
+                ItemOverrides overrides,
                 ResourceLocation modelLocation
         ) {
             return new DynamicLogicModel(board, tube, bakery, spriteGetter, modelTransform);
         }
 
         @Override
-        public Collection<RenderMaterial> getTextures(
+        public Collection<Material> getTextures(
                 IModelConfiguration owner,
-                Function<ResourceLocation, IUnbakedModel> modelGetter,
+                Function<ResourceLocation, UnbakedModel> modelGetter,
                 Set<Pair<String, String>> missingTextureErrors
         ) {
-            Set<RenderMaterial> textures = new HashSet<>();
-            textures.addAll(board.getTextures(modelGetter, missingTextureErrors));
-            textures.addAll(tube.getTextures(modelGetter, missingTextureErrors));
+            Set<Material> textures = new HashSet<>();
+            textures.addAll(board.getMaterials(modelGetter, missingTextureErrors));
+            textures.addAll(tube.getMaterials(modelGetter, missingTextureErrors));
             return textures;
         }
     }

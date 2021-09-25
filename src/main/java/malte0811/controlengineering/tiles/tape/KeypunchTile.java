@@ -14,14 +14,13 @@ import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.serialization.Codecs;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.shapes.VoxelShape;
-
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,26 +35,26 @@ public class KeypunchTile extends CETileEntity implements SelectionShapeOwner, I
 
     private KeypunchState state = new KeypunchState();
 
-    public KeypunchTile(TileEntityType<?> tileEntityTypeIn) {
+    public KeypunchTile(BlockEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
     }
 
     @Override
-    public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
-        super.read(state, nbt);
+    public void load(@Nonnull BlockState state, @Nonnull CompoundTag nbt) {
+        super.load(state, nbt);
         this.state = Codecs.readOptional(KeypunchState.CODEC, nbt.get("state")).orElseGet(KeypunchState::new);
     }
 
     @Nonnull
     @Override
-    public CompoundNBT write(@Nonnull CompoundNBT compound) {
-        compound = super.write(compound);
+    public CompoundTag save(@Nonnull CompoundTag compound) {
+        compound = super.save(compound);
         compound.put("state", Codecs.encode(KeypunchState.CODEC, state));
         return compound;
     }
 
     private final CachedValue<Direction, SelectionShapes> selectionShapes = new CachedValue<>(
-            () -> getBlockState().get(KeypunchBlock.FACING), f -> createSelectionShapes(f, this)
+            () -> getBlockState().getValue(KeypunchBlock.FACING), f -> createSelectionShapes(f, this)
     );
 
     @Override
@@ -71,7 +70,7 @@ public class KeypunchTile extends CETileEntity implements SelectionShapeOwner, I
         ));
         // Add clear tape to input/take it from input
         subshapes.add(new SingleShape(
-                INPUT_SHAPE, ctx -> tile.getState().removeOrAddClearTape(ctx.getPlayer(), ctx.getItem())
+                INPUT_SHAPE, ctx -> tile.getState().removeOrAddClearTape(ctx.getPlayer(), ctx.getItemInHand())
         ));
         return new ListShapes(
                 KeypunchBlock.SHAPE_PROVIDER.apply(d),
@@ -79,9 +78,9 @@ public class KeypunchTile extends CETileEntity implements SelectionShapeOwner, I
                 subshapes,
                 ctx -> {
                     CEBlocks.KEYPUNCH.get().openContainer(
-                            ctx.getPlayer(), tile.getBlockState(), ctx.getWorld(), ctx.getPos()
+                            ctx.getPlayer(), tile.getBlockState(), ctx.getLevel(), ctx.getClickedPos()
                     );
-                    return ActionResultType.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
         );
     }

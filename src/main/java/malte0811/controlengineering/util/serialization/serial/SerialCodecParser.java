@@ -5,8 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import malte0811.controlengineering.util.serialization.ListBasedCodec;
-import net.minecraft.network.PacketBuffer;
-
+import net.minecraft.network.FriendlyByteBuf;
 import java.util.List;
 
 public abstract class SerialCodecParser<T> {
@@ -31,7 +30,7 @@ public abstract class SerialCodecParser<T> {
         return parse(new StringListStorage(parts));
     }
 
-    public final DataResult<T> parse(PacketBuffer parts) {
+    public final DataResult<T> parse(FriendlyByteBuf parts) {
         return parse(new PacketBufferStorage(parts));
     }
 
@@ -45,7 +44,7 @@ public abstract class SerialCodecParser<T> {
         return out.getData();
     }
 
-    public final void writeToBuffer(T in, PacketBuffer out) {
+    public final void writeToBuffer(T in, FriendlyByteBuf out) {
         addTo(in, new PacketBufferStorage(out));
     }
 

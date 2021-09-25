@@ -2,7 +2,7 @@ package malte0811.controlengineering.logic.clock;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Unit;
 
 import java.util.Map;

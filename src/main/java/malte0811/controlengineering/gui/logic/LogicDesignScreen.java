@@ -2,8 +2,8 @@ package malte0811.controlengineering.gui.logic;
 
 import blusunrize.lib.manual.ManualUtils;
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.items.IEItemRefs;
@@ -21,15 +21,20 @@ import malte0811.controlengineering.util.GuiUtil;
 import malte0811.controlengineering.util.TextUtil;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.IHasContainer;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.*;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -39,10 +44,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static net.minecraft.util.math.MathHelper.ceil;
-import static net.minecraft.util.math.MathHelper.floor;
+import static net.minecraft.util.Mth.ceil;
+import static net.minecraft.util.Mth.floor;
 
-public class LogicDesignScreen extends StackedScreen implements IHasContainer<LogicDesignContainer> {
+public class LogicDesignScreen extends StackedScreen implements MenuAccess<LogicDesignContainer> {
     public static final String COMPONENTS_KEY = ControlEngineering.MODID + ".gui.components";
     public static final String ENABLE_DRC_KEY = ControlEngineering.MODID + ".gui.drcOn";
     public static final String DISABLE_DRC_KEY = ControlEngineering.MODID + ".gui.drcOff";
@@ -68,7 +73,7 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
     private double centerX = 0;
     private double centerY = 0;
 
-    public LogicDesignScreen(LogicDesignContainer container, ITextComponent title) {
+    public LogicDesignScreen(LogicDesignContainer container, Component title) {
         super(title);
         this.schematic = new Schematic();
         this.container = container;
@@ -79,15 +84,15 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         super.init();
         if (!container.readOnly) {
             addButton(new Button(
-                    TOTAL_BORDER, TOTAL_BORDER, 20, 20, new StringTextComponent("C"),
-                    btn -> minecraft.displayGuiScreen(new CellSelectionScreen(s -> {
+                    TOTAL_BORDER, TOTAL_BORDER, 20, 20, new TextComponent("C"),
+                    btn -> minecraft.setScreen(new CellSelectionScreen(s -> {
                         placingSymbol = s;
                         resetAfterPlacingSymbol = false;
                     })),
                     makeTooltip(() -> COMPONENTS_KEY)
             ));
             addButton(new Button(
-                    TOTAL_BORDER, TOTAL_BORDER + 20, 20, 20, new StringTextComponent("E"),
+                    TOTAL_BORDER, TOTAL_BORDER + 20, 20, 20, new TextComponent("E"),
                     btn -> {
                         errorsShown = !errorsShown;
                         updateErrors();
@@ -101,18 +106,18 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         );
     }
 
-    private Button.ITooltip makeTooltip(Supplier<String> key) {
-        return ($, transform, x, y) -> this.renderTooltip(transform, new TranslationTextComponent(key.get()), x, y);
+    private Button.OnTooltip makeTooltip(Supplier<String> key) {
+        return ($, transform, x, y) -> this.renderTooltip(transform, new TranslatableComponent(key.get()), x, y);
     }
 
     @Override
-    protected void renderForeground(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        matrixStack.push();
+    protected void renderForeground(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        matrixStack.pushPose();
         matrixStack.translate(width / 2., height / 2., 0);
         matrixStack.scale(currentScale, currentScale, 1);
         matrixStack.translate(-centerX, -centerY, 0);
 
-        final double scale = minecraft.getMainWindow().getGuiScaleFactor();
+        final double scale = minecraft.getWindow().getGuiScale();
         RenderSystem.enableScissor(
                 (int) (TOTAL_BORDER * scale), (int) (TOTAL_BORDER * scale),
                 (int) ((width - 2 * TOTAL_BORDER) * scale), (int) ((height - 2 * TOTAL_BORDER) * scale)
@@ -122,7 +127,7 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         Vec2d mousePos = getMousePosition(mouseX, mouseY);
         schematic.render(matrixStack, mousePos);
 
-        Optional<ITextComponent> currentError = Optional.empty();
+        Optional<Component> currentError = Optional.empty();
         PlacedSymbol placed = getPlacingSymbol(mousePos);
         if (placed != null) {
             currentError = schematic.getChecker().getErrorForAdding(placed);
@@ -137,34 +142,34 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         }
         RenderSystem.disableScissor();
 
-        matrixStack.pop();
+        matrixStack.popPose();
         renderIngredients(matrixStack);
         renderTooltip(matrixStack, mouseX, mouseY, mousePos, currentError.orElse(null));
     }
 
     private void renderTooltip(
-            MatrixStack transform, int mouseX, int mouseY, Vec2d schematicMouse, @Nullable ITextComponent currentError
+            PoseStack transform, int mouseX, int mouseY, Vec2d schematicMouse, @Nullable Component currentError
     ) {
         if (currentError != null) {
-            if (currentError instanceof IFormattableTextComponent) {
-                ((IFormattableTextComponent) currentError).setStyle(Style.EMPTY.setFormatting(TextFormatting.RED));
+            if (currentError instanceof MutableComponent) {
+                ((MutableComponent) currentError).setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
             }
             renderTooltip(transform, currentError, mouseX, mouseY);
         } else {
             PlacedSymbol hovered = schematic.getSymbolAt(schematicMouse);
             if (hovered != null) {
-                ITextComponent toShow = hovered.getSymbol().getName();
-                List<IReorderingProcessor> tooltip = new ArrayList<>();
-                tooltip.add(toShow.func_241878_f());
+                Component toShow = hovered.getSymbol().getName();
+                List<FormattedCharSequence> tooltip = new ArrayList<>();
+                tooltip.add(toShow.getVisualOrderText());
                 for (SymbolPin pin : getHoveredPins(hovered, schematicMouse)) {
                     tooltip.add(
-                            new TranslationTextComponent(PIN_KEY, pin.getPinName())
-                                    .mergeStyle(TextFormatting.GRAY)
-                                    .func_241878_f()
+                            new TranslatableComponent(PIN_KEY, pin.getPinName())
+                                    .withStyle(ChatFormatting.GRAY)
+                                    .getVisualOrderText()
                     );
                 }
-                List<IFormattableTextComponent> extra = hovered.getSymbol().getExtraDesc();
-                for (IFormattableTextComponent extraLine : extra) {
+                List<MutableComponent> extra = hovered.getSymbol().getExtraDesc();
+                for (MutableComponent extraLine : extra) {
                     TextUtil.addTooltipLineReordering(tooltip, extraLine);
                 }
                 renderTooltip(transform, tooltip, mouseX, mouseY);
@@ -172,9 +177,9 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         }
     }
 
-    private void renderIngredients(MatrixStack transform) {
+    private void renderIngredients(PoseStack transform) {
         Optional<AvailableIngredients> stored = container.getAvailableIngredients();
-        transform.push();
+        transform.pushPose();
         transform.translate(width - TOTAL_BORDER - 17, height - TOTAL_BORDER - 17, 0);
         final int numTubes = schematic.getNumTubes();
         final int numWires = schematic.getWireLength();
@@ -189,25 +194,25 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         renderIngredient(
                 transform, stored.map(AvailableIngredients::getAvailableWires).orElse(null), numWires, IEItemRefs.WIRE
         );
-        transform.pop();
+        transform.popPose();
     }
 
     private void renderIngredient(
-            MatrixStack transform, @Nullable ItemStack available, int required, Supplier<Item> defaultItem
+            PoseStack transform, @Nullable ItemStack available, int required, Supplier<Item> defaultItem
     ) {
-        IFormattableTextComponent info;
+        MutableComponent info;
         if (available != null) {
-            info = new StringTextComponent(Math.min(available.getCount(), required) + " / " + required);
+            info = new TextComponent(Math.min(available.getCount(), required) + " / " + required);
             if (available.getCount() < required) {
-                info.mergeStyle(TextFormatting.RED);
+                info.withStyle(ChatFormatting.RED);
             }
         } else {
-            info = new StringTextComponent(Integer.toString(required));
+            info = new TextComponent(Integer.toString(required));
         }
-        info.appendString(" x ");
-        final FontRenderer font = Minecraft.getInstance().fontRenderer;
-        final int width = font.getStringPropertyWidth(info);
-        font.drawText(transform, info, -width, (16 - font.FONT_HEIGHT) / 2f, -1);
+        info.append(" x ");
+        final Font font = Minecraft.getInstance().font;
+        final int width = font.width(info);
+        font.draw(transform, info, -width, (16 - font.lineHeight) / 2f, -1);
         if (available == null || available.isEmpty()) {
             available = defaultItem.get().getDefaultInstance();
         }
@@ -224,14 +229,14 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
         return result;
     }
 
-    private void drawErrors(MatrixStack transform) {
+    private void drawErrors(PoseStack transform) {
         for (ConnectedPin pin : errors) {
             final Vec2i pos = pin.getPosition();
             fill(transform, pos.x - 1, pos.y - 1, pos.x + 2, pos.y + 2, 0xffff0000);
         }
     }
 
-    private void drawBoundary(MatrixStack transform) {
+    private void drawBoundary(PoseStack transform) {
         final int color = 0xff_ff_dd_dd;
         final float offset = 2 / currentScale;
         GuiUtil.fill(
@@ -347,7 +352,7 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
             } else {
                 currentScale /= zoomScale;
             }
-            currentScale = MathHelper.clamp(currentScale, minScale, 10);
+            currentScale = Mth.clamp(currentScale, minScale, 10);
             clampView();
         }
         return true;
@@ -375,7 +380,7 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
 
     @Override
     protected void renderCustomBackground(
-            @Nonnull MatrixStack matrixStack,
+            @Nonnull PoseStack matrixStack,
             int mouseX,
             int mouseY,
             float partialTicks
@@ -464,7 +469,7 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
 
     @Nonnull
     @Override
-    public LogicDesignContainer getContainer() {
+    public LogicDesignContainer getMenu() {
         return container;
     }
 
@@ -479,10 +484,10 @@ public class LogicDesignScreen extends StackedScreen implements IHasContainer<Lo
     private void clampView() {
         final double halfScreenWidth = getShownSizeForScale(width, currentScale) / 2;
         final double halfScreenHeight = getShownSizeForScale(height, currentScale) / 2;
-        centerX = MathHelper.clamp(
+        centerX = Mth.clamp(
                 centerX, Schematic.GLOBAL_MIN + halfScreenWidth, Schematic.GLOBAL_MAX - halfScreenWidth
         );
-        centerY = MathHelper.clamp(
+        centerY = Mth.clamp(
                 centerY, Schematic.GLOBAL_MIN + halfScreenHeight, Schematic.GLOBAL_MAX - halfScreenHeight
         );
     }

@@ -15,16 +15,15 @@ import malte0811.controlengineering.bus.IBusConnector;
 import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.temp.ImprovedLocalRSHandler;
 import malte0811.controlengineering.tiles.CEIICTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3i;
-import net.minecraft.world.World;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -39,38 +38,38 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
     private ConnectionPoint redstonePoint;
     private ConnectionPoint busPoint;
 
-    public LineAccessTile(TileEntityType<?> tileEntityTypeIn) {
+    public LineAccessTile(BlockEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
         reinitConnectionPoints();
     }
 
     private void reinitConnectionPoints() {
-        redstonePoint = new ConnectionPoint(pos, REDSTONE_ID);
-        busPoint = new ConnectionPoint(pos, BUS_ID);
+        redstonePoint = new ConnectionPoint(worldPosition, REDSTONE_ID);
+        busPoint = new ConnectionPoint(worldPosition, BUS_ID);
     }
 
     @Override
-    public void setPos(@Nonnull BlockPos posIn) {
-        super.setPos(posIn);
+    public void setPosition(@Nonnull BlockPos posIn) {
+        super.setPosition(posIn);
         reinitConnectionPoints();
     }
 
     @Override
-    public void setWorldAndPos(@Nonnull World worldIn, @Nonnull BlockPos pos) {
-        super.setWorldAndPos(worldIn, pos);
+    public void setLevelAndPosition(@Nonnull Level worldIn, @Nonnull BlockPos pos) {
+        super.setLevelAndPosition(worldIn, pos);
         reinitConnectionPoints();
     }
 
     @Override
-    public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
-        super.read(state, nbt);
+    public void load(@Nonnull BlockState state, @Nonnull CompoundTag nbt) {
+        super.load(state, nbt);
         selectedLine = nbt.getInt("selectedLine");
     }
 
     @Nonnull
     @Override
-    public CompoundNBT write(@Nonnull CompoundNBT nbt) {
-        nbt = super.write(nbt);
+    public CompoundTag save(@Nonnull CompoundTag nbt) {
+        nbt = super.save(nbt);
         nbt.putInt("selectedLine", selectedLine);
         return nbt;
     }
@@ -103,24 +102,24 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
 
     /*GENERAL IIC*/
     @Override
-    public Vector3d getConnectionOffset(@Nonnull Connection con, ConnectionPoint here) {
+    public Vec3 getConnectionOffset(@Nonnull Connection con, ConnectionPoint here) {
         final double offset;
         if (here.getIndex() == REDSTONE_ID) {
             offset = .25;
         } else {
             offset = -.25;
         }
-        return new Vector3d(0.5, 7 / 16., 0.5).add(
-                Vector3d.copy(getBlockState().get(LineAccessBlock.FACING).getDirectionVec())
+        return new Vec3(0.5, 7 / 16., 0.5).add(
+                Vec3.atLowerCornerOf(getBlockState().getValue(LineAccessBlock.FACING).getNormal())
                         .scale(offset)
         );
     }
 
     @Nullable
     @Override
-    public ConnectionPoint getTargetedPoint(TargetingInfo info, Vector3i offset) {
-        Direction facing = getBlockState().get(LineAccessBlock.FACING);
-        Vector3i normal = facing.getDirectionVec();
+    public ConnectionPoint getTargetedPoint(TargetingInfo info, Vec3i offset) {
+        Direction facing = getBlockState().getValue(LineAccessBlock.FACING);
+        Vec3i normal = facing.getNormal();
         if (normal.getX() * (info.hitX - .5) + normal.getY() * (info.hitY - .5) + normal.getZ() * (info.hitZ - .5) < 0) {
             return busPoint;
         } else {
@@ -129,7 +128,7 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
     }
 
     @Override
-    public boolean canConnectCable(WireType wireType, ConnectionPoint connectionPoint, Vector3i offset) {
+    public boolean canConnectCable(WireType wireType, ConnectionPoint connectionPoint, Vec3i offset) {
         //TODO only allow one connection
         if (connectionPoint.getIndex() == BUS_ID) {
             return IBusConnector.super.canConnectCable(wireType, connectionPoint, offset);

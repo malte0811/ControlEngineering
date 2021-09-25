@@ -1,6 +1,6 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.util.math.RectangleI;
@@ -25,7 +25,7 @@ public class PlacedSymbol {
         this.symbol = symbol;
     }
 
-    public void render(MatrixStack transform) {
+    public void render(PoseStack transform) {
         symbol.render(transform, pos.x, pos.y);
     }
 

@@ -1,7 +1,7 @@
 package malte0811.controlengineering.network.keypunch;
 
 import malte0811.controlengineering.tiles.tape.KeypunchState;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class FullSync extends KeypunchSubPacket {
     private final int numAvailable;
@@ -12,12 +12,12 @@ public class FullSync extends KeypunchSubPacket {
         this.typed = typed;
     }
 
-    public FullSync(PacketBuffer buffer) {
+    public FullSync(FriendlyByteBuf buffer) {
         this(buffer.readVarInt(), buffer.readByteArray());
     }
 
     @Override
-    protected void write(PacketBuffer out) {
+    protected void write(FriendlyByteBuf out) {
         out.writeVarInt(numAvailable);
         out.writeByteArray(typed);
     }

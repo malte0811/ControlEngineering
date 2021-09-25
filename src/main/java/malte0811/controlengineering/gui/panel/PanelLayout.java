@@ -1,6 +1,5 @@
 package malte0811.controlengineering.gui.panel;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.controlpanels.PanelComponentInstance;
@@ -14,25 +13,26 @@ import malte0811.controlengineering.util.GuiUtil;
 import malte0811.controlengineering.util.math.TransformUtil;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.TextComponent;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.math.Quaternion;
 import java.util.List;
 
-public class PanelLayout extends Widget {
+public class PanelLayout extends AbstractWidget {
     private final List<PlacedComponent> components;
     private PanelComponentInstance<?, ?> placing;
 
     public PanelLayout(int x, int y, int size, List<PlacedComponent> components) {
-        super(x, y, size, size, StringTextComponent.EMPTY);
+        super(x, y, size, size, TextComponent.EMPTY);
         this.components = components;
     }
 
@@ -41,30 +41,30 @@ public class PanelLayout extends Widget {
     }
 
     @Override
-    public void renderWidget(@Nonnull MatrixStack transform, int mouseX, int mouseY, float partialTicks) {
+    public void renderButton(@Nonnull PoseStack transform, int mouseX, int mouseY, float partialTicks) {
         TextureAtlasSprite texture = PanelRenderer.PANEL_TEXTURE.get();
-        texture.getAtlasTexture().bindTexture();
-        transform.push();
+        texture.atlas().bind();
+        transform.pushPose();
         transform.translate(x, y, 0);
         blit(transform, 0, 0, 0, width, height, texture);
         transform.scale((float) getPixelSize(), (float) getPixelSize(), 1);
         transform.translate(0, 0, 2);
-        transform.rotate(new Quaternion(-90, 0, 0, true));
+        transform.mulPose(new Quaternion(-90, 0, 0, true));
         TransformUtil.shear(transform, .1f, .1f);
         transform.scale(1, -1, 1);
         MixedModel model = ComponentRenderers.renderAll(components, transform);
         if (placing != null) {
             final double placingX = getGriddedPanelPos(mouseX, x);
             final double placingY = getGriddedPanelPos(mouseY, y);
-            transform.push();
+            transform.pushPose();
             transform.translate(placingX, 0, placingY);
             ComponentRenderers.render(model, placing, transform);
-            transform.pop();
+            transform.popPose();
         }
-        IRenderTypeBuffer.Impl impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-        model.renderTo(impl, new MatrixStack(), LightTexture.packLight(15, 15), OverlayTexture.NO_OVERLAY);
-        impl.finish();
-        transform.pop();
+        MultiBufferSource.BufferSource impl = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        model.renderTo(impl, new PoseStack(), LightTexture.pack(15, 15), OverlayTexture.NO_OVERLAY);
+        impl.endBatch();
+        transform.popPose();
     }
 
     @Override
@@ -116,12 +116,12 @@ public class PanelLayout extends Widget {
 
     private <T> void configure(Vec2d pos, PanelComponentInstance<T, ?> instance) {
         DataProviderScreen<T> screen = DataProviderScreen.makeFor(
-                StringTextComponent.EMPTY, instance.getConfig(), config -> {
+                TextComponent.EMPTY, instance.getConfig(), config -> {
                     processAndSend(new Replace(new PlacedComponent(instance.getType().newInstance(config), pos)));
                 }
         );
         if (screen != null) {
-            Minecraft.getInstance().displayGuiScreen(screen);
+            Minecraft.getInstance().setScreen(screen);
         }
     }
 

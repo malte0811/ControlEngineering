@@ -5,31 +5,30 @@ import com.google.gson.JsonObject;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootPoolEntryType;
-import net.minecraft.loot.StandaloneLootEntry;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.loot.functions.ILootFunction;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
+import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public class PanelDropEntry extends StandaloneLootEntry {
+public class PanelDropEntry extends LootPoolSingletonContainer {
     public static final ResourceLocation ID = new ResourceLocation(ControlEngineering.MODID, "panel");
 
-    protected PanelDropEntry(int weightIn, int qualityIn, ILootCondition[] conditionsIn, ILootFunction[] functionsIn) {
+    protected PanelDropEntry(int weightIn, int qualityIn, LootItemCondition[] conditionsIn, LootItemFunction[] functionsIn) {
         super(weightIn, qualityIn, conditionsIn, functionsIn);
     }
 
     @Override
-    protected void func_216154_a(@Nonnull Consumer<ItemStack> stackConsumer, @Nonnull LootContext context) {
-        TileEntity tile = CELootFunctions.getMasterTile(context);
+    protected void createItemStack(@Nonnull Consumer<ItemStack> stackConsumer, @Nonnull LootContext context) {
+        BlockEntity tile = CELootFunctions.getMasterTile(context);
         if (tile instanceof ControlPanelTile) {
-            CompoundNBT tag = ((ControlPanelTile) tile).getData().copy(true).toNBT();
+            CompoundTag tag = ((ControlPanelTile) tile).getData().copy(true).toNBT();
             ItemStack toDrop = new ItemStack(CEBlocks.CONTROL_PANEL.get(), 1);
             toDrop.setTag(tag);
             stackConsumer.accept(toDrop);
@@ -38,15 +37,15 @@ public class PanelDropEntry extends StandaloneLootEntry {
 
     @Nonnull
     @Override
-    public LootPoolEntryType func_230420_a_() {
+    public LootPoolEntryType getType() {
         return CELootFunctions.controlPanel;
     }
 
-    public static StandaloneLootEntry.Builder<?> builder() {
-        return builder(PanelDropEntry::new);
+    public static LootPoolSingletonContainer.Builder<?> builder() {
+        return simpleBuilder(PanelDropEntry::new);
     }
 
-    public static class Serializer extends StandaloneLootEntry.Serializer<PanelDropEntry> {
+    public static class Serializer extends LootPoolSingletonContainer.Serializer<PanelDropEntry> {
         @Nonnull
         @Override
         protected PanelDropEntry deserialize(
@@ -54,8 +53,8 @@ public class PanelDropEntry extends StandaloneLootEntry {
                 @Nonnull JsonDeserializationContext context,
                 int weight,
                 int quality,
-                @Nonnull ILootCondition[] conditions,
-                @Nonnull ILootFunction[] functions
+                @Nonnull LootItemCondition[] conditions,
+                @Nonnull LootItemFunction[] functions
         ) {
             return new PanelDropEntry(weight, quality, conditions, functions);
         }

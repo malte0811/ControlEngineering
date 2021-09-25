@@ -3,7 +3,7 @@ package malte0811.controlengineering.controlpanels;
 import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class PanelData {
         this(ImmutableList.of(), new PanelTransform());
     }
 
-    public PanelData(CompoundNBT nbt, PanelOrientation orientation) {
+    public PanelData(CompoundTag nbt, PanelOrientation orientation) {
         this(
                 PlacedComponent.readListFromNBT(nbt.getList("components", Constants.NBT.TAG_COMPOUND)),
                 PanelTransform.from(nbt, orientation)
@@ -34,8 +34,8 @@ public class PanelData {
         this(tile.getComponents(), tile.getTransform());
     }
 
-    public CompoundNBT toNBT() {
-        CompoundNBT result = new CompoundNBT();
+    public CompoundTag toNBT() {
+        CompoundTag result = new CompoundTag();
         result.put("components", PlacedComponent.writeListToNBT(getComponents()));
         getTransform().addTo(result);
         return result;

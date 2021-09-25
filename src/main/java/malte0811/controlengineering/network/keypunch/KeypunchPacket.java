@@ -5,16 +5,16 @@ import malte0811.controlengineering.gui.tape.KeypunchContainer;
 import malte0811.controlengineering.gui.tape.KeypunchScreen;
 import malte0811.controlengineering.network.SimplePacket;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 public class KeypunchPacket extends SimplePacket {
     private final KeypunchSubPacket packet;
 
-    public KeypunchPacket(PacketBuffer buffer) {
+    public KeypunchPacket(FriendlyByteBuf buffer) {
         this(KeypunchSubPacket.read(buffer));
     }
 
@@ -23,7 +23,7 @@ public class KeypunchPacket extends SimplePacket {
     }
 
     @Override
-    public void write(PacketBuffer out) {
+    public void write(FriendlyByteBuf out) {
         packet.writeFull(out);
     }
 
@@ -31,7 +31,7 @@ public class KeypunchPacket extends SimplePacket {
     protected void processOnThread(NetworkEvent.Context ctx) {
         if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             Preconditions.checkState(packet.allowSendingToServer());
-            Container activeContainer = ctx.getSender().openContainer;
+            AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
             if (activeContainer instanceof KeypunchContainer) {
                 KeypunchContainer ttyContainer = (KeypunchContainer) activeContainer;
                 packet.process(ttyContainer.getState());
@@ -44,7 +44,7 @@ public class KeypunchPacket extends SimplePacket {
     }
 
     private void processOnClient() {
-        Screen openScreen = Minecraft.getInstance().currentScreen;
+        Screen openScreen = Minecraft.getInstance().screen;
         if (openScreen instanceof KeypunchScreen) {
             packet.process(((KeypunchScreen) openScreen).getState());
             ((KeypunchScreen) openScreen).updateData();

@@ -13,13 +13,12 @@ import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.tiles.CEIICTileEntity;
 import malte0811.controlengineering.tiles.base.INeighborChangeListener;
 import malte0811.controlengineering.util.Clearable;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ import java.util.Map;
 public class BusInterfaceTile extends CEIICTileEntity implements IBusConnector, INeighborChangeListener {
     private final Map<Direction, Pair<WeakReference<IBusInterface>, Runnable>> clearers = new EnumMap<>(Direction.class);
 
-    public BusInterfaceTile(TileEntityType<?> tileEntityTypeIn) {
+    public BusInterfaceTile(BlockEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
     }
 
@@ -50,26 +49,26 @@ public class BusInterfaceTile extends CEIICTileEntity implements IBusConnector, 
 
     @Override
     public LocalWireNetwork getLocalNet(int cpIndex) {
-        return globalNet.getLocalNet(pos);
+        return globalNet.getLocalNet(worldPosition);
     }
 
     @Override
-    public Vector3d getConnectionOffset(@Nonnull Connection con, ConnectionPoint here) {
-        return new Vector3d(0.5, 0.5, 0.5)
-                .add(Vector3d.copy(getFacing().getDirectionVec()).scale(1. / 16));
+    public Vec3 getConnectionOffset(@Nonnull Connection con, ConnectionPoint here) {
+        return new Vec3(0.5, 0.5, 0.5)
+                .add(Vec3.atLowerCornerOf(getFacing().getNormal()).scale(1. / 16));
     }
 
     private Collection<IBusInterface> getConnectedTile() {
         Collection<IBusInterface> ret = new ArrayList<>();
         Direction facing = getFacing();
-        TileEntity neighbor = world.getTileEntity(pos.offset(facing));
+        BlockEntity neighbor = level.getBlockEntity(worldPosition.relative(facing));
         if (neighbor instanceof IBusInterface) {
             IBusInterface i = (IBusInterface) neighbor;
             if (i.canConnect(facing.getOpposite())) {
                 Pair<WeakReference<IBusInterface>, Runnable> existing = clearers.get(facing);
                 if (existing == null || existing.getFirst().get() != i) {
                     Pair<Clearable<Runnable>, Runnable> newClearer = Clearable.create(() -> getBusHandler(new ConnectionPoint(
-                            pos, 0
+                            worldPosition, 0
                     )).requestUpdate());
                     i.addMarkDirtyCallback(newClearer.getFirst());
                     clearers.put(facing, Pair.of(new WeakReference<>(i), newClearer.getSecond()));
@@ -81,7 +80,7 @@ public class BusInterfaceTile extends CEIICTileEntity implements IBusConnector, 
     }
 
     private Direction getFacing() {
-        return getBlockState().get(BusInterfaceBlock.FACING);
+        return getBlockState().getValue(BusInterfaceBlock.FACING);
     }
 
     @Override
@@ -90,8 +89,8 @@ public class BusInterfaceTile extends CEIICTileEntity implements IBusConnector, 
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
         clearers.values().stream()
                 .map(Pair::getSecond)
                 .forEach(Runnable::run);
@@ -108,6 +107,6 @@ public class BusInterfaceTile extends CEIICTileEntity implements IBusConnector, 
     @Override
     public void onNeighborChanged(BlockPos neighbor) {
         //TODO more intelligent approach?
-        getBusHandler(new ConnectionPoint(pos, 0)).requestUpdate();
+        getBusHandler(new ConnectionPoint(worldPosition, 0)).requestUpdate();
     }
 }

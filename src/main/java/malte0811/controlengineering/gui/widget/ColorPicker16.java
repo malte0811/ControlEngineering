@@ -1,17 +1,16 @@
 package malte0811.controlengineering.gui.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.util.ColorUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.text.ITextComponent;
-
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.DyeColor;
+import com.mojang.blaze3d.vertex.PoseStack;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ColorPicker16 extends Widget {
+public class ColorPicker16 extends AbstractWidget {
     public static final int GRID_SIZE = 16;
     public static final int NUM_COLS = 4;
     public static final int SIZE = NUM_COLS * GRID_SIZE;
@@ -19,16 +18,16 @@ public class ColorPicker16 extends Widget {
 
     private DyeColor selected;
 
-    public ColorPicker16(int x, int y, ITextComponent title, @Nullable DyeColor initial) {
+    public ColorPicker16(int x, int y, Component title, @Nullable DyeColor initial) {
         super(x, y, SIZE, SIZE + TITLE_SPACE, title);
         selected = initial;
     }
 
     @Override
-    public void renderWidget(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        final FontRenderer font = Minecraft.getInstance().fontRenderer;
-        final float offset = (width - font.getStringPropertyWidth(getMessage())) / 2f;
-        font.drawText(matrixStack, getMessage(), x + offset, y, -1);
+    public void renderButton(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        final Font font = Minecraft.getInstance().font;
+        final float offset = (width - font.width(getMessage())) / 2f;
+        font.draw(matrixStack, getMessage(), x + offset, y, -1);
         DyeColor underCursor = getColorUnderCursor(mouseX, mouseY);
         for (DyeColor color : DyeColor.values()) {
             final int minX = x + (color.getId() % NUM_COLS) * GRID_SIZE;

@@ -1,17 +1,16 @@
 package malte0811.controlengineering.gui.misc;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndText;
 import malte0811.controlengineering.gui.StackedScreen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -32,7 +31,7 @@ public class DataProviderScreen<T> extends StackedScreen {
 
     @Nullable
     public static <T>
-    DataProviderScreen<T> makeFor(ITextComponent title, @Nonnull T initial, Consumer<T> out) {
+    DataProviderScreen<T> makeFor(Component title, @Nonnull T initial, Consumer<T> out) {
         DataProviderWidget.Factory<T> factory = (DataProviderWidget.Factory<T>) KNOWN_FACTORIES.get(initial.getClass());
         if (factory != null) {
             return new DataProviderScreen<>(title, factory, initial, out);
@@ -48,7 +47,7 @@ public class DataProviderScreen<T> extends StackedScreen {
     private DataProviderWidget<T> provider;
 
     public DataProviderScreen(
-            ITextComponent titleIn, DataProviderWidget.Factory<T> factory, @Nullable T initial, Consumer<T> out
+            Component titleIn, DataProviderWidget.Factory<T> factory, @Nullable T initial, Consumer<T> out
     ) {
         super(titleIn);
         this.factory = factory;
@@ -65,14 +64,14 @@ public class DataProviderScreen<T> extends StackedScreen {
         provider = factory.create(initial, xMin, yMin);
         addButton(provider);
         addButton(new Button(
-                xMin, yMin + provider.getHeight(), provider.getWidth(), 20, new TranslationTextComponent(DONE_KEY),
-                $ -> closeScreen()
+                xMin, yMin + provider.getHeight(), provider.getWidth(), 20, new TranslatableComponent(DONE_KEY),
+                $ -> onClose()
         ));
     }
 
     @Override
-    public void onClose() {
-        super.onClose();
+    public void removed() {
+        super.removed();
         T result = provider.getData();
         if (result != null) {
             out.accept(result);
@@ -80,7 +79,7 @@ public class DataProviderScreen<T> extends StackedScreen {
     }
 
     @Override
-    protected void renderForeground(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    protected void renderForeground(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 
     }
 }

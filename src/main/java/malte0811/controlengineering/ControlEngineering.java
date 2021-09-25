@@ -18,10 +18,10 @@ import malte0811.controlengineering.network.logic.LogicPacket;
 import malte0811.controlengineering.network.panellayout.PanelPacket;
 import malte0811.controlengineering.temp.ImprovedLocalRSHandler;
 import malte0811.controlengineering.tiles.CETileEntities;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -47,9 +47,9 @@ public class ControlEngineering {
             new ResourceLocation(MODID, "channel"), () -> VERSION, VERSION::equals, VERSION::equals
     );
 
-    public static final ItemGroup ITEM_GROUP = new ItemGroup(MODID) {
+    public static final CreativeModeTab ITEM_GROUP = new CreativeModeTab(MODID) {
         @Nonnull
-        public ItemStack createIcon() {
+        public ItemStack makeIcon() {
             return new ItemStack(CEBlocks.LOGIC_CABINET.get());
         }
     };
@@ -87,13 +87,13 @@ public class ControlEngineering {
     }
 
     private <T extends SimplePacket> void registerPacket(
-            int id, Class<T> type, Function<PacketBuffer, T> read
+            int id, Class<T> type, Function<FriendlyByteBuf, T> read
     ) {
         NETWORK.registerMessage(id, type, T::write, read, T::process, Optional.empty());
     }
 
     private <T extends SimplePacket> void registerPacket(
-            int id, Class<T> type, Function<PacketBuffer, T> read, NetworkDirection direction
+            int id, Class<T> type, Function<FriendlyByteBuf, T> read, NetworkDirection direction
     ) {
         NETWORK.registerMessage(id, type, T::write, read, T::process, Optional.of(direction));
     }

@@ -7,19 +7,18 @@ import malte0811.controlengineering.util.Constants;
 import malte0811.controlengineering.util.ItemNBTUtil;
 import malte0811.controlengineering.util.TextUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
@@ -31,8 +30,8 @@ public class PunchedTapeItem extends Item {
     public PunchedTapeItem() {
         super(
                 new Item.Properties()
-                        .group(ControlEngineering.ITEM_GROUP)
-                        .maxStackSize(1)
+                        .tab(ControlEngineering.ITEM_GROUP)
+                        .stacksTo(1)
         );
     }
 
@@ -43,8 +42,8 @@ public class PunchedTapeItem extends Item {
     }
 
     @Override
-    public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
-        if (isInGroup(group)) {
+    public void fillItemCategory(@Nonnull CreativeModeTab group, @Nonnull NonNullList<ItemStack> items) {
+        if (allowdedIn(group)) {
             //TODO remove? replace with more sensible values?
             items.add(setBytes(new ItemStack(this), BitUtils.toBytesWithParity("Test1")));
             items.add(setBytes(new ItemStack(this), BitUtils.toBytesWithParity("Another test")));
@@ -52,31 +51,31 @@ public class PunchedTapeItem extends Item {
     }
 
     @Override
-    public void addInformation(
+    public void appendHoverText(
             @Nonnull ItemStack stack,
-            @Nullable World worldIn,
-            @Nonnull List<ITextComponent> tooltip,
-            @Nonnull ITooltipFlag flagIn
+            @Nullable Level worldIn,
+            @Nonnull List<Component> tooltip,
+            @Nonnull TooltipFlag flagIn
     ) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
         byte[] data = getBytes(stack);
         TextUtil.addTooltipLine(
                 tooltip,
-                new TranslationTextComponent(Constants.PUNCHED_TAPE_BYTES, data.length)
+                new TranslatableComponent(Constants.PUNCHED_TAPE_BYTES, data.length)
         );
     }
 
     @Nonnull
     @Override
-    public ActionResult<ItemStack> onItemRightClick(
-            @Nonnull World worldIn, @Nonnull PlayerEntity playerIn, @Nonnull Hand handIn
+    public InteractionResultHolder<ItemStack> use(
+            @Nonnull Level worldIn, @Nonnull Player playerIn, @Nonnull InteractionHand handIn
     ) {
-        ItemStack stack = playerIn.getHeldItem(handIn);
-        if (worldIn.isRemote) {
+        ItemStack stack = playerIn.getItemInHand(handIn);
+        if (worldIn.isClientSide) {
             //TODO name tapes?
-            Minecraft.getInstance().displayGuiScreen(new ViewTapeScreen("Tape", getBytes(stack), handIn));
+            Minecraft.getInstance().setScreen(new ViewTapeScreen("Tape", getBytes(stack), handIn));
         }
-        return new ActionResult<>(ActionResultType.SUCCESS, stack);
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
     }
 
     public static byte[] getBytes(ItemStack tape) {

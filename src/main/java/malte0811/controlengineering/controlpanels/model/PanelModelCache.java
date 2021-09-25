@@ -5,8 +5,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
@@ -15,16 +15,15 @@ import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.controlpanels.renders.PanelRenderer;
 import malte0811.controlengineering.util.DirectionUtils;
+import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.model.SimpleBakedModel;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.vector.Vector3d;
-
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.SimpleBakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 public class PanelModelCache {
-    private final LoadingCache<PanelData, IBakedModel> cachedStaticModels;
+    private final LoadingCache<PanelData, BakedModel> cachedStaticModels;
     private final LoadingCache<PanelData, MixedModel> componentModels;
 
     public PanelModelCache(RenderType... staticTypes) {
@@ -50,7 +49,7 @@ public class PanelModelCache {
                 .build(new StaticLoader(componentModels));
     }
 
-    public IBakedModel getStaticModel(@Nullable PanelData list) {
+    public BakedModel getStaticModel(@Nullable PanelData list) {
         return getFromCache(cachedStaticModels, list);
     }
 
@@ -87,14 +86,14 @@ public class PanelModelCache {
 
         @Override
         public MixedModel load(@Nonnull PanelData cacheKey) {
-            MatrixStack transform = new MatrixStack();
+            PoseStack transform = new PoseStack();
             cacheKey.getTransform().getPanelTopToWorld().toTransformationMatrix().push(transform);
             transform.scale(1 / 16f, 1 / 16f, 1 / 16f);
             return ComponentRenderers.renderAll(cacheKey.getComponents(), transform, staticTypes);
         }
     }
 
-    private static class StaticLoader extends CacheLoader<PanelData, IBakedModel> {
+    private static class StaticLoader extends CacheLoader<PanelData, BakedModel> {
         public static final Map<Direction, List<BakedQuad>> EMPTY_LISTS_ON_ALL_SIDES = Util.make(
                 new EnumMap<>(Direction.class),
                 m -> {
@@ -111,29 +110,29 @@ public class PanelModelCache {
         }
 
         @Override
-        public IBakedModel load(@Nonnull PanelData cacheKey) {
+        public BakedModel load(@Nonnull PanelData cacheKey) {
             MixedModel mixed = getMixedModel.apply(cacheKey);
             List<BakedQuad> quads = new ArrayList<>(mixed.getStaticQuads());
-            MatrixStack transform = new MatrixStack();
+            PoseStack transform = new PoseStack();
             TextureAtlasSprite panelTexture = PanelRenderer.PANEL_TEXTURE.get();
             renderPanel(cacheKey.getTransform(), new BakedQuadVertexBuilder(panelTexture, transform, quads));
             return new SimpleBakedModel(
                     quads, EMPTY_LISTS_ON_ALL_SIDES, true, true, true,
-                    panelTexture, Transforms.PANEL_TRANSFORMS, ItemOverrideList.EMPTY
+                    panelTexture, Transforms.PANEL_TRANSFORMS, ItemOverrides.EMPTY
             );
         }
     }
 
-    public static void renderPanel(PanelTransform transform, IVertexBuilder builder) {
+    public static void renderPanel(PanelTransform transform, VertexConsumer builder) {
         TextureAtlasSprite texture = PanelRenderer.PANEL_TEXTURE.get();
-        Vector3d[] bottomVertices = transform.getBottomVertices();
-        Vector3d[] topVertices = transform.getTopVertices();
+        Vec3[] bottomVertices = transform.getBottomVertices();
+        Vec3[] topVertices = transform.getTopVertices();
         new QuadBuilder(topVertices[3], topVertices[2], topVertices[1], topVertices[0])
                 .setSprite(texture)
                 .writeTo(builder);
         new QuadBuilder(bottomVertices[0], bottomVertices[1], bottomVertices[2], bottomVertices[3])
                 .setSprite(texture)
-                .setNormal(new Vector3d(0, -1, 0))
+                .setNormal(new Vec3(0, -1, 0))
                 .writeTo(builder);
         final double frontHeight = transform.getFrontHeight();
         final double backHeight = transform.getBackHeight();
@@ -143,8 +142,8 @@ public class PanelModelCache {
     }
 
     private static void renderConnections(
-            IVertexBuilder builder, TextureAtlasSprite texture,
-            Vector3d[] first, Vector3d[] second, double[] height
+            VertexConsumer builder, TextureAtlasSprite texture,
+            Vec3[] first, Vec3[] second, double[] height
     ) {
         Preconditions.checkArgument(first.length == second.length);
         for (int i = 0; i < first.length; ++i) {

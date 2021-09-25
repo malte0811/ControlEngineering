@@ -10,7 +10,7 @@ import malte0811.controlengineering.logic.cells.impl.Comparator;
 import malte0811.controlengineering.logic.cells.impl.RSLatch;
 import malte0811.controlengineering.logic.cells.impl.SchmittTrigger;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;

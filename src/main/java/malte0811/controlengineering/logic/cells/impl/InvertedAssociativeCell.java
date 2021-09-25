@@ -4,7 +4,7 @@ import blusunrize.immersiveengineering.api.tool.LogicCircuitHandler.LogicCircuit
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
 import malte0811.controlengineering.logic.cells.CellCost;
-import net.minecraft.util.math.shapes.IBooleanFunction;
+import net.minecraft.world.phys.shapes.BooleanOp;
 
 public class InvertedAssociativeCell extends AssociativeFunctionCell {
     public InvertedAssociativeCell(
@@ -18,7 +18,7 @@ public class InvertedAssociativeCell extends AssociativeFunctionCell {
         );
     }
 
-    public InvertedAssociativeCell(int numInputs, IBooleanFunction nonInvertedFunc, boolean baseState, CellCost cost) {
+    public InvertedAssociativeCell(int numInputs, BooleanOp nonInvertedFunc, boolean baseState, CellCost cost) {
         super(numInputs, nonInvertedFunc, baseState, cost);
     }
 

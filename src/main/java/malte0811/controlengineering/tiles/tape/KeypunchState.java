@@ -10,10 +10,9 @@ import malte0811.controlengineering.items.EmptyTapeItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.ItemUtil;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResultType;
-
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import java.util.Arrays;
 import java.util.List;
 
@@ -68,18 +67,18 @@ public class KeypunchState {
         setAvailable(getAvailable() + length);
     }
 
-    public ActionResultType removeWrittenTape(PlayerEntity player) {
+    public InteractionResult removeWrittenTape(Player player) {
         ByteList written = getData();
         if (!written.isEmpty() && player != null) {
             ItemUtil.giveOrDrop(player, PunchedTapeItem.withBytes(written.toByteArray()));
             written.clear();
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         } else {
-            return ActionResultType.FAIL;
+            return InteractionResult.FAIL;
         }
     }
 
-    public ActionResultType removeOrAddClearTape(PlayerEntity player, ItemStack item) {
+    public InteractionResult removeOrAddClearTape(Player player, ItemStack item) {
         final int length = EmptyTapeItem.getLength(item);
         if (length > 0) {
             //TODO limit?
@@ -89,7 +88,7 @@ public class KeypunchState {
             ItemUtil.giveOrDrop(player, EmptyTapeItem.withLength(getAvailable()));
             setAvailable(0);
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     /**

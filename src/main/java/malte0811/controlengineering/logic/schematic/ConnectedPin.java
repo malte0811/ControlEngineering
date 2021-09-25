@@ -1,12 +1,11 @@
 package malte0811.controlengineering.logic.schematic;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2i;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.Objects;
 
 public class ConnectedPin {
@@ -34,7 +33,7 @@ public class ConnectedPin {
         return symbol.getPosition().add(pin.getPosition());
     }
 
-    public void render(MatrixStack stack, int wireColor) {
+    public void render(PoseStack stack, int wireColor) {
         pin.render(stack, symbol.getPosition().x, symbol.getPosition().y, wireColor);
     }
 

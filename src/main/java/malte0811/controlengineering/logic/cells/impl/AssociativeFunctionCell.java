@@ -8,7 +8,7 @@ import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.logic.cells.Pin;
 import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
-import net.minecraft.util.math.shapes.IBooleanFunction;
+import net.minecraft.world.phys.shapes.BooleanOp;
 
 public class AssociativeFunctionCell extends StatelessCell {
     private final DoubleBiFunction func;
@@ -23,7 +23,7 @@ public class AssociativeFunctionCell extends StatelessCell {
         );
     }
 
-    public AssociativeFunctionCell(int numInputs, IBooleanFunction func, boolean baseState, CellCost cost) {
+    public AssociativeFunctionCell(int numInputs, BooleanOp func, boolean baseState, CellCost cost) {
         this(numInputs, (a, b) -> debool(func.apply(bool(a), bool(b))), debool(baseState), cost);
     }
 

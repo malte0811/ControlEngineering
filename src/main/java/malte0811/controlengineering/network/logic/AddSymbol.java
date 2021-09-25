@@ -4,8 +4,7 @@ import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.util.math.Vec2i;
-import net.minecraft.network.PacketBuffer;
-
+import net.minecraft.network.FriendlyByteBuf;
 import java.io.IOException;
 import java.util.function.Consumer;
 
@@ -16,19 +15,19 @@ public class AddSymbol extends LogicSubPacket {
         this.symbol = symbol;
     }
 
-    public AddSymbol(PacketBuffer in) {
+    public AddSymbol(FriendlyByteBuf in) {
         try {
-            this.symbol = new PlacedSymbol(new Vec2i(in), in.func_240628_a_(SymbolInstance.CODEC));
+            this.symbol = new PlacedSymbol(new Vec2i(in), in.readWithCodec(SymbolInstance.CODEC));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void write(PacketBuffer out) {
+    public void write(FriendlyByteBuf out) {
         symbol.getPosition().write(out);
         try {
-            out.func_240629_a_(SymbolInstance.CODEC, symbol.getSymbol());
+            out.writeWithCodec(SymbolInstance.CODEC, symbol.getSymbol());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

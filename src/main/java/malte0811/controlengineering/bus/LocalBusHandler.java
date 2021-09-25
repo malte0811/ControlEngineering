@@ -5,9 +5,9 @@ import blusunrize.immersiveengineering.api.wires.localhandlers.IWorldTickable;
 import blusunrize.immersiveengineering.api.wires.localhandlers.LocalNetworkHandler;
 import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.ControlEngineering;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickable {
     public static final ResourceLocation NAME = new ResourceLocation(ControlEngineering.MODID, "bus");
@@ -85,7 +85,7 @@ public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickab
     }
 
     @Override
-    public void update(World w) {
+    public void update(Level w) {
         if (updateNextTick) {
             stateHandler.updateState(BusState.EMPTY);
             updateNextTick = false;

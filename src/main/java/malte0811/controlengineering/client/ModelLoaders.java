@@ -6,7 +6,7 @@ import malte0811.controlengineering.client.model.SpecialModelLoader;
 import malte0811.controlengineering.controlpanels.model.PanelModel;
 import malte0811.controlengineering.controlpanels.renders.PanelRenderer;
 import malte0811.controlengineering.logic.model.DynamicLogicModelLoader;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;

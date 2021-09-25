@@ -9,10 +9,10 @@ import malte0811.controlengineering.controlpanels.PanelData;
 import malte0811.controlengineering.controlpanels.model.PanelItemRenderer;
 import malte0811.controlengineering.logic.clock.ClockGenerator;
 import malte0811.controlengineering.logic.clock.ClockTypes;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -43,9 +43,9 @@ public class CEItems {
     private static final RegistryObject<CEBlockItem<PanelOrientation>> CONTROL_PANEL = blockItemCE(
             //TODO move somewhere else
             CEBlocks.CONTROL_PANEL, simpleItemProperties().setISTER(() -> () -> new PanelItemRenderer(is -> {
-                CompoundNBT tag = is.getTag();
+                CompoundTag tag = is.getTag();
                 if (tag == null) {
-                    tag = new CompoundNBT();
+                    tag = new CompoundTag();
                 }
                 return new PanelData(tag, PanelOrientation.UP_NORTH);
             }))
@@ -68,7 +68,7 @@ public class CEItems {
     }
 
     private static Item.Properties simpleItemProperties() {
-        return new Item.Properties().group(ControlEngineering.ITEM_GROUP);
+        return new Item.Properties().tab(ControlEngineering.ITEM_GROUP);
     }
 
     static {

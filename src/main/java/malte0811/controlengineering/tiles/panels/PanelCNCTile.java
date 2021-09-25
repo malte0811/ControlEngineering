@@ -16,16 +16,16 @@ import malte0811.controlengineering.tiles.base.CETileEntity;
 import malte0811.controlengineering.tiles.base.IExtraDropTile;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.math.Matrix4;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.Constants.BlockFlags;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -39,7 +39,7 @@ import java.util.function.Consumer;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, ITickableTileEntity, IExtraDropTile {
+public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, TickableBlockEntity, IExtraDropTile {
     @Nonnull
     private byte[] insertedTape = new byte[0];
     private final CachedValue<byte[], CNCJob> currentJob = new CachedValue<>(
@@ -68,7 +68,7 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
     );
 
     private final CachedValue<Direction, SelectionShapes> selectionShapes = new CachedValue<>(
-            () -> getBlockState().get(PanelCNCBlock.FACING),
+            () -> getBlockState().getValue(PanelCNCBlock.FACING),
             facing -> new ListShapes(
                     PanelCNCBlock.SHAPE,
                     Matrix4.inverseFacing(facing),
@@ -82,74 +82,74 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
                                     this::topClick
                             )
                     ),
-                    ctx -> ActionResultType.PASS
+                    ctx -> InteractionResult.PASS
             )
     );
 
-    public PanelCNCTile(TileEntityType<?> tileEntityTypeIn) {
+    public PanelCNCTile(BlockEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
     }
 
-    private ActionResultType bottomClick(ItemUseContext ctx) {
-        if (world == null) {
-            return ActionResultType.PASS;
+    private InteractionResult bottomClick(UseOnContext ctx) {
+        if (level == null) {
+            return InteractionResult.PASS;
         }
         if (hasPanel()) {
             if (!hasFinishedJob()) {
-                return ActionResultType.FAIL;
+                return InteractionResult.FAIL;
             }
-            if (!world.isRemote && ctx.getPlayer() != null) {
+            if (!level.isClientSide && ctx.getPlayer() != null) {
                 ItemStack result = PanelTopItem.createWithComponents(currentPlacedComponents);
                 ItemUtil.giveOrDrop(ctx.getPlayer(), result);
                 hasPanel = false;
                 currentPlacedComponents.clear();
                 currentTicksInJob = 0;
                 failed = false;
-                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         } else {
-            ItemStack heldItem = ctx.getItem();
+            ItemStack heldItem = ctx.getItemInHand();
             if (PanelTopItem.isEmptyPanelTop(heldItem)) {
-                if (!world.isRemote) {
+                if (!level.isClientSide) {
                     hasPanel = true;
-                    world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
-                    PlayerEntity player = ctx.getPlayer();
-                    if (player == null || !player.abilities.isCreativeMode) {
+                    level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
+                    Player player = ctx.getPlayer();
+                    if (player == null || !player.abilities.instabuild) {
                         heldItem.shrink(1);
                     }
                 }
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             } else {
-                return ActionResultType.FAIL;
+                return InteractionResult.FAIL;
             }
         }
     }
 
-    private ActionResultType topClick(ItemUseContext ctx) {
+    private InteractionResult topClick(UseOnContext ctx) {
         if (isJobRunning()) {
-            return ActionResultType.FAIL;
+            return InteractionResult.FAIL;
         }
-        final ItemStack held = ctx.getItem();
+        final ItemStack held = ctx.getItemInHand();
         if (insertedTape.length == 0) {
             if (CEItems.PUNCHED_TAPE.get() == held.getItem()) {
-                if (!world.isRemote) {
+                if (!level.isClientSide) {
                     insertedTape = PunchedTapeItem.getBytes(held);
                     held.shrink(1);
-                    world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
+                    level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
                 }
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         } else if (!hasPanel()) {
-            if (!world.isRemote) {
+            if (!level.isClientSide) {
                 ItemStack result = PunchedTapeItem.withBytes(insertedTape);
                 insertedTape = new byte[0];
                 ItemUtil.giveOrDrop(ctx.getPlayer(), result);
-                world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
-        return ActionResultType.FAIL;
+        return InteractionResult.FAIL;
     }
 
     @Override
@@ -159,7 +159,7 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
             int nextComponent = currentPlacedComponents.size();
             CNCJob job = currentJob.get();
             if (nextComponent < job.getTotalComponents()) {
-                if (!world.isRemote && currentTicksInJob >= job.getTickPlacingComponent().getInt(nextComponent)) {
+                if (!level.isClientSide && currentTicksInJob >= job.getTickPlacingComponent().getInt(nextComponent)) {
                     PlacedComponent componentToPlace = job.getComponents().get(nextComponent);
                     if (!ItemUtil.tryConsumeItemsFrom(
                             componentToPlace.getComponent().getType().getCost(), neighborInventories
@@ -212,20 +212,20 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
 
     @Nonnull
     @Override
-    public CompoundNBT write(@Nonnull CompoundNBT compound) {
-        super.write(compound);
+    public CompoundTag save(@Nonnull CompoundTag compound) {
+        super.save(compound);
         writeSyncedData(compound);
         return compound;
     }
 
     @Override
-    public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
-        super.read(state, nbt);
+    public void load(@Nonnull BlockState state, @Nonnull CompoundTag nbt) {
+        super.load(state, nbt);
         readSyncedData(nbt);
     }
 
     @Override
-    protected void readSyncedData(CompoundNBT in) {
+    protected void readSyncedData(CompoundTag in) {
         in.putByteArray("tape", insertedTape);
         in.putInt("currentTick", currentTicksInJob);
         in.putBoolean("hasPanel", hasPanel);
@@ -244,7 +244,7 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
     }
 
     @Override
-    protected CompoundNBT writeSyncedData(CompoundNBT compound) {
+    protected CompoundTag writeSyncedData(CompoundTag compound) {
         insertedTape = compound.getByteArray("tape");
         currentTicksInJob = compound.getInt("currentTick");
         hasPanel = compound.getBoolean("hasPanel");

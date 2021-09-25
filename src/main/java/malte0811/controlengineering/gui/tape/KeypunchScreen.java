@@ -1,6 +1,5 @@
 package malte0811.controlengineering.gui.tape;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.gui.widgets.Keyboard;
@@ -10,15 +9,15 @@ import malte0811.controlengineering.network.keypunch.KeypunchPacket;
 import malte0811.controlengineering.network.keypunch.KeypunchSubPacket;
 import malte0811.controlengineering.network.keypunch.TypeChar;
 import malte0811.controlengineering.tiles.tape.KeypunchState;
-import net.minecraft.client.gui.IHasContainer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import javax.annotation.Nonnull;
 
-public class KeypunchScreen extends Screen implements IHasContainer<KeypunchContainer> {
+public class KeypunchScreen extends Screen implements MenuAccess<KeypunchContainer> {
     private static final int KEY_SIZE = 20;
     private static final int NUM_VISIBLE_CHARS = 23;
     // TODO review once a sound exists
@@ -39,7 +38,7 @@ public class KeypunchScreen extends Screen implements IHasContainer<KeypunchCont
 
     private boolean isCapsLock;
 
-    public KeypunchScreen(KeypunchContainer container, ITextComponent title) {
+    public KeypunchScreen(KeypunchContainer container, Component title) {
         super(title);
         this.container = container;
         this.state = container.getState();
@@ -69,16 +68,16 @@ public class KeypunchScreen extends Screen implements IHasContainer<KeypunchCont
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
         {
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(getXStart(), getYStart(), 0);
         }
         MAIN_SCREEN.blit(matrixStack, 0, 0);
         tapeRender.render(matrixStack);
-        font.drawString(matrixStack, Integer.toString(state.getAvailable()), 210, 35, -1);
-        matrixStack.pop();
+        font.draw(matrixStack, Integer.toString(state.getAvailable()), 210, 35, -1);
+        matrixStack.popPose();
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
@@ -142,7 +141,7 @@ public class KeypunchScreen extends Screen implements IHasContainer<KeypunchCont
 
     @Nonnull
     @Override
-    public KeypunchContainer getContainer() {
+    public KeypunchContainer getMenu() {
         return container;
     }
 

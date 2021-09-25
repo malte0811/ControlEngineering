@@ -16,13 +16,12 @@ import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.tiles.base.CETileEntity;
 import malte0811.controlengineering.tiles.base.IHasMaster;
 import malte0811.controlengineering.util.Clearable;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -42,7 +41,7 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
             i -> components.get(i).getComponent().updateTotalState(getTotalState())
     );
 
-    public ControlPanelTile(TileEntityType<?> tileEntityTypeIn) {
+    public ControlPanelTile(BlockEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
         resetStateHandler();
     }
@@ -62,49 +61,49 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
         if (changed) {
             markBusDirty.run();
         }
-        if (sync.shouldSync(changed) && world != null) {
+        if (sync.shouldSync(changed) && level != null) {
             BlockState state = getBlockState();
-            world.notifyBlockUpdate(pos, state, state, 0);
+            level.sendBlockUpdated(worldPosition, state, state, 0);
         }
     }
 
     @Override
-    public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
-        super.read(state, nbt);
-        readComponentsAndTransform(nbt, state.get(PanelOrientation.PROPERTY));
+    public void load(@Nonnull BlockState state, @Nonnull CompoundTag nbt) {
+        super.load(state, nbt);
+        readComponentsAndTransform(nbt, state.getValue(PanelOrientation.PROPERTY));
     }
 
-    public void readComponentsAndTransform(CompoundNBT nbt, PanelOrientation orientation) {
+    public void readComponentsAndTransform(CompoundTag nbt, PanelOrientation orientation) {
         final PanelData data = new PanelData(nbt, orientation);
         this.transform = data.getTransform();
         this.components = data.getComponents();
-        if (world != null && !world.isRemote) {
+        if (level != null && !level.isClientSide) {
             resetStateHandler();
         }
     }
 
     @Override
-    public void setWorldAndPos(@Nonnull World world, @Nonnull BlockPos pos) {
-        super.setWorldAndPos(world, pos);
-        if (!world.isRemote) {
+    public void setLevelAndPosition(@Nonnull Level world, @Nonnull BlockPos pos) {
+        super.setLevelAndPosition(world, pos);
+        if (!world.isClientSide) {
             resetStateHandler();
         }
     }
 
     @Override
-    protected CompoundNBT writeSyncedData(CompoundNBT out) {
+    protected CompoundTag writeSyncedData(CompoundTag out) {
         out.merge(new PanelData(this).toNBT());
         return out;
     }
 
     @Override
-    protected void readSyncedData(CompoundNBT in) {
-        readComponentsAndTransform(in, getBlockState().get(PanelOrientation.PROPERTY));
+    protected void readSyncedData(CompoundTag in) {
+        readComponentsAndTransform(in, getBlockState().getValue(PanelOrientation.PROPERTY));
     }
 
     @Nonnull
     @Override
-    public CompoundNBT write(@Nonnull CompoundNBT compound) {
+    public CompoundTag save(@Nonnull CompoundTag compound) {
         return writeSyncedData(compound);
     }
 
@@ -145,8 +144,8 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
         this.markBusDirty.run();
     }
 
@@ -159,10 +158,10 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
     @Override
     public SelectionShapes getShape() {
         BlockState state = getBlockState();
-        if (!state.hasProperty(PanelBlock.IS_BASE) || state.get(PanelBlock.IS_BASE)) {
+        if (!state.hasProperty(PanelBlock.IS_BASE) || state.getValue(PanelBlock.IS_BASE)) {
             return SingleShape.FULL_BLOCK;
         }
-        ControlPanelTile base = PanelBlock.getBase(world, state, pos);
+        ControlPanelTile base = PanelBlock.getBase(level, state, worldPosition);
         if (base == null) {
             return SingleShape.FULL_BLOCK;
         }
@@ -176,7 +175,7 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
     @Nullable
     @Override
     public ControlPanelTile computeMasterTile(BlockState stateHere) {
-        return PanelBlock.getBase(world, stateHere, pos);
+        return PanelBlock.getBase(level, stateHere, worldPosition);
     }
 
     public enum SyncType {

@@ -1,11 +1,10 @@
 package malte0811.controlengineering.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IHasContainer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.text.ITextComponent;
-
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.network.chat.Component;
+import com.mojang.blaze3d.vertex.PoseStack;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -15,10 +14,10 @@ public abstract class StackedScreen extends Screen {
     @Nonnull
     protected Minecraft minecraft;
 
-    protected StackedScreen(ITextComponent titleIn) {
+    protected StackedScreen(Component titleIn) {
         super(titleIn);
         this.minecraft = Minecraft.getInstance();
-        Screen currentScreen = minecraft.currentScreen;
+        Screen currentScreen = minecraft.screen;
         if (currentScreen instanceof StackedScreen) {
             this.previousInStack = (StackedScreen) currentScreen;
         } else {
@@ -27,33 +26,33 @@ public abstract class StackedScreen extends Screen {
     }
 
     @Override
-    public final void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public final void render(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         renderWithPrevious(matrixStack, mouseX, mouseY, partialTicks, true);
     }
 
     @Override
-    public void closeScreen() {
-        minecraft.displayGuiScreen(previousInStack);
-        if (this instanceof IHasContainer<?> && previousInStack == null) {
-            minecraft.player.closeScreen();
+    public void onClose() {
+        minecraft.setScreen(previousInStack);
+        if (this instanceof MenuAccess<?> && previousInStack == null) {
+            minecraft.player.closeContainer();
         }
     }
 
     @Override
-    public final void renderBackground(@Nonnull MatrixStack matrixStack) {
+    public final void renderBackground(@Nonnull PoseStack matrixStack) {
         super.renderBackground(matrixStack);
     }
 
     private void renderWithPrevious(
-            @Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, boolean isTop
+            @Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, boolean isTop
     ) {
         if (previousInStack != null) {
             // Pretend the mouse is off-screen to stop button highlighting
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(0, 0, -1);
             matrixStack.scale(1, 1, 0.01f);
             previousInStack.renderWithPrevious(matrixStack, -1, -1, partialTicks, false);
-            matrixStack.pop();
+            matrixStack.popPose();
         }
         if (isTop) {
             renderBackground(matrixStack);
@@ -69,11 +68,11 @@ public abstract class StackedScreen extends Screen {
     }
 
     protected abstract void renderForeground(
-            @Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks
+            @Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks
     );
 
     protected void renderCustomBackground(
-            @Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks
+            @Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks
     ) {}
 
     @Nullable
@@ -83,7 +82,7 @@ public abstract class StackedScreen extends Screen {
 
     @Nullable
     public static <T extends StackedScreen> T findInstanceOf(Class<T> type) {
-        Screen currentScreen = Minecraft.getInstance().currentScreen;
+        Screen currentScreen = Minecraft.getInstance().screen;
         if (!(currentScreen instanceof StackedScreen)) {
             return null;
         }

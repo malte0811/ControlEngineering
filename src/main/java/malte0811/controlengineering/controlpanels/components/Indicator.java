@@ -9,7 +9,7 @@ import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.util.math.Vec2d;
-import net.minecraft.util.ActionResultType;
+import net.minecraft.world.InteractionResult;
 import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nonnull;
@@ -57,7 +57,7 @@ public class Indicator extends PanelComponentType<ColorAndSignal, Integer> {
     }
 
     @Override
-    public Pair<ActionResultType, Integer> click(ColorAndSignal colorAndSignal, Integer oldState) {
-        return Pair.of(ActionResultType.PASS, oldState);
+    public Pair<InteractionResult, Integer> click(ColorAndSignal colorAndSignal, Integer oldState) {
+        return Pair.of(InteractionResult.PASS, oldState);
     }
 }

@@ -1,8 +1,7 @@
 package malte0811.controlengineering.network.logic;
 
 import malte0811.controlengineering.logic.schematic.Schematic;
-import net.minecraft.network.PacketBuffer;
-
+import net.minecraft.network.FriendlyByteBuf;
 import java.io.IOException;
 import java.util.function.Consumer;
 
@@ -13,18 +12,18 @@ public class FullSync extends LogicSubPacket {
         this.schematic = schematic;
     }
 
-    public FullSync(PacketBuffer in) {
+    public FullSync(FriendlyByteBuf in) {
         try {
-            schematic = in.func_240628_a_(Schematic.CODEC);
+            schematic = in.readWithCodec(Schematic.CODEC);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void write(PacketBuffer out) {
+    public void write(FriendlyByteBuf out) {
         try {
-            out.func_240629_a_(Schematic.CODEC, schematic);
+            out.writeWithCodec(Schematic.CODEC, schematic);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

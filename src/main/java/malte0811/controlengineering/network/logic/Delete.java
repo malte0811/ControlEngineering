@@ -2,8 +2,7 @@ package malte0811.controlengineering.network.logic;
 
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.util.math.Vec2d;
-import net.minecraft.network.PacketBuffer;
-
+import net.minecraft.network.FriendlyByteBuf;
 import java.util.function.Consumer;
 
 public class Delete extends LogicSubPacket {
@@ -13,12 +12,12 @@ public class Delete extends LogicSubPacket {
         this.pos = pos;
     }
 
-    public Delete(PacketBuffer buffer) {
+    public Delete(FriendlyByteBuf buffer) {
         this(new Vec2d(buffer));
     }
 
     @Override
-    protected void write(PacketBuffer out) {
+    protected void write(FriendlyByteBuf out) {
         pos.write(out);
     }
 

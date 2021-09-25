@@ -1,8 +1,8 @@
 package malte0811.controlengineering.util.energy;
 
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.IntNBT;
-import net.minecraft.nbt.NumberNBT;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.NumericTag;
+import net.minecraft.nbt.Tag;
 import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
@@ -23,13 +23,13 @@ public class CEEnergyStorage implements IEnergyStorage {
         this.energyStored = energyStored;
     }
 
-    public INBT writeNBT() {
-        return IntNBT.valueOf(energyStored);
+    public Tag writeNBT() {
+        return IntTag.valueOf(energyStored);
     }
 
-    public void readNBT(INBT nbt) {
-        if (nbt instanceof NumberNBT) {
-            setEnergyStored(((NumberNBT) nbt).getInt());
+    public void readNBT(Tag nbt) {
+        if (nbt instanceof NumericTag) {
+            setEnergyStored(((NumericTag) nbt).getAsInt());
         } else {
             setEnergyStored(0);
         }

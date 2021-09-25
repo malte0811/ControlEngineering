@@ -1,7 +1,6 @@
 package malte0811.controlengineering.client.render.target;
 
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import java.util.List;
 
 public class DynamicVertex {
@@ -11,7 +10,7 @@ public class DynamicVertex {
         this.steps = steps;
     }
 
-    public void accept(IVertexBuilder out, int combinedLight, int combinedOverlay) {
+    public void accept(VertexConsumer out, int combinedLight, int combinedOverlay) {
         for (Step step : steps) {
             step.apply(out, combinedLight, combinedOverlay);
         }
@@ -19,6 +18,6 @@ public class DynamicVertex {
     }
 
     public interface Step {
-        void apply(IVertexBuilder out, int light, int overlay);
+        void apply(VertexConsumer out, int light, int overlay);
     }
 }

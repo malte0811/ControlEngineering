@@ -1,9 +1,9 @@
 package malte0811.controlengineering.tiles.base;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public interface IHasMasterBase {
-    TileEntity getCachedMaster();
+    BlockEntity getCachedMaster();
 
-    void setCachedMaster(TileEntity newCachedMaster);
+    void setCachedMaster(BlockEntity newCachedMaster);
 }

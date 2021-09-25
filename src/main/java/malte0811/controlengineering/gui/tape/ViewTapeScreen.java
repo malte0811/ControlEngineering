@@ -1,17 +1,16 @@
 package malte0811.controlengineering.gui.tape;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.network.CutTapePacket;
 import malte0811.controlengineering.util.GuiUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
-
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
@@ -29,10 +28,10 @@ public class ViewTapeScreen extends Screen {
     private int offset = 0;
     private final TapeRender tapeRender;
     private final boolean canCut;
-    private final Hand tapeHand;
+    private final InteractionHand tapeHand;
 
-    public ViewTapeScreen(String titleIn, byte[] data, Hand tapeHand) {
-        super(new StringTextComponent(titleIn));
+    public ViewTapeScreen(String titleIn, byte[] data, InteractionHand tapeHand) {
+        super(new TextComponent(titleIn));
         this.fullData = data;
         this.canCut = CutTapePacket.canCut(tapeHand, Objects.requireNonNull(Minecraft.getInstance().player));
         this.tapeHand = tapeHand;
@@ -47,24 +46,24 @@ public class ViewTapeScreen extends Screen {
         final int buttonY = FIRST_HOLE_Y + 3 + (this.height - HEIGHT) / 2;
         addButton(new Button(
                 leftButtonX + 1, buttonY, buttonWidth, 20,
-                new StringTextComponent("<"),
+                new TextComponent("<"),
                 btn -> incOffset()
         ));
         addButton(new Button(
                 width - leftButtonX - buttonWidth + 1, buttonY, buttonWidth, 20,
-                new StringTextComponent(">"),
+                new TextComponent(">"),
                 btn -> decOffset()
         ));
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.minecraft.getTextureManager().bindTexture(BASE_SCREEN);
+        this.minecraft.getTextureManager().bind(BASE_SCREEN);
         int startX = (this.width - WIDTH) / 2;
         int startY = (this.height - HEIGHT) / 2;
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(startX, startY, 0);
         blit(matrixStack, 0, 0, 0, 0, WIDTH, HEIGHT);
         tapeRender.render(matrixStack);
@@ -80,7 +79,7 @@ public class ViewTapeScreen extends Screen {
                 );
             }
         }
-        matrixStack.pop();
+        matrixStack.popPose();
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
@@ -112,7 +111,7 @@ public class ViewTapeScreen extends Screen {
         int startY = (this.height - HEIGHT) / 2;
         int visualRow = getVisualFocussedRow(mouseX - startX, mouseY - startY);
         if (canCut && visualRow >= 0) {
-            closeScreen();
+            onClose();
             ControlEngineering.NETWORK.sendToServer(new CutTapePacket(tapeHand, visualRow + offset));
             return true;
         }

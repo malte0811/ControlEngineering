@@ -10,9 +10,9 @@ import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.serialization.Codecs;
 import malte0811.controlengineering.util.serialization.serial.SerialCodecParser;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.util.Lazy;
 
 import javax.annotation.Nonnull;
@@ -46,7 +46,7 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
     }
 
     @Nullable
-    public PanelComponentInstance<Config, State> newInstance(PacketBuffer from) {
+    public PanelComponentInstance<Config, State> newInstance(FriendlyByteBuf from) {
         return configParser.parse(from).map(this::newInstance).result().orElse(null);
     }
 
@@ -68,22 +68,22 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
 
     public abstract State tick(Config config, State oldState);
 
-    public abstract Pair<ActionResultType, State> click(Config config, State oldState);
+    public abstract Pair<InteractionResult, State> click(Config config, State oldState);
 
     protected abstract double getSelectionHeight();
 
-    private final Lazy<AxisAlignedBB> defaultSelectionShape = Lazy.of(() -> {
+    private final Lazy<AABB> defaultSelectionShape = Lazy.of(() -> {
         final double height = getSelectionHeight();
         if (height >= 0) {
             final Vec2d size = getSize(getInitialState().getFirst());
-            return new AxisAlignedBB(0, 0, 0, size.x, height, size.y);
+            return new AABB(0, 0, 0, size.x, height, size.y);
         } else {
             return null;
         }
     });
 
     @Nullable
-    public AxisAlignedBB getSelectionShape() {
+    public AABB getSelectionShape() {
         return defaultSelectionShape.get();
     }
 

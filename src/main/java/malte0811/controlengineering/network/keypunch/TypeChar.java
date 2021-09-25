@@ -1,12 +1,12 @@
 package malte0811.controlengineering.network.keypunch;
 
 import malte0811.controlengineering.tiles.tape.KeypunchState;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class TypeChar extends KeypunchSubPacket {
     private final byte typed;
 
-    public TypeChar(PacketBuffer buffer) {
+    public TypeChar(FriendlyByteBuf buffer) {
         typed = buffer.readByte();
     }
 
@@ -15,7 +15,7 @@ public class TypeChar extends KeypunchSubPacket {
     }
 
     @Override
-    public void write(PacketBuffer out) {
+    public void write(FriendlyByteBuf out) {
         out.writeByte(typed);
     }
 

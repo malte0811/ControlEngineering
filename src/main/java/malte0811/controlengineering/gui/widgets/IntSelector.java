@@ -1,16 +1,15 @@
 package malte0811.controlengineering.gui.widgets;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.gui.widget.BasicSlider;
 import malte0811.controlengineering.gui.widget.ColorPicker16;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import javax.annotation.Nonnull;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.function.IntConsumer;
 
 public class IntSelector extends StackedScreen {
@@ -19,7 +18,7 @@ public class IntSelector extends StackedScreen {
     private BasicSlider lineSelect;
 
     public IntSelector(IntConsumer select, String translationKey) {
-        super(new StringTextComponent("Signal selector"));
+        super(new TextComponent("Signal selector"));
         this.select = select;
         this.translationKey = translationKey;
     }
@@ -39,17 +38,17 @@ public class IntSelector extends StackedScreen {
         addButton(lineSelect);
         addButton(new Button(
                 width / 2 - 64, height / 2 + ColorPicker16.SIZE / 2 + 20, 128, 20,
-                new TranslationTextComponent(DataProviderScreen.DONE_KEY), $ -> closeScreen()
+                new TranslatableComponent(DataProviderScreen.DONE_KEY), $ -> onClose()
         ));
     }
 
     @Override
-    public void onClose() {
-        super.onClose();
+    public void removed() {
+        super.removed();
         select.accept(lineSelect.getValue());
     }
 
     @Override
-    protected void renderForeground(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    protected void renderForeground(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
     }
 }

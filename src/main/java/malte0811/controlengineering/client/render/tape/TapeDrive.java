@@ -1,7 +1,7 @@
 package malte0811.controlengineering.client.render.tape;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import malte0811.controlengineering.util.math.Vec2d;
 
 public class TapeDrive {
@@ -30,15 +30,15 @@ public class TapeDrive {
         updateTapeProgress(0);
     }
 
-    public void render(IVertexBuilder output, MatrixStack stack, int light, int overlay) {
-        stack.push();
+    public void render(VertexConsumer output, PoseStack stack, int light, int overlay) {
+        stack.pushPose();
         stack.translate(leftCenter.x, 0, leftCenter.y);
         leftWheel.render(output, stack, light, overlay);
-        stack.pop();
-        stack.push();
+        stack.popPose();
+        stack.pushPose();
         stack.translate(rightCenter.x, 0, rightCenter.y);
         rightWheel.render(output, stack, light, overlay);
-        stack.pop();
+        stack.popPose();
     }
 
     public void updateTapeProgress(double lengthOnRight) {

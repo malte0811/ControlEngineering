@@ -1,21 +1,20 @@
 package malte0811.controlengineering.client.render.utils;
 
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.util.math.vector.Vector3d;
-
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import javax.annotation.Nonnull;
+import net.minecraft.world.phys.Vec3;
 
-public abstract class DelegatingVertexBuilder<T extends DelegatingVertexBuilder<T>> implements IVertexBuilder {
-    protected final IVertexBuilder delegate;
+public abstract class DelegatingVertexBuilder<T extends DelegatingVertexBuilder<T>> implements VertexConsumer {
+    protected final VertexConsumer delegate;
 
-    protected DelegatingVertexBuilder(IVertexBuilder delegate) {
+    protected DelegatingVertexBuilder(VertexConsumer delegate) {
         this.delegate = delegate;
     }
 
     @Nonnull
     @Override
-    public T pos(double x, double y, double z) {
-        delegate.pos(x, y, z);
+    public T vertex(double x, double y, double z) {
+        delegate.vertex(x, y, z);
         return getThis();
     }
 
@@ -28,22 +27,22 @@ public abstract class DelegatingVertexBuilder<T extends DelegatingVertexBuilder<
 
     @Nonnull
     @Override
-    public T tex(float u, float v) {
-        delegate.tex(u, v);
+    public T uv(float u, float v) {
+        delegate.uv(u, v);
         return getThis();
     }
 
     @Nonnull
     @Override
-    public T overlay(int u, int v) {
-        delegate.overlay(u, v);
+    public T overlayCoords(int u, int v) {
+        delegate.overlayCoords(u, v);
         return getThis();
     }
 
     @Nonnull
     @Override
-    public T lightmap(int u, int v) {
-        delegate.lightmap(u, v);
+    public T uv2(int u, int v) {
+        delegate.uv2(u, v);
         return getThis();
     }
 
@@ -59,8 +58,8 @@ public abstract class DelegatingVertexBuilder<T extends DelegatingVertexBuilder<
         delegate.endVertex();
     }
 
-    public T pos(Vector3d pos) {
-        return pos((float) pos.x, (float) pos.y, (float) pos.z);
+    public T pos(Vec3 pos) {
+        return vertex((float) pos.x, (float) pos.y, (float) pos.z);
     }
 
     protected abstract T getThis();

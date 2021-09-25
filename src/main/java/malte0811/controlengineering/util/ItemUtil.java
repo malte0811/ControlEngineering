@@ -2,10 +2,9 @@ package malte0811.controlengineering.util;
 
 import blusunrize.immersiveengineering.api.crafting.IngredientWithSize;
 import blusunrize.immersiveengineering.api.utils.CapabilityReference;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.MutablePair;
 
@@ -15,11 +14,11 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ItemUtil {
-    public static void giveOrDrop(PlayerEntity player, ItemStack stack) {
-        if (!player.inventory.addItemStackToInventory(stack)) {
-            player.dropItem(stack, false);
+    public static void giveOrDrop(Player player, ItemStack stack) {
+        if (!player.inventory.add(stack)) {
+            player.drop(stack, false);
         } else  {
-            player.container.detectAndSendChanges();
+            player.inventoryMenu.broadcastChanges();
         }
     }
 

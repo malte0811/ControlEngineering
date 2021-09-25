@@ -1,41 +1,40 @@
 package malte0811.controlengineering.client.render.utils;
 
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
 import malte0811.controlengineering.util.BitUtils;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.math.vector.Vector4f;
-
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 //TODO copied from IE
 public class TransformingVertexBuilder extends DelegatingVertexBuilder<TransformingVertexBuilder> {
-    protected final MatrixStack transform;
-    protected final ObjectWithGlobal<Vector2f> uv = new ObjectWithGlobal<>();
-    protected final ObjectWithGlobal<Vector3d> pos = new ObjectWithGlobal<>();
+    protected final PoseStack transform;
+    protected final ObjectWithGlobal<Vec2> uv = new ObjectWithGlobal<>();
+    protected final ObjectWithGlobal<Vec3> pos = new ObjectWithGlobal<>();
     protected final ObjectWithGlobal<Vec2i> overlay = new ObjectWithGlobal<>();
     protected final ObjectWithGlobal<Vec2i> lightmap = new ObjectWithGlobal<>();
     protected final ObjectWithGlobal<Vector3f> normal = new ObjectWithGlobal<>();
     protected final ObjectWithGlobal<Vector4f> color = new ObjectWithGlobal<>();
 
-    public TransformingVertexBuilder(IVertexBuilder base, MatrixStack transform) {
+    public TransformingVertexBuilder(VertexConsumer base, PoseStack transform) {
         super(base);
         this.transform = transform;
     }
 
-    public TransformingVertexBuilder(IVertexBuilder base) {
-        this(base, new MatrixStack());
+    public TransformingVertexBuilder(VertexConsumer base) {
+        this(base, new PoseStack());
     }
 
     @Nonnull
     @Override
-    public TransformingVertexBuilder pos(double x, double y, double z) {
-        pos.putData(new Vector3d(x, y, z));
+    public TransformingVertexBuilder vertex(double x, double y, double z) {
+        pos.putData(new Vec3(x, y, z));
         return this;
     }
 
@@ -48,21 +47,21 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
 
     @Nonnull
     @Override
-    public TransformingVertexBuilder tex(float u, float v) {
-        uv.putData(new Vector2f(u, v));
+    public TransformingVertexBuilder uv(float u, float v) {
+        uv.putData(new Vec2(u, v));
         return this;
     }
 
     @Nonnull
     @Override
-    public TransformingVertexBuilder overlay(int u, int v) {
+    public TransformingVertexBuilder overlayCoords(int u, int v) {
         overlay.putData(new Vec2i(u, v));
         return this;
     }
 
     @Nonnull
     @Override
-    public TransformingVertexBuilder lightmap(int u, int v) {
+    public TransformingVertexBuilder uv2(int u, int v) {
         lightmap.putData(new Vec2i(u, v));
         return this;
     }
@@ -76,17 +75,17 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
 
     @Override
     public void endVertex() {
-        pos.ifPresent(pos -> delegate.pos(
-                transform.getLast().getMatrix(),
+        pos.ifPresent(pos -> delegate.vertex(
+                transform.last().pose(),
                 (float) pos.x,
                 (float) pos.y,
                 (float) pos.z
         ));
-        color.ifPresent(c -> delegate.color(c.getX(), c.getY(), c.getZ(), c.getW()));
-        uv.ifPresent(uv -> delegate.tex(uv.x, uv.y));
-        overlay.ifPresent(overlay -> delegate.overlay(overlay.x, overlay.y));
-        lightmap.ifPresent(lightmap -> delegate.lightmap(lightmap.x, lightmap.y));
-        normal.ifPresent(normal -> delegate.normal(normal.getX(), normal.getY(), normal.getZ()));
+        color.ifPresent(c -> delegate.color(c.x(), c.y(), c.z(), c.w()));
+        uv.ifPresent(uv -> delegate.uv(uv.x, uv.y));
+        overlay.ifPresent(overlay -> delegate.overlayCoords(overlay.x, overlay.y));
+        lightmap.ifPresent(lightmap -> delegate.uv2(lightmap.x, lightmap.y));
+        normal.ifPresent(normal -> delegate.normal(normal.x(), normal.y(), normal.z()));
         delegate.endVertex();
     }
 
@@ -115,7 +114,7 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
         return getThis();
     }
 
-    public TransformingVertexBuilder setNormal(Vector3d normal) {
+    public TransformingVertexBuilder setNormal(Vec3 normal) {
         return setNormal((float) normal.x, (float) normal.y, (float) normal.z);
     }
 

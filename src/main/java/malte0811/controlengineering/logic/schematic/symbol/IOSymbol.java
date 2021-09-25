@@ -1,21 +1,20 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.gui.misc.BusSignalSelector;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.util.TextUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.DyeColor;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
@@ -36,7 +35,7 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
     }
 
     @Override
-    public void renderCustom(MatrixStack transform, int x, int y, @Nullable BusSignalRef state) {
+    public void renderCustom(PoseStack transform, int x, int y, @Nullable BusSignalRef state) {
         int color;
         if (state != null) {
             color = DyeColor.byId(state.color).getColorValue();
@@ -45,9 +44,9 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
         }
         color |= 0xff000000;
         if (isInput) {
-            AbstractGui.fill(transform, x + 3, y + 1, x + 4, y + 2, color);
+            GuiComponent.fill(transform, x + 3, y + 1, x + 4, y + 2, color);
         } else {
-            AbstractGui.fill(transform, x + 2, y + 1, x + 3, y + 2, color);
+            GuiComponent.fill(transform, x + 2, y + 1, x + 3, y + 2, color);
         }
         final String text = state != null ? Integer.toString(state.line) : "";
         final int blockX = x + (isInput ? 0 : 3);
@@ -75,8 +74,8 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
 
     @Override
     public void createInstanceWithUI(Consumer<? super SymbolInstance<BusSignalRef>> onDone) {
-        Minecraft.getInstance().displayGuiScreen(new DataProviderScreen<>(
-                StringTextComponent.EMPTY, BusSignalSelector::new, null,
+        Minecraft.getInstance().setScreen(new DataProviderScreen<>(
+                TextComponent.EMPTY, BusSignalSelector::new, null,
                 ref -> {
                     SymbolInstance<BusSignalRef> instance = new SymbolInstance<>(this, ref);
                     onDone.accept(instance);
@@ -85,15 +84,15 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
     }
 
     @Override
-    public ITextComponent getName() {
-        return new TranslationTextComponent(isInput ? INPUT_KEY : OUTPUT_KEY);
+    public Component getName() {
+        return new TranslatableComponent(isInput ? INPUT_KEY : OUTPUT_KEY);
     }
 
     @Override
-    public List<IFormattableTextComponent> getExtraDescription(BusSignalRef state) {
+    public List<MutableComponent> getExtraDescription(BusSignalRef state) {
         final DyeColor color = DyeColor.byId(state.color);
-        final String colorName = I18n.format(VANILLA_COLOR_PREFIX + color);
-        return ImmutableList.of(new TranslationTextComponent(SIGNAL_KEY, colorName, state.line));
+        final String colorName = I18n.get(VANILLA_COLOR_PREFIX + color);
+        return ImmutableList.of(new TranslatableComponent(SIGNAL_KEY, colorName, state.line));
     }
 
     public boolean isInput() {

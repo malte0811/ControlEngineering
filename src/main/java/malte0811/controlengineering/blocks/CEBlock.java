@@ -7,40 +7,44 @@ import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.gui.CustomDataContainerProvider;
 import malte0811.controlengineering.tiles.base.IHasMaster;
 import malte0811.controlengineering.util.RaytraceUtils;
-import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class CEBlock<PlacementData, Tile extends TileEntity> extends Block {
+public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends Block {
     public final PlacementBehavior<PlacementData> placementBehavior;
     private final FromBlockFunction<VoxelShape> getShape;
     @Nullable
-    private final RegistryObject<TileEntityType<Tile>> tileType;
+    private final RegistryObject<BlockEntityType<Tile>> tileType;
 
     public CEBlock(
             Properties properties,
             PlacementBehavior<PlacementData> placement,
             FromBlockFunction<VoxelShape> getShape,
-            @Nullable RegistryObject<TileEntityType<Tile>> tileType
+            @Nullable RegistryObject<BlockEntityType<Tile>> tileType
     ) {
         super(properties);
         this.placementBehavior = placement;
@@ -49,28 +53,28 @@ public abstract class CEBlock<PlacementData, Tile extends TileEntity> extends Bl
     }
 
     @Override
-    public void onReplaced(
+    public void onRemove(
             @Nonnull BlockState state,
-            @Nonnull World worldIn,
+            @Nonnull Level worldIn,
             @Nonnull BlockPos pos,
             @Nonnull BlockState newState,
             boolean isMoving
     ) {
-        TileEntity te = worldIn.getTileEntity(pos);
+        BlockEntity te = worldIn.getBlockEntity(pos);
         if (te instanceof IHasMaster) {
             ((IHasMaster) te).setCachedMaster(((IHasMaster) te).computeMasterTile(state));
         }
         Pair<PlacementData, BlockPos> dataAndOffset = placementBehavior.getPlacementDataAndOffset(state, te);
-        super.onReplaced(state, worldIn, pos, newState, isMoving);
+        super.onRemove(state, worldIn, pos, newState, isMoving);
         for (BlockPos offset : placementBehavior.getPlacementOffsets(dataAndOffset.getFirst())) {
             BlockPos relative = offset.subtract(dataAndOffset.getSecond());
             if (!BlockPos.ZERO.equals(relative)) {
                 //TODO stop callee from running this loop again
-                BlockPos absolute = pos.add(relative);
+                BlockPos absolute = pos.offset(relative);
                 BlockState offsetState = worldIn.getBlockState(absolute);
-                TileEntity offsetTile = worldIn.getTileEntity(absolute);
+                BlockEntity offsetTile = worldIn.getBlockEntity(absolute);
                 if (placementBehavior.isValidAtOffset(offset, offsetState, offsetTile, dataAndOffset.getFirst())) {
-                    worldIn.setBlockState(absolute, Blocks.AIR.getDefaultState());
+                    worldIn.setBlockAndUpdate(absolute, Blocks.AIR.defaultBlockState());
                 }
             }
         }
@@ -80,72 +84,72 @@ public abstract class CEBlock<PlacementData, Tile extends TileEntity> extends Bl
     @Override
     public VoxelShape getShape(
             @Nonnull BlockState state,
-            @Nonnull IBlockReader worldIn,
+            @Nonnull BlockGetter worldIn,
             @Nonnull BlockPos pos,
-            @Nonnull ISelectionContext context
+            @Nonnull CollisionContext context
     ) {
         return getShape.apply(state, worldIn, pos);
     }
 
     @Nonnull
     @Override
-    public VoxelShape getRayTraceShape(
+    public VoxelShape getVisualShape(
             @Nonnull BlockState state,
-            @Nonnull IBlockReader reader,
+            @Nonnull BlockGetter reader,
             @Nonnull BlockPos pos,
-            @Nonnull ISelectionContext context
+            @Nonnull CollisionContext context
     ) {
-        TileEntity tile = reader.getTileEntity(pos);
+        BlockEntity tile = reader.getBlockEntity(pos);
         if (tile instanceof SelectionShapeOwner) {
             VoxelShape selShape = ((SelectionShapeOwner) tile).getShape().mainShape();
             if (selShape != null) {
                 return selShape;
             }
         }
-        return super.getRayTraceShape(state, reader, pos, context);
+        return super.getVisualShape(state, reader, pos, context);
     }
 
     @Nonnull
     @Override
-    public VoxelShape getRenderShape(@Nonnull BlockState state, @Nonnull IBlockReader worldIn, @Nonnull BlockPos pos) {
-        return state.getCollisionShape(worldIn, pos);
+    public VoxelShape getOcclusionShape(@Nonnull BlockState state, @Nonnull BlockGetter worldIn, @Nonnull BlockPos pos) {
+        return state.getBlockSupportShape(worldIn, pos);
     }
 
     @Nonnull
     @Override
-    public ActionResultType onBlockActivated(
+    public InteractionResult use(
             @Nonnull BlockState state,
-            @Nonnull World worldIn,
+            @Nonnull Level worldIn,
             @Nonnull BlockPos pos,
-            @Nonnull PlayerEntity player,
-            @Nonnull Hand handIn,
-            @Nonnull BlockRayTraceResult hit
+            @Nonnull Player player,
+            @Nonnull InteractionHand handIn,
+            @Nonnull BlockHitResult hit
     ) {
-        TileEntity tile = worldIn.getTileEntity(pos);
+        BlockEntity tile = worldIn.getBlockEntity(pos);
         if (tile instanceof SelectionShapeOwner) {
             return ((SelectionShapeOwner) tile).getShape()
                     .onUse(
-                            new ItemUseContext(player, handIn, hit),
-                            RaytraceUtils.create(player, 0, Vector3d.copy(pos))
+                            new UseOnContext(player, handIn, hit),
+                            RaytraceUtils.create(player, 0, Vec3.atLowerCornerOf(pos))
                     );
         }
-        return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
+        return super.use(state, worldIn, pos, player, handIn, hit);
     }
 
-    public void openContainer(PlayerEntity player, BlockState state, World worldIn, BlockPos pos) {
-        if (player instanceof ServerPlayerEntity) {
-            INamedContainerProvider container = state.getContainer(worldIn, pos);
+    public void openContainer(Player player, BlockState state, Level worldIn, BlockPos pos) {
+        if (player instanceof ServerPlayer) {
+            MenuProvider container = state.getMenuProvider(worldIn, pos);
             if (container instanceof CustomDataContainerProvider) {
-                ((CustomDataContainerProvider) container).open((ServerPlayerEntity) player);
+                ((CustomDataContainerProvider) container).open((ServerPlayer) player);
             } else {
-                NetworkHooks.openGui((ServerPlayerEntity) player, container, pos);
+                NetworkHooks.openGui((ServerPlayer) player, container, pos);
             }
         }
     }
 
     @Nullable
     @Override
-    public final TileEntity createTileEntity(BlockState state, IBlockReader world) {
+    public final BlockEntity createTileEntity(BlockState state, BlockGetter world) {
         if (this.tileType != null) {
             return this.tileType.get().create();
         } else {
@@ -158,18 +162,18 @@ public abstract class CEBlock<PlacementData, Tile extends TileEntity> extends Bl
         return this.tileType != null;
     }
 
-    public BlockPos getMainBlock(BlockState state, TileEntity te) {
+    public BlockPos getMainBlock(BlockState state, BlockEntity te) {
         Pair<PlacementData, BlockPos> data = placementBehavior.getPlacementDataAndOffset(state, te);
-        return te.getPos().subtract(data.getSecond());
+        return te.getBlockPos().subtract(data.getSecond());
     }
 
-    protected static AbstractBlock.Properties defaultProperties() {
-        return Properties.create(Material.IRON)
-                .hardnessAndResistance(3, 15)
+    protected static BlockBehaviour.Properties defaultProperties() {
+        return Properties.of(Material.METAL)
+                .strength(3, 15)
                 .sound(SoundType.METAL);
     }
 
-    protected static AbstractBlock.Properties defaultPropertiesNotSolid() {
-        return defaultProperties().notSolid().setOpaque(($1, $2, $3) -> false).variableOpacity();
+    protected static BlockBehaviour.Properties defaultPropertiesNotSolid() {
+        return defaultProperties().noOcclusion().isRedstoneConductor(($1, $2, $3) -> false).dynamicShape();
     }
 }

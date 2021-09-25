@@ -18,12 +18,12 @@ import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.datagen.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.datagen.modelbuilder.LogicCabinetBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
-import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.state.Property;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
@@ -48,13 +48,13 @@ public class BlockstateGenerator extends BlockStateProvider {
     @Override
     protected void registerStatesAndModels() {
         registerConnector(
-                obj("bus_relay.obj"), CEBlocks.BUS_RELAY, 90, RenderType.getSolid(), BusRelayBlock.FACING
+                obj("bus_relay.obj"), CEBlocks.BUS_RELAY, 90, RenderType.solid(), BusRelayBlock.FACING
         );
         registerConnector(
-                obj("line_access.obj"), CEBlocks.LINE_ACCESS, 0, RenderType.getCutout(), LineAccessBlock.FACING
+                obj("line_access.obj"), CEBlocks.LINE_ACCESS, 0, RenderType.cutout(), LineAccessBlock.FACING
         );
         registerConnector(
-                obj("bus_interface.obj"), CEBlocks.BUS_INTERFACE, 90, RenderType.getSolid(), BusInterfaceBlock.FACING
+                obj("bus_interface.obj"), CEBlocks.BUS_INTERFACE, 90, RenderType.solid(), BusInterfaceBlock.FACING
         );
 
         panelModel();
@@ -122,7 +122,7 @@ public class BlockstateGenerator extends BlockStateProvider {
             T baseOffset, Property<T> offsetProp,
             Property<Direction> facing
     ) {
-        for (T offset : offsetProp.getAllowedValues()) {
+        for (T offset : offsetProp.getPossibleValues()) {
             ModelFile model;
             if (offset == baseOffset) {
                 model = mainModel;
@@ -186,7 +186,7 @@ public class BlockstateGenerator extends BlockStateProvider {
                 partial = withUnchecked(partial, entry.getKey(), entry.getValue());
             }
             partial.modelForState()
-                    .rotationY((int) d.getHorizontalAngle())
+                    .rotationY((int) d.toYRot())
                     .modelFile(model)
                     .addModel();
         }

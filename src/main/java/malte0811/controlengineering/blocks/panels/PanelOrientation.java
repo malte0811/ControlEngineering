@@ -1,13 +1,12 @@
 package malte0811.controlengineering.blocks.panels;
 
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.Property;
-import net.minecraft.util.Direction;
-import net.minecraft.util.IStringSerializable;
-
 import java.util.Locale;
+import net.minecraft.core.Direction;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 
-public enum PanelOrientation implements IStringSerializable {
+public enum PanelOrientation implements StringRepresentable {
     //Placed on the ceiling
     DOWN_NORTH(Direction.DOWN, Direction.NORTH),
     DOWN_EAST(Direction.DOWN, Direction.EAST),
@@ -41,11 +40,11 @@ public enum PanelOrientation implements IStringSerializable {
 
     @Override
     public String toString() {
-        return getString();
+        return getSerializedName();
     }
 
     @Override
-    public String getString() {
+    public String getSerializedName() {
         return (top + "_" + front).toLowerCase(Locale.US);
     }
 

@@ -5,7 +5,7 @@ import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.datagen.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.items.CEItems;
-import net.minecraft.util.IItemProvider;
+import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 
@@ -32,11 +32,11 @@ public class ItemModels extends ItemModelProvider {
         CEItems.CLOCK_GENERATORS.forEach((rl, item) -> addItemModel(rl.getPath().replace('_', '/'), item));
     }
 
-    public static String name(Supplier<? extends IItemProvider> item) {
+    public static String name(Supplier<? extends ItemLike> item) {
         return item.get().asItem().getRegistryName().getPath();
     }
 
-    private void addItemModel(@Nullable String texture, Supplier<? extends IItemProvider> item) {
+    private void addItemModel(@Nullable String texture, Supplier<? extends ItemLike> item) {
         String path = name(item);
         String textureLoc = texture == null ? path : ("item/" + texture);
         withExistingParent(path, mcLoc("item/generated"))

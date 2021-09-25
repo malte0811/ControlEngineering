@@ -4,9 +4,9 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.logic.LogicDesignContainer;
 import malte0811.controlengineering.gui.panel.PanelLayoutContainer;
 import malte0811.controlengineering.gui.tape.KeypunchContainer;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.network.IContainerFactory;
 import net.minecraftforge.registries.DeferredRegister;
@@ -16,27 +16,27 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 public class CEContainers {
-    public static final DeferredRegister<ContainerType<?>> REGISTER = DeferredRegister.create(
+    public static final DeferredRegister<MenuType<?>> REGISTER = DeferredRegister.create(
             ForgeRegistries.CONTAINERS, ControlEngineering.MODID
     );
 
-    public static final RegistryObject<ContainerType<KeypunchContainer>> KEYPUNCH = REGISTER.register(
+    public static final RegistryObject<MenuType<KeypunchContainer>> KEYPUNCH = REGISTER.register(
             "keypunch", createNoInv(KeypunchContainer::new)
     );
 
-    public static final RegistryObject<ContainerType<LogicDesignContainer>> LOGIC_DESIGN = REGISTER.register(
+    public static final RegistryObject<MenuType<LogicDesignContainer>> LOGIC_DESIGN = REGISTER.register(
             "logic_design", createNoInv(LogicDesignContainer::new)
     );
 
-    public static final RegistryObject<ContainerType<PanelLayoutContainer>> PANEL_LAYOUT = REGISTER.register(
+    public static final RegistryObject<MenuType<PanelLayoutContainer>> PANEL_LAYOUT = REGISTER.register(
             "panel_layout", createNoInv(PanelLayoutContainer::new)
     );
 
-    private static <T extends Container> Supplier<ContainerType<T>> createNoInv(BiFunction<Integer, PacketBuffer, T> factory) {
+    private static <T extends AbstractContainerMenu> Supplier<MenuType<T>> createNoInv(BiFunction<Integer, FriendlyByteBuf, T> factory) {
         return create((id, inv, data) -> factory.apply(id, data));
     }
 
-    private static <T extends Container> Supplier<ContainerType<T>> create(IContainerFactory<T> factory) {
-        return () -> new ContainerType<>(factory);
+    private static <T extends AbstractContainerMenu> Supplier<MenuType<T>> create(IContainerFactory<T> factory) {
+        return () -> new MenuType<>(factory);
     }
 }

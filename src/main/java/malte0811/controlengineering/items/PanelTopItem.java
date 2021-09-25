@@ -7,10 +7,10 @@ import malte0811.controlengineering.controlpanels.PanelData;
 import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.model.PanelItemRenderer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class PanelTopItem extends Item {
 
     public PanelTopItem() {
         super(
-                new Item.Properties().group(ControlEngineering.ITEM_GROUP)
+                new Item.Properties().tab(ControlEngineering.ITEM_GROUP)
                         //TODO server?
                         .setISTER(() -> () -> new PanelItemRenderer(
                                 is -> new PanelData(getComponentsOn(is), FLAT_PANEL)
@@ -38,16 +38,16 @@ public class PanelTopItem extends Item {
     private static final String COMPONENTS_KEY = "components";
 
     public static List<PlacedComponent> getComponentsOn(ItemStack panel) {
-        CompoundNBT fullNBT = panel.getTag();
+        CompoundTag fullNBT = panel.getTag();
         if (fullNBT == null) {
             return ImmutableList.of();
         }
-        ListNBT componentList = fullNBT.getList(COMPONENTS_KEY, Constants.NBT.TAG_COMPOUND);
+        ListTag componentList = fullNBT.getList(COMPONENTS_KEY, Constants.NBT.TAG_COMPOUND);
         return PlacedComponent.readListFromNBT(componentList);
     }
 
     public static ItemStack createWithComponents(List<PlacedComponent> components) {
-        CompoundNBT resultTag = new CompoundNBT();
+        CompoundTag resultTag = new CompoundTag();
         resultTag.put(COMPONENTS_KEY, PlacedComponent.writeListToNBT(components));
         ItemStack resultStack = new ItemStack(CEItems.PANEL_TOP.get(), 1);
         resultStack.setTag(resultTag);

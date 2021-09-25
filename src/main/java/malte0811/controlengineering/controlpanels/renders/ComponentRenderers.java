@@ -1,13 +1,12 @@
 package malte0811.controlengineering.controlpanels.renders;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.controlpanels.PanelComponentInstance;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import net.minecraft.client.renderer.RenderType;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,21 +33,21 @@ public class ComponentRenderers {
 
     public static MixedModel renderAll(
             List<PlacedComponent> components,
-            MatrixStack transform,
+            PoseStack transform,
             RenderType... staticTypes
     ) {
         MixedModel result = new MixedModel(staticTypes);
         for (PlacedComponent component : components) {
-            transform.push();
+            transform.pushPose();
             transform.translate(component.getPosMin().x, 0, component.getPosMin().y);
             render(result, component.getComponent(), transform);
-            transform.pop();
+            transform.popPose();
         }
         return result;
     }
 
     public static <Config, State> void render(
-            MixedModel out, PanelComponentInstance<Config, State> instance, MatrixStack transform
+            MixedModel out, PanelComponentInstance<Config, State> instance, PoseStack transform
     ) {
         getRenderer(instance.getType()).render(out, instance.getConfig(), instance.getState(), transform);
     }

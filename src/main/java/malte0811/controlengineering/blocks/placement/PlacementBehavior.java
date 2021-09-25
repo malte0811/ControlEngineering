@@ -3,12 +3,12 @@ package malte0811.controlengineering.blocks.placement;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.datafixers.util.Unit;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.fml.RegistryObject;
 
@@ -16,15 +16,15 @@ import java.util.Collection;
 
 public interface PlacementBehavior<T> {
     static PlacementBehavior<Unit> simple(RegistryObject<? extends Block> block) {
-        Lazy<BlockState> state = Lazy.of(() -> block.get().getDefaultState());
+        Lazy<BlockState> state = Lazy.of(() -> block.get().defaultBlockState());
         return new PlacementBehavior<Unit>() {
             @Override
-            public Unit getPlacementData(BlockItemUseContext ctx) {
+            public Unit getPlacementData(BlockPlaceContext ctx) {
                 return Unit.INSTANCE;
             }
 
             @Override
-            public Pair<Unit, BlockPos> getPlacementDataAndOffset(BlockState state, TileEntity te) {
+            public Pair<Unit, BlockPos> getPlacementDataAndOffset(BlockState state, BlockEntity te) {
                 return Pair.of(Unit.INSTANCE, BlockPos.ZERO);
             }
 
@@ -42,7 +42,7 @@ public interface PlacementBehavior<T> {
             public boolean isValidAtOffset(
                     BlockPos offset,
                     BlockState actualState,
-                    TileEntity te,
+                    BlockEntity te,
                     Unit data
             ) {
                 return BlockPos.ZERO.equals(offset) && actualState == state.get();
@@ -50,15 +50,15 @@ public interface PlacementBehavior<T> {
         };
     }
 
-    T getPlacementData(BlockItemUseContext ctx);
+    T getPlacementData(BlockPlaceContext ctx);
 
-    Pair<T, BlockPos> getPlacementDataAndOffset(BlockState state, TileEntity te);
+    Pair<T, BlockPos> getPlacementDataAndOffset(BlockState state, BlockEntity te);
 
     Collection<BlockPos> getPlacementOffsets(T data);
 
     BlockState getStateForOffset(Block owner, BlockPos offset, T data);
 
-    default void fillTileData(BlockPos offset, TileEntity te, T data, ItemStack item) {}
+    default void fillTileData(BlockPos offset, BlockEntity te, T data, ItemStack item) {}
 
-    boolean isValidAtOffset(BlockPos offset, BlockState state, TileEntity te, T data);
+    boolean isValidAtOffset(BlockPos offset, BlockState state, BlockEntity te, T data);
 }

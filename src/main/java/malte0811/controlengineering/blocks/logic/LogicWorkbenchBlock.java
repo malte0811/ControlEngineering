@@ -8,20 +8,19 @@ import malte0811.controlengineering.blocks.shapes.HorizontalWithExtraShape;
 import malte0811.controlengineering.gui.logic.LogicDesignContainer;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.logic.LogicWorkbenchTile;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.Property;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.Direction;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.World;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Locale;
@@ -37,20 +36,20 @@ public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> 
     private static final VoxelShape LEG_RIGHT_FRONT = createPixelRelative(12, 0, 12, 15, 16, 15);
     private static final VoxelShape LEG_RIGHT_BACK = createPixelRelative(12, 0, 1, 15, 16, 4);
     private static final VoxelShape DRAWER_LOW = createPixelRelative(1, 7, 1, 15, 13, 15);
-    public static final VoxelShape BURNER = VoxelShapes.or(
+    public static final VoxelShape BURNER = Shapes.or(
             createPixelRelative(11, 0, 3, 13, 6, 5),
             createPixelRelative(9, 4.5, 3.5, 11, 5.5, 4.5)
     );
     public static final VoxelShape TUBE_DRAWER = createPixelRelative(2, 0, 2, 10, 8, 8);
     public static final VoxelShape WIRE_DRAWER = createPixelRelative(12, 0, 2, 20, 8, 8);
-    private static final VoxelShape DRAWERS_TOP = VoxelShapes.or(TUBE_DRAWER, WIRE_DRAWER);
-    public static final VoxelShape WIRE_DRAWER_TOP_RIGHT = WIRE_DRAWER.withOffset(-1, 0, 0);
+    private static final VoxelShape DRAWERS_TOP = Shapes.or(TUBE_DRAWER, WIRE_DRAWER);
+    public static final VoxelShape WIRE_DRAWER_TOP_RIGHT = WIRE_DRAWER.move(-1, 0, 0);
 
     public static final HorizontalWithExtraShape<Offset> SHAPE = new HorizontalWithExtraShape<>(
             FromBlockFunction.getProperty(OFFSET),
             FromBlockFunction.getProperty(FACING),
             ImmutableMap.<Offset, VoxelShape>builder()
-                    .put(Offset.ORIGIN, VoxelShapes.or(
+                    .put(Offset.ORIGIN, Shapes.or(
                             TABLE_TOP,
                             LEG_LEFT_FRONT,
                             LEG_LEFT_BACK,
@@ -58,11 +57,11 @@ public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> 
                             LEG_RIGHT_BACK,
                             DRAWER_LOW
                     ))
-                    .put(Offset.BACK_LEFT, VoxelShapes.or(TABLE_TOP, LEG_LEFT_BACK))
-                    .put(Offset.FRONT_RIGHT, VoxelShapes.or(TABLE_TOP, LEG_RIGHT_FRONT))
-                    .put(Offset.BACK_RIGHT, VoxelShapes.or(TABLE_TOP, LEG_RIGHT_BACK))
+                    .put(Offset.BACK_LEFT, Shapes.or(TABLE_TOP, LEG_LEFT_BACK))
+                    .put(Offset.FRONT_RIGHT, Shapes.or(TABLE_TOP, LEG_RIGHT_FRONT))
+                    .put(Offset.BACK_RIGHT, Shapes.or(TABLE_TOP, LEG_RIGHT_BACK))
                     .put(Offset.TOP_LEFT, DRAWERS_TOP)
-                    .put(Offset.TOP_RIGHT, VoxelShapes.or(BURNER, WIRE_DRAWER_TOP_RIGHT))
+                    .put(Offset.TOP_RIGHT, Shapes.or(BURNER, WIRE_DRAWER_TOP_RIGHT))
                     .build()
     );
 
@@ -76,20 +75,20 @@ public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> 
     }
 
     @Override
-    protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(OFFSET, FACING);
     }
 
     @Nullable
     @Override
-    public INamedContainerProvider getContainer(
-            @Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos
+    public MenuProvider getMenuProvider(
+            @Nonnull BlockState state, @Nonnull Level worldIn, @Nonnull BlockPos pos
     ) {
         return LogicDesignContainer.makeProvider(worldIn, pos, false);
     }
 
-    public enum Offset implements IStringSerializable {
+    public enum Offset implements StringRepresentable {
         ORIGIN(0, 0),
         FRONT_RIGHT(1, 0),
         BACK_LEFT(0, -1),
@@ -112,7 +111,7 @@ public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> 
 
         @Nonnull
         @Override
-        public String getString() {
+        public String getSerializedName() {
             return name().toLowerCase(Locale.ROOT);
         }
     }

@@ -1,10 +1,10 @@
 package malte0811.controlengineering.gui.widget;
 
-import net.minecraft.client.gui.widget.AbstractSlider;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.Mth;
 
-public class BasicSlider extends AbstractSlider {
+public class BasicSlider extends AbstractSliderButton {
     private final int min;
     private final int max;
     private final String translationKey;
@@ -16,31 +16,31 @@ public class BasicSlider extends AbstractSlider {
     public BasicSlider(
             int x, int y, int width, int height, int min, int max, String key, int defaultValue
     ) {
-        super(x, y, width, height, new TranslationTextComponent(key, min), min + defaultValue / (double) (max - min));
+        super(x, y, width, height, new TranslatableComponent(key, min), min + defaultValue / (double) (max - min));
         this.min = min;
         this.max = max;
         this.translationKey = key;
-        func_230979_b_();
+        updateMessage();
     }
 
     @Override
     // Update message
-    protected void func_230979_b_() {
-        setMessage(new TranslationTextComponent(translationKey, getValue()));
+    protected void updateMessage() {
+        setMessage(new TranslatableComponent(translationKey, getValue()));
     }
 
     @Override
     // Apply value
-    protected void func_230972_a_() {
-        sliderValue = exactSliderValue();
+    protected void applyValue() {
+        value = exactSliderValue();
     }
 
     public int getValue() {
-        return (int) Math.round(MathHelper.clampedLerp(min, max, sliderValue));
+        return (int) Math.round(Mth.clampedLerp(min, max, value));
     }
 
     private double exactSliderValue() {
         final int numValuesMin1 = max - min;
-        return Math.round(sliderValue * numValuesMin1) / (double) numValuesMin1;
+        return Math.round(value * numValuesMin1) / (double) numValuesMin1;
     }
 }

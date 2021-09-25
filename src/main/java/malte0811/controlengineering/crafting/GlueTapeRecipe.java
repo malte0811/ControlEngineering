@@ -2,18 +2,17 @@ package malte0811.controlengineering.crafting;
 
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PunchedTapeItem;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 
-public class GlueTapeRecipe implements ICraftingRecipe {
+public class GlueTapeRecipe implements CraftingRecipe {
     private final ResourceLocation id;
     private final Ingredient glue;
 
@@ -23,19 +22,19 @@ public class GlueTapeRecipe implements ICraftingRecipe {
     }
 
     @Override
-    public boolean matches(@Nonnull CraftingInventory inv, @Nonnull World worldIn) {
+    public boolean matches(@Nonnull CraftingContainer inv, @Nonnull Level worldIn) {
         return findMatch(inv) >= 0;
     }
 
     @Nonnull
     @Override
-    public ItemStack getCraftingResult(@Nonnull CraftingInventory inv) {
+    public ItemStack assemble(@Nonnull CraftingContainer inv) {
         int match = findMatch(inv);
         if (match < 0) {
             return ItemStack.EMPTY;
         }
-        ItemStack tape1 = inv.getStackInSlot(match);
-        ItemStack tape2 = inv.getStackInSlot(match + 2);
+        ItemStack tape1 = inv.getItem(match);
+        ItemStack tape2 = inv.getItem(match + 2);
         byte[] first = PunchedTapeItem.getBytes(tape1);
         byte[] second = PunchedTapeItem.getBytes(tape2);
         byte[] combined = Arrays.copyOf(first, first.length + second.length);
@@ -44,17 +43,17 @@ public class GlueTapeRecipe implements ICraftingRecipe {
     }
 
     @Override
-    public boolean canFit(int width, int height) {
+    public boolean canCraftInDimensions(int width, int height) {
         return width >= 3 && height >= 1;
     }
 
-    private int findMatch(CraftingInventory inv) {
+    private int findMatch(CraftingContainer inv) {
         for (int x = 0; x < inv.getWidth() - 2; ++x) {
             for (int y = 0; y < inv.getHeight(); ++y) {
                 int offset = y * inv.getWidth() + x;
-                ItemStack tape1 = inv.getStackInSlot(offset);
-                ItemStack glue = inv.getStackInSlot(offset + 1);
-                ItemStack tape2 = inv.getStackInSlot(offset + 2);
+                ItemStack tape1 = inv.getItem(offset);
+                ItemStack glue = inv.getItem(offset + 1);
+                ItemStack tape2 = inv.getItem(offset + 2);
                 if (tape1.getItem() == CEItems.PUNCHED_TAPE.get() && this.glue.test(glue) &&
                         tape2.getItem() == CEItems.PUNCHED_TAPE.get()) {
                     return offset;
@@ -66,7 +65,7 @@ public class GlueTapeRecipe implements ICraftingRecipe {
 
     @Nonnull
     @Override
-    public ItemStack getRecipeOutput() {
+    public ItemStack getResultItem() {
         return CEItems.PUNCHED_TAPE.get().getDefaultInstance();
     }
 
@@ -78,7 +77,7 @@ public class GlueTapeRecipe implements ICraftingRecipe {
 
     @Nonnull
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return CERecipeSerializers.GLUE_TAPE.get();
     }
 

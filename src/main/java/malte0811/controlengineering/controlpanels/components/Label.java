@@ -11,10 +11,10 @@ import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndText;
 import malte0811.controlengineering.util.ServerFontWidth;
 import malte0811.controlengineering.util.math.Vec2d;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nonnull;
@@ -50,8 +50,8 @@ public class Label extends PanelComponentType<ColorAndText, Unit> {
     }
 
     @Override
-    public Pair<ActionResultType, Unit> click(ColorAndText s, Unit oldState) {
-        return Pair.of(ActionResultType.PASS, oldState);
+    public Pair<InteractionResult, Unit> click(ColorAndText s, Unit oldState) {
+        return Pair.of(InteractionResult.PASS, oldState);
     }
 
     @Override
@@ -65,13 +65,13 @@ public class Label extends PanelComponentType<ColorAndText, Unit> {
         return ImmutableList.of(
                 new IngredientWithSize(Tags.Items.DYES_BLACK),
                 //TODO tag?
-                new IngredientWithSize(Ingredient.fromItems(Items.PAPER))
+                new IngredientWithSize(Ingredient.of(Items.PAPER))
         );
     }
 
     @Nullable
     @Override
-    public AxisAlignedBB getSelectionShape() {
+    public AABB getSelectionShape() {
         return null;
     }
 

@@ -1,7 +1,7 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusLine;
@@ -9,11 +9,10 @@ import malte0811.controlengineering.gui.widgets.IntSelector;
 import malte0811.controlengineering.util.RedstoneTapeUtils;
 import malte0811.controlengineering.util.TextUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
@@ -39,9 +38,9 @@ public class ConstantSymbol extends SchematicSymbol<Double> {
     }
 
     @Override
-    public void renderCustom(MatrixStack transform, int x, int y, @Nullable Double state) {
+    public void renderCustom(PoseStack transform, int x, int y, @Nullable Double state) {
         int color = RedstoneTapeUtils.getRSColor(state == null ? 0 : state.floatValue());
-        AbstractGui.fill(
+        GuiComponent.fill(
                 transform,
                 x + BOX_SIZE, y + BOX_SIZE / 2,
                 x + BOX_SIZE + 1, y + BOX_SIZE / 2 + 1,
@@ -77,19 +76,19 @@ public class ConstantSymbol extends SchematicSymbol<Double> {
 
     @Override
     public void createInstanceWithUI(Consumer<? super SymbolInstance<Double>> onDone) {
-        Minecraft.getInstance().displayGuiScreen(new IntSelector(
+        Minecraft.getInstance().setScreen(new IntSelector(
                 i -> onDone.accept(new SymbolInstance<>(this, i / (double) BusLine.MAX_VALID_VALUE)),
                 INPUT_KEY
         ));
     }
 
     @Override
-    public ITextComponent getName() {
-        return new TranslationTextComponent(NAME);
+    public Component getName() {
+        return new TranslatableComponent(NAME);
     }
 
     @Override
-    public List<IFormattableTextComponent> getExtraDescription(Double state) {
-        return ImmutableList.of(new TranslationTextComponent(INPUT_KEY, (int) (state * BusLine.MAX_VALID_VALUE)));
+    public List<MutableComponent> getExtraDescription(Double state) {
+        return ImmutableList.of(new TranslatableComponent(INPUT_KEY, (int) (state * BusLine.MAX_VALID_VALUE)));
     }
 }

@@ -24,19 +24,19 @@ import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.serialization.Codecs;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.TickableBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwner, IBusInterface, ITickableTileEntity,
+public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwner, IBusInterface, TickableBlockEntity,
         ISchematicTile, IExtraDropTile, IHasMaster {
     public static final int MAX_NUM_BOARDS = 4;
     public static final int NUM_TUBES_PER_BOARD = 16;
@@ -66,26 +66,26 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
     private int numTubes;
     private BusState currentBusState = BusState.EMPTY;
 
-    public LogicCabinetTile(TileEntityType<?> tileEntityTypeIn) {
+    public LogicCabinetTile(BlockEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
     }
 
     public static int getNumBoardsFor(int numTubes) {
-        return MathHelper.ceil(numTubes / (double) NUM_TUBES_PER_BOARD);
+        return Mth.ceil(numTubes / (double) NUM_TUBES_PER_BOARD);
     }
 
     @Override
     public void tick() {
-        if (world.isRemote || isUpper(getBlockState())) {
+        if (level.isClientSide || isUpper(getBlockState())) {
             return;
         }
         //TODO less? config?
-        if (circuit == null || energy.extractOrTrue(128) || world.getGameTime() % 2 != 0) {
+        if (circuit == null || energy.extractOrTrue(128) || level.getGameTime() % 2 != 0) {
             return;
         }
         final Direction facing = getFacing(getBlockState());
-        final Direction clockFace = facing.rotateYCCW();
-        boolean rsIn = world.getRedstonePower(pos.offset(clockFace), clockFace.getOpposite()) > 0;
+        final Direction clockFace = facing.getCounterClockWise();
+        boolean rsIn = level.getSignal(worldPosition.relative(clockFace), clockFace.getOpposite()) > 0;
         if (!clock.tick(rsIn)) {
             return;
         }
@@ -96,8 +96,8 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
     }
 
     @Override
-    public void read(@Nonnull BlockState state, @Nonnull CompoundNBT nbt) {
-        super.read(state, nbt);
+    public void load(@Nonnull BlockState state, @Nonnull CompoundTag nbt) {
+        super.load(state, nbt);
         clock = Codecs.readOrNull(ClockInstance.CODEC, nbt.getCompound("clock"));
         if (clock == null) {
             clock = ClockTypes.NEVER.newInstance();
@@ -112,8 +112,8 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
 
     @Nonnull
     @Override
-    public CompoundNBT write(@Nonnull CompoundNBT compound) {
-        compound = super.write(compound);
+    public CompoundTag save(@Nonnull CompoundTag compound) {
+        compound = super.save(compound);
         compound.put("clock", Codecs.encode(ClockInstance.CODEC, clock));
         if (circuit != null) {
             compound.put("circuit", Codecs.encode(Schematic.CODEC, circuit.getFirst()));
@@ -123,22 +123,22 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
     }
 
     @Override
-    protected CompoundNBT writeSyncedData(CompoundNBT result) {
+    protected CompoundTag writeSyncedData(CompoundTag result) {
         result.putBoolean("hasClock", clock.getType().isActiveClock());
         result.putInt("numTubes", numTubes);
         return result;
     }
 
     @Override
-    protected void readSyncedData(CompoundNBT tag) {
+    protected void readSyncedData(CompoundTag tag) {
         if (tag.getBoolean("hasClock"))
             clock = ClockTypes.ALWAYS_ON.newInstance();
         else
             clock = ClockTypes.NEVER.newInstance();
         numTubes = tag.getInt("numTubes");
         requestModelDataUpdate();
-        world.notifyBlockUpdate(
-                pos, getBlockState(), getBlockState(), Constants.BlockFlags.DEFAULT
+        level.sendBlockUpdated(
+                worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.DEFAULT
         );
     }
 
@@ -169,7 +169,7 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
 
     @Override
     public boolean canConnect(Direction fromSide) {
-        return fromSide == getFacing(getBlockState()).rotateY();
+        return fromSide == getFacing(getBlockState()).getClockWise();
     }
 
     private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(energy::insertOnlyView);
@@ -197,8 +197,8 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
         this.markBusDirty.run();
     }
 
@@ -225,11 +225,11 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
     }
 
     private static Direction getFacing(BlockState state) {
-        return state.get(LogicCabinetBlock.FACING);
+        return state.getValue(LogicCabinetBlock.FACING);
     }
 
     private static boolean isUpper(BlockState state) {
-        return state.get(LogicCabinetBlock.HEIGHT) != 0;
+        return state.getValue(LogicCabinetBlock.HEIGHT) != 0;
     }
 
     private final CachedValue<BlockState, SelectionShapes> selectionShapes = new CachedValue<>(
@@ -252,7 +252,7 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
         }
         subshapes.add(makeBoardInteraction(tile, upper));
         return new ListShapes(
-                baseShape.apply(d), Matrix4.inverseFacing(d), subshapes, $ -> ActionResultType.PASS
+                baseShape.apply(d), Matrix4.inverseFacing(d), subshapes, $ -> InteractionResult.PASS
         );
     }
 
@@ -260,17 +260,17 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
         return new SingleShape(
                 ShapeUtils.createPixelRelative(0, 6, 6, 5, 10, 10), ctx -> {
             if (ctx.getPlayer() == null) {
-                return ActionResultType.PASS;
+                return InteractionResult.PASS;
             }
             ClockGenerator<?> currentClock = tile.clock.getType();
             RegistryObject<Item> clockItem = CEItems.CLOCK_GENERATORS.get(currentClock.getRegistryName());
-            if (!ctx.getWorld().isRemote) {
+            if (!ctx.getLevel().isClientSide) {
                 if (clockItem != null) {
                     ItemUtil.giveOrDrop(ctx.getPlayer(), new ItemStack(clockItem.get()));
                     tile.clock = ClockTypes.NEVER.newInstance();
                     TileUtil.markDirtyAndSync(tile);
                 } else {
-                    ItemStack item = ctx.getItem();
+                    ItemStack item = ctx.getItemInHand();
                     ClockGenerator<?> newClock = ClockTypes.REGISTRY.get(item.getItem().getRegistryName());
                     if (newClock != null) {
                         tile.clock = newClock.newInstance();
@@ -279,7 +279,7 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
                     }
                 }
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         });
     }
 
@@ -291,14 +291,14 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
         return new SingleShape(
                 fullShape, ctx -> {
             if (ctx.getPlayer() == null) {
-                return ActionResultType.PASS;
+                return InteractionResult.PASS;
             }
-            if (!ctx.getWorld().isRemote) {
+            if (!ctx.getLevel().isClientSide) {
                 final Pair<Schematic, BusConnectedCircuit> oldSchematic = tile.circuit;
-                Pair<Schematic, BusConnectedCircuit> schematic = PCBStackItem.getSchematic(ctx.getItem());
+                Pair<Schematic, BusConnectedCircuit> schematic = PCBStackItem.getSchematic(ctx.getItemInHand());
                 if (schematic != null) {
                     tile.setCircuit(schematic.getFirst());
-                    ctx.getItem().shrink(1);
+                    ctx.getItemInHand().shrink(1);
                 } else {
                     tile.setCircuit(null);
                     tile.markBusDirty.run();
@@ -308,7 +308,7 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
                 }
                 TileUtil.markDirtyAndSync(tile);
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         });
     }
 
@@ -318,15 +318,15 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
         );
         return new SingleShape(
                 shape, ctx -> {
-            final PlayerEntity player = ctx.getPlayer();
+            final Player player = ctx.getPlayer();
             if (player == null) {
-                return ActionResultType.PASS;
+                return InteractionResult.PASS;
             }
-            if (player instanceof ServerPlayerEntity && tile.circuit != null) {
-                LogicDesignContainer.makeProvider(tile.world, tile.pos, true)
-                        .open((ServerPlayerEntity) player);
+            if (player instanceof ServerPlayer && tile.circuit != null) {
+                LogicDesignContainer.makeProvider(tile.level, tile.worldPosition, true)
+                        .open((ServerPlayer) player);
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         });
     }
 
@@ -355,7 +355,7 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
     @Override
     public LogicCabinetTile computeMasterTile(BlockState stateHere) {
         if (isUpper(stateHere)) {
-            TileEntity below = world.getTileEntity(pos.down());
+            BlockEntity below = level.getBlockEntity(worldPosition.below());
             if (below instanceof LogicCabinetTile) {
                 return (LogicCabinetTile) below;
             } else {

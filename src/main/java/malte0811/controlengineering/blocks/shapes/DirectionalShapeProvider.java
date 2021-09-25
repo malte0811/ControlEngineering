@@ -1,16 +1,15 @@
 package malte0811.controlengineering.blocks.shapes;
 
 import malte0811.controlengineering.util.math.Matrix4;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IBlockReader;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.List;
 
 public class DirectionalShapeProvider extends CachedShape<Direction> {
@@ -24,22 +23,22 @@ public class DirectionalShapeProvider extends CachedShape<Direction> {
 
     @Override
     protected VoxelShape compute(Direction k) {
-        List<AxisAlignedBB> boxesIn = baseShape.toBoundingBoxList();
-        VoxelShape rotated = VoxelShapes.empty();
+        List<AABB> boxesIn = baseShape.toAabbs();
+        VoxelShape rotated = Shapes.empty();
         Matrix4 mat = new Matrix4(k);
-        for (AxisAlignedBB original : boxesIn) {
-            Vector3d minOld = new Vector3d(original.minX, original.minY, original.minZ);
-            Vector3d maxOld = new Vector3d(original.maxX, original.maxY, original.maxZ);
-            Vector3d firstNew = mat.apply(minOld);
-            Vector3d secondNew = mat.apply(maxOld);
-            VoxelShape rotatedBox = VoxelShapes.create(new AxisAlignedBB(firstNew, secondNew));
-            rotated = VoxelShapes.combine(rotated, rotatedBox, IBooleanFunction.OR);
+        for (AABB original : boxesIn) {
+            Vec3 minOld = new Vec3(original.minX, original.minY, original.minZ);
+            Vec3 maxOld = new Vec3(original.maxX, original.maxY, original.maxZ);
+            Vec3 firstNew = mat.apply(minOld);
+            Vec3 secondNew = mat.apply(maxOld);
+            VoxelShape rotatedBox = Shapes.create(new AABB(firstNew, secondNew));
+            rotated = Shapes.joinUnoptimized(rotated, rotatedBox, BooleanOp.OR);
         }
-        return rotated.simplify();
+        return rotated.optimize();
     }
 
     @Override
-    protected Direction getKey(BlockState state, IBlockReader world, BlockPos pos) {
+    protected Direction getKey(BlockState state, BlockGetter world, BlockPos pos) {
         return getKey.apply(state, world, pos);
     }
 }

@@ -5,10 +5,9 @@ import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.typereg.TypedInstance;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.ResourceLocation;
-
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionResult;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
@@ -27,7 +26,7 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
     }
 
     @Nullable
-    public static PanelComponentInstance<?, ?> readFrom(PacketBuffer buffer) {
+    public static PanelComponentInstance<?, ?> readFrom(FriendlyByteBuf buffer) {
         ResourceLocation typeName;
         try {
             typeName = buffer.readResourceLocation();
@@ -41,8 +40,8 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
         return type.newInstance(buffer);
     }
 
-    public ActionResultType onClick() {
-        Pair<ActionResultType, State> clickResult = getType().click(getConfig(), getState());
+    public InteractionResult onClick() {
+        Pair<InteractionResult, State> clickResult = getType().click(getConfig(), getState());
         currentState = Pair.of(getConfig(), clickResult.getSecond());
         return clickResult.getFirst();
     }
@@ -55,7 +54,7 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
         return currentState.getFirst();
     }
 
-    public void writeToWithoutState(PacketBuffer buffer) {
+    public void writeToWithoutState(FriendlyByteBuf buffer) {
         buffer.writeResourceLocation(getType().getRegistryName());
         getType().getConfigParser().writeToBuffer(getConfig(), buffer);
     }

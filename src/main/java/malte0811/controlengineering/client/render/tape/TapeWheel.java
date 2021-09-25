@@ -4,17 +4,16 @@ import blusunrize.immersiveengineering.api.IEApi;
 import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.math.Quaternion;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.util.math.Vec2d;
-import net.minecraft.client.renderer.SpriteAwareVertexBuilder;
+import net.minecraft.client.renderer.SpriteCoordinateExpander;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Quaternion;
-
+import net.minecraft.util.Mth;
 import java.util.List;
 import java.util.function.BiPredicate;
 
@@ -58,8 +57,8 @@ public class TapeWheel {
         }
     }
 
-    public void render(IVertexBuilder output, MatrixStack stack, int light, int overlay) {
-        SpriteAwareVertexBuilder spriteBuilder = new SpriteAwareVertexBuilder(output, TEXTURE.get());
+    public void render(VertexConsumer output, PoseStack stack, int light, int overlay) {
+        SpriteCoordinateExpander spriteBuilder = new SpriteCoordinateExpander(output, TEXTURE.get());
         TransformingVertexBuilder finalBuilder = new TransformingVertexBuilder(spriteBuilder, stack);
         finalBuilder.setColor(0xffa8f9);
         finalBuilder.setNormal(0, 1, 0);
@@ -69,7 +68,7 @@ public class TapeWheel {
         renderTapeToTarget(finalBuilder);
     }
 
-    private void renderTapeToTarget(IVertexBuilder output) {
+    private void renderTapeToTarget(VertexConsumer output) {
         //TODO cache and use convexity (or rather check convexity and then use it...)
         int bestCorner = 0;
         double bestValue = getSlopeFrom(bestCorner);
@@ -86,15 +85,15 @@ public class TapeWheel {
         //TODO deduplicate
         for (Pair<Integer, Double> pos : offsetAndHeight) {
             Vec2d vec = positions[pos.getFirst()];
-            output.pos(vec.x, pos.getSecond(), vec.y)
-                    .tex(toUV(cornerUV.x), toUV(cornerUV.y))
+            output.vertex(vec.x, pos.getSecond(), vec.y)
+                    .uv(toUV(cornerUV.x), toUV(cornerUV.y))
                     .endVertex();
         }
         for (int i = offsetAndHeight.size() - 1; i >= 0; i--) {
             Pair<Integer, Double> pos = offsetAndHeight.get(i);
             Vec2d vec = positions[pos.getFirst()];
-            output.pos(vec.x, pos.getSecond(), vec.y)
-                    .tex(toUV(cornerUV.x), toUV(cornerUV.y))
+            output.vertex(vec.x, pos.getSecond(), vec.y)
+                    .uv(toUV(cornerUV.x), toUV(cornerUV.y))
                     .endVertex();
         }
     }
@@ -106,15 +105,15 @@ public class TapeWheel {
         return deltaY / deltaX;
     }
 
-    private void renderTapeRoll(IVertexBuilder output, MatrixStack stack) {
-        stack.push();
-        stack.rotate(new Quaternion(0, (float) rotationRadians, 0, false));
+    private void renderTapeRoll(VertexConsumer output, PoseStack stack) {
+        stack.pushPose();
+        stack.mulPose(new Quaternion(0, (float) rotationRadians, 0, false));
         // render top
         for (int i = 1; i + 2 < NUM_CORNERS; i += 2) {
             for (int vertex : new int[]{0, i, i + 1, i + 2}) {
                 Vec2d posNormalized = cornerRelative(vertex);
-                output.pos(posNormalized.x, TAPE_WIDTH, posNormalized.y)
-                        .tex(toUV(posNormalized.x), toUV(posNormalized.y))
+                output.vertex(posNormalized.x, TAPE_WIDTH, posNormalized.y)
+                        .uv(toUV(posNormalized.x), toUV(posNormalized.y))
                         .endVertex();
             }
         }
@@ -128,12 +127,12 @@ public class TapeWheel {
         for (int i = 0; i < NUM_CORNERS; ++i) {
             for (Pair<Integer, Double> quadVertex : offsetAndHeight) {
                 Vec2d posNormalized = cornerRelative((quadVertex.getFirst() + i) % NUM_CORNERS);
-                output.pos(posNormalized.x, quadVertex.getSecond(), posNormalized.y)
-                        .tex(toUV(posNormalized.x), toUV(posNormalized.y))
+                output.vertex(posNormalized.x, quadVertex.getSecond(), posNormalized.y)
+                        .uv(toUV(posNormalized.x), toUV(posNormalized.y))
                         .endVertex();
             }
         }
-        stack.pop();
+        stack.popPose();
     }
 
     private Vec2d cornerRotated(int vertex) {
@@ -151,7 +150,7 @@ public class TapeWheel {
     }
 
     private float toUV(double pmMaxRadiusRelative) {
-        return MathHelper.clamp(
+        return Mth.clamp(
                 (float) (0.5 * (1 + pmMaxRadiusRelative / maxRenderRadius)),
                 1e-3f,
                 1 - 1e-3f

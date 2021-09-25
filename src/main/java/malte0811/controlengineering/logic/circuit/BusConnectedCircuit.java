@@ -8,9 +8,8 @@ import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.util.serialization.Codecs;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.MathHelper;
-
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 import java.util.List;
 import java.util.Map;
 import java.util.function.ToDoubleFunction;
@@ -50,7 +49,7 @@ public class BusConnectedCircuit {
         constantInputs.forEach(circuit::updateInputValue);
     }
 
-    public BusConnectedCircuit(CompoundNBT nbt) {
+    public BusConnectedCircuit(CompoundTag nbt) {
         this(
                 Circuit.fromNBT(nbt.getCompound("circuit")),
                 Codecs.readOrThrow(OUTPUT_CODEC, nbt.get("outputs")),
@@ -73,7 +72,7 @@ public class BusConnectedCircuit {
         circuit.tick();
         boolean changed = false;
         for (Map.Entry<NetReference, List<BusSignalRef>> output : outputConnections.entrySet()) {
-            final int newValue = (int) MathHelper.clamp(
+            final int newValue = (int) Mth.clamp(
                     BusLine.MAX_VALID_VALUE * circuit.getNetValue(output.getKey()),
                     BusLine.MIN_VALID_VALUE,
                     BusLine.MAX_VALID_VALUE
@@ -93,8 +92,8 @@ public class BusConnectedCircuit {
         return circuit;
     }
 
-    public CompoundNBT toNBT() {
-        CompoundNBT result = new CompoundNBT();
+    public CompoundTag toNBT() {
+        CompoundTag result = new CompoundTag();
         result.put("circuit", circuit.toNBT());
         result.put("inputs", Codecs.encode(INPUT_CODEC, inputConnections));
         result.put("outputs", Codecs.encode(OUTPUT_CODEC, outputConnections));
@@ -107,7 +106,7 @@ public class BusConnectedCircuit {
     }
 
     private int getTotalCost(ToDoubleFunction<CellCost> individualCost) {
-        return MathHelper.ceil(getCircuit()
+        return Mth.ceil(getCircuit()
                 .getCellTypes()
                 .map(LeafcellType::getCost)
                 .mapToDouble(individualCost)

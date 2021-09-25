@@ -2,8 +2,7 @@ package malte0811.controlengineering.network.panellayout;
 
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.network.PacketUtils;
-import net.minecraft.network.PacketBuffer;
-
+import net.minecraft.network.FriendlyByteBuf;
 import java.util.List;
 
 public class FullSync extends PanelSubPacket {
@@ -13,12 +12,12 @@ public class FullSync extends PanelSubPacket {
         this.allComponents = allComponents;
     }
 
-    public FullSync(PacketBuffer buffer) {
+    public FullSync(FriendlyByteBuf buffer) {
         this(PacketUtils.readList(buffer, PlacedComponent::readWithoutState));
     }
 
     @Override
-    protected void write(PacketBuffer out) {
+    protected void write(FriendlyByteBuf out) {
         PacketUtils.writeList(out, allComponents, PlacedComponent::writeToWithoutState);
     }
 

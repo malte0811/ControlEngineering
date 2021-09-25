@@ -1,11 +1,14 @@
 package malte0811.controlengineering.blocks.loot;
 
 import malte0811.controlengineering.tiles.base.IHasMaster;
-import net.minecraft.loot.*;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.Serializer;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import javax.annotation.Nullable;
 
 public class CELootFunctions {
@@ -19,7 +22,7 @@ public class CELootFunctions {
 
     private static LootPoolEntryType registerEntry(
             ResourceLocation id,
-            ILootSerializer<? extends LootEntry> serializer
+            Serializer<? extends LootPoolEntryContainer> serializer
     ) {
         return Registry.register(
                 Registry.LOOT_POOL_ENTRY_TYPE, id, new LootPoolEntryType(serializer)
@@ -27,13 +30,13 @@ public class CELootFunctions {
     }
 
     @Nullable
-    public static TileEntity getMasterTile(LootContext ctx) {
-        if (!ctx.has(LootParameters.BLOCK_ENTITY)) {
+    public static BlockEntity getMasterTile(LootContext ctx) {
+        if (!ctx.hasParam(LootContextParams.BLOCK_ENTITY)) {
             return null;
         }
-        TileEntity te = ctx.get(LootParameters.BLOCK_ENTITY);
+        BlockEntity te = ctx.getParamOrNull(LootContextParams.BLOCK_ENTITY);
         if (te instanceof IHasMaster)
-            return ((IHasMaster) te).getOrComputeMasterTile(ctx.get(LootParameters.BLOCK_STATE));
+            return ((IHasMaster) te).getOrComputeMasterTile(ctx.getParamOrNull(LootContextParams.BLOCK_STATE));
         else
             return te;
     }

@@ -10,9 +10,9 @@ import malte0811.controlengineering.logic.cells.LeafcellInstance;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
 import malte0811.controlengineering.util.serialization.Codecs;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.*;
@@ -34,22 +34,22 @@ public class Circuit {
     private final Map<NetReference, PinReference> delayedNetsBySource;
     private final Map<PinReference, NetReference> pinToNet;
 
-    public static Circuit fromNBT(CompoundNBT nbt) {
-        ListNBT stages = nbt.getList(STAGES_KEY, Constants.NBT.TAG_LIST);
+    public static Circuit fromNBT(CompoundTag nbt) {
+        ListTag stages = nbt.getList(STAGES_KEY, Constants.NBT.TAG_LIST);
         List<LeafcellInstance<?>> cellsInTopoOrder = Codecs.readOrNull(CELLS_CODEC, stages);
         Map<PinReference, NetReference> pinToNet = new HashMap<>();
-        CompoundNBT netsNBT = nbt.getCompound(NETS_KEY);
+        CompoundTag netsNBT = nbt.getCompound(NETS_KEY);
         Object2DoubleMap<NetReference> allNetValues = new Object2DoubleOpenHashMap<>();
         Object2DoubleMap<NetReference> inputValues = new Object2DoubleOpenHashMap<>();
-        for (String netName : netsNBT.keySet()) {
-            CompoundNBT netNBT = netsNBT.getCompound(netName);
+        for (String netName : netsNBT.getAllKeys()) {
+            CompoundTag netNBT = netsNBT.getCompound(netName);
             NetReference netRef = new NetReference(netName);
             final double value = netNBT.getDouble(CURRENT_VALUE_KEY);
             allNetValues.put(netRef, value);
             if (netNBT.getBoolean(IS_INPUT_KEY)) {
                 inputValues.put(netRef, value);
             }
-            for (INBT pinNBT : netNBT.getList(PINS_KEY, Constants.NBT.TAG_COMPOUND)) {
+            for (Tag pinNBT : netNBT.getList(PINS_KEY, Constants.NBT.TAG_COMPOUND)) {
                 PinReference pin = Codecs.readOrNull(PinReference.CODEC, pinNBT);
                 if (pin != null && isValidPin(pin, cellsInTopoOrder) && !pinToNet.containsKey(pin)) {
                     pinToNet.put(pin, netRef);
@@ -109,18 +109,18 @@ public class Circuit {
         return pins.containsKey(pin.getPinName());
     }
 
-    public CompoundNBT toNBT() {
-        INBT stages = Codecs.encode(CELLS_CODEC, cellsInTopoOrder);
+    public CompoundTag toNBT() {
+        Tag stages = Codecs.encode(CELLS_CODEC, cellsInTopoOrder);
         Map<NetReference, List<PinReference>> pinsByNet = new HashMap<>();
         for (Map.Entry<PinReference, NetReference> entry : pinToNet.entrySet()) {
             pinsByNet.computeIfAbsent(entry.getValue(), $ -> new ArrayList<>()).add(entry.getKey());
         }
-        CompoundNBT nets = new CompoundNBT();
+        CompoundTag nets = new CompoundTag();
         for (Map.Entry<NetReference, List<PinReference>> entry : pinsByNet.entrySet()) {
             NetReference net = entry.getKey();
-            CompoundNBT netNBT = new CompoundNBT();
+            CompoundTag netNBT = new CompoundTag();
             netNBT.putDouble(CURRENT_VALUE_KEY, allNetValues.getDouble(net));
-            ListNBT netPins = new ListNBT();
+            ListTag netPins = new ListTag();
             for (PinReference pin : entry.getValue()) {
                 netPins.add(Codecs.encode(PinReference.CODEC, pin));
             }
@@ -128,7 +128,7 @@ public class Circuit {
             netNBT.putBoolean(IS_INPUT_KEY, inputValues.containsKey(net));
             nets.put(net.getId(), netNBT);
         }
-        CompoundNBT result = new CompoundNBT();
+        CompoundTag result = new CompoundTag();
         result.put(STAGES_KEY, stages);
         result.put(NETS_KEY, nets);
         return result;

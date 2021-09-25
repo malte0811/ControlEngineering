@@ -9,20 +9,20 @@ import malte0811.controlengineering.network.keypunch.KeypunchPacket;
 import malte0811.controlengineering.network.keypunch.KeypunchSubPacket;
 import malte0811.controlengineering.tiles.tape.KeypunchState;
 import malte0811.controlengineering.tiles.tape.KeypunchTile;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.IWorldPosCallable;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.level.Level;
 
 public class KeypunchContainer extends CEContainer<KeypunchSubPacket> {
     private final KeypunchState state;
 
-    public KeypunchContainer(int id, PacketBuffer data) {
+    public KeypunchContainer(int id, FriendlyByteBuf data) {
         this(id, ContainerScreenManager.readWorldPos(data));
     }
 
-    public KeypunchContainer(int id, IWorldPosCallable pos) {
+    public KeypunchContainer(int id, ContainerLevelAccess pos) {
         super(CEContainers.KEYPUNCH.get(), pos, id);
-        state = pos.apply(World::getTileEntity)
+        state = pos.evaluate(Level::getBlockEntity)
                 .filter(t -> t instanceof KeypunchTile)
                 .map(t -> ((KeypunchTile) t).getState())
                 .orElseGet(KeypunchState::new);

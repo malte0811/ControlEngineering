@@ -1,16 +1,14 @@
 package malte0811.controlengineering.client.render.target;
 
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.util.BitUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,6 +16,8 @@ import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
 import java.util.OptionalInt;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -31,7 +31,7 @@ public class QuadBuilder {
     @Nullable
     private TextureAtlasSprite sprite;
     @Nullable
-    private Vector3d normal;
+    private Vec3 normal;
     // Range: [0, 15]
     private OptionalInt blockLightOverride = OptionalInt.empty();
     private float red = 1;
@@ -39,7 +39,7 @@ public class QuadBuilder {
     private float blue = 1;
     private float alpha = 1;
 
-    public QuadBuilder(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4) {
+    public QuadBuilder(Vec3 v1, Vec3 v2, Vec3 v3, Vec3 v4) {
         this.vertices = new Vertex[]{
                 new Vertex(v1, 0, 0),
                 new Vertex(v2, 0, 1),
@@ -53,7 +53,7 @@ public class QuadBuilder {
         return this;
     }
 
-    public QuadBuilder setNormal(@Nullable Vector3d normal) {
+    public QuadBuilder setNormal(@Nullable Vec3 normal) {
         this.normal = normal;
         return this;
     }
@@ -98,48 +98,48 @@ public class QuadBuilder {
         return this;
     }
 
-    public void writeTo(IVertexBuilder target) {
+    public void writeTo(VertexConsumer target) {
         TextureAtlasSprite sprite = this.sprite == null ? getWhiteTexture() : this.sprite;
-        Vector3d normalD = this.normal == null ? automaticNormal() : this.normal;
+        Vec3 normalD = this.normal == null ? automaticNormal() : this.normal;
         Vector3f normal = new Vector3f(normalD);
         for (Vertex v : vertices) {
-            target.addVertex(
+            target.vertex(
                     (float) v.position.x, (float) v.position.y, (float) v.position.z,
                     red, green, blue, alpha,
-                    sprite.getInterpolatedU(16 * v.spriteU), sprite.getInterpolatedV(16 * v.spriteV),
+                    sprite.getU(16 * v.spriteU), sprite.getV(16 * v.spriteV),
                     OverlayTexture.NO_OVERLAY, blockLightOverride.orElse(0),
-                    normal.getX(), normal.getY(), normal.getZ()
+                    normal.x(), normal.y(), normal.z()
             );
         }
     }
 
-    private Vector3d automaticNormal() {
-        Vector3d first = vertices[0].position;
-        Vector3d second = vertices[1].position;
-        Vector3d third = vertices[2].position;
-        return first.subtract(second).crossProduct(first.subtract(third)).normalize();
+    private Vec3 automaticNormal() {
+        Vec3 first = vertices[0].position;
+        Vec3 second = vertices[1].position;
+        Vec3 third = vertices[2].position;
+        return first.subtract(second).cross(first.subtract(third)).normalize();
     }
 
     public static TextureAtlasSprite getWhiteTexture() {
         return Minecraft.getInstance()
                 .getModelManager()
-                .getAtlasTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE)
+                .getAtlas(TextureAtlas.LOCATION_BLOCKS)
                 .getSprite(WHITE_WITH_BORDER);
     }
 
     @SubscribeEvent
     public static void onTextureStitch(TextureStitchEvent.Pre ev) {
-        if (ev.getMap().getTextureLocation().equals(PlayerContainer.LOCATION_BLOCKS_TEXTURE)) {
+        if (ev.getMap().location().equals(InventoryMenu.BLOCK_ATLAS)) {
             ev.addSprite(WHITE_WITH_BORDER);
         }
     }
 
     private static class Vertex {
-        private final Vector3d position;
+        private final Vec3 position;
         private float spriteU;
         private float spriteV;
 
-        private Vertex(Vector3d position, float spriteU, float spriteV) {
+        private Vertex(Vec3 position, float spriteU, float spriteV) {
             this.position = position;
             this.spriteU = spriteU;
             this.spriteV = spriteV;

@@ -1,14 +1,13 @@
 package malte0811.controlengineering.blocks.shapes;
 
 import malte0811.controlengineering.util.math.Matrix4;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -39,49 +38,49 @@ public abstract class SelectionShapes {
         return this;
     }
 
-    public abstract ActionResultType onUse(ItemUseContext ctx, ActionResultType defaultType);
+    public abstract InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType);
 
-    public void plotBox(BiConsumer<Vector3d, Vector3d> drawLine) {
+    public void plotBox(BiConsumer<Vec3, Vec3> drawLine) {
         VoxelShape main = mainShape();
         if (main != null) {
-            main.forEachEdge(
-                    (x1, y1, z1, x2, y2, z2) -> drawLine.accept(new Vector3d(x1, y1, z1), new Vector3d(x2, y2, z2))
+            main.forAllEdges(
+                    (x1, y1, z1, x2, y2, z2) -> drawLine.accept(new Vec3(x1, y1, z1), new Vec3(x2, y2, z2))
             );
         }
     }
 
-    public final ActionResultType onUse(ItemUseContext useCtx, RayTraceContext ray) {
+    public final InteractionResult onUse(UseOnContext useCtx, ClipContext ray) {
         List<SelectionShapes> stack = getTargeted(ray);
-        ActionResultType ret = ActionResultType.PASS;
+        InteractionResult ret = InteractionResult.PASS;
         for (int i = 0; i < stack.size(); ++i) {
             ret = stack.get(stack.size() - i - 1).onUse(useCtx, ret);
         }
         return ret;
     }
 
-    public final List<SelectionShapes> getTargeted(RayTraceContext ray) {
+    public final List<SelectionShapes> getTargeted(ClipContext ray) {
         List<SelectionShapes> result = new ArrayList<>();
         fillTargetedStack(ray, result);
         return result;
     }
 
-    private void fillTargetedStack(RayTraceContext ray, List<SelectionShapes> out) {
+    private void fillTargetedStack(ClipContext ray, List<SelectionShapes> out) {
         out.add(this);
         List<? extends SelectionShapes> innerShapes = innerShapes();
         if (innerShapes.isEmpty()) {
             return;
         }
-        RayTraceContext innerRay = outerToInnerPosition().transformRay(ray.getStartVec(), ray.getEndVec());
+        ClipContext innerRay = outerToInnerPosition().transformRay(ray.getFrom(), ray.getTo());
         Optional<SelectionShapes> closest = Optional.empty();
         double minDistanceSq = Double.POSITIVE_INFINITY;
         for (SelectionShapes inner : innerShapes) {
             final VoxelShape innerShape = inner.mainShape();
             if (innerShape != null) {
-                final BlockRayTraceResult result = innerShape.rayTrace(
-                        innerRay.getStartVec(), innerRay.getEndVec(), BlockPos.ZERO
+                final BlockHitResult result = innerShape.clip(
+                        innerRay.getFrom(), innerRay.getTo(), BlockPos.ZERO
                 );
                 if (result != null) {
-                    final double distanceSq = result.getHitVec().squareDistanceTo(innerRay.getStartVec());
+                    final double distanceSq = result.getLocation().distanceToSqr(innerRay.getFrom());
                     if (distanceSq < minDistanceSq) {
                         minDistanceSq = distanceSq;
                         closest = Optional.of(inner);

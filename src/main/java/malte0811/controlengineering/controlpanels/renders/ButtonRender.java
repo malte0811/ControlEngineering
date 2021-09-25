@@ -1,22 +1,21 @@
 package malte0811.controlengineering.controlpanels.renders;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.client.render.target.RenderUtils;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.util.ColorUtils;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Vector3d;
-
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.Vec3;
 import java.util.EnumMap;
 import java.util.Map;
 
 public class ButtonRender extends ComponentRenderer<ColorAndSignal, Boolean> {
-    private static final Vector3d BOX_MIN = Vector3d.ZERO;
-    private static final Vector3d BOX_MAX = new Vector3d(1, 0.5, 1);
+    private static final Vec3 BOX_MIN = Vec3.ZERO;
+    private static final Vec3 BOX_MAX = new Vec3(1, 0.5, 1);
     private static final Map<Direction, RenderType> TARGETS = ImmutableMap.<Direction, RenderType>builder()
             .put(Direction.NORTH, MixedModel.SOLID_STATIC)
             .put(Direction.EAST, MixedModel.SOLID_STATIC)
@@ -26,7 +25,7 @@ public class ButtonRender extends ComponentRenderer<ColorAndSignal, Boolean> {
             .build();
 
     @Override
-    public void render(MixedModel output, ColorAndSignal config, Boolean active, MatrixStack transform) {
+    public void render(MixedModel output, ColorAndSignal config, Boolean active, PoseStack transform) {
         EnumMap<Direction, Integer> colors = new EnumMap<>(Direction.class);
         for (Direction d : DirectionUtils.BY_HORIZONTAL_INDEX) {
             colors.put(d, -1);

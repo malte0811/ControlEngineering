@@ -1,47 +1,47 @@
 package malte0811.controlengineering.gui;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.IContainerProvider;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public class CustomDataContainerProvider implements INamedContainerProvider {
-    private final ITextComponent name;
-    private final IContainerProvider inner;
-    private final Consumer<PacketBuffer> writeExtra;
+public class CustomDataContainerProvider implements MenuProvider {
+    private final Component name;
+    private final MenuConstructor inner;
+    private final Consumer<FriendlyByteBuf> writeExtra;
 
     public CustomDataContainerProvider(
-            ITextComponent name, IContainerProvider inner, Consumer<PacketBuffer> writeExtra
+            Component name, MenuConstructor inner, Consumer<FriendlyByteBuf> writeExtra
     ) {
         this.name = name;
         this.inner = inner;
         this.writeExtra = writeExtra;
     }
 
-    public Consumer<PacketBuffer> extraData() {
+    public Consumer<FriendlyByteBuf> extraData() {
         return writeExtra;
     }
 
     @Nonnull
     @Override
-    public ITextComponent getDisplayName() {
+    public Component getDisplayName() {
         return this.name;
     }
 
     @Override
-    public Container createMenu(int id, @Nonnull PlayerInventory inv, @Nonnull PlayerEntity player) {
+    public AbstractContainerMenu createMenu(int id, @Nonnull Inventory inv, @Nonnull Player player) {
         return this.inner.createMenu(id, inv, player);
     }
 
-    public void open(ServerPlayerEntity player) {
+    public void open(ServerPlayer player) {
         NetworkHooks.openGui(player, this, extraData());
     }
 }

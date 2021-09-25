@@ -5,8 +5,8 @@ import com.google.gson.JsonParser;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
 import malte0811.controlengineering.ControlEngineering;
-import net.minecraft.resources.IResource;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class ServerFontWidth {
     private static Int2FloatMap getWidths() {
         if (widths == null) {
             try {
-                IResource resource = ServerLifecycleHooks.getCurrentServer()
+                Resource resource = ServerLifecycleHooks.getCurrentServer()
                         .getDataPackRegistries()
                         .getResourceManager()
                         .getResource(new ResourceLocation(ControlEngineering.MODID, FILE_NAME));

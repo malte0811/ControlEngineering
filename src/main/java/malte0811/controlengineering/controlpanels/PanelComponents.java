@@ -8,8 +8,7 @@ import malte0811.controlengineering.controlpanels.components.Button;
 import malte0811.controlengineering.controlpanels.components.Indicator;
 import malte0811.controlengineering.controlpanels.components.Label;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
-import net.minecraft.util.ResourceLocation;
-
+import net.minecraft.resources.ResourceLocation;
 import javax.annotation.Nullable;
 
 public class PanelComponents {

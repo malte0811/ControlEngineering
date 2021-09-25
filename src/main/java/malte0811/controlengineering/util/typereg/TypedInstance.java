@@ -5,10 +5,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.nbt.NBTDynamicOps;
-import net.minecraft.util.ResourceLocation;
-
 import java.util.function.BiFunction;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.ResourceLocation;
 
 // Not "logically" abstract, but the using the class itself causes general issues with the type system
 public abstract class TypedInstance<State, Type extends TypedRegistryEntry<State>> {
@@ -29,8 +28,8 @@ public abstract class TypedInstance<State, Type extends TypedRegistryEntry<State
     }
 
     DataResult<Dynamic<?>> serializeState() {
-        return getType().getStateCodec().encodeStart(NBTDynamicOps.INSTANCE, getCurrentState())
-                .map(nbt -> new Dynamic<>(NBTDynamicOps.INSTANCE, nbt));
+        return getType().getStateCodec().encodeStart(NbtOps.INSTANCE, getCurrentState())
+                .map(nbt -> new Dynamic<>(NbtOps.INSTANCE, nbt));
     }
 
     protected static <I extends TypedInstance<?, ?>, T extends TypedRegistryEntry<?>>

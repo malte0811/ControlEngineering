@@ -10,9 +10,9 @@ import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.util.math.Vec2d;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ActionResultType;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nonnull;
@@ -60,12 +60,12 @@ public class Button extends PanelComponentType<ColorAndSignal, Boolean> {
         return ImmutableList.of(
                 new IngredientWithSize(Tags.Items.DYES),
                 new IngredientWithSize(Tags.Items.DUSTS_GLOWSTONE),
-                new IngredientWithSize(Ingredient.fromItems(Items.STONE_BUTTON))
+                new IngredientWithSize(Ingredient.of(Items.STONE_BUTTON))
         );
     }
 
     @Override
-    public Pair<ActionResultType, Boolean> click(ColorAndSignal config, Boolean oldState) {
-        return Pair.of(ActionResultType.SUCCESS, !oldState);
+    public Pair<InteractionResult, Boolean> click(ColorAndSignal config, Boolean oldState) {
+        return Pair.of(InteractionResult.SUCCESS, !oldState);
     }
 }

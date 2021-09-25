@@ -1,20 +1,26 @@
 package malte0811.controlengineering.logic.model;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Transformation;
+import com.mojang.math.Vector3f;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.*;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraft.util.math.vector.Vector2f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.ModelTransformComposition;
 import net.minecraftforge.client.model.SimpleModelTransform;
@@ -27,9 +33,9 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
-public class DynamicLogicModel implements IBakedModel {
+public class DynamicLogicModel implements BakedModel {
     private static final Random RANDOM = new Random(1234);
-    private static final Vector2f[] TUBE_OFFSETS;
+    private static final Vec2[] TUBE_OFFSETS;
     private static final float[] BOARD_HEIGHTS = {16.5f / 16f, 21.5f / 16f, 12.5f / 16f, 26.5f / 16f,};
     public static final ModelProperty<ModelData> DATA = new ModelProperty<>();
 
@@ -38,27 +44,27 @@ public class DynamicLogicModel implements IBakedModel {
         TUBE_OFFSETS = Arrays.stream(tubeAxisOffsets)
                 .boxed()
                 .flatMap(i -> Arrays.stream(tubeAxisOffsets).mapToObj(i2 -> new int[]{i, i2}))
-                .map(a -> new Vector2f(a[0] / 16f, a[1] / 16f))
-                .toArray(Vector2f[]::new);
+                .map(a -> new Vec2(a[0] / 16f, a[1] / 16f))
+                .toArray(Vec2[]::new);
         Collections.shuffle(Arrays.asList(TUBE_OFFSETS), RANDOM);
     }
 
-    private final IUnbakedModel board;
-    private final IUnbakedModel tube;
+    private final UnbakedModel board;
+    private final UnbakedModel tube;
     private final ModelBakery bakery;
-    private final Function<RenderMaterial, TextureAtlasSprite> spriteGetter;
-    private final IModelTransform modelTransform;
+    private final Function<Material, TextureAtlasSprite> spriteGetter;
+    private final ModelState modelTransform;
     private final TextureAtlasSprite particles;
     private final BakedQuad clockQuad;
 
     private final List<FixedTubeModel> knownModels = new ArrayList<>();
 
     public DynamicLogicModel(
-            IUnbakedModel board,
-            IUnbakedModel tube,
+            UnbakedModel board,
+            UnbakedModel tube,
             ModelBakery bakery,
-            Function<RenderMaterial, TextureAtlasSprite> spriteGetter,
-            IModelTransform modelTransform
+            Function<Material, TextureAtlasSprite> spriteGetter,
+            ModelState modelTransform
     ) {
 
         this.board = board;
@@ -66,18 +72,18 @@ public class DynamicLogicModel implements IBakedModel {
         this.bakery = bakery;
         this.spriteGetter = spriteGetter;
         this.modelTransform = modelTransform;
-        particles = board.bakeModel(
+        particles = board.bake(
                 bakery, spriteGetter, modelTransform, new ResourceLocation(ControlEngineering.MODID, "temp")
-        ).getQuads(null, null, RANDOM, EmptyModelData.INSTANCE).get(0).getSprite();
+        ).getQuads(null, null, RANDOM, EmptyModelData.INSTANCE).get(0).func_187508_a();
 
-        MatrixStack transform = new MatrixStack();
+        PoseStack transform = new PoseStack();
         modelTransform.getRotation().blockCenterToCorner().push(transform);
         List<BakedQuad> quads = new ArrayList<>();
         new QuadBuilder(
-                new Vector3d(1, 0.375, 0.625),
-                new Vector3d(1, 0.375, 0.375),
-                new Vector3d(1, 0.625, 0.375),
-                new Vector3d(1, 0.625, 0.625)
+                new Vec3(1, 0.375, 0.625),
+                new Vec3(1, 0.375, 0.375),
+                new Vec3(1, 0.625, 0.375),
+                new Vec3(1, 0.625, 0.625)
         ).setSprite(particles)
                 .setUCoords(15 / 16f, 15 / 16f, 1, 1)
                 .setVCoords(0, 1 / 16f, 1 / 16f, 0)
@@ -119,7 +125,7 @@ public class DynamicLogicModel implements IBakedModel {
     }
 
     @Override
-    public boolean isAmbientOcclusion() {
+    public boolean useAmbientOcclusion() {
         return true;
     }
 
@@ -129,25 +135,25 @@ public class DynamicLogicModel implements IBakedModel {
     }
 
     @Override
-    public boolean isSideLit() {
+    public boolean usesBlockLight() {
         return false;
     }
 
     @Override
-    public boolean isBuiltInRenderer() {
+    public boolean isCustomRenderer() {
         return false;
     }
 
     @Nonnull
     @Override
-    public TextureAtlasSprite getParticleTexture() {
+    public TextureAtlasSprite getParticleIcon() {
         return particles;
     }
 
     @Nonnull
     @Override
-    public ItemOverrideList getOverrides() {
-        return ItemOverrideList.EMPTY;
+    public ItemOverrides getOverrides() {
+        return ItemOverrides.EMPTY;
     }
 
     private class FixedTubeModel {
@@ -161,7 +167,7 @@ public class DynamicLogicModel implements IBakedModel {
                 int numAdded = 0;
                 for (float y : BOARD_HEIGHTS) {
                     solid.addAll(translated(board, new Vector3f(0, y, 0)));
-                    for (Vector2f xz : TUBE_OFFSETS) {
+                    for (Vec2 xz : TUBE_OFFSETS) {
                         translucent.addAll(translated(tube, new Vector3f(-xz.x, y, -xz.y)));
                         ++numAdded;
                         if (numAdded >= numTubes) {
@@ -177,12 +183,12 @@ public class DynamicLogicModel implements IBakedModel {
             this.translucent = ImmutableList.copyOf(translucent);
         }
 
-        private List<BakedQuad> translated(IUnbakedModel model, Vector3f offset) {
-            IModelTransform offsetTransform = new SimpleModelTransform(new TransformationMatrix(
+        private List<BakedQuad> translated(UnbakedModel model, Vector3f offset) {
+            ModelState offsetTransform = new SimpleModelTransform(new Transformation(
                     offset, null, null, null
             ));
             ResourceLocation dummy = new ResourceLocation(ControlEngineering.MODID, "dynamic");
-            IBakedModel baked = model.bakeModel(
+            BakedModel baked = model.bake(
                     bakery, spriteGetter, new ModelTransformComposition(modelTransform, offsetTransform), dummy
             );
             if (baked == null) {
@@ -194,9 +200,9 @@ public class DynamicLogicModel implements IBakedModel {
 
         public List<BakedQuad> getQuads() {
             RenderType currentType = MinecraftForgeClient.getRenderLayer();
-            if (currentType == RenderType.getSolid()) {
+            if (currentType == RenderType.solid()) {
                 return solid;
-            } else if (currentType == RenderType.getTranslucent()) {
+            } else if (currentType == RenderType.translucent()) {
                 return translucent;
             } else {
                 return ImmutableList.of();

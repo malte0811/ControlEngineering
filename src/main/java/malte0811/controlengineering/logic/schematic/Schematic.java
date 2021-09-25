@@ -2,7 +2,7 @@ package malte0811.controlengineering.logic.schematic;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
@@ -15,8 +15,7 @@ import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
-import net.minecraft.util.math.MathHelper;
-
+import net.minecraft.util.Mth;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -112,7 +111,7 @@ public class Schematic {
         return indices;
     }
 
-    public void render(MatrixStack stack, Vec2d mouse) {
+    public void render(PoseStack stack, Vec2d mouse) {
         for (PlacedSymbol s : symbols) {
             s.render(stack);
         }
@@ -157,7 +156,7 @@ public class Schematic {
                 sum += individualCost.applyAsDouble(cost);
             }
         }
-        return MathHelper.ceil(sum);
+        return Mth.ceil(sum);
     }
 
     public int getNumTubes() {

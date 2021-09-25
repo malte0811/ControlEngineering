@@ -10,22 +10,21 @@ import malte0811.controlengineering.blocks.tape.KeypunchBlock;
 import malte0811.controlengineering.gui.panel.PanelLayoutContainer;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.panels.PanelDesignerTile;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.Property;
-import net.minecraft.state.StateContainer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.IWorldPosCallable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Locale;
@@ -36,22 +35,22 @@ public class PanelDesignerBlock extends CEBlock<Direction, PanelDesignerTile> {
     public static final Property<Offset> OFFSET = EnumProperty.create("offset", Offset.class);
     public static final Property<Direction> FACING = IEProperties.FACING_HORIZONTAL;
     public static final VoxelShape TABLE_TOP = createPixelRelative(0, 13, 0, 16, 16, 16);
-    private static final VoxelShape TABLE_FRONT_SHAPE = VoxelShapes.or(
+    private static final VoxelShape TABLE_FRONT_SHAPE = Shapes.or(
             TABLE_TOP,
             createPixelRelative(1, 0, 12, 4, 13, 15),
             createPixelRelative(12, 0, 12, 15, 13, 15)
     );
-    private static final VoxelShape TABLE_BACK_SHAPE = VoxelShapes.or(
+    private static final VoxelShape TABLE_BACK_SHAPE = Shapes.or(
             TABLE_TOP,
             createPixelRelative(1, 0, 1, 4, 13, 4),
             createPixelRelative(12, 0, 1, 15, 13, 4)
     );
-    private static final VoxelShape TOP_FRONT_SHAPE = VoxelShapes.or(
+    private static final VoxelShape TOP_FRONT_SHAPE = Shapes.or(
             createPixelRelative(0, 0, 0, 16, 16, 1),
             createPixelRelative(0, 8, 0, 16, 16, 12)
     );
     public static final VoxelShape TTY_BASE_SHAPE = KeypunchBlock.SHAPE_PROVIDER.apply(Direction.NORTH);
-    private static final VoxelShape TOP_BACK_SHAPE = VoxelShapes.or(
+    private static final VoxelShape TOP_BACK_SHAPE = Shapes.or(
             TTY_BASE_SHAPE,
             createPixelRelative(0, 8, 8, 16, 16, 16),
             createPixelRelative(1, 4, 8, 15, 8, 16)
@@ -78,23 +77,23 @@ public class PanelDesignerBlock extends CEBlock<Direction, PanelDesignerTile> {
     }
 
     @Override
-    protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(OFFSET, FACING);
     }
 
     @Nullable
     @Override
-    public INamedContainerProvider getContainer(
-            @Nonnull BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos
+    public MenuProvider getMenuProvider(
+            @Nonnull BlockState state, @Nonnull Level worldIn, @Nonnull BlockPos pos
     ) {
-        return new SimpleNamedContainerProvider(
-                (id, inv, player) -> new PanelLayoutContainer(IWorldPosCallable.of(worldIn, pos), id),
-                StringTextComponent.EMPTY
+        return new SimpleMenuProvider(
+                (id, inv, player) -> new PanelLayoutContainer(ContainerLevelAccess.create(worldIn, pos), id),
+                TextComponent.EMPTY
         );
     }
 
-    public enum Offset implements IStringSerializable {
+    public enum Offset implements StringRepresentable {
         ORIGIN(0, 0),
         BACK(0, -1),
         FRONT_TOP(1, 0),
@@ -115,7 +114,7 @@ public class PanelDesignerBlock extends CEBlock<Direction, PanelDesignerTile> {
 
         @Nonnull
         @Override
-        public String getString() {
+        public String getSerializedName() {
             return name().toLowerCase(Locale.ROOT);
         }
     }

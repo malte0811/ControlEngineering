@@ -4,8 +4,7 @@ import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.WireSegment;
 import malte0811.controlengineering.logic.schematic.WireSegment.WireAxis;
 import malte0811.controlengineering.util.math.Vec2i;
-import net.minecraft.network.PacketBuffer;
-
+import net.minecraft.network.FriendlyByteBuf;
 import java.util.function.Consumer;
 
 public class AddWire extends LogicSubPacket {
@@ -15,14 +14,14 @@ public class AddWire extends LogicSubPacket {
         this.added = added;
     }
 
-    public AddWire(PacketBuffer buffer) {
+    public AddWire(FriendlyByteBuf buffer) {
         this.added = new WireSegment(
                 new Vec2i(buffer), buffer.readVarInt(), buffer.readBoolean() ? WireAxis.X : WireAxis.Y
         );
     }
 
     @Override
-    public void write(PacketBuffer out) {
+    public void write(FriendlyByteBuf out) {
         this.added.getStart().write(out);
         out.writeVarInt(this.added.getLength());
         out.writeBoolean(this.added.getAxis() == WireAxis.X);

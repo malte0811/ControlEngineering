@@ -4,12 +4,16 @@ import blusunrize.immersiveengineering.data.loot.LootGenerator;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.loot.ExtraTileDropEntry;
 import malte0811.controlengineering.blocks.loot.PanelDropEntry;
-import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.loot.*;
-import net.minecraft.loot.conditions.SurvivesExplosion;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.ConstantIntValue;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraftforge.fml.RegistryObject;
 
 import javax.annotation.Nonnull;
@@ -28,7 +32,7 @@ public class BlockLootGenerator extends LootGenerator {
         registerSelfDropping(CEBlocks.LOGIC_CABINET, tileDrop());
         registerSelfDropping(CEBlocks.PANEL_CNC, tileDrop());
         registerSelfDropping(CEBlocks.KEYPUNCH, tileDrop());
-        register(CEBlocks.CONTROL_PANEL, createPoolBuilder().addEntry(PanelDropEntry.builder()));
+        register(CEBlocks.CONTROL_PANEL, createPoolBuilder().add(PanelDropEntry.builder()));
         registerAllRemainingAsDefault();
     }
 
@@ -46,23 +50,23 @@ public class BlockLootGenerator extends LootGenerator {
 
     private LootPool.Builder tileDrop() {
         return createPoolBuilder()
-                .addEntry(ExtraTileDropEntry.builder());
+                .add(ExtraTileDropEntry.builder());
     }
 
-    private LootPool.Builder singleItem(IItemProvider in) {
+    private LootPool.Builder singleItem(ItemLike in) {
         return createPoolBuilder()
-                .rolls(ConstantRange.of(1))
-                .addEntry(ItemLootEntry.builder(in));
+                .setRolls(ConstantIntValue.exactly(1))
+                .add(LootItem.lootTableItem(in));
     }
 
     private LootPool.Builder createPoolBuilder() {
-        return LootPool.builder().acceptCondition(SurvivesExplosion.builder());
+        return LootPool.lootPool().when(ExplosionCondition.survivesExplosion());
     }
 
     private void register(RegistryObject<? extends Block> b, LootPool.Builder... pools) {
-        LootTable.Builder builder = LootTable.builder();
+        LootTable.Builder builder = LootTable.lootTable();
         for (LootPool.Builder pool : pools)
-            builder.addLootPool(pool);
+            builder.withPool(pool);
         register(b, builder);
     }
 
@@ -71,7 +75,7 @@ public class BlockLootGenerator extends LootGenerator {
     }
 
     private void register(ResourceLocation name, LootTable.Builder table) {
-        if (tables.put(toTableLoc(name), table.setParameterSet(LootParameterSets.BLOCK).build()) != null)
+        if (tables.put(toTableLoc(name), table.setParamSet(LootContextParamSets.BLOCK).build()) != null)
             throw new IllegalStateException("Duplicate loot table " + name);
     }
 

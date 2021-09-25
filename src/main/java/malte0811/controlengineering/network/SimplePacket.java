@@ -1,12 +1,12 @@
 package malte0811.controlengineering.network;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
 public abstract class SimplePacket {
-    public abstract void write(PacketBuffer out);
+    public abstract void write(FriendlyByteBuf out);
 
     protected abstract void processOnThread(NetworkEvent.Context ctx);
 

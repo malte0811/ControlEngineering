@@ -3,9 +3,8 @@ package malte0811.controlengineering.logic.schematic;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import java.util.*;
 
 import static malte0811.controlengineering.logic.schematic.Schematic.BOUNDARY;
@@ -23,7 +22,7 @@ public class SchematicChecker {
         this.schematic = schematic;
     }
 
-    public Optional<ITextComponent> getErrorForAdding(WireSegment segment) {
+    public Optional<Component> getErrorForAdding(WireSegment segment) {
         if (!BOUNDARY.containsClosed(segment.getStart()) || !BOUNDARY.containsClosed(segment.getEnd())) {
             return error(WIRE_OUTSIDE_BOUNDARY);
         }
@@ -34,7 +33,7 @@ public class SchematicChecker {
             SchematicNet net = schematic.getNets().get(netId);
             allPins.addAll(net.getOrComputePins(schematic.getSymbols()));
         }
-        Optional<ITextComponent> consistency = getConsistencyError(allPins);
+        Optional<Component> consistency = getConsistencyError(allPins);
         if (consistency.isPresent()) {
             return consistency;
         }
@@ -59,7 +58,7 @@ public class SchematicChecker {
         return !getErrorForAdding(segment).isPresent();
     }
 
-    public static Optional<ITextComponent> getConsistencyError(Set<ConnectedPin> netPins) {
+    public static Optional<Component> getConsistencyError(Set<ConnectedPin> netPins) {
         ConnectedPin sourcePin = null;
         boolean hasAnalogSource = false;
         boolean hasDigitalSink = false;
@@ -85,7 +84,7 @@ public class SchematicChecker {
         }
     }
 
-    public Optional<ITextComponent> getErrorForAdding(PlacedSymbol candidate) {
+    public Optional<Component> getErrorForAdding(PlacedSymbol candidate) {
         if (!BOUNDARY.contains(candidate.getShape())) {
             return error(SYMBOL_OUTSIDE_BOUNDARY);
         }
@@ -96,7 +95,7 @@ public class SchematicChecker {
         for (SchematicNet net : schematic.getNets()) {
             Set<ConnectedPin> pinsInNet = new HashSet<>(net.getOrComputePins(schematic.getSymbols()));
             pinsInNet.addAll(net.computeConnectedPins(Collections.singletonList(candidate)));
-            Optional<ITextComponent> netConsistency = getConsistencyError(pinsInNet);
+            Optional<Component> netConsistency = getConsistencyError(pinsInNet);
             if (netConsistency.isPresent()) {
                 return netConsistency;
             }
@@ -116,7 +115,7 @@ public class SchematicChecker {
         return !getErrorForAdding(candidate).isPresent();
     }
 
-    private static Optional<ITextComponent> error(String translationKey) {
-        return Optional.of(new TranslationTextComponent(translationKey));
+    private static Optional<Component> error(String translationKey) {
+        return Optional.of(new TranslatableComponent(translationKey));
     }
 }

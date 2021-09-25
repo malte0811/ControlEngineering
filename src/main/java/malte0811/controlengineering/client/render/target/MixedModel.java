@@ -1,27 +1,26 @@
 package malte0811.controlengineering.client.render.target;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.texture.MissingTextureSprite;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.inventory.container.PlayerContainer;
-
+import net.minecraft.world.inventory.InventoryMenu;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MixedModel implements IRenderTypeBuffer {
-    public static final RenderType SOLID_STATIC = RenderType.getSolid();
+public class MixedModel implements MultiBufferSource {
+    public static final RenderType SOLID_STATIC = RenderType.solid();
     public static final RenderType SOLID_DYNAMIC = createCopy("solid_ter", false, SOLID_STATIC);
 
     private final Set<RenderType> staticTypes;
@@ -29,8 +28,8 @@ public class MixedModel implements IRenderTypeBuffer {
     private final List<BakedQuad> staticQuads = new ArrayList<>();
     private final Map<RenderType, List<DynamicVertex>> dynamicQuads = new Object2ObjectArrayMap<>();
     private TextureAtlasSprite staticSprite = Minecraft.getInstance().getModelManager()
-            .getAtlasTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE)
-            .getSprite(MissingTextureSprite.getLocation());
+            .getAtlas(InventoryMenu.BLOCK_ATLAS)
+            .getSprite(MissingTextureAtlasSprite.getLocation());
 
     public MixedModel(RenderType... staticTypes) {
         this.staticTypes = new ObjectArraySet<>(staticTypes);
@@ -38,9 +37,9 @@ public class MixedModel implements IRenderTypeBuffer {
 
     @Nonnull
     @Override
-    public IVertexBuilder getBuffer(@Nonnull RenderType type) {
+    public VertexConsumer getBuffer(@Nonnull RenderType type) {
         if (staticTypes.contains(type)) {
-            return new BakedQuadVertexBuilder(staticSprite, new MatrixStack(), staticQuads);
+            return new BakedQuadVertexBuilder(staticSprite, new PoseStack(), staticQuads);
         } else {
             return new DynamicVertexBuilder(dynamicQuads.computeIfAbsent(type, $ -> new ArrayList<>()));
         }
@@ -54,9 +53,9 @@ public class MixedModel implements IRenderTypeBuffer {
         return staticQuads;
     }
 
-    public void renderTo(IRenderTypeBuffer out, MatrixStack transform, int combinedLight, int combinedOverlay) {
+    public void renderTo(MultiBufferSource out, PoseStack transform, int combinedLight, int combinedOverlay) {
         for (Map.Entry<RenderType, List<DynamicVertex>> vertices : dynamicQuads.entrySet()) {
-            IVertexBuilder buffer = new TransformingVertexBuilder(out.getBuffer(vertices.getKey()), transform);
+            VertexConsumer buffer = new TransformingVertexBuilder(out.getBuffer(vertices.getKey()), transform);
             for (DynamicVertex v : vertices.getValue()) {
                 v.accept(buffer, combinedLight, combinedOverlay);
             }
@@ -66,10 +65,10 @@ public class MixedModel implements IRenderTypeBuffer {
     private static RenderType createCopy(String name, boolean needsSorting, RenderType original) {
         return new RenderType(
                 name,
-                original.getVertexFormat(),
-                original.getDrawMode(),
-                original.getBufferSize(),
-                original.isUseDelegate(),
+                original.format(),
+                original.mode(),
+                original.bufferSize(),
+                original.affectsCrumbling(),
                 needsSorting,
                 original::setupRenderState,
                 original::clearRenderState

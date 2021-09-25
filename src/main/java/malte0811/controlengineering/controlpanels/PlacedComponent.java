@@ -8,13 +8,13 @@ import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.math.RectangleD;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.serialization.Codecs;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.INBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.util.Lazy;
 
 import javax.annotation.Nonnull;
@@ -35,23 +35,23 @@ public class PlacedComponent extends SelectionShapes {
     private final PanelComponentInstance<?, ?> component;
     @Nonnull
     private final Vec2d pos;
-    private final Lazy<AxisAlignedBB> shape;
+    private final Lazy<AABB> shape;
 
     public PlacedComponent(@Nonnull PanelComponentInstance<?, ?> component, @Nonnull Vec2d pos) {
         this.component = component;
         this.pos = pos;
         shape = Lazy.of(() -> {
-            AxisAlignedBB compShape = component.getType().getSelectionShape();
+            AABB compShape = component.getType().getSelectionShape();
             if (compShape == null) {
                 return null;
             } else {
-                return scale(compShape.offset(pos.x, 0, pos.y), 1 / 16d);
+                return scale(compShape.move(pos.x, 0, pos.y), 1 / 16d);
             }
         });
     }
 
     @Nullable
-    public static PlacedComponent readWithoutState(PacketBuffer from) {
+    public static PlacedComponent readWithoutState(FriendlyByteBuf from) {
         Vec2d pos = new Vec2d(from);
         PanelComponentInstance<?, ?> instance = PanelComponentInstance.readFrom(from);
         if (instance == null) {
@@ -60,7 +60,7 @@ public class PlacedComponent extends SelectionShapes {
         return new PlacedComponent(instance, pos);
     }
 
-    public void writeToWithoutState(PacketBuffer buffer) {
+    public void writeToWithoutState(FriendlyByteBuf buffer) {
         pos.write(buffer);
         getComponent().writeToWithoutState(buffer);
     }
@@ -85,12 +85,12 @@ public class PlacedComponent extends SelectionShapes {
     }
 
     @Nullable
-    public AxisAlignedBB getSelectionShape() {
+    public AABB getSelectionShape() {
         return shape.get();
     }
 
-    private static AxisAlignedBB scale(AxisAlignedBB in, double scale) {
-        return new AxisAlignedBB(
+    private static AABB scale(AABB in, double scale) {
+        return new AABB(
                 in.minX * scale,
                 in.minY * scale,
                 in.minZ * scale,
@@ -103,9 +103,9 @@ public class PlacedComponent extends SelectionShapes {
     @Override
     @Nullable
     public VoxelShape mainShape() {
-        AxisAlignedBB selectionShape = getSelectionShape();
+        AABB selectionShape = getSelectionShape();
         if (selectionShape != null) {
-            return VoxelShapes.create(selectionShape);
+            return Shapes.create(selectionShape);
         } else {
             return null;
         }
@@ -124,7 +124,7 @@ public class PlacedComponent extends SelectionShapes {
     }
 
     @Override
-    public ActionResultType onUse(ItemUseContext ctx, ActionResultType defaultType) {
+    public InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType) {
         return component.onClick();
     }
 
@@ -153,11 +153,11 @@ public class PlacedComponent extends SelectionShapes {
         return new PlacedComponent(component.copy(clearState), pos);
     }
 
-    public static List<PlacedComponent> readListFromNBT(INBT list) {
+    public static List<PlacedComponent> readListFromNBT(Tag list) {
         return Codecs.read(Codec.list(CODEC), list).result().orElseGet(ImmutableList::of);
     }
 
-    public static INBT writeListToNBT(List<PlacedComponent> components) {
+    public static Tag writeListToNBT(List<PlacedComponent> components) {
         return Codecs.encode(Codec.list(CODEC), components);
     }
 

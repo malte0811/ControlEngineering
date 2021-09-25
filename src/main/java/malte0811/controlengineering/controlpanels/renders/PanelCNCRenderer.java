@@ -2,8 +2,9 @@ package malte0811.controlengineering.controlpanels.renders;
 
 import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Quaternion;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.client.render.tape.TapeDrive;
@@ -16,28 +17,26 @@ import malte0811.controlengineering.tiles.panels.CNCJob;
 import malte0811.controlengineering.tiles.panels.PanelCNCTile;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.Vector3d;
-
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
+public class PanelCNCRenderer extends BlockEntityRenderer<PanelCNCTile> {
     //TODO reset?
     private static final ResettableLazy<TextureAtlasSprite> MODEL_TEXTURE = new ResettableLazy<>(
             () -> {
-                AtlasTexture atlas = Minecraft.getInstance().getModelManager().getAtlasTexture(
-                        PlayerContainer.LOCATION_BLOCKS_TEXTURE
+                TextureAtlas atlas = Minecraft.getInstance().getModelManager().getAtlas(
+                        InventoryMenu.BLOCK_ATLAS
                 );
                 return atlas.getSprite(new ResourceLocation(ControlEngineering.MODID, "block/panel_cnc"));
             }
@@ -46,9 +45,9 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
     private static final double HEAD_SIZE = 0.5;
     private static final double HEAD_TRAVERSAL_HEIGHT = 3;
     private static final double HEAD_WORK_HEIGHT = -1;
-    private static final Vector3d HEAD_IDLE = new Vector3d(8 - HEAD_SIZE / 2, 5, 8 - HEAD_SIZE / 2);
+    private static final Vec3 HEAD_IDLE = new Vec3(8 - HEAD_SIZE / 2, 5, 8 - HEAD_SIZE / 2);
 
-    public PanelCNCRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
+    public PanelCNCRenderer(BlockEntityRenderDispatcher rendererDispatcherIn) {
         super(rendererDispatcherIn);
     }
 
@@ -56,59 +55,59 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
     public void render(
             @Nonnull PanelCNCTile tile,
             float partialTicks,
-            @Nonnull MatrixStack transform,
-            @Nonnull IRenderTypeBuffer buffers,
+            @Nonnull PoseStack transform,
+            @Nonnull MultiBufferSource buffers,
             int light,
             int overlay
     ) {
-        transform.push();
-        rotateAroundCenter(-PanelCNCBlock.getDirection(tile).getHorizontalAngle(), transform);
+        transform.pushPose();
+        rotateAroundCenter(-PanelCNCBlock.getDirection(tile).toYRot(), transform);
         transform.scale(1 / 16f, 1 / 16f, 1 / 16f);
         //TODO hasPanel => isActive
         final double tick = tile.getCurrentTicksInJob() + (tile.hasPanel() ? partialTicks : 0);
-        transform.push();
+        transform.pushPose();
         transform.translate(0, 14, 0);
         renderTape(tile, buffers, transform, light, overlay, tick);
-        transform.pop();
-        transform.push();
+        transform.popPose();
+        transform.pushPose();
         transform.translate(1, 2, 1);
         transform.scale(14f / 16, 14f / 16, 14f / 16);
         renderCurrentPanelState(tile, buffers, transform, light, overlay);
         renderHead(tile, buffers, transform, light, overlay, tick);
-        transform.pop();
-        transform.pop();
+        transform.popPose();
+        transform.popPose();
     }
 
-    private void rotateAroundCenter(double angleDegrees, MatrixStack stack) {
+    private void rotateAroundCenter(double angleDegrees, PoseStack stack) {
         stack.translate(.5, .5, .5);
-        stack.rotate(new Quaternion(0, (float) angleDegrees, 0, true));
+        stack.mulPose(new Quaternion(0, (float) angleDegrees, 0, true));
         stack.translate(-.5, -.5, -.5);
     }
 
     private void renderCurrentPanelState(
-            PanelCNCTile tile, IRenderTypeBuffer buffers, MatrixStack transform, int light, int overlay
+            PanelCNCTile tile, MultiBufferSource buffers, PoseStack transform, int light, int overlay
     ) {
-        IVertexBuilder builder = buffers.getBuffer(RenderType.getSolid());
+        VertexConsumer builder = buffers.getBuffer(RenderType.solid());
         if (tile.hasPanel()) {
-            IVertexBuilder forTexture = MODEL_TEXTURE.get().wrapBuffer(builder);
+            VertexConsumer forTexture = MODEL_TEXTURE.get().wrap(builder);
             TransformingVertexBuilder finalWrapped = new TransformingVertexBuilder(forTexture, transform);
             finalWrapped.setColor(-1).setLight(light).setNormal(0, 1, 0).setOverlay(overlay);
             final float minU = 17 / 64f;
             final float maxU = 31 / 64f;
             final float minV = 31 / 32f;
             final float maxV = 17 / 32f;
-            finalWrapped.pos(0, 0, 0).tex(minU, minV).endVertex();
-            finalWrapped.pos(0, 0, 16).tex(minU, maxV).endVertex();
-            finalWrapped.pos(16, 0, 16).tex(maxU, maxV).endVertex();
-            finalWrapped.pos(16, 0, 0).tex(maxU, minV).endVertex();
+            finalWrapped.vertex(0, 0, 0).uv(minU, minV).endVertex();
+            finalWrapped.vertex(0, 0, 16).uv(minU, maxV).endVertex();
+            finalWrapped.vertex(16, 0, 16).uv(maxU, maxV).endVertex();
+            finalWrapped.vertex(16, 0, 0).uv(maxU, minV).endVertex();
         }
         //TODO cache?
-        ComponentRenderers.renderAll(tile.getCurrentPlacedComponents(), new MatrixStack())
+        ComponentRenderers.renderAll(tile.getCurrentPlacedComponents(), new PoseStack())
                 .renderTo(buffers, transform, light, overlay);
     }
 
     private void renderTape(
-            PanelCNCTile tile, IRenderTypeBuffer buffer, MatrixStack transform, int light, int overlay, double ticks
+            PanelCNCTile tile, MultiBufferSource buffer, PoseStack transform, int light, int overlay, double ticks
     ) {
         final long totLength = tile.getTapeLength();
         if (totLength > 0) {
@@ -121,31 +120,31 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
                     new Vec2d(11, 8), new Vec2d(9, 5)
             );
             testWheel.updateTapeProgress(currentJob.getTapeProgressAtTime(ticks));
-            testWheel.render(buffer.getBuffer(RenderType.getSolid()), transform, light, overlay);
+            testWheel.render(buffer.getBuffer(RenderType.solid()), transform, light, overlay);
         }
     }
 
     private void renderHead(
-            PanelCNCTile tile, IRenderTypeBuffer buffer, MatrixStack transform, int light, int overlay, double ticks
+            PanelCNCTile tile, MultiBufferSource buffer, PoseStack transform, int light, int overlay, double ticks
     ) {
-        Vector3d currentPos;
+        Vec3 currentPos;
         if (tile.getCurrentJob() != null && !tile.hasFailed()) {
             //TODO cache path!
             currentPos = createPathFor(tile.getCurrentJob()).getPosAt(ticks);
         } else {
             currentPos = HEAD_IDLE;
         }
-        transform.push();
+        transform.pushPose();
         transform.translate(currentPos.x, 0, currentPos.z);
         //TODO pull out
-        IVertexBuilder solidBuffer = buffer.getBuffer(RenderType.getSolid());
-        IVertexBuilder forTexture = MODEL_TEXTURE.get().wrapBuffer(solidBuffer);
+        VertexConsumer solidBuffer = buffer.getBuffer(RenderType.solid());
+        VertexConsumer forTexture = MODEL_TEXTURE.get().wrap(solidBuffer);
         TransformingVertexBuilder innerBuilder = new TransformingVertexBuilder(forTexture, transform);
         innerBuilder.setOverlay(overlay)
                 .setLight(light)
                 .setColor(1, 1, 1, 1);
         renderHeadModel(innerBuilder, (float) currentPos.y);
-        transform.pop();
+        transform.popPose();
     }
 
     private void renderHeadModel(TransformingVertexBuilder builder, float yMin) {
@@ -160,12 +159,12 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
         ModelRenderUtils.renderTube(builder, HEAD_SIZE, HEAD_SIZE, yMin + headHeight, yMax, shaftMin, shaftMax);
     }
 
-    private PiecewiseAffinePath<Vector3d> createPathFor(CNCJob job) {
+    private PiecewiseAffinePath<Vec3> createPathFor(CNCJob job) {
         final double arrival = 0.5;
         final double down = arrival + 1 / 16.;
         final double done = 15 / 16.;
         final double up = 1;
-        List<Node<Vector3d>> nodes = new ArrayList<>();
+        List<Node<Vec3>> nodes = new ArrayList<>();
         int lastComponentTime = 0;
         nodes.add(new Node<>(HEAD_IDLE, lastComponentTime));
         for (int i = 0; i < job.getTotalComponents(); ++i) {
@@ -173,24 +172,24 @@ public class PanelCNCRenderer extends TileEntityRenderer<PanelCNCTile> {
             final Vec2d min = nextComponent.getPosMin();
             final Vec2d max = nextComponent.getPosMax().subtract(new Vec2d(HEAD_SIZE, HEAD_SIZE));
             final int nextComponentTime = job.getTickPlacingComponent().getInt(i);
-            final double arrivalAtComponent = MathHelper.lerp(arrival, lastComponentTime, nextComponentTime);
-            nodes.add(new Node<>(new Vector3d(min.x, HEAD_TRAVERSAL_HEIGHT, min.y), arrivalAtComponent));
-            final double downAtComp = MathHelper.lerp(down, lastComponentTime, nextComponentTime);
-            final double doneAtComp = MathHelper.lerp(done, lastComponentTime, nextComponentTime);
+            final double arrivalAtComponent = Mth.lerp(arrival, lastComponentTime, nextComponentTime);
+            nodes.add(new Node<>(new Vec3(min.x, HEAD_TRAVERSAL_HEIGHT, min.y), arrivalAtComponent));
+            final double downAtComp = Mth.lerp(down, lastComponentTime, nextComponentTime);
+            final double doneAtComp = Mth.lerp(done, lastComponentTime, nextComponentTime);
             Vec2d[] corners = {min, new Vec2d(min.x, max.y), max, new Vec2d(max.x, min.y), min};
             for (int point = 0; point < corners.length; point++) {
-                final double cornerTime = MathHelper.lerp(
+                final double cornerTime = Mth.lerp(
                         point / (double) (corners.length - 1), downAtComp, doneAtComp
                 );
                 nodes.add(new Node<>(
-                        new Vector3d(corners[point].x, HEAD_WORK_HEIGHT, corners[point].y), cornerTime
+                        new Vec3(corners[point].x, HEAD_WORK_HEIGHT, corners[point].y), cornerTime
                 ));
             }
-            final double upAtComp = MathHelper.lerp(up, lastComponentTime, nextComponentTime);
-            nodes.add(new Node<>(new Vector3d(min.x, HEAD_TRAVERSAL_HEIGHT, min.y), upAtComp));
+            final double upAtComp = Mth.lerp(up, lastComponentTime, nextComponentTime);
+            nodes.add(new Node<>(new Vec3(min.x, HEAD_TRAVERSAL_HEIGHT, min.y), upAtComp));
             lastComponentTime = nextComponentTime;
         }
         nodes.add(new Node<>(HEAD_IDLE, job.getTotalTicks()));
-        return new PiecewiseAffinePath<>(nodes, Vector3d::scale, Vector3d::add);
+        return new PiecewiseAffinePath<>(nodes, Vec3::scale, Vec3::add);
     }
 }

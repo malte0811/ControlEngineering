@@ -7,15 +7,15 @@ import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.controlpanels.PanelData;
 import malte0811.controlengineering.controlpanels.renders.PanelRenderer;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockDisplayReader;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
@@ -25,13 +25,13 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-public class PanelModel implements IBakedModel {
+public class PanelModel implements BakedModel {
     private static final ModelProperty<PanelData> COMPONENTS = new ModelProperty<>($ -> true);
 
     private final PanelModelCache CACHED_MODELS = new PanelModelCache(MixedModel.SOLID_STATIC);
-    private final ItemCameraTransforms transforms;
+    private final ItemTransforms transforms;
 
-    public PanelModel(ItemCameraTransforms transforms) {
+    public PanelModel(ItemTransforms transforms) {
         this.transforms = transforms;
     }
 
@@ -52,7 +52,7 @@ public class PanelModel implements IBakedModel {
     @Nonnull
     @Override
     public IModelData getModelData(
-            @Nonnull IBlockDisplayReader world,
+            @Nonnull BlockAndTintGetter world,
             @Nonnull BlockPos pos,
             @Nonnull BlockState state,
             @Nonnull IModelData tileData
@@ -65,7 +65,7 @@ public class PanelModel implements IBakedModel {
     }
 
     @Override
-    public boolean isAmbientOcclusion() {
+    public boolean useAmbientOcclusion() {
         return true;
     }
 
@@ -75,31 +75,31 @@ public class PanelModel implements IBakedModel {
     }
 
     @Override
-    public boolean isSideLit() {
+    public boolean usesBlockLight() {
         return true;
     }
 
     @Override
-    public boolean isBuiltInRenderer() {
+    public boolean isCustomRenderer() {
         return true;
     }
 
     @Nonnull
     @Override
-    public TextureAtlasSprite getParticleTexture() {
+    public TextureAtlasSprite getParticleIcon() {
         return PanelRenderer.PANEL_TEXTURE.get();
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("deprecation")
-    public ItemCameraTransforms getItemCameraTransforms() {
+    public ItemTransforms getTransforms() {
         return transforms;
     }
 
     @Nonnull
     @Override
-    public ItemOverrideList getOverrides() {
-        return ItemOverrideList.EMPTY;
+    public ItemOverrides getOverrides() {
+        return ItemOverrides.EMPTY;
     }
 }

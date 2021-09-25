@@ -6,10 +6,9 @@ import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import malte0811.controlengineering.util.serialization.Codecs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
@@ -17,7 +16,7 @@ public class PCBStackItem extends Item {
     private static final String SCHEMATIC_KEY = "schematic";
 
     public PCBStackItem() {
-        super(new Properties().group(ControlEngineering.ITEM_GROUP));
+        super(new Properties().tab(ControlEngineering.ITEM_GROUP));
     }
 
     @Nullable
@@ -25,7 +24,7 @@ public class PCBStackItem extends Item {
         if (stack.getItem() != CEItems.PCB_STACK.get()) {
             return null;
         }
-        CompoundNBT tag = stack.getTag();
+        CompoundTag tag = stack.getTag();
         if (tag == null) {
             return null;
         }

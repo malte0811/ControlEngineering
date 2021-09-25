@@ -1,14 +1,14 @@
 package malte0811.controlengineering.util.math;
 
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector4f;
+import com.mojang.math.Transformation;
+import com.mojang.math.Vector4f;
+import net.minecraft.world.phys.Vec3;
 
 public class MatrixUtils {
-    public static Vector3d transform(Vector3d in, TransformationMatrix transform) {
+    public static Vec3 transform(Vec3 in, Transformation transform) {
         Vector4f vec = new Vector4f((float) in.x, (float) in.y, (float) in.z, 1);
         transform.transformPosition(vec);
         vec.perspectiveDivide();
-        return new Vector3d(vec.getX(), vec.getY(), vec.getZ());
+        return new Vec3(vec.x(), vec.y(), vec.z());
     }
 }

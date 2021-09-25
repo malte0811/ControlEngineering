@@ -7,18 +7,17 @@ import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PanelTopItem;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 import javax.annotation.Nonnull;
 
 //TODO the final recipe should be something different
-public class PanelRecipe implements ICraftingRecipe {
+public class PanelRecipe implements CraftingRecipe {
     private final ResourceLocation id;
 
     public PanelRecipe(ResourceLocation id) {
@@ -26,10 +25,10 @@ public class PanelRecipe implements ICraftingRecipe {
     }
 
     @Override
-    public boolean matches(@Nonnull CraftingInventory inv, @Nonnull World worldIn) {
+    public boolean matches(@Nonnull CraftingContainer inv, @Nonnull Level worldIn) {
         for (int x = 0; x < 3; ++x) {
             for (int y = 0; y < 3; ++y) {
-                ItemStack stack = inv.getStackInSlot(x + inv.getWidth() * y);
+                ItemStack stack = inv.getItem(x + inv.getWidth() * y);
                 if (x == 1 && y == 1) {
                     if (stack.getItem() != CEItems.PANEL_TOP.get() || PanelTopItem.isEmptyPanelTop(stack)) {
                         return false;
@@ -44,12 +43,12 @@ public class PanelRecipe implements ICraftingRecipe {
 
     @Nonnull
     @Override
-    public ItemStack getCraftingResult(@Nonnull CraftingInventory inv) {
-        final ItemStack middleStack = inv.getStackInSlot(inv.getWidth() + 1);
-        final ItemStack result = getRecipeOutput().copy();
-        CompoundNBT resultNBT = middleStack.getTag();
+    public ItemStack assemble(@Nonnull CraftingContainer inv) {
+        final ItemStack middleStack = inv.getItem(inv.getWidth() + 1);
+        final ItemStack result = getResultItem().copy();
+        CompoundTag resultNBT = middleStack.getTag();
         if (resultNBT == null) {
-            resultNBT = new CompoundNBT();
+            resultNBT = new CompoundTag();
         } else {
             resultNBT = resultNBT.copy();
         }
@@ -62,13 +61,13 @@ public class PanelRecipe implements ICraftingRecipe {
     }
 
     @Override
-    public boolean canFit(int width, int height) {
+    public boolean canCraftInDimensions(int width, int height) {
         return width >= 3 && height >= 3;
     }
 
     @Nonnull
     @Override
-    public ItemStack getRecipeOutput() {
+    public ItemStack getResultItem() {
         return new ItemStack(CEBlocks.CONTROL_PANEL.get());
     }
 
@@ -80,7 +79,7 @@ public class PanelRecipe implements ICraftingRecipe {
 
     @Nonnull
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return CERecipeSerializers.PANEL_RECIPE.get();
     }
 }

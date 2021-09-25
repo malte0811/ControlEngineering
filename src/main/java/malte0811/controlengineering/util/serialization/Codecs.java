@@ -6,19 +6,18 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.NBTDynamicOps;
-import net.minecraft.util.Direction;
-
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Codecs {
-    public static final Codec<INBT> INBT_CODEC = Codec.PASSTHROUGH.flatXmap(
-            dyn -> DataResult.success(dyn.convert(NBTDynamicOps.INSTANCE).getValue()),
-            inbt -> DataResult.success(new Dynamic<>(NBTDynamicOps.INSTANCE, inbt))
+    public static final Codec<Tag> INBT_CODEC = Codec.PASSTHROUGH.flatXmap(
+            dyn -> DataResult.success(dyn.convert(NbtOps.INSTANCE).getValue()),
+            inbt -> DataResult.success(new Dynamic<>(NbtOps.INSTANCE, inbt))
     );
 
     public static final Codec<Direction> DIRECTION_CODEC = Codec.INT.xmap(
@@ -45,28 +44,28 @@ public class Codecs {
         );
     }
 
-    public static <T> DataResult<T> read(Codec<T> codec, CompoundNBT in, String subName) {
+    public static <T> DataResult<T> read(Codec<T> codec, CompoundTag in, String subName) {
         return read(codec, in.get(subName));
     }
 
-    public static <T> DataResult<T> read(Codec<T> codec, INBT nbt) {
-        return codec.decode(NBTDynamicOps.INSTANCE, nbt)
+    public static <T> DataResult<T> read(Codec<T> codec, Tag nbt) {
+        return codec.decode(NbtOps.INSTANCE, nbt)
                 .map(Pair::getFirst);
     }
 
-    public static <T> void add(Codec<T> codec, T value, CompoundNBT out, String subName) {
+    public static <T> void add(Codec<T> codec, T value, CompoundTag out, String subName) {
         out.put(subName, encode(codec, value));
     }
 
-    public static <T> INBT encode(Codec<T> codec, T value) {
-        return codec.encodeStart(NBTDynamicOps.INSTANCE, value).getOrThrow(false, s -> {});
+    public static <T> Tag encode(Codec<T> codec, T value) {
+        return codec.encodeStart(NbtOps.INSTANCE, value).getOrThrow(false, s -> {});
     }
 
-    public static <T> T readOrNull(Codec<T> codec, INBT pinNBT) {
+    public static <T> T readOrNull(Codec<T> codec, Tag pinNBT) {
         return read(codec, pinNBT).result().orElse(null);
     }
 
-    public static <T> T readOrThrow(Codec<T> codec, INBT data) {
+    public static <T> T readOrThrow(Codec<T> codec, Tag data) {
         T result = readOrNull(codec, data);
         if (result == null) {
             throw new RuntimeException("Failed to read from " + data);
@@ -75,7 +74,7 @@ public class Codecs {
         }
     }
 
-    public static <T> Optional<T> readOptional(Codec<T> codec, INBT data) {
+    public static <T> Optional<T> readOptional(Codec<T> codec, Tag data) {
         return read(codec, data).result();
     }
 }

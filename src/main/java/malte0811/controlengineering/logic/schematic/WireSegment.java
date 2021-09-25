@@ -2,7 +2,7 @@ package malte0811.controlengineering.logic.schematic;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.util.GuiUtil;
@@ -111,7 +111,7 @@ public class WireSegment {
         return new Vec2i[]{getStart(), getEnd()};
     }
 
-    public void renderWithoutBlobs(MatrixStack stack, int color) {
+    public void renderWithoutBlobs(PoseStack stack, int color) {
         GuiUtil.fill(
                 stack,
                 getStart().x + WIRE_SPACE, getStart().y + WIRE_SPACE,

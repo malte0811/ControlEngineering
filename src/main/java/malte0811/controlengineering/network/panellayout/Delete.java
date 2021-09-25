@@ -2,8 +2,7 @@ package malte0811.controlengineering.network.panellayout;
 
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.util.math.Vec2d;
-import net.minecraft.network.PacketBuffer;
-
+import net.minecraft.network.FriendlyByteBuf;
 import java.util.List;
 
 public class Delete extends PanelSubPacket {
@@ -13,12 +12,12 @@ public class Delete extends PanelSubPacket {
         this.pos = pos;
     }
 
-    public Delete(PacketBuffer from) {
+    public Delete(FriendlyByteBuf from) {
         this(new Vec2d(from));
     }
 
     @Override
-    protected void write(PacketBuffer out) {
+    protected void write(FriendlyByteBuf out) {
         pos.write(out);
     }
 

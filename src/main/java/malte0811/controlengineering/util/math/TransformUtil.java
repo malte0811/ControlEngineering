@@ -1,8 +1,8 @@
 package malte0811.controlengineering.util.math;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.util.math.vector.Matrix3f;
-import net.minecraft.util.math.vector.Matrix4f;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix3f;
+import com.mojang.math.Matrix4f;
 
 public class TransformUtil {
     public static Matrix4f shear(float deltaXPerY, float deltaZPerY) {
@@ -23,8 +23,8 @@ public class TransformUtil {
         return result;
     }
 
-    public static void shear(MatrixStack transform, float deltaXPerY, float deltaZPerY) {
-        transform.getLast().getMatrix().mul(shear(deltaXPerY, deltaZPerY));
-        transform.getLast().getNormal().mul(shearNormal(deltaXPerY, deltaZPerY));
+    public static void shear(PoseStack transform, float deltaXPerY, float deltaZPerY) {
+        transform.last().pose().multiply(shear(deltaXPerY, deltaZPerY));
+        transform.last().normal().mul(shearNormal(deltaXPerY, deltaZPerY));
     }
 }

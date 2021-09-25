@@ -4,7 +4,7 @@ import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
 import blusunrize.immersiveengineering.api.wires.IImmersiveConnectable;
 import blusunrize.immersiveengineering.api.wires.LocalWireNetwork;
 import blusunrize.immersiveengineering.api.wires.WireType;
-import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.core.Vec3i;
 
 public interface IBusConnector extends IImmersiveConnectable {
     void onBusUpdated(ConnectionPoint updatedPoint);
@@ -14,7 +14,7 @@ public interface IBusConnector extends IImmersiveConnectable {
     LocalWireNetwork getLocalNet(int cpIndex);
 
     @Override
-    default boolean canConnectCable(WireType wireType, ConnectionPoint connectionPoint, Vector3i offset) {
+    default boolean canConnectCable(WireType wireType, ConnectionPoint connectionPoint, Vec3i offset) {
         return wireType == BusWireType.INSTANCE || !isBusPoint(connectionPoint);
     }
 

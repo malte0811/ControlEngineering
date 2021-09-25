@@ -1,11 +1,10 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import malte0811.controlengineering.util.typereg.TypedInstance;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import java.util.List;
 
 public class SymbolInstance<State> extends TypedInstance<State, SchematicSymbol<State>> {
@@ -17,7 +16,7 @@ public class SymbolInstance<State> extends TypedInstance<State, SchematicSymbol<
         super(stateSchematicSymbol, currentState);
     }
 
-    public void render(MatrixStack transform, int x, int y) {
+    public void render(PoseStack transform, int x, int y) {
         getType().render(transform, x, y, getCurrentState());
     }
 
@@ -29,11 +28,11 @@ public class SymbolInstance<State> extends TypedInstance<State, SchematicSymbol<
         return getType().getYSize();
     }
 
-    public ITextComponent getName() {
+    public Component getName() {
         return getType().getName();
     }
 
-    public List<IFormattableTextComponent> getExtraDesc() {
+    public List<MutableComponent> getExtraDesc() {
         return getType().getExtraDescription(getCurrentState());
     }
 

@@ -1,15 +1,15 @@
 package malte0811.controlengineering.network.keypunch;
 
 import malte0811.controlengineering.tiles.tape.KeypunchState;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class Backspace extends KeypunchSubPacket {
     public Backspace() {}
 
-    public Backspace(PacketBuffer b) {}
+    public Backspace(FriendlyByteBuf b) {}
 
     @Override
-    protected void write(PacketBuffer out) {}
+    protected void write(FriendlyByteBuf out) {}
 
     @Override
     public boolean process(KeypunchState state) {

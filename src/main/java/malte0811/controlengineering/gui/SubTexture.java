@@ -1,11 +1,11 @@
 package malte0811.controlengineering.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.gui.widget.button.ImageButton;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.resources.ResourceLocation;
 
 public class SubTexture {
     private final ResourceLocation mainTexture;
@@ -56,7 +56,7 @@ public class SubTexture {
         return mainTexture;
     }
 
-    public ImageButton createButton(int x, int y, Button.IPressable onPress) {
+    public ImageButton createButton(int x, int y, Button.OnPress onPress) {
         return new ImageButton(
                 x, y,
                 getWidth(), getHeight(), getMinU(), getMinV(),
@@ -65,8 +65,8 @@ public class SubTexture {
         );
     }
 
-    public void blit(MatrixStack transform, int x, int y) {
-        Minecraft.getInstance().getTextureManager().bindTexture(getMainTexture());
+    public void blit(PoseStack transform, int x, int y) {
+        Minecraft.getInstance().getTextureManager().bind(getMainTexture());
         Screen.blit(
                 transform, x, y, getWidth(), getHeight(), getMinU(), getMinV(), getWidth(), getHeight(),
                 mainSize, mainSize

@@ -1,12 +1,12 @@
 package malte0811.controlengineering.util.serialization.serial;
 
 import com.mojang.serialization.DataResult;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class PacketBufferStorage implements SerialStorage {
-    private final PacketBuffer buffer;
+    private final FriendlyByteBuf buffer;
 
-    public PacketBufferStorage(PacketBuffer buffer) {
+    public PacketBufferStorage(FriendlyByteBuf buffer) {
         this.buffer = buffer;
     }
 
@@ -22,12 +22,12 @@ public class PacketBufferStorage implements SerialStorage {
 
     @Override
     public void writeString(String value) {
-        buffer.writeString(value);
+        buffer.writeUtf(value);
     }
 
     @Override
     public DataResult<String> readString() {
-        return DataResult.success(buffer.readString());
+        return DataResult.success(buffer.readUtf());
     }
 
     @Override

@@ -4,11 +4,10 @@ import malte0811.controlengineering.blocks.panels.CachedPanelShape;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import malte0811.controlengineering.util.math.Matrix4;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
-
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
@@ -40,10 +39,10 @@ public class PanelSelectionShapes extends SelectionShapes {
     }
 
     @Override
-    public void plotBox(BiConsumer<Vector3d, Vector3d> drawLine) {
+    public void plotBox(BiConsumer<Vec3, Vec3> drawLine) {
         PanelTransform transform = tile.getTransform();
-        Vector3d[] bottomVertices = transform.getBottomVertices();
-        Vector3d[] topVertices = transform.getTopVertices();
+        Vec3[] bottomVertices = transform.getBottomVertices();
+        Vec3[] topVertices = transform.getTopVertices();
         for (int i = 0; i < 4; ++i) {
             drawLine.accept(bottomVertices[i], bottomVertices[(i + 1) % 4]);
             drawLine.accept(topVertices[i], topVertices[(i + 1) % 4]);
@@ -52,10 +51,10 @@ public class PanelSelectionShapes extends SelectionShapes {
     }
 
     @Override
-    public ActionResultType onUse(ItemUseContext ctx, ActionResultType defaultType) {
-        if (defaultType.isSuccess() && !tile.getWorld().isRemote) {
+    public InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType) {
+        if (defaultType.shouldSwing() && !tile.getLevel().isClientSide) {
             tile.updateBusState(ControlPanelTile.SyncType.ALWAYS);
-            tile.markDirty();
+            tile.setChanged();
         }
         return defaultType;
     }

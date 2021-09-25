@@ -2,7 +2,7 @@ package malte0811.controlengineering.util.typereg;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public abstract class TypedRegistryEntry<StateType> {
     private final StateType initialState;

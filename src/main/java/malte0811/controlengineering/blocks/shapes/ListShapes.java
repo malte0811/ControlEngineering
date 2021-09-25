@@ -1,10 +1,9 @@
 package malte0811.controlengineering.blocks.shapes;
 
 import malte0811.controlengineering.util.math.Matrix4;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.shapes.VoxelShape;
-
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
@@ -14,13 +13,13 @@ public class ListShapes extends SelectionShapes {
     private final VoxelShape mainShape;
     private final Matrix4 outerToInner;
     private final List<? extends SelectionShapes> shapes;
-    private final Function<ItemUseContext, ActionResultType> onClick;
+    private final Function<UseOnContext, InteractionResult> onClick;
 
     public ListShapes(
             VoxelShape mainShape,
             Matrix4 outerToInner,
             List<? extends SelectionShapes> shapes,
-            Function<ItemUseContext, ActionResultType> onClick
+            Function<UseOnContext, InteractionResult> onClick
     ) {
         this.mainShape = mainShape;
         this.outerToInner = outerToInner;
@@ -47,8 +46,8 @@ public class ListShapes extends SelectionShapes {
     }
 
     @Override
-    public ActionResultType onUse(ItemUseContext ctx, ActionResultType defaultType) {
-        if (defaultType == ActionResultType.PASS) {
+    public InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType) {
+        if (defaultType == InteractionResult.PASS) {
             return onClick.apply(ctx);
         } else {
             return defaultType;

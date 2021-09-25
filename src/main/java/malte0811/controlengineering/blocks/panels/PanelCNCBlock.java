@@ -5,30 +5,29 @@ import malte0811.controlengineering.blocks.placement.BlockPropertyPlacement;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.panels.PanelCNCTile;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.state.Property;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nonnull;
 
 public class PanelCNCBlock extends CEBlock<Direction, PanelCNCTile> {
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-    public static final VoxelShape BASE = VoxelShapes.create(0, 0, 0, 1, 2 / 16., 1);
-    public static final VoxelShape TOP = VoxelShapes.create(0, 12 / 16., 0, 1, 1, 1);
-    public static final VoxelShape SHAPE = VoxelShapes.or(
+    public static final VoxelShape BASE = Shapes.box(0, 0, 0, 1, 2 / 16., 1);
+    public static final VoxelShape TOP = Shapes.box(0, 12 / 16., 0, 1, 1, 1);
+    public static final VoxelShape SHAPE = Shapes.or(
             BASE,
             TOP,
 
-            VoxelShapes.create(0, 0, 0, 1 / 16., 1, 1 / 16.),
-            VoxelShapes.create(15 / 16., 0, 0, 1, 1, 1 / 16.),
-            VoxelShapes.create(15 / 16., 0, 15 / 16., 1, 1, 1),
-            VoxelShapes.create(0, 0, 15 / 16., 1 / 16., 1, 1)
+            Shapes.box(0, 0, 0, 1 / 16., 1, 1 / 16.),
+            Shapes.box(15 / 16., 0, 0, 1, 1, 1 / 16.),
+            Shapes.box(15 / 16., 0, 15 / 16., 1, 1, 1),
+            Shapes.box(0, 0, 15 / 16., 1 / 16., 1, 1)
     );
 
     public PanelCNCBlock() {
@@ -41,12 +40,12 @@ public class PanelCNCBlock extends CEBlock<Direction, PanelCNCTile> {
     }
 
     @Override
-    protected void fillStateContainer(@Nonnull StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(FACING);
     }
 
     public static Direction getDirection(PanelCNCTile tile) {
-        return tile.getWorld().getBlockState(tile.getPos()).get(FACING);
+        return tile.getLevel().getBlockState(tile.getBlockPos()).getValue(FACING);
     }
 }

@@ -2,7 +2,7 @@ package malte0811.controlengineering.logic.schematic;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -10,9 +10,8 @@ import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.util.text.ITextComponent;
-
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.network.chat.Component;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -75,7 +74,7 @@ public class SchematicNet {
         return false;
     }
 
-    public void render(MatrixStack stack, Vec2d mouse, List<PlacedSymbol> symbols) {
+    public void render(PoseStack stack, Vec2d mouse, List<PlacedSymbol> symbols) {
         final int color = contains(mouse.floor()) ? SELECTED_WIRE_COLOR : WIRE_COLOR;
         for (WireSegment segment : allSegments) {
             segment.renderWithoutBlobs(stack, color);
@@ -84,7 +83,7 @@ public class SchematicNet {
         for (WireSegment segment : allSegments) {
             for (Vec2i end : segment.getEnds()) {
                 if (endsAt.addTo(end, 1) == 2) {
-                    AbstractGui.fill(stack, end.x, end.y, end.x + 1, end.y + 1, color);
+                    GuiComponent.fill(stack, end.x, end.y, end.x + 1, end.y + 1, color);
                 }
             }
         }
@@ -116,7 +115,7 @@ public class SchematicNet {
         pins = null;
     }
 
-    public Optional<ITextComponent> canMerge(SchematicNet other, List<PlacedSymbol> symbols) {
+    public Optional<Component> canMerge(SchematicNet other, List<PlacedSymbol> symbols) {
         Set<ConnectedPin> totalPins = new HashSet<>(getOrComputePins(symbols));
         totalPins.addAll(other.getOrComputePins(symbols));
         return SchematicChecker.getConsistencyError(totalPins);

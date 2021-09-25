@@ -4,15 +4,14 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.util.Constants;
 import malte0811.controlengineering.util.ItemNBTUtil;
 import malte0811.controlengineering.util.TextUtil;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
@@ -23,14 +22,14 @@ public class EmptyTapeItem extends Item {
     public EmptyTapeItem() {
         super(
                 new Item.Properties()
-                        .group(ControlEngineering.ITEM_GROUP)
-                        .maxStackSize(1)
+                        .tab(ControlEngineering.ITEM_GROUP)
+                        .stacksTo(1)
         );
     }
 
     @Override
-    public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
-        if (isInGroup(group)) {
+    public void fillItemCategory(@Nonnull CreativeModeTab group, @Nonnull NonNullList<ItemStack> items) {
+        if (allowdedIn(group)) {
             items.add(setLength(new ItemStack(this), 16));
             items.add(setLength(new ItemStack(this), 256));
             items.add(setLength(new ItemStack(this), 8192));
@@ -38,17 +37,17 @@ public class EmptyTapeItem extends Item {
     }
 
     @Override
-    public void addInformation(
+    public void appendHoverText(
             @Nonnull ItemStack stack,
-            @Nullable World worldIn,
-            @Nonnull List<ITextComponent> tooltip,
-            @Nonnull ITooltipFlag flagIn
+            @Nullable Level worldIn,
+            @Nonnull List<Component> tooltip,
+            @Nonnull TooltipFlag flagIn
     ) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
         int length = getLength(stack);
         TextUtil.addTooltipLine(
                 tooltip,
-                new TranslationTextComponent(Constants.EMPTY_TAPE_BYTES, length)
+                new TranslatableComponent(Constants.EMPTY_TAPE_BYTES, length)
         );
     }
 

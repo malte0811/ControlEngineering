@@ -7,14 +7,13 @@ import malte0811.controlengineering.blocks.bus.BusInterfaceBlock;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusConnector;
 import malte0811.controlengineering.tiles.CEIICTileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Vector3d;
-
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nonnull;
 
 public class BusRelayTile extends CEIICTileEntity implements IBusConnector {
-    public BusRelayTile(TileEntityType<?> tileEntityTypeIn) {
+    public BusRelayTile(BlockEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
     }
 
@@ -32,12 +31,12 @@ public class BusRelayTile extends CEIICTileEntity implements IBusConnector {
     }
 
     @Override
-    public Vector3d getConnectionOffset(@Nonnull Connection connection, ConnectionPoint connectionPoint) {
-        return new Vector3d(0.5, 0.5, 0.5)
-                .add(Vector3d.copy(getFacing().getDirectionVec()).scale(1.5 / 16));
+    public Vec3 getConnectionOffset(@Nonnull Connection connection, ConnectionPoint connectionPoint) {
+        return new Vec3(0.5, 0.5, 0.5)
+                .add(Vec3.atLowerCornerOf(getFacing().getNormal()).scale(1.5 / 16));
     }
 
     private Direction getFacing() {
-        return getBlockState().get(BusInterfaceBlock.FACING);
+        return getBlockState().getValue(BusInterfaceBlock.FACING);
     }
 }

@@ -1,6 +1,6 @@
 package malte0811.controlengineering.client.render.utils;
 
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
 
 public class ModelRenderUtils {
     private static final int NUM_TUBE_FACES = 4;
@@ -14,39 +14,39 @@ public class ModelRenderUtils {
         final double lowerOffset = (diameterHigh - diameterLow) / 2;
         final float deltaU = (maxUV.u - minUV.u) / NUM_TUBE_FACES;
         for (int leftVertex = 0; leftVertex < NUM_TUBE_FACES; ++leftVertex) {
-            final Vector3d normal = tubeNormal(leftVertex);
+            final Vec3 normal = tubeNormal(leftVertex);
             out.setNormal(normal);
 
             final int rightVertex = leftVertex + 1;
             final float leftU = deltaU * leftVertex + minUV.u;
             final float rightU = deltaU * rightVertex + minUV.u;
             out.pos(tubeVertex(rightVertex, diameterLow, lowerOffset, yMin))
-                    .tex(rightU, minUV.v).endVertex();
+                    .uv(rightU, minUV.v).endVertex();
             out.pos(tubeVertex(rightVertex, diameterHigh, 0, yMax))
-                    .tex(rightU, maxUV.v).endVertex();
+                    .uv(rightU, maxUV.v).endVertex();
             out.pos(tubeVertex(leftVertex, diameterHigh, 0, yMax))
-                    .tex(leftU, maxUV.v).endVertex();
+                    .uv(leftU, maxUV.v).endVertex();
             out.pos(tubeVertex(leftVertex, diameterLow, lowerOffset, yMin))
-                    .tex(leftU, minUV.v).endVertex();
+                    .uv(leftU, minUV.v).endVertex();
         }
     }
 
-    private static Vector3d tubeNormal(int vertex) {
+    private static Vec3 tubeNormal(int vertex) {
         //Not 100% accurate (ignores lower/upper diameter), but good enough
         //TODO actually implement
-        return new Vector3d(0, 1, 0);
+        return new Vec3(0, 1, 0);
     }
 
-    private static Vector3d tubeVertex(int vertex, double diameter, double offset, double y) {
+    private static Vec3 tubeVertex(int vertex, double diameter, double offset, double y) {
         switch (vertex % NUM_TUBE_FACES) {
             case 0:
-                return new Vector3d(offset, y, offset);
+                return new Vec3(offset, y, offset);
             case 1:
-                return new Vector3d(offset, y, diameter + offset);
+                return new Vec3(offset, y, diameter + offset);
             case 2:
-                return new Vector3d(diameter + offset, y, diameter + offset);
+                return new Vec3(diameter + offset, y, diameter + offset);
             case 3:
-                return new Vector3d(diameter + offset, y, offset);
+                return new Vec3(diameter + offset, y, offset);
         }
         throw new IllegalStateException();
     }

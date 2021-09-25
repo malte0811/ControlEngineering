@@ -2,10 +2,9 @@ package malte0811.controlengineering.util.math;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.MathHelper;
-
 import java.util.Objects;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.Mth;
 
 public class Vec2d {
     public static final Codec<Vec2d> CODEC = RecordCodecBuilder.create(
@@ -23,17 +22,17 @@ public class Vec2d {
         this.y = y;
     }
 
-    public Vec2d(PacketBuffer in) {
+    public Vec2d(FriendlyByteBuf in) {
         this(in.readDouble(), in.readDouble());
     }
 
-    public void write(PacketBuffer out) {
+    public void write(FriendlyByteBuf out) {
         out.writeDouble(x);
         out.writeDouble(y);
     }
 
     public static Vec2d lerp(Vec2d start, Vec2d end, double time) {
-        return new Vec2d(MathHelper.lerp(time, start.x, end.x), MathHelper.lerp(time, start.y, end.y));
+        return new Vec2d(Mth.lerp(time, start.x, end.x), Mth.lerp(time, start.y, end.y));
     }
 
     @Override
@@ -71,6 +70,6 @@ public class Vec2d {
     }
 
     public Vec2i floor() {
-        return new Vec2i(MathHelper.floor(x), MathHelper.floor(y));
+        return new Vec2i(Mth.floor(x), Mth.floor(y));
     }
 }

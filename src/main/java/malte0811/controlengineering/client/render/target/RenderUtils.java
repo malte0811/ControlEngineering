@@ -1,17 +1,16 @@
 package malte0811.controlengineering.client.render.target;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Vector3d;
-
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.Vec3;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.Map;
 
 public class RenderUtils {
     public static void renderColoredBox(
             MixedModel output,
-            MatrixStack transform, Vector3d min, Vector3d max,
+            PoseStack transform, Vec3 min, Vec3 max,
             Map<Direction, Integer> sideColors, Map<Direction, Integer> lightOverrides,
             Map<Direction, RenderType> targets
     ) {
@@ -22,8 +21,8 @@ public class RenderUtils {
             Direction.Axis orthA = Direction.Axis.values()[(normal.ordinal() + 1) % 3];
             Direction.Axis orthB = Direction.Axis.values()[(normal.ordinal() + 2) % 3];
             final boolean positive = side.getAxisDirection() == Direction.AxisDirection.POSITIVE;
-            Vector3d posA = positive ? max : min;
-            Vector3d posB = positive ? min : max;
+            Vec3 posA = positive ? max : min;
+            Vec3 posB = positive ? min : max;
             TransformingVertexBuilder out = new TransformingVertexBuilder(
                     output.getBuffer(targets.get(side)), transform
             );
@@ -36,17 +35,17 @@ public class RenderUtils {
                     //TODO other default?
                     .setBlockLightOverride(lightOverrides.getOrDefault(side, 0))
                     .setRGB(entry.getValue())
-                    .setNormal(Vector3d.copy(side.getDirectionVec()))
+                    .setNormal(Vec3.atLowerCornerOf(side.getNormal()))
                     .writeTo(out);
         }
     }
 
-    private static Vector3d withValueFrom(Vector3d main, Direction.Axis axis, Vector3d from) {
-        return with(main, axis, axis.getCoordinate(from.x, from.y, from.z));
+    private static Vec3 withValueFrom(Vec3 main, Direction.Axis axis, Vec3 from) {
+        return with(main, axis, axis.choose(from.x, from.y, from.z));
     }
 
-    private static Vector3d with(Vector3d in, Direction.Axis axis, double value) {
-        return new Vector3d(
+    private static Vec3 with(Vec3 in, Direction.Axis axis, double value) {
+        return new Vec3(
                 axis == Direction.Axis.X ? value : in.x,
                 axis == Direction.Axis.Y ? value : in.y,
                 axis == Direction.Axis.Z ? value : in.z

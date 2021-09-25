@@ -5,8 +5,7 @@ import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
-import net.minecraft.util.ResourceLocation;
-
+import net.minecraft.resources.ResourceLocation;
 import java.util.Map;
 
 public abstract class LeafcellType<State> extends TypedRegistryEntry<State> {

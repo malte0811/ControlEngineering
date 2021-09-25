@@ -5,12 +5,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.serialization.Codecs;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.vector.Vector3d;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.Vec3;
 import java.util.Objects;
 
 //All transforms are for the "top" block of the control panel
@@ -80,13 +79,13 @@ public class PanelTransform {
         this(0.25F, (float) Math.toDegrees(Math.atan(0.5)), PanelOrientation.DOWN_NORTH);
     }
 
-    public RayTraceContext toPanelRay(Vector3d start, Vector3d end, BlockPos panelPos) {
-        Vector3d offset = Vector3d.copy(panelPos);
-        return new RayTraceContext(
+    public ClipContext toPanelRay(Vec3 start, Vec3 end, BlockPos panelPos) {
+        Vec3 offset = Vec3.atLowerCornerOf(panelPos);
+        return new ClipContext(
                 worldToPanelTop.apply(start.subtract(offset)),
                 worldToPanelTop.apply(end.subtract(offset)),
-                RayTraceContext.BlockMode.VISUAL,
-                RayTraceContext.FluidMode.NONE,
+                ClipContext.Block.VISUAL,
+                ClipContext.Fluid.NONE,
                 null
         );
     }
@@ -107,7 +106,7 @@ public class PanelTransform {
         return 1 / Math.cos(Math.toRadians(tileData.degrees));
     }
 
-    public void addTo(CompoundNBT out) {
+    public void addTo(CompoundTag out) {
         Codecs.add(CODEC, tileData, out, "transform");
     }
 
@@ -121,7 +120,7 @@ public class PanelTransform {
         return tileData.centerHeight + (Math.tan(radians) / 2);
     }
 
-    public static PanelTransform from(CompoundNBT nbt, PanelOrientation orientation) {
+    public static PanelTransform from(CompoundTag nbt, PanelOrientation orientation) {
         TileTransformData tile = Codecs.read(CODEC, nbt, "transform")
                 .result()
                 .orElseGet(TileTransformData::new);
@@ -132,31 +131,31 @@ public class PanelTransform {
         return tileData.centerHeight;
     }
 
-    public Vector3d[] getBottomVertices() {
-        Vector3d[] bottomVertices = layerVertices(1);
+    public Vec3[] getBottomVertices() {
+        Vec3[] bottomVertices = layerVertices(1);
         for (int i = 0; i < 4; ++i) {
             bottomVertices[i] = getPanelBottomToWorld().apply(bottomVertices[i]);
         }
         return bottomVertices;
     }
 
-    public Vector3d[] getTopVertices() {
-        Vector3d[] topVertices = layerVertices(getTopFaceHeight());
+    public Vec3[] getTopVertices() {
+        Vec3[] topVertices = layerVertices(getTopFaceHeight());
         for (int i = 0; i < 4; ++i) {
             topVertices[i] = getPanelTopToWorld().apply(topVertices[i]);
         }
-        Vector3d temp = topVertices[0];
+        Vec3 temp = topVertices[0];
         System.arraycopy(topVertices, 1, topVertices, 0, topVertices.length - 1);
         topVertices[topVertices.length - 1] = temp;
         return topVertices;
     }
 
-    public static Vector3d[] layerVertices(double xMax) {
-        return new Vector3d[]{
-                new Vector3d(0, 0, 0),
-                new Vector3d(1, 0, 0),
-                new Vector3d(1, 0, xMax),
-                new Vector3d(0, 0, xMax),
+    public static Vec3[] layerVertices(double xMax) {
+        return new Vec3[]{
+                new Vec3(0, 0, 0),
+                new Vec3(1, 0, 0),
+                new Vec3(1, 0, xMax),
+                new Vec3(0, 0, xMax),
         };
     }
 

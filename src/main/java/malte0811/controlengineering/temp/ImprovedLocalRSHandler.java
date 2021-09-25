@@ -6,11 +6,10 @@ import blusunrize.immersiveengineering.api.wires.localhandlers.LocalNetworkHandl
 import blusunrize.immersiveengineering.api.wires.redstone.IRedstoneConnector;
 import blusunrize.immersiveengineering.api.wires.redstone.RedstoneNetworkHandler;
 import com.google.common.base.Preconditions;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 
 public class ImprovedLocalRSHandler extends RedstoneNetworkHandler {
     public static final ResourceLocation ID = new ResourceLocation(Lib.MODID, "redstone");

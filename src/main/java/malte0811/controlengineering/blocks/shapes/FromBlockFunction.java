@@ -1,19 +1,18 @@
 package malte0811.controlengineering.blocks.shapes;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.block.BlockState;
-import net.minecraft.state.Property;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-
 import java.util.Map;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 
 @FunctionalInterface
 public interface FromBlockFunction<T> {
-    T apply(BlockState state, IBlockReader world, BlockPos pos);
+    T apply(BlockState state, BlockGetter world, BlockPos pos);
 
     static <T extends Comparable<T>> FromBlockFunction<T> getProperty(Property<T> prop) {
-        return (state, w, p) -> state.get(prop);
+        return (state, w, p) -> state.getValue(prop);
     }
 
     static <T> FromBlockFunction<T> either(
@@ -24,7 +23,7 @@ public interface FromBlockFunction<T> {
 
     static <T, T2 extends Comparable<T2>>
     FromBlockFunction<T> switchOnProperty(Property<T2> prop, Map<T2, FromBlockFunction<T>> subFunctions) {
-        return switchOn((state, world, pos) -> state.get(prop), subFunctions);
+        return switchOn((state, world, pos) -> state.getValue(prop), subFunctions);
     }
 
     static <T, T2 extends Comparable<T2>>

@@ -1,15 +1,15 @@
 package malte0811.controlengineering.util;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerChunkProvider;
+import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class TileUtil {
-    public static void markDirtyAndSync(TileEntity tile) {
-        tile.markDirty();
-        World world = tile.getWorld();
-        if (world != null && world.getChunkProvider() instanceof ServerChunkProvider) {
-            ((ServerChunkProvider) world.getChunkProvider()).markBlockChanged(tile.getPos());
+    public static void markDirtyAndSync(BlockEntity tile) {
+        tile.setChanged();
+        Level world = tile.getLevel();
+        if (world != null && world.getChunkSource() instanceof ServerChunkCache) {
+            ((ServerChunkCache) world.getChunkSource()).blockChanged(tile.getBlockPos());
         }
     }
 }
