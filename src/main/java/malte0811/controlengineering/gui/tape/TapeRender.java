@@ -136,7 +136,7 @@ public class TapeRender {
         Matrix4f matrix = m.last().pose();
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
-        TransformingVertexBuilder inner = new TransformingVertexBuilder(bufferbuilder);
+        TransformingVertexBuilder inner = new TransformingVertexBuilder(bufferbuilder, DefaultVertexFormat.BLOCK);
         inner.setColor(color | (0xff << 24));
         final float minU = texture.getU0();
         final float maxU = texture.getU1();

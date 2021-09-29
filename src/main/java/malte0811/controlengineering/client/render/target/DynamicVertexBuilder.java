@@ -1,7 +1,8 @@
 package malte0811.controlengineering.client.render.target;
 
-import javax.annotation.Nonnull;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,5 +64,15 @@ public class DynamicVertexBuilder implements VertexConsumer {
     public void endVertex() {
         finishedVertices.add(new DynamicVertex(inVertex));
         inVertex = new ArrayList<>();
+    }
+
+    @Override
+    public void defaultColor(int pRed, int pGreen, int pBlue, int pAlpha) {
+        inVertex.add((out, $1, $2) -> out.defaultColor(pRed, pGreen, pBlue, pAlpha));
+    }
+
+    @Override
+    public void unsetDefaultColor() {
+        inVertex.add((out, $1, $2) -> out.unsetDefaultColor());
     }
 }

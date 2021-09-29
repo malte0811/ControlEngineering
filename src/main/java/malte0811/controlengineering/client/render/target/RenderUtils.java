@@ -1,10 +1,12 @@
 package malte0811.controlengineering.client.render.target;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
-import com.mojang.blaze3d.vertex.PoseStack;
+
 import java.util.Map;
 
 public class RenderUtils {
@@ -24,7 +26,7 @@ public class RenderUtils {
             Vec3 posA = positive ? max : min;
             Vec3 posB = positive ? min : max;
             TransformingVertexBuilder out = new TransformingVertexBuilder(
-                    output.getBuffer(targets.get(side)), transform
+                    output.getBuffer(targets.get(side)), transform, DefaultVertexFormat.BLOCK
             );
             new QuadBuilder(
                     posA,

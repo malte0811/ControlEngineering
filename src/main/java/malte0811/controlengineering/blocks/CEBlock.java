@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -34,6 +35,7 @@ import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends Block implements EntityBlock {
     public final PlacementBehavior<PlacementData> placementBehavior;
@@ -150,7 +152,7 @@ public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends B
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+    public BlockEntity newBlockEntity(@Nonnull BlockPos pPos, @Nonnull BlockState pState) {
         if (this.tileType != null) {
             return this.tileType.get().create(pPos, pState);
         } else {
@@ -171,5 +173,13 @@ public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends B
 
     protected static BlockBehaviour.Properties defaultPropertiesNotSolid() {
         return defaultProperties().noOcclusion().isRedstoneConductor(($1, $2, $3) -> false).dynamicShape();
+    }
+
+    @Nullable
+    protected <A extends BlockEntity>
+    BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> actual, Consumer<? super Tile> ticker) {
+        if (tileType != null && tileType.get() == actual)
+            return (pLevel, pPos, pState, pBlockEntity) -> ticker.accept((Tile) pBlockEntity);
+        return null;
     }
 }

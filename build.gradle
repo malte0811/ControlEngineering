@@ -25,7 +25,12 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 
 sourceSets {
     main {
-        setupSourceSet(sourceSets.main, "main")
+        resources {
+            srcDirs = [
+                    "$rootDir/src/main/resources",
+                    "$rootDir/src/generated/resources"
+            ]
+        }
     }
     datagen {
         compileClasspath += main.output + main.compileClasspath
@@ -46,13 +51,8 @@ def setupSourceSet(SourceSet sourceSet, String name) {
 }
 
 processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        include 'META-INF/mods.toml'
-
+    filesMatching("META-INF/mods.toml") {
         expand 'version': project.version
-    }
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'META-INF/mods.toml'
     }
 }
 
@@ -96,7 +96,6 @@ minecraft {
         }
         data {
             workingDirectory project.file('run')
-            environment 'target', 'fmluserdevdata'
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', ''
@@ -111,16 +110,17 @@ minecraft {
 
             mods {
                 controlengineering {
-                    sources(sourceSets.main, sourceSets.datagen)
+                    source sourceSets.main
+                    source sourceSets.datagen
                 }
             }
         }
     }
 }
 
-configurations {
+/*configurations {
     datagenCompile.extendsFrom(compile)
-}
+}*/
 
 repositories {
     maven { // JEI & Tinkers
@@ -139,9 +139,10 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-	runtimeOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:1.17.1-+")
-    compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:1.17.1-+:api")
-    datagenCompile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:1.17.1-+:datagen")
+	runtimeOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}")
+    compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}:api")
+    //TODO why doesn't datagenImpl work as expected?
+    /*datagenI*/implementation fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}:datagen")
     testImplementation('junit:junit:4.13')
 }
 

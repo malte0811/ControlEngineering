@@ -32,7 +32,7 @@ import net.minecraftforge.client.model.generators.VariantBlockStateBuilder.Parti
 import net.minecraftforge.client.model.generators.loaders.CompositeModelBuilder;
 import net.minecraftforge.client.model.generators.loaders.OBJLoaderBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fmllegacy.RegistryObject;
 
 import java.util.Map;
 

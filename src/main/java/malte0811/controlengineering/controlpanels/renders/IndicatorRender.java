@@ -16,9 +16,7 @@ public class IndicatorRender extends ComponentRenderer<ColorAndSignal, Integer> 
         int ownBrightness = (rsValue * 15) / BusLine.MAX_VALID_VALUE;
         final double zOffset = 1e-3;
         output.setSpriteForStaticTargets(QuadBuilder.getWhiteTexture());
-        TransformingVertexBuilder builder = new TransformingVertexBuilder(
-                output.getBuffer(MixedModel.SOLID_DYNAMIC), transform
-        );
+        TransformingVertexBuilder builder = new TransformingVertexBuilder(output, MixedModel.SOLID_DYNAMIC, transform);
         new QuadBuilder(
                 new Vec3(0, zOffset, 0),
                 new Vec3(0, zOffset, 1),

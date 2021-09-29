@@ -5,12 +5,9 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
-import malte0811.controlengineering.controlpanels.PanelData;
-import malte0811.controlengineering.controlpanels.model.PanelItemRenderer;
 import malte0811.controlengineering.logic.clock.ClockGenerator;
 import malte0811.controlengineering.logic.clock.ClockTypes;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.fmllegacy.RegistryObject;
@@ -40,15 +37,9 @@ public class CEItems {
     private static final RegistryObject<CEBlockItem<Direction>> BUS_RELAY = blockItemCE(CEBlocks.BUS_RELAY);
     private static final RegistryObject<CEBlockItem<Direction>> BUS_INTERFACE = blockItemCE(CEBlocks.BUS_INTERFACE);
     private static final RegistryObject<CEBlockItem<Direction>> LINE_ACCESS = blockItemCE(CEBlocks.LINE_ACCESS);
-    private static final RegistryObject<CEBlockItem<PanelOrientation>> CONTROL_PANEL = blockItemCE(
-            //TODO move somewhere else
-            CEBlocks.CONTROL_PANEL, simpleItemProperties().setISTER(() -> () -> new PanelItemRenderer(is -> {
-                CompoundTag tag = is.getTag();
-                if (tag == null) {
-                    tag = new CompoundTag();
-                }
-                return new PanelData(tag, PanelOrientation.UP_NORTH);
-            }))
+    private static final RegistryObject<CEBlockItem<PanelOrientation>> CONTROL_PANEL = REGISTER.register(
+            CEBlocks.CONTROL_PANEL.getId().getPath(),
+            () -> new ControlPanelItem(CEBlocks.CONTROL_PANEL.get(), simpleItemProperties())
     );
     private static final RegistryObject<CEBlockItem<Direction>> KEYPUNCH = blockItemCE(CEBlocks.KEYPUNCH);
     private static final RegistryObject<CEBlockItem<Direction>> PANEL_CNC = blockItemCE(CEBlocks.PANEL_CNC);

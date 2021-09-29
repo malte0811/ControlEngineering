@@ -6,14 +6,20 @@ import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.panels.PanelCNCTile;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class PanelCNCBlock extends CEBlock<Direction, PanelCNCTile> {
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -47,5 +53,13 @@ public class PanelCNCBlock extends CEBlock<Direction, PanelCNCTile> {
 
     public static Direction getDirection(PanelCNCTile tile) {
         return tile.getLevel().getBlockState(tile.getBlockPos()).getValue(FACING);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            @Nonnull Level pLevel, @Nonnull BlockState pState, @Nonnull BlockEntityType<T> pBlockEntityType
+    ) {
+        return createTickerHelper(pBlockEntityType, PanelCNCTile::tick);
     }
 }

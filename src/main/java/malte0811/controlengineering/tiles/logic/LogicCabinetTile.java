@@ -74,11 +74,7 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
         return Mth.ceil(numTubes / (double) NUM_TUBES_PER_BOARD);
     }
 
-    @Override
     public void tick() {
-        if (level.isClientSide || isUpper(getBlockState())) {
-            return;
-        }
         //TODO less? config?
         if (circuit == null || energy.extractOrTrue(128) || level.getGameTime() % 2 != 0) {
             return;

@@ -7,14 +7,20 @@ import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.logic.LogicCabinetTile;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.shapes.Shapes;
+
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class LogicCabinetBlock extends CEBlock<Direction, LogicCabinetTile> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -52,5 +58,15 @@ public class LogicCabinetBlock extends CEBlock<Direction, LogicCabinetTile> {
     protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(FACING, HEIGHT);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            Level pLevel, @Nonnull BlockState pState, @Nonnull BlockEntityType<T> pBlockEntityType
+    ) {
+        if (!pLevel.isClientSide && pState.getValue(HEIGHT) == 0)
+            return createTickerHelper(pBlockEntityType, LogicCabinetTile::tick);
+        return null;
     }
 }

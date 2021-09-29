@@ -7,7 +7,7 @@ import malte0811.controlengineering.datagen.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.items.CEItems;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;

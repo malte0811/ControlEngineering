@@ -152,7 +152,6 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
         return InteractionResult.FAIL;
     }
 
-    @Override
     public void tick() {
         if (isJobRunning()) {
             ++currentTicksInJob;

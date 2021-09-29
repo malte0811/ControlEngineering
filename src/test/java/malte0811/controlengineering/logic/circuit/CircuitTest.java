@@ -2,7 +2,7 @@ package malte0811.controlengineering.logic.circuit;
 
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.cells.SignalType;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,7 +20,7 @@ public class CircuitTest {
     public static void setup() {
         Leafcells.init();
         // Load classes now to prevent weird test runtimes
-        new CompoundNBT();
+        new CompoundTag();
         CircuitBuilder.builder()
                 .addInputNet(IN_A, SignalType.DIGITAL)
                 .addCell(Leafcells.AND2)
@@ -83,7 +83,7 @@ public class CircuitTest {
         assertTrue(c, OUT_A);
         assertFalse(c, OUT_B);
 
-        CompoundNBT serialized = c.toNBT();
+        CompoundTag serialized = c.toNBT();
         c = Circuit.fromNBT(serialized);
         assertTrue(c, OUT_A);
         c.updateInputValue(IN_A, 1);

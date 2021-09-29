@@ -3,14 +3,21 @@ package malte0811.controlengineering.client.render.utils;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
 import com.mojang.math.Vector3f;
 import com.mojang.math.Vector4f;
 import malte0811.controlengineering.util.BitUtils;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
+
+import static com.mojang.blaze3d.vertex.DefaultVertexFormat.*;
 
 //TODO copied from IE
 public class TransformingVertexBuilder extends DelegatingVertexBuilder<TransformingVertexBuilder> {
@@ -21,14 +28,20 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
     protected final ObjectWithGlobal<Vec2i> lightmap = new ObjectWithGlobal<>();
     protected final ObjectWithGlobal<Vector3f> normal = new ObjectWithGlobal<>();
     protected final ObjectWithGlobal<Vector4f> color = new ObjectWithGlobal<>();
+    protected final VertexFormat format;
 
-    public TransformingVertexBuilder(VertexConsumer base, PoseStack transform) {
+    public TransformingVertexBuilder(VertexConsumer base, PoseStack transform, VertexFormat format) {
         super(base);
         this.transform = transform;
+        this.format = format;
     }
 
-    public TransformingVertexBuilder(VertexConsumer base) {
-        this(base, new PoseStack());
+    public TransformingVertexBuilder(VertexConsumer base, VertexFormat format) {
+        this(base, new PoseStack(), format);
+    }
+
+    public TransformingVertexBuilder(MultiBufferSource buffer, RenderType type, PoseStack transform) {
+        this(buffer.getBuffer(type), transform, type.format());
     }
 
     @Nonnull
@@ -75,27 +88,46 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
 
     @Override
     public void endVertex() {
-        pos.ifPresent(pos -> delegate.vertex(
-                transform.last().pose(),
-                (float) pos.x,
-                (float) pos.y,
-                (float) pos.z
-        ));
-        color.ifPresent(c -> delegate.color(c.x(), c.y(), c.z(), c.w()));
-        uv.ifPresent(uv -> delegate.uv(uv.x, uv.y));
-        overlay.ifPresent(overlay -> delegate.overlayCoords(overlay.x, overlay.y));
-        lightmap.ifPresent(lightmap -> delegate.uv2(lightmap.x, lightmap.y));
-        normal.ifPresent(normal -> delegate.normal(normal.x(), normal.y(), normal.z()));
+        for (VertexFormatElement element : format.getElements()) {
+            if (element == ELEMENT_POSITION)
+                pos.ifPresent(pos -> delegate.vertex(
+                        transform.last().pose(),
+                        (float) pos.x,
+                        (float) pos.y,
+                        (float) pos.z
+                ));
+            else if (element == ELEMENT_COLOR)
+                color.ifPresent(c -> delegate.color(c.x(), c.y(), c.z(), c.w()));
+            else if (element == ELEMENT_UV0)
+                uv.ifPresent(uv -> delegate.uv(uv.x, uv.y));
+            else if (element == ELEMENT_UV1)
+                overlay.ifPresent(overlay -> delegate.overlayCoords(overlay.x, overlay.y));
+            else if (element == ELEMENT_UV2)
+                lightmap.ifPresent(lightmap -> delegate.uv2(lightmap.x, lightmap.y));
+            else if (element == ELEMENT_NORMAL)
+                normal.ifPresent(
+                        normal -> delegate.normal(transform.last().normal(), normal.x(), normal.y(), normal.z())
+                );
+        }
         delegate.endVertex();
+    }
+
+    public void defaultColor(float r, float g, float b, float a) {
+        color.setGlobal(new Vector4f(r, g, b, a));
+    }
+
+    @Override
+    public void defaultColor(int r, int g, int b, int a) {
+        defaultColor(r / 255f, g / 255f, b / 255f, a / 255f);
+    }
+
+    @Override
+    public void unsetDefaultColor() {
+        color.setGlobal(null);
     }
 
     public TransformingVertexBuilder setLight(int light) {
         lightmap.setGlobal(new Vec2i(light & 255, light >> 16));
-        return getThis();
-    }
-
-    public TransformingVertexBuilder setColor(float r, float g, float b, float a) {
-        color.setGlobal(new Vector4f(r, g, b, a));
         return getThis();
     }
 
@@ -106,6 +138,10 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
         return getThis();
     }
 
+    public TransformingVertexBuilder setNormal(Vec3 normal) {
+        return setNormal((float) normal.x, (float) normal.y, (float) normal.z);
+    }
+
     public TransformingVertexBuilder setOverlay(int packedOverlayIn) {
         overlay.setGlobal(new Vec2i(
                 packedOverlayIn & 0xffff,
@@ -114,31 +150,22 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
         return getThis();
     }
 
-    public TransformingVertexBuilder setNormal(Vec3 normal) {
-        return setNormal((float) normal.x, (float) normal.y, (float) normal.z);
-    }
-
     @Override
     protected TransformingVertexBuilder getThis() {
         return this;
     }
 
     public TransformingVertexBuilder setColor(int color) {
-        return setColor(
+        defaultColor(
                 BitUtils.getBits(color, 16, 8) / 255f,
                 BitUtils.getBits(color, 8, 8) / 255f,
                 BitUtils.getBits(color, 0, 8) / 255f,
                 BitUtils.getBits(color, 24, 8) / 255f
         );
+        return this;
     }
 
-    private static class Vec2i {
-        final int x, y;
-
-        private Vec2i(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
+    private record Vec2i(int x, int y) {
     }
 
     protected static class ObjectWithGlobal<T> {
@@ -147,9 +174,8 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
         private boolean isGlobal;
 
         public void putData(T newVal) {
-            if (!isGlobal) {
-                obj = newVal;
-            }
+            Preconditions.checkState(obj == null);
+            obj = newVal;
         }
 
         public void setGlobal(@Nullable T obj) {

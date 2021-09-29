@@ -1,5 +1,11 @@
 package malte0811.controlengineering.client.render.utils;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
+import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
@@ -7,11 +13,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.client.model.pipeline.IVertexConsumer;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
+
 import java.util.List;
 
 public class BakedQuadVertexBuilder extends TransformingVertexBuilder {
@@ -24,7 +26,7 @@ public class BakedQuadVertexBuilder extends TransformingVertexBuilder {
     public BakedQuadVertexBuilder(
             TextureAtlasSprite sprite, PoseStack transform, List<BakedQuad> quads
     ) {
-        super(null, transform);
+        super(null, transform, DefaultVertexFormat.BLOCK);
         this.sprite = sprite;
         this.quads = quads;
     }

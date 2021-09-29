@@ -4,6 +4,7 @@ import blusunrize.immersiveengineering.api.IEApi;
 import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
@@ -14,6 +15,7 @@ import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.renderer.SpriteCoordinateExpander;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Mth;
+
 import java.util.List;
 import java.util.function.BiPredicate;
 
@@ -59,7 +61,9 @@ public class TapeWheel {
 
     public void render(VertexConsumer output, PoseStack stack, int light, int overlay) {
         SpriteCoordinateExpander spriteBuilder = new SpriteCoordinateExpander(output, TEXTURE.get());
-        TransformingVertexBuilder finalBuilder = new TransformingVertexBuilder(spriteBuilder, stack);
+        TransformingVertexBuilder finalBuilder = new TransformingVertexBuilder(
+                spriteBuilder, stack, DefaultVertexFormat.BLOCK
+        );
         finalBuilder.setColor(0xffa8f9);
         finalBuilder.setNormal(0, 1, 0);
         finalBuilder.setOverlay(overlay);

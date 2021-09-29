@@ -1,5 +1,6 @@
 package malte0811.controlengineering.client.render.target;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -13,6 +14,7 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.inventory.InventoryMenu;
+
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +57,9 @@ public class MixedModel implements MultiBufferSource {
 
     public void renderTo(MultiBufferSource out, PoseStack transform, int combinedLight, int combinedOverlay) {
         for (Map.Entry<RenderType, List<DynamicVertex>> vertices : dynamicQuads.entrySet()) {
-            VertexConsumer buffer = new TransformingVertexBuilder(out.getBuffer(vertices.getKey()), transform);
+            VertexConsumer buffer = new TransformingVertexBuilder(
+                    out.getBuffer(vertices.getKey()), transform, DefaultVertexFormat.BLOCK
+            );
             for (DynamicVertex v : vertices.getValue()) {
                 v.accept(buffer, combinedLight, combinedOverlay);
             }

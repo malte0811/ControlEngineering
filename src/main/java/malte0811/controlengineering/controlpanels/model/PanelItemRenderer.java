@@ -1,5 +1,6 @@
 package malte0811.controlengineering.controlpanels.model;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.controlpanels.PanelData;
@@ -33,7 +34,7 @@ public class PanelItemRenderer extends BlockEntityWithoutLevelRenderer {
         PanelData data = getData.apply(stack);
         CACHE.getMixedModel(data).renderTo(buffer, matrixStack, combinedLight, combinedOverlay);
         TransformingVertexBuilder baseRender = new TransformingVertexBuilder(
-                buffer.getBuffer(RenderType.solid()), matrixStack
+                buffer.getBuffer(RenderType.solid()), matrixStack, DefaultVertexFormat.BLOCK
         );
         baseRender.setLight(combinedLight);
         baseRender.setOverlay(combinedOverlay);

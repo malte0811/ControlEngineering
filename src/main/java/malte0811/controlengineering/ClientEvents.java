@@ -3,6 +3,7 @@ package malte0811.controlengineering;
 import blusunrize.immersiveengineering.api.IETags;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
@@ -104,16 +105,21 @@ public class ClientEvents {
     }
 
     private static void renderShape(PoseStack transform, SelectionShapes shape, VertexConsumer builder) {
-        Matrix4f currentMatrix = transform.last().pose();
         shape.plotBox((v1, v2) -> {
-            addPoint(builder, currentMatrix, v1);
-            addPoint(builder, currentMatrix, v2);
+            Vec3 normal = v2.subtract(v1);
+            var poseMatrix = transform.last().pose();
+            var normalMatrix = transform.last().normal();
+            addPoint(builder, poseMatrix, normalMatrix, v1, normal);
+            addPoint(builder, poseMatrix, normalMatrix, v2, normal);
         });
     }
 
-    private static void addPoint(VertexConsumer builder, Matrix4f transform, Vec3 pos) {
+    private static void addPoint(
+            VertexConsumer builder, Matrix4f transform, Matrix3f normalTransform, Vec3 pos, Vec3 normal
+    ) {
         builder.vertex(transform, (float) pos.x, (float) pos.y, (float) pos.z)
                 .color(0, 0, 0, 0.4F)
+                .normal(normalTransform, (float) normal.x, (float) normal.y, (float) normal.z)
                 .endVertex();
     }
 
@@ -121,10 +127,9 @@ public class ClientEvents {
     private static List<? extends SelectionShapes> getSelectedStack() {
         Minecraft mc = Minecraft.getInstance();
         final HitResult mop = mc.hitResult;
-        if (!(mop instanceof BlockHitResult)) {
+        if (!(mop instanceof BlockHitResult target)) {
             return null;
         }
-        BlockHitResult target = (BlockHitResult) mop;
         BlockPos highlighted = target.getBlockPos();
         Level world = mc.level;
         Player player = mc.player;
@@ -132,8 +137,8 @@ public class ClientEvents {
             return null;
         }
         BlockEntity te = world.getBlockEntity(highlighted);
-        if (te instanceof SelectionShapeOwner) {
-            List<? extends SelectionShapes> selectedStack = ((SelectionShapeOwner) te).getShape()
+        if (te instanceof SelectionShapeOwner shapeOwner) {
+            List<? extends SelectionShapes> selectedStack = shapeOwner.getShape()
                     .getTargeted(RaytraceUtils.create(player, mc.getFrameTime(), Vec3.atLowerCornerOf(highlighted)));
             if (!selectedStack.isEmpty()) {
                 return selectedStack;

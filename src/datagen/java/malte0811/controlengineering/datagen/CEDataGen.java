@@ -3,7 +3,7 @@ package malte0811.controlengineering.datagen;
 import malte0811.controlengineering.ControlEngineering;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 @Mod.EventBusSubscriber(modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CEDataGen {
@@ -14,6 +14,6 @@ public class CEDataGen {
         ev.getGenerator().addProvider(new Recipes(ev.getGenerator()));
         ev.getGenerator().addProvider(new LangGenerator(ev.getGenerator()));
         ev.getGenerator().addProvider(new ServerFontData(ev.getGenerator(), ev.getExistingFileHelper()));
-        ev.getGenerator().addProvider(new BlockLootGenerator(ev.getGenerator()));
+        ev.getGenerator().addProvider(new LootGenerator(ev.getGenerator()));
     }
 }

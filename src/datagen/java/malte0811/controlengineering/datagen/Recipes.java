@@ -19,7 +19,7 @@ public class Recipes extends RecipeProvider {
     }
 
     @Override
-    protected void buildShapelessRecipes(@Nonnull Consumer<FinishedRecipe> consumer) {
+    protected void buildCraftingRecipes(@Nonnull Consumer<FinishedRecipe> consumer) {
         SpecialRecipeBuilder.special(CERecipeSerializers.PANEL_RECIPE.get())
                 .save(consumer, ControlEngineering.MODID + ":panel");
         GlueTapeBuilder.customRecipe(Ingredient.of(Tags.Items.SLIMEBALLS))

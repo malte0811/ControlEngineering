@@ -2,6 +2,7 @@ package malte0811.controlengineering.controlpanels.renders;
 
 import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Quaternion;
@@ -90,7 +91,9 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCTile> {
         VertexConsumer builder = buffers.getBuffer(RenderType.solid());
         if (tile.hasPanel()) {
             VertexConsumer forTexture = MODEL_TEXTURE.get().wrap(builder);
-            TransformingVertexBuilder finalWrapped = new TransformingVertexBuilder(forTexture, transform);
+            TransformingVertexBuilder finalWrapped = new TransformingVertexBuilder(
+                    forTexture, transform, DefaultVertexFormat.BLOCK
+            );
             finalWrapped.setColor(-1).setLight(light).setNormal(0, 1, 0).setOverlay(overlay);
             final float minU = 17 / 64f;
             final float maxU = 31 / 64f;
@@ -139,10 +142,12 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCTile> {
         //TODO pull out
         VertexConsumer solidBuffer = buffer.getBuffer(RenderType.solid());
         VertexConsumer forTexture = MODEL_TEXTURE.get().wrap(solidBuffer);
-        TransformingVertexBuilder innerBuilder = new TransformingVertexBuilder(forTexture, transform);
+        TransformingVertexBuilder innerBuilder = new TransformingVertexBuilder(
+                forTexture, transform, DefaultVertexFormat.BLOCK
+        );
         innerBuilder.setOverlay(overlay)
                 .setLight(light)
-                .setColor(1, 1, 1, 1);
+                .setColor(-1);
         renderHeadModel(innerBuilder, (float) currentPos.y);
         transform.popPose();
     }
