@@ -34,7 +34,7 @@ public class Indicator extends PanelComponentType<ColorAndSignal, Integer> {
 
     @Override
     public Integer updateTotalState(ColorAndSignal colorAndSignal, Integer oldState, BusState busState) {
-        return busState.getSignal(colorAndSignal.getSignal());
+        return busState.getSignal(colorAndSignal.signal());
     }
 
     @Override

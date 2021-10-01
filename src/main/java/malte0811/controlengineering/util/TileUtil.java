@@ -8,8 +8,8 @@ public class TileUtil {
     public static void markDirtyAndSync(BlockEntity tile) {
         tile.setChanged();
         Level world = tile.getLevel();
-        if (world != null && world.getChunkSource() instanceof ServerChunkCache) {
-            ((ServerChunkCache) world.getChunkSource()).blockChanged(tile.getBlockPos());
+        if (world != null && world.getChunkSource() instanceof ServerChunkCache chunkCache) {
+            chunkCache.blockChanged(tile.getBlockPos());
         }
     }
 }

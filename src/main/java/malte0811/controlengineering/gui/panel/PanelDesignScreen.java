@@ -15,15 +15,15 @@ import net.minecraft.util.Mth;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class PanelDesignScreen extends StackedScreen implements MenuAccess<PanelLayoutContainer> {
+public class PanelDesignScreen extends StackedScreen implements MenuAccess<PanelDesignContainer> {
     public static final String REQUIRED_VS_AVAILABLE_TAPE = ControlEngineering.MODID + ".gui.reqVsAvTape";
     private static final int BORDER = 20;
     @Nonnull
-    private final PanelLayoutContainer container;
+    private final PanelDesignContainer container;
     private int panelLayoutXMin;
     private int panelLayoutYMax;
 
-    public PanelDesignScreen(@Nonnull PanelLayoutContainer container, Component title) {
+    public PanelDesignScreen(@Nonnull PanelDesignContainer container, Component title) {
         super(title);
         this.container = container;
     }
@@ -40,8 +40,8 @@ public class PanelDesignScreen extends StackedScreen implements MenuAccess<Panel
         this.panelLayoutXMin = selectorWidth + offset;
         this.panelLayoutYMax = BORDER + panelSize;
         PanelLayout panelLayout = new PanelLayout(panelLayoutXMin, BORDER, panelSize, container.getComponents());
-        addRenderableWidget(panelLayout);
         addRenderableWidget(new ComponentSelector(offset, BORDER, selectorWidth, panelSize, panelLayout::setPlacingComponent));
+        addRenderableWidget(panelLayout);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class PanelDesignScreen extends StackedScreen implements MenuAccess<Panel
 
     @Nonnull
     @Override
-    public PanelLayoutContainer getMenu() {
+    public PanelDesignContainer getMenu() {
         return container;
     }
 }

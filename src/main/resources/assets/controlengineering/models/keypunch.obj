@@ -1,5 +1,5 @@
-mtllib typewriter.mtl
-usemtl tty
+mtllib keypunch.mtl
+usemtl keypunch
 o Cylinder
 v 0.1486675 0.5625 0.78125 
 v 0.1486675 0.5625 0.84375 

@@ -39,7 +39,7 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
     public void renderCustom(PoseStack transform, int x, int y, @Nullable BusSignalRef state) {
         int color;
         if (state != null) {
-            color = DyeColor.byId(state.color).getTextColor();
+            color = DyeColor.byId(state.color()).getTextColor();
         } else {
             color = 0;
         }
@@ -49,7 +49,7 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
         } else {
             GuiComponent.fill(transform, x + 2, y + 1, x + 3, y + 2, color);
         }
-        final String text = state != null ? Integer.toString(state.line) : "";
+        final String text = state != null ? Integer.toString(state.line()) : "";
         final int blockX = x + (isInput ? 0 : 3);
         TextUtil.renderBoxWithText(transform, color, text, 4, blockX, y, 3, 3);
     }
@@ -91,9 +91,9 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
 
     @Override
     public List<MutableComponent> getExtraDescription(BusSignalRef state) {
-        final DyeColor color = DyeColor.byId(state.color);
+        final DyeColor color = DyeColor.byId(state.color());
         final String colorName = I18n.get(VANILLA_COLOR_PREFIX + color);
-        return ImmutableList.of(new TranslatableComponent(SIGNAL_KEY, colorName, state.line));
+        return ImmutableList.of(new TranslatableComponent(SIGNAL_KEY, colorName, state.line()));
     }
 
     public boolean isInput() {

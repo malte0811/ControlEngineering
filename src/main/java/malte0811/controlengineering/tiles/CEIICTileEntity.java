@@ -1,5 +1,6 @@
 package malte0811.controlengineering.tiles;
 
+import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.TargetingInfo;
 import blusunrize.immersiveengineering.api.wires.Connection;
 import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
@@ -58,5 +59,13 @@ public abstract class CEIICTileEntity extends ImmersiveConnectableBlockEntity {
     @Override
     public final BlockPos getPosition() {
         return getBlockPos();
+    }
+
+    //TODO Workaround for Forge#7926
+    @Override
+    public void clearRemoved()
+    {
+        super.clearRemoved();
+        ApiUtils.addFutureServerTask(level, this::onLoad);
     }
 }

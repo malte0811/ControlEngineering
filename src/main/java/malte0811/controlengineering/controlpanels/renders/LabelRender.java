@@ -16,9 +16,9 @@ public class LabelRender extends ComponentRenderer<ColorAndText, Unit> {
         transform.scale(Label.SCALE, Label.SCALE, Label.SCALE);
         transform.mulPose(new Quaternion(90, 0, 0, true));
         Minecraft.getInstance().font.drawInBatch(
-                s.getText(),
+                s.text(),
                 0, 0,
-                s.getColor(), false,
+                s.color(), false,
                 transform.last().pose(), output,
                 false, 0, 0
         );

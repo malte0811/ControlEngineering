@@ -137,6 +137,7 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
                     insertedTape = PunchedTapeItem.getBytes(held);
                     held.shrink(1);
                     level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
+                    setChanged();
                 }
                 return InteractionResult.SUCCESS;
             }
@@ -146,6 +147,7 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
                 insertedTape = new byte[0];
                 ItemUtil.giveOrDrop(ctx.getPlayer(), result);
                 level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
+                setChanged();
             }
             return InteractionResult.SUCCESS;
         }
@@ -224,11 +226,11 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
     }
 
     @Override
-    protected void readSyncedData(CompoundTag in) {
-        in.putByteArray("tape", insertedTape);
-        in.putInt("currentTick", currentTicksInJob);
-        in.putBoolean("hasPanel", hasPanel);
-        in.putBoolean("failed", failed);
+    protected void readSyncedData(CompoundTag compound) {
+        insertedTape = compound.getByteArray("tape");
+        currentTicksInJob = compound.getInt("currentTick");
+        hasPanel = compound.getBoolean("hasPanel");
+        failed = compound.getBoolean("failed");
         currentPlacedComponents.clear();
         CNCJob job = currentJob.get();
         if (job != null) {
@@ -243,12 +245,12 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
     }
 
     @Override
-    protected CompoundTag writeSyncedData(CompoundTag compound) {
-        insertedTape = compound.getByteArray("tape");
-        currentTicksInJob = compound.getInt("currentTick");
-        hasPanel = compound.getBoolean("hasPanel");
-        failed = compound.getBoolean("failed");
-        return compound;
+    protected CompoundTag writeSyncedData(CompoundTag in) {
+        in.putByteArray("tape", insertedTape);
+        in.putInt("currentTick", currentTicksInJob);
+        in.putBoolean("hasPanel", hasPanel);
+        in.putBoolean("failed", failed);
+        return in;
     }
 
     public boolean hasFailed() {

@@ -152,10 +152,11 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
         final String instructions = CNCInstructionGenerator.toInstructions(components);
         final byte[] bytes = BitUtils.toBytesWithParity(instructions);
         state.tryTypeAll(new ByteArrayList(bytes, 0, bytes.length));
+        setChanged();
         return InteractionResult.SUCCESS;
     }
 
-    public KeypunchState getTTY() {
+    public KeypunchState getKeypunch() {
         return state;
     }
 }

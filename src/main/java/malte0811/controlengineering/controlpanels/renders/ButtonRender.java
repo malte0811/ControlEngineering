@@ -33,10 +33,10 @@ public class ButtonRender extends ComponentRenderer<ColorAndSignal, Boolean> {
         final Map<Direction, Integer> lightOverrides;
         if (active) {
             lightOverrides = ImmutableMap.of(Direction.UP, 15);
-            colors.put(Direction.UP, config.getColor());
+            colors.put(Direction.UP, config.color());
         } else {
             lightOverrides = ImmutableMap.of();
-            colors.put(Direction.UP, ColorUtils.halfColor(config.getColor()));
+            colors.put(Direction.UP, ColorUtils.halfColor(config.color()));
         }
         RenderUtils.renderColoredBox(output, transform, BOX_MIN, BOX_MAX, colors, lightOverrides, TARGETS);
     }

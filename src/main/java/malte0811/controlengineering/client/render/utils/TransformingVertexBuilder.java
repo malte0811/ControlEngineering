@@ -15,6 +15,8 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static com.mojang.blaze3d.vertex.DefaultVertexFormat.*;
@@ -22,6 +24,7 @@ import static com.mojang.blaze3d.vertex.DefaultVertexFormat.*;
 //TODO copied from IE
 public class TransformingVertexBuilder extends DelegatingVertexBuilder<TransformingVertexBuilder> {
     protected final PoseStack transform;
+    protected final List<ObjectWithGlobal<?>> allObjects = new ArrayList<>();
     protected final ObjectWithGlobal<Vec2> uv = new ObjectWithGlobal<>();
     protected final ObjectWithGlobal<Vec3> pos = new ObjectWithGlobal<>();
     protected final ObjectWithGlobal<Vec2i> overlay = new ObjectWithGlobal<>();
@@ -110,6 +113,7 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
                 );
         }
         delegate.endVertex();
+        allObjects.forEach(ObjectWithGlobal::clear);
     }
 
     public void defaultColor(float r, float g, float b, float a) {
@@ -143,10 +147,7 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
     }
 
     public TransformingVertexBuilder setOverlay(int packedOverlayIn) {
-        overlay.setGlobal(new Vec2i(
-                packedOverlayIn & 0xffff,
-                packedOverlayIn >> 16
-        ));
+        overlay.setGlobal(new Vec2i(packedOverlayIn & 0xffff, packedOverlayIn >> 16));
         return getThis();
     }
 
@@ -168,14 +169,18 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
     private record Vec2i(int x, int y) {
     }
 
-    protected static class ObjectWithGlobal<T> {
+    protected class ObjectWithGlobal<T> {
         @Nullable
         private T obj;
         private boolean isGlobal;
 
+        public ObjectWithGlobal() {
+            allObjects.add(this);
+        }
+
         public void putData(T newVal) {
-            Preconditions.checkState(obj == null);
-            obj = newVal;
+            if (obj == null)
+                obj = newVal;
         }
 
         public void setGlobal(@Nullable T obj) {
@@ -185,13 +190,17 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
 
         public T read() {
             T ret = Preconditions.checkNotNull(obj);
-            if (!isGlobal)
-                obj = null;
+            clear();
             return ret;
         }
 
         public boolean hasValue() {
             return obj != null;
+        }
+
+        public void clear() {
+            if (!isGlobal)
+                obj = null;
         }
 
         public void ifPresent(Consumer<T> out) {

@@ -38,8 +38,8 @@ public class BusState {
     }
 
     public BusState with(BusSignalRef signal, int value) {
-        BusLine newLine = getLine(signal.line).with(signal.color, value);
-        return withLine(signal.line, newLine);
+        BusLine newLine = getLine(signal.line()).with(signal.color(), value);
+        return withLine(signal.line(), newLine);
     }
 
     public int getWidth() {
@@ -59,9 +59,9 @@ public class BusState {
     }
 
     public int getSignal(BusSignalRef signal) {
-        if (signal.line < lines.size()) {
-            BusLine line = getLine(signal.line);
-            return line.getValue(signal.color);
+        if (signal.line() < lines.size()) {
+            BusLine line = getLine(signal.line());
+            return line.getValue(signal.color());
         } else {
             return 0;
         }

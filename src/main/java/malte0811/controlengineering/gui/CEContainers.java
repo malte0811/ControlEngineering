@@ -2,7 +2,7 @@ package malte0811.controlengineering.gui;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.logic.LogicDesignContainer;
-import malte0811.controlengineering.gui.panel.PanelLayoutContainer;
+import malte0811.controlengineering.gui.panel.PanelDesignContainer;
 import malte0811.controlengineering.gui.tape.KeypunchContainer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -28,8 +28,8 @@ public class CEContainers {
             "logic_design", createNoInv(LogicDesignContainer::new)
     );
 
-    public static final RegistryObject<MenuType<PanelLayoutContainer>> PANEL_LAYOUT = REGISTER.register(
-            "panel_layout", createNoInv(PanelLayoutContainer::new)
+    public static final RegistryObject<MenuType<PanelDesignContainer>> PANEL_DESIGN = REGISTER.register(
+            "panel_layout", createNoInv(PanelDesignContainer::new)
     );
 
     private static <T extends AbstractContainerMenu> Supplier<MenuType<T>> createNoInv(BiFunction<Integer, FriendlyByteBuf, T> factory) {

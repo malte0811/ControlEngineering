@@ -15,9 +15,9 @@ public class ColorAndSignalWidget extends DataProviderWidget<ColorAndSignal> {
 
     public ColorAndSignalWidget(@Nullable ColorAndSignal initialState, int x, int y) {
         super(x, y, WIDTH, HEIGHT);
-        addWidget(color = new ColorSelector(initialState != null ? initialState.getColor() : 0, x, y));
+        addWidget(color = new ColorSelector(initialState != null ? initialState.color() : 0, x, y));
         addWidget(signal = new BusSignalSelector(
-                initialState != null ? initialState.getSignal() : null, x + ColorSelector.WIDTH, y
+                initialState != null ? initialState.signal() : null, x + ColorSelector.WIDTH, y
         ));
     }
 

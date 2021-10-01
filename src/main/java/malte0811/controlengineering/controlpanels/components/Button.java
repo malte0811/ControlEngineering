@@ -33,7 +33,7 @@ public class Button extends PanelComponentType<ColorAndSignal, Boolean> {
     @Override
     public BusState getEmittedState(ColorAndSignal config, Boolean active) {
         if (active) {
-            return config.getSignal().singleSignalState(BusLine.MAX_VALID_VALUE);
+            return config.signal().singleSignalState(BusLine.MAX_VALID_VALUE);
         } else {
             return BusState.EMPTY;
         }

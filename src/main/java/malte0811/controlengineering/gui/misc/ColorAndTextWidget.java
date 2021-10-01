@@ -17,12 +17,12 @@ public class ColorAndTextWidget extends DataProviderWidget<ColorAndText> {
 
     public ColorAndTextWidget(@Nullable ColorAndText initialState, int x, int y) {
         super(x, y, WIDTH, HEIGHT);
-        addWidget(color = new ColorSelector(initialState != null ? initialState.getColor() : 0, x, y));
+        addWidget(color = new ColorSelector(initialState != null ? initialState.color() : 0, x, y));
         addWidget(text = new EditBox(
                 Minecraft.getInstance().font, x, y + ColorSelector.HEIGHT, ColorSelector.WIDTH, TEXT_HEIGHT,
                 TextComponent.EMPTY
         ));
-        text.setValue(initialState != null ? initialState.getText() : "");
+        text.setValue(initialState != null ? initialState.text() : "");
         text.setFilter(s -> s.chars().allMatch(i -> i < 128));
     }
 

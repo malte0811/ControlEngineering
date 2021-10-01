@@ -25,13 +25,13 @@ public class BusSignalSelector extends DataProviderWidget<BusSignalRef> {
                 WIDTH, 20,
                 0, BusWireType.NUM_LINES - 1,
                 BUS_LINE_INDEX_KEY,
-                initial != null ? initial.line : 0
+                initial != null ? initial.line() : 0
         );
         colorSelect = new ColorPicker16(
                 x + width / 2 - ColorPicker16.SIZE / 2,
                 y + height / 2 - ColorPicker16.SIZE / 2 - ColorPicker16.TITLE_SPACE - 20,
                 new TranslatableComponent(COLOR_KEY),
-                initial != null ? DyeColor.byId(initial.color) : null
+                initial != null ? DyeColor.byId(initial.color()) : null
         );
         addWidget(lineSelect);
         addWidget(colorSelect);

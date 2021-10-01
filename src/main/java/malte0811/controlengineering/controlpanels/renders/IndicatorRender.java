@@ -23,7 +23,7 @@ public class IndicatorRender extends ComponentRenderer<ColorAndSignal, Integer> 
                 new Vec3(1, zOffset, 1),
                 new Vec3(1, zOffset, 0)
         ).setNormal(new Vec3(0, 1, 0))
-                .setRGB(ColorUtils.fractionalColor(config.getColor(), colorFactor))
+                .setRGB(ColorUtils.fractionalColor(config.color(), colorFactor))
                 .setBlockLightOverride(ownBrightness)
                 .writeTo(builder);
     }

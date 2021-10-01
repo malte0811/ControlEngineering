@@ -10,6 +10,7 @@ import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.controlpanels.renders.PanelRenderer;
+import malte0811.controlengineering.gui.ScreenUtils;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.network.panellayout.*;
 import malte0811.controlengineering.util.GuiUtil;
@@ -44,7 +45,7 @@ public class PanelLayout extends AbstractWidget {
     @Override
     public void renderButton(@Nonnull PoseStack transform, int mouseX, int mouseY, float partialTicks) {
         TextureAtlasSprite texture = PanelRenderer.PANEL_TEXTURE.get();
-        texture.atlas().bind();
+        ScreenUtils.bindForShader(texture);
         transform.pushPose();
         transform.translate(x, y, 0);
         blit(transform, 0, 0, 0, width, height, texture);

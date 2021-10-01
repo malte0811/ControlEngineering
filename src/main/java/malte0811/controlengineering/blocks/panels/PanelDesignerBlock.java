@@ -7,7 +7,7 @@ import malte0811.controlengineering.blocks.placement.HorizontalStructurePlacemen
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.HorizontalWithExtraShape;
 import malte0811.controlengineering.blocks.tape.KeypunchBlock;
-import malte0811.controlengineering.gui.panel.PanelLayoutContainer;
+import malte0811.controlengineering.gui.panel.PanelDesignContainer;
 import malte0811.controlengineering.tiles.CETileEntities;
 import malte0811.controlengineering.tiles.panels.PanelDesignerTile;
 import net.minecraft.core.BlockPos;
@@ -88,7 +88,7 @@ public class PanelDesignerBlock extends CEBlock<Direction, PanelDesignerTile> {
             @Nonnull BlockState state, @Nonnull Level worldIn, @Nonnull BlockPos pos
     ) {
         return new SimpleMenuProvider(
-                (id, inv, player) -> new PanelLayoutContainer(ContainerLevelAccess.create(worldIn, pos), id),
+                (id, inv, player) -> new PanelDesignContainer(ContainerLevelAccess.create(worldIn, pos), id),
                 TextComponent.EMPTY
         );
     }

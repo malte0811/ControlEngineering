@@ -1,14 +1,17 @@
 package malte0811.controlengineering.gui.tape;
 
 import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
+import malte0811.controlengineering.gui.ScreenUtils;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.RedstoneTapeUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
@@ -19,6 +22,7 @@ import net.minecraft.world.level.block.RedStoneWireBlock;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
+import static net.minecraft.client.gui.GuiComponent.blit;
 import static net.minecraft.client.gui.GuiComponent.fill;
 
 public class TapeRender {
@@ -96,10 +100,9 @@ public class TapeRender {
         final int sideSpace = -2;
         final double vOffset = yStart + TAPE_WIDTH + font.get().lineHeight + 2;
         final float rsSize = 16 + 2 * sideSpace;
-        TextureAtlas texture = Minecraft.getInstance().getModelManager()
-                .getAtlas(InventoryMenu.BLOCK_ATLAS);
-        texture.bind();
+        TextureAtlas texture = Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
         TextureAtlasSprite sprite = texture.getSprite(new ResourceLocation("block/redstone_dust_dot"));
+        ScreenUtils.bindForShader(sprite);
         forEachRow(matrixStack, shownBytes, rsSize, vOffset, (transform, currentByte) -> {
             int strength = RedstoneTapeUtils.getStrength(currentByte);
             int color = RedStoneWireBlock.getColorForPower(strength);
@@ -107,6 +110,7 @@ public class TapeRender {
         });
 
         TextureAtlasSprite white = QuadBuilder.getWhiteTexture();
+        ScreenUtils.bindForShader(white);
         forEachRow(matrixStack, shownBytes, 1, vOffset + CHAR_DISTANCE + 2, (transform, currentByte) -> {
             final DyeColor color = RedstoneTapeUtils.getColor(currentByte);
             blitWithColor(transform, 0, 1, 1, white, color.getTextColor());
@@ -133,20 +137,12 @@ public class TapeRender {
     private static void blitWithColor(
             PoseStack m, int x, int width, int height, TextureAtlasSprite texture, int color
     ) {
-        Matrix4f matrix = m.last().pose();
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
-        TransformingVertexBuilder inner = new TransformingVertexBuilder(bufferbuilder, DefaultVertexFormat.BLOCK);
-        inner.setColor(color | (0xff << 24));
-        final float minU = texture.getU0();
-        final float maxU = texture.getU1();
-        final float minV = texture.getV0();
-        final float maxV = texture.getV1();
-        inner.vertex(matrix, x, height, 0).uv(minU, maxV).endVertex();
-        inner.vertex(matrix, x + width, height, 0).uv(maxU, maxV).endVertex();
-        inner.vertex(matrix, x + width, 0, 0).uv(maxU, minV).endVertex();
-        inner.vertex(matrix, x, 0, 0).uv(minU, minV).endVertex();
-        bufferbuilder.end();
-        BufferUploader.end(bufferbuilder);
+        RenderSystem.setShaderColor(
+                BitUtils.getBits(color, 16, 8) / 255f,
+                BitUtils.getBits(color, 8, 8) / 255f,
+                BitUtils.getBits(color, 0, 8) / 255f,
+                1
+        );
+        blit(m, x, 0, 0, width, height, texture);
     }
 }

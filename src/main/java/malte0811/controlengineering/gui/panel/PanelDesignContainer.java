@@ -11,20 +11,34 @@ import malte0811.controlengineering.network.panellayout.PanelSubPacket;
 import malte0811.controlengineering.tiles.panels.PanelDesignerTile;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.level.Level;
 import java.util.List;
 
-public class PanelLayoutContainer extends CEContainer<PanelSubPacket> {
+public class PanelDesignContainer extends CEContainer<PanelSubPacket> {
     private final PanelDesignerTile designerTile;
 
-    public PanelLayoutContainer(ContainerLevelAccess pos, int id) {
-        super(CEContainers.PANEL_LAYOUT.get(), pos, id);
+    public PanelDesignContainer(ContainerLevelAccess pos, int id) {
+        super(CEContainers.PANEL_DESIGN.get(), pos, id);
         designerTile = pos.evaluate(Level::getBlockEntity)
                 .map(te -> te instanceof PanelDesignerTile ? (PanelDesignerTile) te : null)
                 .orElseThrow(RuntimeException::new);
+        if (designerTile.getLevel().isClientSide())
+            designerTile.getKeypunch().setAvailable(0);
+        addDataSlot(new DataSlot() {
+            @Override
+            public int get() {
+                return designerTile.getKeypunch().getAvailable();
+            }
+
+            @Override
+            public void set(int pValue) {
+                designerTile.getKeypunch().setAvailable(pValue);
+            }
+        });
     }
 
-    public PanelLayoutContainer(int id, FriendlyByteBuf data) {
+    public PanelDesignContainer(int id, FriendlyByteBuf data) {
         this(ContainerScreenManager.readWorldPos(data), id);
     }
 
@@ -47,6 +61,6 @@ public class PanelLayoutContainer extends CEContainer<PanelSubPacket> {
     }
 
     public int getAvailableTapeLength() {
-        return designerTile.getTTY().getAvailable();
+        return designerTile.getKeypunch().getAvailable();
     }
 }
