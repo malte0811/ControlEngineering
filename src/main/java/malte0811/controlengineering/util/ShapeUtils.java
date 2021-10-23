@@ -1,8 +1,8 @@
 package malte0811.controlengineering.util;
 
-import malte0811.controlengineering.util.math.Matrix4;
+import com.mojang.math.Matrix4f;
+import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.function.UnaryOperator;
@@ -14,14 +14,14 @@ public class ShapeUtils {
                 .reduce(Shapes.empty(), Shapes::or);
     }
 
-    public static AABB transform(Matrix4 matrix, AABB transform) {
+    public static AABB transform(Matrix4f matrix, AABB transform) {
         return transformFunc(matrix).apply(transform);
     }
 
-    public static UnaryOperator<AABB> transformFunc(Matrix4 transform) {
+    public static UnaryOperator<AABB> transformFunc(Matrix4f transform) {
         return aabb -> new AABB(
-                transform.apply(new Vec3(aabb.minX, aabb.minY, aabb.minZ)),
-                transform.apply(new Vec3(aabb.maxX, aabb.maxY, aabb.maxZ))
+                MatrixUtils.transform(transform, aabb.minX, aabb.minY, aabb.minZ),
+                MatrixUtils.transform(transform, aabb.maxX, aabb.maxY, aabb.maxZ)
         );
     }
 

@@ -1,6 +1,7 @@
 package malte0811.controlengineering.blocks.shapes;
 
-import malte0811.controlengineering.util.math.Matrix4;
+import com.mojang.math.Matrix4f;
+import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
@@ -23,7 +24,7 @@ public abstract class SelectionShapes {
     public abstract VoxelShape mainShape();
 
     @Nonnull
-    public abstract Matrix4 outerToInnerPosition();
+    public abstract Matrix4f outerToInnerPosition();
 
     @Nonnull
     public abstract List<? extends SelectionShapes> innerShapes();
@@ -70,26 +71,24 @@ public abstract class SelectionShapes {
         if (innerShapes.isEmpty()) {
             return;
         }
-        ClipContext innerRay = outerToInnerPosition().transformRay(ray.getFrom(), ray.getTo());
-        Optional<SelectionShapes> closest = Optional.empty();
+        ClipContext innerRay = MatrixUtils.transformRay(outerToInnerPosition(), ray.getFrom(), ray.getTo());
+        SelectionShapes closest = null;
         double minDistanceSq = Double.POSITIVE_INFINITY;
         for (SelectionShapes inner : innerShapes) {
             final VoxelShape innerShape = inner.mainShape();
             if (innerShape != null) {
-                final BlockHitResult result = innerShape.clip(
-                        innerRay.getFrom(), innerRay.getTo(), BlockPos.ZERO
-                );
+                final BlockHitResult result = innerShape.clip(innerRay.getFrom(), innerRay.getTo(), BlockPos.ZERO);
                 if (result != null) {
                     final double distanceSq = result.getLocation().distanceToSqr(innerRay.getFrom());
                     if (distanceSq < minDistanceSq) {
                         minDistanceSq = distanceSq;
-                        closest = Optional.of(inner);
+                        closest = inner;
                     }
                 }
             }
         }
-        if (closest.isPresent()) {
-            closest.get().fillTargetedStack(innerRay, out);
+        if (closest != null) {
+            closest.fillTargetedStack(innerRay, out);
         }
     }
 

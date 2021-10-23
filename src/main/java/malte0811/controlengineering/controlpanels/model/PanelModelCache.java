@@ -7,6 +7,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Transformation;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
@@ -87,7 +88,7 @@ public class PanelModelCache {
         @Override
         public MixedModel load(@Nonnull PanelData cacheKey) {
             PoseStack transform = new PoseStack();
-            cacheKey.getTransform().getPanelTopToWorld().toTransformationMatrix().push(transform);
+            new Transformation(cacheKey.getTransform().getPanelTopToWorld()).push(transform);
             transform.scale(1 / 16f, 1 / 16f, 1 / 16f);
             return ComponentRenderers.renderAll(cacheKey.getComponents(), transform, staticTypes);
         }

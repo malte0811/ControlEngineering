@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
+import com.mojang.math.Transformation;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.gui.misc.BusSignalSelector;
@@ -52,11 +53,10 @@ public class ClientEvents {
                 if (nonTopShape.shouldRenderNonTop()) {
                     renderShape(transform, nonTopShape, builder);
                 }
-                nonTopShape.outerToInnerPosition()
-                        .toTransformationMatrix()
-                        //TODO cache?
-                        .inverse()
-                        .push(transform);
+                var inverse = nonTopShape.outerToInnerPosition().copy();
+                //TODO cache?
+                inverse.invert();
+                new Transformation(inverse).push(transform);
             }
             renderShape(transform, selectedStack.get(pushCount), builder);
             for (int i = 0; i < pushCount; ++i) {

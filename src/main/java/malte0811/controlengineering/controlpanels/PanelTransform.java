@@ -1,15 +1,14 @@
 package malte0811.controlengineering.controlpanels;
 
+import com.mojang.math.Matrix4f;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
-import malte0811.controlengineering.util.math.Matrix4;
+import malte0811.controlengineering.util.math.MatrixUtils;
 import malte0811.controlengineering.util.serialization.Codecs;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.Vec3;
+
 import java.util.Objects;
 
 //All transforms are for the "top" block of the control panel
@@ -23,10 +22,10 @@ public class PanelTransform {
 
     private final TileTransformData tileData;
     //Transforms panel top coords (x, 0, y) to world coords
-    private final Matrix4 panelTopToWorld;
+    private final Matrix4f panelTopToWorld;
     //Transforms rotated world coords (panel base) to actual world coords
-    private final Matrix4 panelBottomToWorld;
-    private final Matrix4 worldToPanelTop;
+    private final Matrix4f panelBottomToWorld;
+    private final Matrix4f worldToPanelTop;
 
     public PanelTransform(float centerHeight, float degrees, PanelOrientation blockData) {
         this(new TileTransformData(centerHeight, degrees), blockData);
@@ -34,60 +33,30 @@ public class PanelTransform {
 
     public PanelTransform(TileTransformData tileData, PanelOrientation blockData) {
         this.tileData = tileData;
-        panelBottomToWorld = new Matrix4();
-        panelBottomToWorld.translate(0.5, 0.5, 0.5);
-        panelBottomToWorld.rotateFacing(blockData.top, 1);
-        panelBottomToWorld.rotate(-Math.PI / 2, 1, 0, 0);
-        if (blockData.top == Direction.DOWN) {
-            panelBottomToWorld.rotateFacing(blockData.front, -1);
-        } else {
-            panelBottomToWorld.rotateFacing(blockData.front, 1);
-        }
-        panelBottomToWorld.rotate(-Math.PI / 2, 0, 1, 0);
-        panelBottomToWorld.translate(-0.5, -0.5, -0.5);
-        final double radians = Math.toRadians(tileData.degrees);
-        double borderHeight = getFrontHeight();
+        final float radians = (float) Math.toRadians(tileData.degrees);
+        final float borderHeight = (float) getFrontHeight();
 
-        panelTopToWorld = new Matrix4();
-        panelTopToWorld.multiply(getPanelBottomToWorld());
-        panelTopToWorld.translate(0, borderHeight, 0);
-        panelTopToWorld.rotate(radians, 0, 0, 1);
-        panelTopToWorld.translate(0.5, 0, 0.5);
-        panelTopToWorld.rotate(Math.PI / 2, 0, 1, 0);
-        panelTopToWorld.translate(-0.5, 0, -0.5);
+        panelBottomToWorld = TransformCaches.makePanelBottomToWorld(blockData);
+        panelTopToWorld = panelBottomToWorld.copy();
+        panelTopToWorld.multiply(TransformCaches.makePanelTopToPanelBottom(borderHeight, radians));
 
-        worldToPanelTop = new Matrix4();
-        worldToPanelTop.translate(0.5, 0, 0.5);
-        worldToPanelTop.rotate(-Math.PI / 2, 0, 1, 0);
-        worldToPanelTop.translate(-0.5, 0, -0.5);
-        worldToPanelTop.rotate(-radians, 0, 0, 1);
-        worldToPanelTop.translate(0, -borderHeight, 0);
-        //TODO deduplicate?
-        worldToPanelTop.translate(0.5, 0.5, 0.5);
-        worldToPanelTop.rotate(Math.PI / 2, 0, 1, 0);
-        if (blockData.top == Direction.DOWN) {
-            worldToPanelTop.rotateFacing(blockData.front, 1);
-        } else {
-            worldToPanelTop.rotateFacing(blockData.front, -1);
-        }
-        worldToPanelTop.rotate(Math.PI / 2, 1, 0, 0);
-        worldToPanelTop.rotateFacing(blockData.top, -1);
-        worldToPanelTop.translate(-0.5, -0.5, -0.5);
+        worldToPanelTop = TransformCaches.makePanelBottomToPanelTop(borderHeight, radians).copy();
+        worldToPanelTop.multiply(TransformCaches.makeWorldToPanelBottom(blockData));
     }
 
     public PanelTransform() {
         this(0.25F, (float) Math.toDegrees(Math.atan(0.5)), PanelOrientation.DOWN_NORTH);
     }
 
-    public Matrix4 getPanelBottomToWorld() {
+    public Matrix4f getPanelBottomToWorld() {
         return panelBottomToWorld;
     }
 
-    public Matrix4 getPanelTopToWorld() {
+    public Matrix4f getPanelTopToWorld() {
         return panelTopToWorld;
     }
 
-    public Matrix4 getWorldToPanelTop() {
+    public Matrix4f getWorldToPanelTop() {
         return worldToPanelTop;
     }
 
@@ -123,7 +92,7 @@ public class PanelTransform {
     public Vec3[] getBottomVertices() {
         Vec3[] bottomVertices = layerVertices(1);
         for (int i = 0; i < 4; ++i) {
-            bottomVertices[i] = getPanelBottomToWorld().apply(bottomVertices[i]);
+            bottomVertices[i] = MatrixUtils.transform(getPanelBottomToWorld(), bottomVertices[i]);
         }
         return bottomVertices;
     }
@@ -131,7 +100,7 @@ public class PanelTransform {
     public Vec3[] getTopVertices() {
         Vec3[] topVertices = layerVertices(getTopFaceHeight());
         for (int i = 0; i < 4; ++i) {
-            topVertices[i] = getPanelTopToWorld().apply(topVertices[i]);
+            topVertices[i] = MatrixUtils.transform(getPanelTopToWorld(), topVertices[i]);
         }
         Vec3 temp = topVertices[0];
         System.arraycopy(topVertices, 1, topVertices, 0, topVertices.length - 1);

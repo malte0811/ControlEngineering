@@ -12,7 +12,7 @@ import malte0811.controlengineering.tiles.base.CETileEntity;
 import malte0811.controlengineering.tiles.base.IExtraDropTile;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
-import malte0811.controlengineering.util.math.Matrix4;
+import malte0811.controlengineering.util.math.MatrixUtils;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -76,7 +76,7 @@ public class KeypunchTile extends CETileEntity implements SelectionShapeOwner, I
         ));
         return new ListShapes(
                 KeypunchBlock.SHAPE_PROVIDER.apply(d),
-                Matrix4.inverseFacing(d),
+                MatrixUtils.inverseFacing(d),
                 subshapes,
                 ctx -> {
                     CEBlocks.KEYPUNCH.get().openContainer(

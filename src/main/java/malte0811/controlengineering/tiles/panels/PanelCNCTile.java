@@ -15,7 +15,7 @@ import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.tiles.base.CETileEntity;
 import malte0811.controlengineering.tiles.base.IExtraDropTile;
 import malte0811.controlengineering.util.*;
-import malte0811.controlengineering.util.math.Matrix4;
+import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -71,7 +71,7 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
             () -> getBlockState().getValue(PanelCNCBlock.FACING),
             facing -> new ListShapes(
                     PanelCNCBlock.SHAPE,
-                    Matrix4.inverseFacing(facing),
+                    MatrixUtils.inverseFacing(facing),
                     ImmutableList.of(
                             new SingleShape(
                                     createPixelRelative(1, 0, 1, 15, 2, 15),

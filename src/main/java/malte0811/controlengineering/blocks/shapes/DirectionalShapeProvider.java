@@ -1,6 +1,7 @@
 package malte0811.controlengineering.blocks.shapes;
 
-import malte0811.controlengineering.util.math.Matrix4;
+import com.mojang.math.Matrix4f;
+import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -25,12 +26,12 @@ public class DirectionalShapeProvider extends CachedShape<Direction> {
     protected VoxelShape compute(Direction k) {
         List<AABB> boxesIn = baseShape.toAabbs();
         VoxelShape rotated = Shapes.empty();
-        Matrix4 mat = new Matrix4(k);
+        Matrix4f mat = MatrixUtils.facing(k);
         for (AABB original : boxesIn) {
             Vec3 minOld = new Vec3(original.minX, original.minY, original.minZ);
             Vec3 maxOld = new Vec3(original.maxX, original.maxY, original.maxZ);
-            Vec3 firstNew = mat.apply(minOld);
-            Vec3 secondNew = mat.apply(maxOld);
+            Vec3 firstNew = MatrixUtils.transform(mat, minOld);
+            Vec3 secondNew = MatrixUtils.transform(mat, maxOld);
             VoxelShape rotatedBox = Shapes.create(new AABB(firstNew, secondNew));
             rotated = Shapes.joinUnoptimized(rotated, rotatedBox, BooleanOp.OR);
         }

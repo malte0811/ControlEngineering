@@ -1,7 +1,7 @@
 package malte0811.controlengineering.blocks.shapes;
 
 import com.google.common.collect.ImmutableList;
-import malte0811.controlengineering.util.math.Matrix4;
+import com.mojang.math.Matrix4f;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -33,8 +33,10 @@ public class SingleShape extends SelectionShapes {
 
     @Nonnull
     @Override
-    public Matrix4 outerToInnerPosition() {
-        return Matrix4.IDENTITY;
+    public Matrix4f outerToInnerPosition() {
+        final var id = new Matrix4f();
+        id.setIdentity();
+        return id;
     }
 
     @Nonnull

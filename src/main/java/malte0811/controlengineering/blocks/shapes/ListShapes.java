@@ -1,6 +1,6 @@
 package malte0811.controlengineering.blocks.shapes;
 
-import malte0811.controlengineering.util.math.Matrix4;
+import com.mojang.math.Matrix4f;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -11,13 +11,13 @@ import java.util.function.Function;
 
 public class ListShapes extends SelectionShapes {
     private final VoxelShape mainShape;
-    private final Matrix4 outerToInner;
+    private final Matrix4f outerToInner;
     private final List<? extends SelectionShapes> shapes;
     private final Function<UseOnContext, InteractionResult> onClick;
 
     public ListShapes(
             VoxelShape mainShape,
-            Matrix4 outerToInner,
+            Matrix4f outerToInner,
             List<? extends SelectionShapes> shapes,
             Function<UseOnContext, InteractionResult> onClick
     ) {
@@ -35,7 +35,7 @@ public class ListShapes extends SelectionShapes {
 
     @Nonnull
     @Override
-    public Matrix4 outerToInnerPosition() {
+    public Matrix4f outerToInnerPosition() {
         return outerToInner;
     }
 

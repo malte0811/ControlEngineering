@@ -17,7 +17,7 @@ import malte0811.controlengineering.tiles.tape.KeypunchState;
 import malte0811.controlengineering.tiles.tape.KeypunchTile;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
-import malte0811.controlengineering.util.math.Matrix4;
+import malte0811.controlengineering.util.math.MatrixUtils;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -51,7 +51,7 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
                     );
                     return new ListShapes(
                             baseShape,
-                            Matrix4.inverseFacing(facing),
+                            MatrixUtils.inverseFacing(facing),
                             ImmutableList.of(
                                     new SingleShape(PanelDesignerBlock.TABLE_TOP, openUI)
                             ),
@@ -69,7 +69,7 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
                     );
                     return new ListShapes(
                             baseShape,
-                            Matrix4.inverseFacing(facing),
+                            MatrixUtils.inverseFacing(facing),
                             ImmutableList.of(
                                     new SingleShape(PanelDesignerBlock.BUTTON, writeTape),
                                     new SingleShape(KeypunchTile.INPUT_SHAPE, addTape),

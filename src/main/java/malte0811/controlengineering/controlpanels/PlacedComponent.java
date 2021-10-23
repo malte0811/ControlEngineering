@@ -1,10 +1,10 @@
 package malte0811.controlengineering.controlpanels;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.math.Matrix4f;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
-import malte0811.controlengineering.util.math.Matrix4;
 import malte0811.controlengineering.util.math.RectangleD;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.serialization.Codecs;
@@ -113,8 +113,10 @@ public class PlacedComponent extends SelectionShapes {
 
     @Nonnull
     @Override
-    public Matrix4 outerToInnerPosition() {
-        return Matrix4.IDENTITY;
+    public Matrix4f outerToInnerPosition() {
+        final var id = new Matrix4f();
+        id.setIdentity();
+        return id;
     }
 
     @Nonnull

@@ -24,10 +24,7 @@ public enum PanelOrientation implements StringRepresentable {
     WEST(Direction.WEST, NORTH.front),
     ;
 
-    public static final Property<PanelOrientation> PROPERTY = EnumProperty.create(
-            "orientation",
-            PanelOrientation.class
-    );
+    public static final Property<PanelOrientation> PROPERTY = EnumProperty.create("orientation", PanelOrientation.class);
     public static final Direction HORIZONTAL_FRONT = NORTH.front;
 
     public final Direction top;

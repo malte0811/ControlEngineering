@@ -1,9 +1,9 @@
 package malte0811.controlengineering.controlpanels;
 
+import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.blocks.panels.CachedPanelShape;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
-import malte0811.controlengineering.util.math.Matrix4;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.Vec3;
@@ -28,7 +28,7 @@ public class PanelSelectionShapes extends SelectionShapes {
 
     @Nonnull
     @Override
-    public Matrix4 outerToInnerPosition() {
+    public Matrix4f outerToInnerPosition() {
         return tile.getTransform().getWorldToPanelTop();
     }
 

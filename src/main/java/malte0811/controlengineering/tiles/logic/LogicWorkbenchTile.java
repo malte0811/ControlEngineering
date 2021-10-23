@@ -17,7 +17,7 @@ import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import malte0811.controlengineering.tiles.base.CETileEntity;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.ItemUtil;
-import malte0811.controlengineering.util.math.Matrix4;
+import malte0811.controlengineering.util.math.MatrixUtils;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
@@ -72,7 +72,7 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
                     );
                     return new ListShapes(
                             baseShape,
-                            Matrix4.inverseFacing(facing),
+                            MatrixUtils.inverseFacing(facing),
                             ImmutableList.of(new SingleShape(LogicWorkbenchBlock.BURNER, create), wireDrawer),
                             $ -> InteractionResult.PASS
                     );
@@ -85,7 +85,7 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
                     );
                     return new ListShapes(
                             baseShape,
-                            Matrix4.inverseFacing(facing),
+                            MatrixUtils.inverseFacing(facing),
                             ImmutableList.of(tubeDrawer, wireDrawer),
                             $ -> InteractionResult.PASS
                     );

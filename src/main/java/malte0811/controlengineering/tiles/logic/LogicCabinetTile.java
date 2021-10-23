@@ -22,7 +22,7 @@ import malte0811.controlengineering.tiles.base.IExtraDropTile;
 import malte0811.controlengineering.tiles.base.IHasMaster;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.energy.CEEnergyStorage;
-import malte0811.controlengineering.util.math.Matrix4;
+import malte0811.controlengineering.util.math.MatrixUtils;
 import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -248,7 +248,7 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
         }
         subshapes.add(makeBoardInteraction(tile, upper));
         return new ListShapes(
-                baseShape.apply(d), Matrix4.inverseFacing(d), subshapes, $ -> InteractionResult.PASS
+                baseShape.apply(d), MatrixUtils.inverseFacing(d), subshapes, $ -> InteractionResult.PASS
         );
     }
 
