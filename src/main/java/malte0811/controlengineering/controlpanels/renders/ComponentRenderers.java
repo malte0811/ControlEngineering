@@ -39,7 +39,7 @@ public class ComponentRenderers {
         MixedModel result = new MixedModel(staticTypes);
         for (PlacedComponent component : components) {
             transform.pushPose();
-            transform.translate(component.getPosMin().x, 0, component.getPosMin().y);
+            transform.translate(component.getPosMin().x(), 0, component.getPosMin().y());
             render(result, component.getComponent(), transform);
             transform.popPose();
         }

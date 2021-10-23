@@ -12,14 +12,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 
-public class BlockPropertyPlacement<T extends Comparable<T>> implements PlacementBehavior<T> {
-    private final Property<T> property;
-    private final Function<BlockPlaceContext, T> getData;
-
-    public BlockPropertyPlacement(Property<T> property, Function<BlockPlaceContext, T> getData) {
-        this.property = property;
-        this.getData = getData;
-    }
+public record BlockPropertyPlacement<T extends Comparable<T>>(
+        Property<T> property, Function<BlockPlaceContext, T> getData
+) implements PlacementBehavior<T> {
 
     public static PlacementBehavior<Direction> horizontal(Property<Direction> property) {
         return new BlockPropertyPlacement<>(property, BlockPlaceContext::getHorizontalDirection);

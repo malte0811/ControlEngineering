@@ -114,11 +114,11 @@ public class BusConnectedCircuit {
     }
 
     public int getNumTubes() {
-        return getTotalCost(CellCost::getNumTubes);
+        return getTotalCost(CellCost::numTubes);
     }
 
     public int getWireLength() {
-        return getTotalCost(CellCost::getWireLength);
+        return getTotalCost(CellCost::wireLength);
     }
 
     public int getSolderAmount() {

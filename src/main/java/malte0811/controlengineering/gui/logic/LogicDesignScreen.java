@@ -147,8 +147,8 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
             PoseStack transform, int mouseX, int mouseY, Vec2d schematicMouse, @Nullable Component currentError
     ) {
         if (currentError != null) {
-            if (currentError instanceof MutableComponent) {
-                ((MutableComponent) currentError).setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
+            if (currentError instanceof MutableComponent mutable) {
+                mutable.setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
             }
             renderTooltip(transform, currentError, mouseX, mouseY);
         } else {
@@ -159,7 +159,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                 tooltip.add(toShow.getVisualOrderText());
                 for (SymbolPin pin : getHoveredPins(hovered, schematicMouse)) {
                     tooltip.add(
-                            new TranslatableComponent(PIN_KEY, pin.getPinName())
+                            new TranslatableComponent(PIN_KEY, pin.pinName())
                                     .withStyle(ChatFormatting.GRAY)
                                     .getVisualOrderText()
                     );
@@ -228,7 +228,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     private void drawErrors(PoseStack transform) {
         for (ConnectedPin pin : errors) {
             final Vec2i pos = pin.getPosition();
-            fill(transform, pos.x - 1, pos.y - 1, pos.x + 2, pos.y + 2, 0xffff0000);
+            fill(transform, pos.x() - 1, pos.y() - 1, pos.x() + 2, pos.y() + 2, 0xffff0000);
         }
     }
 
@@ -302,10 +302,10 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                 if (schematic.getChecker().canAdd(placedWire)) {
                     schematic.addWire(placedWire);
                     sendToServer(new AddWire(placedWire));
-                    if (placedWire.getEnd().equals(currentWireStart)) {
-                        currentWireStart = placedWire.getStart();
+                    if (placedWire.end().equals(currentWireStart)) {
+                        currentWireStart = placedWire.start();
                     } else {
-                        currentWireStart = placedWire.getEnd();
+                        currentWireStart = placedWire.end();
                     }
                 }
             } else {
@@ -401,7 +401,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     }
 
     private Vec2d getMousePosition(Vec2d screenPos) {
-        return getMousePosition(screenPos.x, screenPos.y);
+        return getMousePosition(screenPos.x(), screenPos.y());
     }
 
     private Vec2d getMousePosition(double mouseX, double mouseY) {
@@ -423,18 +423,18 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     @Nullable
     private WireSegment getPlacingSegment(Vec2d pos) {
         if (currentWireStart != null) {
-            final double sizeX = Math.abs(pos.x - currentWireStart.x - .5);
-            final double sizeY = Math.abs(pos.y - currentWireStart.y - .5);
+            final double sizeX = Math.abs(pos.x() - currentWireStart.x() - .5);
+            final double sizeY = Math.abs(pos.y() - currentWireStart.y() - .5);
             if (sizeX > sizeY) {
                 return new WireSegment(
-                        new Vec2i(getWireStart(currentWireStart.x, pos.x), currentWireStart.y),
-                        getWireLength(currentWireStart.x, pos.x),
+                        new Vec2i(getWireStart(currentWireStart.x(), pos.x()), currentWireStart.y()),
+                        getWireLength(currentWireStart.x(), pos.x()),
                         WireSegment.WireAxis.X
                 );
             } else {
                 return new WireSegment(
-                        new Vec2i(currentWireStart.x, getWireStart(currentWireStart.y, pos.y)),
-                        getWireLength(currentWireStart.y, pos.y),
+                        new Vec2i(currentWireStart.x(), getWireStart(currentWireStart.y(), pos.y())),
+                        getWireLength(currentWireStart.y(), pos.y()),
                         WireSegment.WireAxis.Y
                 );
             }

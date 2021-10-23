@@ -89,23 +89,23 @@ public class TapeWheel {
         //TODO deduplicate
         for (Pair<Integer, Double> pos : offsetAndHeight) {
             Vec2d vec = positions[pos.getFirst()];
-            output.vertex(vec.x, pos.getSecond(), vec.y)
-                    .uv(toUV(cornerUV.x), toUV(cornerUV.y))
+            output.vertex(vec.x(), pos.getSecond(), vec.y())
+                    .uv(toUV(cornerUV.x()), toUV(cornerUV.y()))
                     .endVertex();
         }
         for (int i = offsetAndHeight.size() - 1; i >= 0; i--) {
             Pair<Integer, Double> pos = offsetAndHeight.get(i);
             Vec2d vec = positions[pos.getFirst()];
-            output.vertex(vec.x, pos.getSecond(), vec.y)
-                    .uv(toUV(cornerUV.x), toUV(cornerUV.y))
+            output.vertex(vec.x(), pos.getSecond(), vec.y())
+                    .uv(toUV(cornerUV.x()), toUV(cornerUV.y()))
                     .endVertex();
         }
     }
 
     private double getSlopeFrom(int cornerId) {
         Vec2d corner = cornerRotated(cornerId);
-        double deltaX = tapeTarget.x - corner.x;
-        double deltaY = tapeTarget.y - corner.y;
+        double deltaX = tapeTarget.x() - corner.x();
+        double deltaY = tapeTarget.y() - corner.y();
         return deltaY / deltaX;
     }
 
@@ -116,8 +116,8 @@ public class TapeWheel {
         for (int i = 1; i + 2 < NUM_CORNERS; i += 2) {
             for (int vertex : new int[]{0, i, i + 1, i + 2}) {
                 Vec2d posNormalized = cornerRelative(vertex);
-                output.vertex(posNormalized.x, TAPE_WIDTH, posNormalized.y)
-                        .uv(toUV(posNormalized.x), toUV(posNormalized.y))
+                output.vertex(posNormalized.x(), TAPE_WIDTH, posNormalized.y())
+                        .uv(toUV(posNormalized.x()), toUV(posNormalized.y()))
                         .endVertex();
             }
         }
@@ -131,8 +131,8 @@ public class TapeWheel {
         for (int i = 0; i < NUM_CORNERS; ++i) {
             for (Pair<Integer, Double> quadVertex : offsetAndHeight) {
                 Vec2d posNormalized = cornerRelative((quadVertex.getFirst() + i) % NUM_CORNERS);
-                output.vertex(posNormalized.x, quadVertex.getSecond(), posNormalized.y)
-                        .uv(toUV(posNormalized.x), toUV(posNormalized.y))
+                output.vertex(posNormalized.x(), quadVertex.getSecond(), posNormalized.y())
+                        .uv(toUV(posNormalized.x()), toUV(posNormalized.y()))
                         .endVertex();
             }
         }
@@ -144,8 +144,8 @@ public class TapeWheel {
         final double sin = Math.sin(rotationRadians);
         final Vec2d baseVertex = cornerRelative(vertex);
         return new Vec2d(
-                cos * baseVertex.x + sin * baseVertex.y,
-                -sin * baseVertex.x + cos * baseVertex.y
+                cos * baseVertex.x() + sin * baseVertex.y(),
+                -sin * baseVertex.x() + cos * baseVertex.y()
         );
     }
 

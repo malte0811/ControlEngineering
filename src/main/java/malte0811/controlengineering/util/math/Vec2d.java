@@ -6,21 +6,13 @@ import java.util.Objects;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 
-public class Vec2d {
+public record Vec2d(double x, double y) {
     public static final Codec<Vec2d> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
                     Codec.DOUBLE.fieldOf("x").forGetter(v -> v.x),
                     Codec.DOUBLE.fieldOf("y").forGetter(v -> v.y)
             ).apply(inst, Vec2d::new)
     );
-
-    public final double x;
-    public final double y;
-
-    public Vec2d(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
 
     public Vec2d(FriendlyByteBuf in) {
         this(in.readDouble(), in.readDouble());
@@ -33,20 +25,6 @@ public class Vec2d {
 
     public static Vec2d lerp(Vec2d start, Vec2d end, double time) {
         return new Vec2d(Mth.lerp(time, start.x, end.x), Mth.lerp(time, start.y, end.y));
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Vec2d vec2d = (Vec2d) o;
-        return Double.compare(vec2d.x, x) == 0 &&
-                Double.compare(vec2d.y, y) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y);
     }
 
     public Vec2d scale(double scale) {
@@ -62,7 +40,7 @@ public class Vec2d {
     }
 
     public Vec2d add(Vec2i size) {
-        return new Vec2d(x + size.x, y + size.y);
+        return new Vec2d(x + size.x(), y + size.y());
     }
 
     public double get(int coord) {

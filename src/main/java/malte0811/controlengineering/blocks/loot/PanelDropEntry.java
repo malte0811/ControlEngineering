@@ -27,8 +27,8 @@ public class PanelDropEntry extends LootPoolSingletonContainer {
     @Override
     protected void createItemStack(@Nonnull Consumer<ItemStack> stackConsumer, @Nonnull LootContext context) {
         BlockEntity tile = CELootFunctions.getMasterTile(context);
-        if (tile instanceof ControlPanelTile) {
-            CompoundTag tag = ((ControlPanelTile) tile).getData().copy(true).toNBT();
+        if (tile instanceof ControlPanelTile panel) {
+            CompoundTag tag = panel.getData().copy(true).toNBT();
             ItemStack toDrop = new ItemStack(CEBlocks.CONTROL_PANEL.get(), 1);
             toDrop.setTag(tag);
             stackConsumer.accept(toDrop);

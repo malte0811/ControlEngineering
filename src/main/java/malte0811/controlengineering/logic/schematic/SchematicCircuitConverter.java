@@ -69,7 +69,7 @@ public class SchematicCircuitConverter {
                 }
             }
         }
-        pinsWithoutNet.removeIf(pin -> pin.getPin().isOutput());
+        pinsWithoutNet.removeIf(pin -> pin.pin().isOutput());
         return new ArrayList<>(pinsWithoutNet);
     }
 
@@ -89,15 +89,15 @@ public class SchematicCircuitConverter {
             graph.addNode(symbol);
         }
         for (Map.Entry<ConnectedPin, List<ConnectedPin>> net : nets.entrySet()) {
-            if (!net.getKey().getPin().isCombinatorialOutput()) {
+            if (!net.getKey().pin().isCombinatorialOutput()) {
                 continue;
             }
-            PlacedSymbol source = net.getKey().getSymbol();
+            PlacedSymbol source = net.getKey().symbol();
             for (ConnectedPin sink : net.getValue()) {
-                if (source == sink.getSymbol()) {
+                if (source == sink.symbol()) {
                     return Optional.empty();
                 }
-                graph.putEdge(source, sink.getSymbol());
+                graph.putEdge(source, sink.symbol());
             }
         }
         try {
@@ -118,12 +118,12 @@ public class SchematicCircuitConverter {
     }
 
     private static Optional<ConnectedPin> getSource(Collection<ConnectedPin> netPins) {
-        return netPins.stream().filter(p -> p.getPin().isOutput()).findAny();
+        return netPins.stream().filter(p -> p.pin().isOutput()).findAny();
     }
 
     private static List<ConnectedPin> getSinks(Collection<ConnectedPin> netPins) {
         return netPins.stream()
-                .filter(p -> !p.getPin().isOutput())
+                .filter(p -> !p.pin().isOutput())
                 .collect(Collectors.toList());
     }
 
@@ -134,7 +134,7 @@ public class SchematicCircuitConverter {
         for (Map.Entry<NetReference, List<ConnectedPin>> entry : nets.entrySet()) {
             Optional<ConnectedPin> source = getSource(entry.getValue());
             if (source.isPresent()) {
-                SymbolInstance<?> symbol = source.get().getSymbol().getSymbol();
+                SymbolInstance<?> symbol = source.get().symbol().getSymbol();
                 if (symbol.getType() == sourceType) {
                     result.put(entry.getKey(), (T) symbol.getCurrentState());
                 }
@@ -158,7 +158,7 @@ public class SchematicCircuitConverter {
         Map<NetReference, List<BusSignalRef>> result = new HashMap<>();
         for (Map.Entry<NetReference, List<ConnectedPin>> entry : nets.entrySet()) {
             for (ConnectedPin sink : getSinks(entry.getValue())) {
-                SymbolInstance<?> symbol = sink.getSymbol().getSymbol();
+                SymbolInstance<?> symbol = sink.symbol().getSymbol();
                 SchematicSymbol<?> type = symbol.getType();
                 if (type instanceof IOSymbol) {
                     result.computeIfAbsent(entry.getKey(), $ -> new ArrayList<>())
@@ -190,8 +190,8 @@ public class SchematicCircuitConverter {
         }
         for (Map.Entry<NetReference, List<ConnectedPin>> net : nets.entrySet()) {
             Optional<ConnectedPin> source = getSource(net.getValue());
-            if (source.isPresent() && !source.get().getPin().isCombinatorialOutput()) {
-                builder.addDelayedNet(net.getKey(), source.get().getPin().getType());
+            if (source.isPresent() && !source.get().pin().isCombinatorialOutput()) {
+                builder.addDelayedNet(net.getKey(), source.get().pin().type());
             }
         }
 
@@ -212,10 +212,10 @@ public class SchematicCircuitConverter {
                 if (pin.isOutput()) {
                     if (circuitNet != null) {
                         // Non-connected output is not an error
-                        cellBuilder.output(pin.getPinName(), circuitNet);
+                        cellBuilder.output(pin.pinName(), circuitNet);
                     }
                 } else {
-                    cellBuilder.input(pin.getPinName(), circuitNet);
+                    cellBuilder.input(pin.pinName(), circuitNet);
                 }
             }
             cellBuilder.buildCell();

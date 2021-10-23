@@ -44,10 +44,7 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
 
     @Override
     public Collection<BlockPos> getPlacementOffsets(PanelOrientation data) {
-        return ImmutableList.of(
-                BlockPos.ZERO,
-                new BlockPos(data.top.getNormal())
-        );
+        return ImmutableList.of(BlockPos.ZERO, new BlockPos(data.top.getNormal()));
     }
 
     @Override

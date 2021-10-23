@@ -5,16 +5,11 @@ import com.google.common.base.Preconditions;
 import java.util.List;
 import java.util.function.BinaryOperator;
 
-public class PiecewiseAffinePath<Vec> {
-    private final List<Node<Vec>> nodes;
-    private final ScalarMultiplier<Vec> multiplier;
-    private final BinaryOperator<Vec> adder;
-
-    public PiecewiseAffinePath(List<Node<Vec>> nodes, ScalarMultiplier<Vec> multiplier, BinaryOperator<Vec> adder) {
-        this.nodes = nodes;
+public record PiecewiseAffinePath<Vec>(
+        List<Node<Vec>> nodes, ScalarMultiplier<Vec> multiplier, BinaryOperator<Vec> adder
+) {
+    public PiecewiseAffinePath {
         Preconditions.checkArgument(!nodes.isEmpty());
-        this.multiplier = multiplier;
-        this.adder = adder;
     }
 
     public Vec getPosAt(double time) {
@@ -41,13 +36,5 @@ public class PiecewiseAffinePath<Vec> {
         Vec scale(Vec vector, double value);
     }
 
-    public static class Node<Vec> {
-        private final Vec point;
-        private final double time;
-
-        public Node(Vec point, double time) {
-            this.point = point;
-            this.time = time;
-        }
-    }
+    public record Node<Vec>(Vec point, double time) {}
 }

@@ -77,7 +77,7 @@ public class CircuitBuilder {
             Preconditions.checkState(existingNets.contains(net));
             final Pin cellPin = cell.getType().getInputPins().get(name);
             Preconditions.checkNotNull(cellPin);
-            if (cellPin.getType() == SignalType.DIGITAL) {
+            if (cellPin.type() == SignalType.DIGITAL) {
                 Preconditions.checkState(!analogNets.contains(net));
             }
             cellPins.put(new PinReference(cells.size(), false, name), net);
@@ -93,9 +93,9 @@ public class CircuitBuilder {
             pins.putAll(cellPins);
             for (Map.Entry<PinReference, NetReference> e : cellPins.entrySet()) {
                 if (e.getKey().isOutput()) {
-                    final Pin cellPin = cell.getType().getOutputPins().get(e.getKey().getPinName());
-                    if (cellPin.getDirection().isCombinatorialOutput() || !openDelayedNets.contains(e.getValue())) {
-                        addNet(e.getValue(), cellPin.getType());
+                    final Pin cellPin = cell.getType().getOutputPins().get(e.getKey().pinName());
+                    if (cellPin.direction().isCombinatorialOutput() || !openDelayedNets.contains(e.getValue())) {
+                        addNet(e.getValue(), cellPin.type());
                     } else {
                         openDelayedNets.remove(e.getValue());
                     }

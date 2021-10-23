@@ -23,7 +23,7 @@ public class Delete extends PanelSubPacket {
 
     @Override
     public boolean process(List<PlacedComponent> allComponents) {
-        final int index = PlacedComponent.getIndexAt(allComponents, pos.x, pos.y);
+        final int index = PlacedComponent.getIndexAt(allComponents, pos.x(), pos.y());
         if (index >= 0) {
             allComponents.remove(index);
             return true;

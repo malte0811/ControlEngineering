@@ -61,7 +61,7 @@ public class PanelDesignScreen extends StackedScreen implements MenuAccess<Panel
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         final Vec2d mouse = GuiUtil.getMousePosition();
         for (var button : children()) {
-            if (button.isMouseOver(mouse.x, mouse.y)) {
+            if (button.isMouseOver(mouse.x(), mouse.y())) {
                 if (button.keyPressed(keyCode, scanCode, modifiers)) {
                     return true;
                 } else {

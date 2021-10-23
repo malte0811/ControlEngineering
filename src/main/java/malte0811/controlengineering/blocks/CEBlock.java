@@ -64,8 +64,8 @@ public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends B
             boolean isMoving
     ) {
         BlockEntity te = worldIn.getBlockEntity(pos);
-        if (te instanceof IHasMaster) {
-            ((IHasMaster) te).setCachedMaster(((IHasMaster) te).computeMasterTile(state));
+        if (te instanceof IHasMaster hasMaster) {
+            hasMaster.setCachedMaster(hasMaster.computeMasterTile(state));
         }
         Pair<PlacementData, BlockPos> dataAndOffset = placementBehavior.getPlacementDataAndOffset(state, te);
         super.onRemove(state, worldIn, pos, newState, isMoving);
@@ -103,8 +103,8 @@ public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends B
             @Nonnull CollisionContext context
     ) {
         BlockEntity tile = reader.getBlockEntity(pos);
-        if (tile instanceof SelectionShapeOwner) {
-            VoxelShape selShape = ((SelectionShapeOwner) tile).getShape().mainShape();
+        if (tile instanceof SelectionShapeOwner shapeOwner) {
+            VoxelShape selShape = shapeOwner.getShape().mainShape();
             if (selShape != null) {
                 return selShape;
             }
@@ -129,8 +129,8 @@ public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends B
             @Nonnull BlockHitResult hit
     ) {
         BlockEntity tile = worldIn.getBlockEntity(pos);
-        if (tile instanceof SelectionShapeOwner) {
-            return ((SelectionShapeOwner) tile).getShape()
+        if (tile instanceof SelectionShapeOwner shapeOwner) {
+            return shapeOwner.getShape()
                     .onUse(
                             new UseOnContext(player, handIn, hit),
                             RaytraceUtils.create(player, 0, Vec3.atLowerCornerOf(pos))
@@ -140,12 +140,12 @@ public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends B
     }
 
     public void openContainer(Player player, BlockState state, Level worldIn, BlockPos pos) {
-        if (player instanceof ServerPlayer) {
+        if (player instanceof ServerPlayer serverPlayer) {
             MenuProvider container = state.getMenuProvider(worldIn, pos);
-            if (container instanceof CustomDataContainerProvider) {
-                ((CustomDataContainerProvider) container).open((ServerPlayer) player);
+            if (container instanceof CustomDataContainerProvider customProvider) {
+                customProvider.open(serverPlayer);
             } else {
-                NetworkHooks.openGui((ServerPlayer) player, container, pos);
+                NetworkHooks.openGui(serverPlayer, container, pos);
             }
         }
     }

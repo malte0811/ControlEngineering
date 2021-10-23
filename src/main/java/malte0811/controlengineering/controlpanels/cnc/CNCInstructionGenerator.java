@@ -19,9 +19,9 @@ public class CNCInstructionGenerator {
             }
             result.append(PanelComponents.getCreationKey(comp.getComponent().getType()))
                     .append(' ')
-                    .append(FORMAT.format(comp.getPosMin().x))
+                    .append(FORMAT.format(comp.getPosMin().x()))
                     .append(' ')
-                    .append(FORMAT.format(comp.getPosMin().y));
+                    .append(FORMAT.format(comp.getPosMin().y()));
             for (String field : comp.getComponent().toCNCStrings()) {
                 result.append(' ').append(escape(field));
             }

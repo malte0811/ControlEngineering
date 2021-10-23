@@ -44,14 +44,9 @@ public class DynamicLogicModelLoader implements IModelLoader<DynamicLogicModelLo
         return new DynamicLogicGeometry(boardModel, tubeModel);
     }
 
-    public static class DynamicLogicGeometry implements IModelGeometry<DynamicLogicGeometry> {
-        private final UnbakedModel board;
-        private final UnbakedModel tube;
-
-        public DynamicLogicGeometry(UnbakedModel board, UnbakedModel tube) {
-            this.board = board;
-            this.tube = tube;
-        }
+    public record DynamicLogicGeometry(
+            UnbakedModel board, UnbakedModel tube
+    ) implements IModelGeometry<DynamicLogicGeometry> {
 
         @Override
         public BakedModel bake(

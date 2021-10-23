@@ -17,8 +17,7 @@ import net.minecraftforge.fml.common.Mod;
 public class ModelLoaders {
     public static final ResourceLocation PANEL_MODEL = new ResourceLocation(ControlEngineering.MODID, "panel");
     public static final ResourceLocation LOGIC_CABINET = new ResourceLocation(
-            ControlEngineering.MODID,
-            "dynamic_logic"
+            ControlEngineering.MODID, "dynamic_logic"
     );
 
     @SubscribeEvent

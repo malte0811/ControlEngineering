@@ -45,7 +45,7 @@ public class PlacedComponent extends SelectionShapes {
             if (compShape == null) {
                 return null;
             } else {
-                return scale(compShape.move(pos.x, 0, pos.y), 1 / 16d);
+                return scale(compShape.move(pos.x(), 0, pos.y()), 1 / 16d);
             }
         });
     }

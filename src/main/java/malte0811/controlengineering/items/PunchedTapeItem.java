@@ -3,7 +3,6 @@ package malte0811.controlengineering.items;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.tape.ViewTapeScreen;
 import malte0811.controlengineering.util.BitUtils;
-import malte0811.controlengineering.util.Constants;
 import malte0811.controlengineering.util.ItemNBTUtil;
 import malte0811.controlengineering.util.TextUtil;
 import net.minecraft.client.Minecraft;
@@ -26,13 +25,10 @@ import java.util.List;
 public class PunchedTapeItem extends Item {
     // Main tag
     private static final String BYTES_KEY = "bytes";
+    public static final String PUNCHED_TAPE_BYTES = "controlengineering.tooltip.written_tape_bytes";
 
     public PunchedTapeItem() {
-        super(
-                new Item.Properties()
-                        .tab(ControlEngineering.ITEM_GROUP)
-                        .stacksTo(1)
-        );
+        super(new Item.Properties().tab(ControlEngineering.ITEM_GROUP).stacksTo(1));
     }
 
     public static ItemStack withBytes(byte[] bytes) {
@@ -59,10 +55,7 @@ public class PunchedTapeItem extends Item {
     ) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         byte[] data = getBytes(stack);
-        TextUtil.addTooltipLine(
-                tooltip,
-                new TranslatableComponent(Constants.PUNCHED_TAPE_BYTES, data.length)
-        );
+        TextUtil.addTooltipLine(tooltip, new TranslatableComponent(PUNCHED_TAPE_BYTES, data.length));
     }
 
     @Nonnull

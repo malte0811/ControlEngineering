@@ -53,27 +53,5 @@ public class ListBasedCodec<T> implements Codec<T> {
         return fields;
     }
 
-    public static class Field<T, T1> {
-        private final String name;
-        private final Function<T, T1> get;
-        private final Codec<T1> fieldCodec;
-
-        private Field(String name, Function<T, T1> get, Codec<T1> fieldCodec) {
-            this.name = name;
-            this.get = get;
-            this.fieldCodec = fieldCodec;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Function<T, T1> getGetter() {
-            return get;
-        }
-
-        public Codec<T1> getFieldCodec() {
-            return fieldCodec;
-        }
-    }
+    public record Field<T, T1>(String name, Function<T, T1> getter, Codec<T1> fieldCodec) {}
 }

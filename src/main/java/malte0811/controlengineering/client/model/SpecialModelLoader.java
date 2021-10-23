@@ -30,10 +30,6 @@ public class SpecialModelLoader implements IModelLoader<SpecialModelLoader.Speci
     private final Function<ItemTransforms, ? extends BakedModel> modelMaker;
     private final Collection<Material> materials;
 
-    public SpecialModelLoader(Supplier<? extends BakedModel> modelMaker, ResourceLocation... materials) {
-        this($ -> modelMaker.get(), materials);
-    }
-
     public SpecialModelLoader(
             Function<ItemTransforms, ? extends BakedModel> modelMaker,
             ResourceLocation... materials

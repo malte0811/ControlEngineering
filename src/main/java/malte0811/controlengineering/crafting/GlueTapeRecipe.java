@@ -12,14 +12,7 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 
-public class GlueTapeRecipe implements CraftingRecipe {
-    private final ResourceLocation id;
-    private final Ingredient glue;
-
-    public GlueTapeRecipe(ResourceLocation id, Ingredient glue) {
-        this.id = id;
-        this.glue = glue;
-    }
+public record GlueTapeRecipe(ResourceLocation id, Ingredient glue) implements CraftingRecipe {
 
     @Override
     public boolean matches(@Nonnull CraftingContainer inv, @Nonnull Level worldIn) {

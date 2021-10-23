@@ -22,9 +22,9 @@ public class AddWire extends LogicSubPacket {
 
     @Override
     public void write(FriendlyByteBuf out) {
-        this.added.getStart().write(out);
-        out.writeVarInt(this.added.getLength());
-        out.writeBoolean(this.added.getAxis() == WireAxis.X);
+        this.added.start().write(out);
+        out.writeVarInt(this.added.length());
+        out.writeBoolean(this.added.axis() == WireAxis.X);
     }
 
     @Override

@@ -17,7 +17,7 @@ import java.util.Collection;
 public interface PlacementBehavior<T> {
     static PlacementBehavior<Unit> simple(RegistryObject<? extends Block> block) {
         Lazy<BlockState> state = Lazy.of(() -> block.get().defaultBlockState());
-        return new PlacementBehavior<Unit>() {
+        return new PlacementBehavior<>() {
             @Override
             public Unit getPlacementData(BlockPlaceContext ctx) {
                 return Unit.INSTANCE;

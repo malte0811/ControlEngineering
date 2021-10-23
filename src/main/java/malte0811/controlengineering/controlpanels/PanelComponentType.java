@@ -76,7 +76,7 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
         final double height = getSelectionHeight();
         if (height >= 0) {
             final Vec2d size = getSize(getInitialState().getFirst());
-            return new AABB(0, 0, 0, size.x, height, size.y);
+            return new AABB(0, 0, 0, size.x(), height, size.y());
         } else {
             return null;
         }

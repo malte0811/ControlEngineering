@@ -22,24 +22,10 @@ public class ColorSelector extends DataProviderWidget<Integer> {
         final int sliderHeight = HEIGHT / 3;
         addWidget(red = new BasicSlider(x, y, width, sliderHeight, 0, 255, RED, ColorUtils.getRed(colorIn)));
         addWidget(green = new BasicSlider(
-                x,
-                y + sliderHeight,
-                width,
-                sliderHeight,
-                0,
-                255,
-                GREEN,
-                ColorUtils.getGreen(colorIn)
+                x, y + sliderHeight, width, sliderHeight, 0, 255, GREEN, ColorUtils.getGreen(colorIn)
         ));
         addWidget(blue = new BasicSlider(
-                x,
-                y + 2 * sliderHeight,
-                width,
-                sliderHeight,
-                0,
-                255,
-                BLUE,
-                ColorUtils.getBlue(colorIn)
+                x, y + 2 * sliderHeight, width, sliderHeight, 0, 255, BLUE, ColorUtils.getBlue(colorIn)
         ));
     }
 

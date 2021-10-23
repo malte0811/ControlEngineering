@@ -51,13 +51,5 @@ public class ModelRenderUtils {
         throw new IllegalStateException();
     }
 
-    public static class UVCoord {
-        public final float u;
-        public final float v;
-
-        public UVCoord(float u, float v) {
-            this.u = u;
-            this.v = v;
-        }
-    }
+    public record UVCoord(float u, float v) {}
 }

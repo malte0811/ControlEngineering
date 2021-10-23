@@ -22,9 +22,9 @@ public class WireSegmentTest {
     public void testSplit() {
         Vec2i center = new Vec2i(2, 2);
         List<WireSegment> splitResult = TEST_SEGMENT.splitAt(center);
-        assertEquals(TEST_SEGMENT.getStart(), splitResult.get(0).getStart());
-        assertEquals(center, splitResult.get(0).getEnd());
-        assertEquals(center, splitResult.get(1).getStart());
-        assertEquals(TEST_SEGMENT.getEnd(), splitResult.get(1).getEnd());
+        assertEquals(TEST_SEGMENT.start(), splitResult.get(0).start());
+        assertEquals(center, splitResult.get(0).end());
+        assertEquals(center, splitResult.get(1).start());
+        assertEquals(TEST_SEGMENT.end(), splitResult.get(1).end());
     }
 }

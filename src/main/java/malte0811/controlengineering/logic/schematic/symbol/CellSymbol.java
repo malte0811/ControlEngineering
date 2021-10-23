@@ -26,9 +26,9 @@ public class CellSymbol extends SchematicSymbol<Unit> {
         this.texture = new SubTexture(SYMBOLS_SHEET, uMin, vMin, uMin + uSize, vMin + vSize, 64);
         for (SymbolPin pin : pins) {
             if (pin.isOutput()) {
-                Preconditions.checkState(type.getOutputPins().containsKey(pin.getPinName()));
+                Preconditions.checkState(type.getOutputPins().containsKey(pin.pinName()));
             } else {
-                Preconditions.checkState(type.getInputPins().containsKey(pin.getPinName()));
+                Preconditions.checkState(type.getInputPins().containsKey(pin.pinName()));
             }
         }
     }

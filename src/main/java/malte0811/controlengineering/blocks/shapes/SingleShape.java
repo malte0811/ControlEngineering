@@ -12,10 +12,7 @@ import java.util.List;
 import java.util.function.Function;
 
 public class SingleShape extends SelectionShapes {
-    public static final SelectionShapes FULL_BLOCK = new SingleShape(
-            Shapes.block(),
-            $ -> InteractionResult.PASS
-    );
+    public static final SelectionShapes FULL_BLOCK = new SingleShape(Shapes.block(), $ -> InteractionResult.PASS);
 
     private final VoxelShape mainShape;
     private final Function<UseOnContext, InteractionResult> onClick;

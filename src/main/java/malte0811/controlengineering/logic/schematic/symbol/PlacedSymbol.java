@@ -26,7 +26,7 @@ public class PlacedSymbol {
     }
 
     public void render(PoseStack transform) {
-        symbol.render(transform, pos.x, pos.y);
+        symbol.render(transform, pos.x(), pos.y());
     }
 
     public SymbolInstance<?> getSymbol() {

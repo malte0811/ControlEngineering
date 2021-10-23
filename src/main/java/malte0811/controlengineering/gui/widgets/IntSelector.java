@@ -28,12 +28,9 @@ public class IntSelector extends StackedScreen {
     protected void init() {
         super.init();
         lineSelect = new BasicSlider(
-                width / 2 - 64,
-                height / 2 + ColorPicker16.SIZE / 2 - 10,
-                128,
-                20,
-                BusLine.MIN_VALID_VALUE,
-                BusLine.MAX_VALID_VALUE,
+                width / 2 - 64, height / 2 + ColorPicker16.SIZE / 2 - 10,
+                128, 20,
+                BusLine.MIN_VALID_VALUE, BusLine.MAX_VALID_VALUE,
                 translationKey
         );
         addRenderableWidget(lineSelect);

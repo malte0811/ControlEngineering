@@ -23,7 +23,7 @@ public class SchematicChecker {
     }
 
     public Optional<Component> getErrorForAdding(WireSegment segment) {
-        if (!BOUNDARY.containsClosed(segment.getStart()) || !BOUNDARY.containsClosed(segment.getEnd())) {
+        if (!BOUNDARY.containsClosed(segment.start()) || !BOUNDARY.containsClosed(segment.end())) {
             return error(WIRE_OUTSIDE_BOUNDARY);
         }
         IntSet netsToCheck = schematic.getConnectedNetIndices(segment);
@@ -63,7 +63,7 @@ public class SchematicChecker {
         boolean hasAnalogSource = false;
         boolean hasDigitalSink = false;
         for (ConnectedPin pin : netPins) {
-            if (pin.getPin().isOutput()) {
+            if (pin.pin().isOutput()) {
                 if (sourcePin != null) {
                     // Only allow one signal source
                     return error(MULTIPLE_SOURCES);

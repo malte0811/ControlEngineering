@@ -105,7 +105,7 @@ public class ComponentSelector extends AbstractWidget {
             transform.translate(colWidth / 2., (actualRowHeight + mc.font.lineHeight) / 2., 0);
             transform.scale(16, 16, .01f);
             PanelComponentInstance<?, ?> instance = type.newInstance();
-            transform.translate(-instance.getSize().x / 2f, -instance.getSize().y / 2f, 0);
+            transform.translate(-instance.getSize().x() / 2f, -instance.getSize().y() / 2f, 0);
             transform.mulPose(new Quaternion(-90, 0, 0, true));
             TransformUtil.shear(transform, .1f, .1f);
             transform.scale(1, -1, 1);

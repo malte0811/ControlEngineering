@@ -33,11 +33,7 @@ public class PanelBlock extends CEBlock<PanelOrientation, ControlPanelTile> {
             masterPos = pos.relative(po.top, -1);
         }
         BlockEntity te = world.getBlockEntity(masterPos);
-        if (te instanceof ControlPanelTile) {
-            return (ControlPanelTile) te;
-        } else {
-            return null;
-        }
+        return te instanceof ControlPanelTile panel ? panel : null;
     }
 
     @Override

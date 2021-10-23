@@ -86,8 +86,8 @@ public class Circuit {
             if (!entry.getKey().isOutput()) {
                 continue;
             }
-            Map<String, Pin> pins = cellsInOrder.get(entry.getKey().getCell()).getType().getOutputPins();
-            if (!pins.get(entry.getKey().getPinName()).getDirection().isCombinatorialOutput()) {
+            Map<String, Pin> pins = cellsInOrder.get(entry.getKey().cell()).getType().getOutputPins();
+            if (!pins.get(entry.getKey().pinName()).direction().isCombinatorialOutput()) {
                 delayedSources.put(entry.getValue(), entry.getKey());
             }
         }
@@ -96,17 +96,17 @@ public class Circuit {
     }
 
     private static boolean isValidPin(PinReference pin, List<LeafcellInstance<?>> cellsInTopoOrder) {
-        if (pin.getCell() >= cellsInTopoOrder.size()) {
+        if (pin.cell() >= cellsInTopoOrder.size()) {
             return false;
         }
-        LeafcellInstance<?> cell = cellsInTopoOrder.get(pin.getCell());
+        LeafcellInstance<?> cell = cellsInTopoOrder.get(pin.cell());
         Map<String, Pin> pins;
         if (pin.isOutput()) {
             pins = cell.getType().getOutputPins();
         } else {
             pins = cell.getType().getInputPins();
         }
-        return pins.containsKey(pin.getPinName());
+        return pins.containsKey(pin.pinName());
     }
 
     public CompoundTag toNBT() {
@@ -126,7 +126,7 @@ public class Circuit {
             }
             netNBT.put(PINS_KEY, netPins);
             netNBT.putBoolean(IS_INPUT_KEY, inputValues.containsKey(net));
-            nets.put(net.getId(), netNBT);
+            nets.put(net.id(), netNBT);
         }
         CompoundTag result = new CompoundTag();
         result.put(STAGES_KEY, stages);
@@ -149,9 +149,9 @@ public class Circuit {
         for (Map.Entry<NetReference, PinReference> delayedNet : delayedNetsBySource.entrySet()) {
             NetReference net = delayedNet.getKey();
             PinReference pin = delayedNet.getValue();
-            LeafcellInstance<?> cell = cellsInTopoOrder.get(pin.getCell());
+            LeafcellInstance<?> cell = cellsInTopoOrder.get(pin.cell());
             allNetValues.put(
-                    net, cell.getCurrentOutput(getCellInputs(pin.getCell())).getDouble(pin.getPinName())
+                    net, cell.getCurrentOutput(getCellInputs(pin.cell())).getDouble(pin.pinName())
             );
         }
         for (int cellId = 0; cellId < cellsInTopoOrder.size(); cellId++) {
@@ -160,7 +160,7 @@ public class Circuit {
                 NetReference net = pinToNet.get(new PinReference(cellId, true, entry.getKey()));
                 if (net != null) {
                     Pin pin = cell.getType().getOutputPins().get(entry.getKey());
-                    if (pin.getDirection().isCombinatorialOutput()) {
+                    if (pin.direction().isCombinatorialOutput()) {
                         Preconditions.checkState(!allNetValues.containsKey(net));
                         allNetValues.put(net, entry.getDoubleValue());
                     } else {

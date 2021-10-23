@@ -10,6 +10,9 @@ import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignScreen;
 import malte0811.controlengineering.gui.widget.ColorSelector;
 import malte0811.controlengineering.items.CEItems;
+import malte0811.controlengineering.items.EmptyTapeItem;
+import malte0811.controlengineering.items.PanelTopItem;
+import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.clock.ClockGenerator;
@@ -19,7 +22,6 @@ import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.ConstantSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.IOSymbol;
 import malte0811.controlengineering.tiles.logic.LogicWorkbenchTile;
-import malte0811.controlengineering.util.Constants;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
 
@@ -51,8 +53,8 @@ public class LangGenerator extends LanguageProvider {
         addClock(ClockTypes.RISING_EDGE, "Clock Generator: Rising edge");
         addClock(ClockTypes.WHILE_RS_ON, "Clock Generator: State triggered");
 
-        add(Constants.PUNCHED_TAPE_BYTES, "Characters: %d");
-        add(Constants.EMPTY_TAPE_BYTES, "Length: %d characters");
+        add(PunchedTapeItem.PUNCHED_TAPE_BYTES, "Characters: %d");
+        add(EmptyTapeItem.EMPTY_TAPE_BYTES, "Length: %d characters");
 
         add("itemGroup." + ControlEngineering.MODID, "Control Engineering");
 

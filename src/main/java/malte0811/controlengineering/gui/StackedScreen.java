@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+//TODO look at what giga did in Forge for this
 public abstract class StackedScreen extends Screen {
     @Nullable
     private final StackedScreen previousInStack;

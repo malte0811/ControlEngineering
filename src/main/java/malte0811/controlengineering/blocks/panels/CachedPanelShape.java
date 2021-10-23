@@ -26,9 +26,7 @@ public class CachedPanelShape extends CachedShape<PanelTransform> {
         final double backHeight = Math.max(transform.getCenterHeight(), transform.getBackHeight());
         parts.add(new AABB(0, 0, 0, 0.5, frontHeight, 1));
         parts.add(new AABB(0.5, 0, 0, 1, backHeight, 1));
-        return ShapeUtils.or(
-                parts.stream().map(ShapeUtils.transformFunc(transform.getPanelBottomToWorld()))
-        );
+        return ShapeUtils.or(parts.stream().map(ShapeUtils.transformFunc(transform.getPanelBottomToWorld())));
     }
 
     @Override

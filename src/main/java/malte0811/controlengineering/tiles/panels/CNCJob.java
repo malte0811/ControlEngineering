@@ -8,12 +8,12 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.cnc.CNCInstructionParser;
 
-public class CNCJob {
-    private final ImmutableList<PlacedComponent> components;
-    private final IntList tickPlacingComponent;
-    private final IntList tapeProgressAfterComponent;
-    private final int totalTicks;
-
+public record CNCJob(
+        ImmutableList<PlacedComponent> components,
+        IntList tickPlacingComponent,
+        IntList tapeProgressAfterComponent,
+        int totalTicks
+) {
     public static CNCJob createFor(CNCInstructionParser.ParserResult parserData) {
         final int timePerComponent = 60;
         IntList tickEnds = new IntArrayList(parserData.getComponents().size());
@@ -28,38 +28,17 @@ public class CNCJob {
         );
     }
 
-    public CNCJob(
-            ImmutableList<PlacedComponent> components,
-            IntList tickPlacingComponent,
-            IntList tapeProgressAfterComponent,
-            int totalTicks
-    ) {
+    public CNCJob {
         Preconditions.checkArgument(components.size() == tickPlacingComponent.size());
         Preconditions.checkArgument(components.size() == tapeProgressAfterComponent.size());
-        this.components = components;
-        this.tickPlacingComponent = tickPlacingComponent;
-        this.tapeProgressAfterComponent = tapeProgressAfterComponent;
-        this.totalTicks = totalTicks;
     }
 
     public double getTapeProgressAtTime(double tick) {
         return interpolate(tick, tapeProgressAfterComponent::getInt);
     }
 
-    public ImmutableList<PlacedComponent> getComponents() {
-        return components;
-    }
-
-    public IntList getTickPlacingComponent() {
-        return tickPlacingComponent;
-    }
-
     public int getTotalComponents() {
         return components.size();
-    }
-
-    public int getTotalTicks() {
-        return totalTicks;
     }
 
     private double interpolate(double tick, Int2IntFunction getValue) {

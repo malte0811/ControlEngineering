@@ -25,10 +25,10 @@ public class ListCodecParser<T> extends SerialCodecParser<T> {
         for (ParserField<T, ?> f : fields) {
             DataResult<JsonElement> fieldValue = f.parser.toJson(parts);
             if (fieldValue.result().isPresent()) {
-                result.add(f.field.getName(), fieldValue.result().get());
+                result.add(f.field.name(), fieldValue.result().get());
             } else {
                 Preconditions.checkState(fieldValue.error().isPresent());
-                return fieldValue.mapError(s -> f.field.getName() + ": " + s);
+                return fieldValue.mapError(s -> f.field.name() + ": " + s);
             }
         }
         return DataResult.success(result);
@@ -47,11 +47,11 @@ public class ListCodecParser<T> extends SerialCodecParser<T> {
 
         private ParserField(ListBasedCodec.Field<T, T1> field) {
             this.field = field;
-            this.parser = SerialCodecParser.getParser(field.getFieldCodec());
+            this.parser = SerialCodecParser.getParser(field.fieldCodec());
         }
 
         private void addTo(T in, SerialStorage parts) {
-            parser.addTo(field.getGetter().apply(in), parts);
+            parser.addTo(field.getter().apply(in), parts);
         }
     }
 }

@@ -32,11 +32,11 @@ public class TapeDrive {
 
     public void render(VertexConsumer output, PoseStack stack, int light, int overlay) {
         stack.pushPose();
-        stack.translate(leftCenter.x, 0, leftCenter.y);
+        stack.translate(leftCenter.x(), 0, leftCenter.y());
         leftWheel.render(output, stack, light, overlay);
         stack.popPose();
         stack.pushPose();
-        stack.translate(rightCenter.x, 0, rightCenter.y);
+        stack.translate(rightCenter.x(), 0, rightCenter.y());
         rightWheel.render(output, stack, light, overlay);
         stack.popPose();
     }

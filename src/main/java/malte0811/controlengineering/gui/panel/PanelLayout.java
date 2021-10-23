@@ -109,7 +109,7 @@ public class PanelLayout extends AbstractWidget {
     }
 
     private boolean delete(Vec2d mouse) {
-        return delete(mouse.x, mouse.y);
+        return delete(mouse.x(), mouse.y());
     }
 
     private boolean delete(double mouseX, double mouseY) {
@@ -128,7 +128,7 @@ public class PanelLayout extends AbstractWidget {
     }
 
     private int getHoveredIndex(Vec2d mouse) {
-        return getHoveredIndex(mouse.x, mouse.y);
+        return getHoveredIndex(mouse.x(), mouse.y());
     }
 
     private int getHoveredIndex(double mouseX, double mouseY) {

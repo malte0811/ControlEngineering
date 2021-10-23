@@ -30,8 +30,8 @@ public abstract class LeafcellType<State> extends TypedRegistryEntry<State> {
             CellCost cost
     ) {
         super(initialState, stateCodec);
-        Preconditions.checkArgument(inputPins.values().stream().noneMatch(p -> p.getDirection().isOutput()));
-        Preconditions.checkArgument(outputPins.values().stream().allMatch(p -> p.getDirection().isOutput()));
+        Preconditions.checkArgument(inputPins.values().stream().noneMatch(p -> p.direction().isOutput()));
+        Preconditions.checkArgument(outputPins.values().stream().allMatch(p -> p.direction().isOutput()));
         this.inputPins = inputPins;
         this.outputPins = outputPins;
         this.cost = cost;

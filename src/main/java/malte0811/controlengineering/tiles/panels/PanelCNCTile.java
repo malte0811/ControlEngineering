@@ -160,8 +160,8 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
             int nextComponent = currentPlacedComponents.size();
             CNCJob job = currentJob.get();
             if (nextComponent < job.getTotalComponents()) {
-                if (!level.isClientSide && currentTicksInJob >= job.getTickPlacingComponent().getInt(nextComponent)) {
-                    PlacedComponent componentToPlace = job.getComponents().get(nextComponent);
+                if (!level.isClientSide && currentTicksInJob >= job.tickPlacingComponent().getInt(nextComponent)) {
+                    PlacedComponent componentToPlace = job.components().get(nextComponent);
                     if (!ItemUtil.tryConsumeItemsFrom(
                             componentToPlace.getComponent().getType().getCost(), neighborInventories
                     )) {
@@ -177,12 +177,12 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
 
     private boolean hasFinishedJob() {
         CNCJob job = currentJob.get();
-        return job != null && (failed || currentTicksInJob >= job.getTotalTicks());
+        return job != null && (failed || currentTicksInJob >= job.totalTicks());
     }
 
     private boolean isJobRunning() {
         CNCJob job = currentJob.get();
-        return hasPanel && job != null && !failed && currentTicksInJob < job.getTotalTicks();
+        return hasPanel && job != null && !failed && currentTicksInJob < job.totalTicks();
     }
 
     @Override
@@ -237,8 +237,8 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
             int numComponents = 0;
             final int lastTickToConsider = currentTicksInJob - (failed ? 1 : 0);
             while (numComponents < job.getTotalComponents() &&
-                    job.getTickPlacingComponent().getInt(numComponents) <= lastTickToConsider) {
-                currentPlacedComponents.add(job.getComponents().get(numComponents));
+                    job.tickPlacingComponent().getInt(numComponents) <= lastTickToConsider) {
+                currentPlacedComponents.add(job.components().get(numComponents));
                 ++numComponents;
             }
         }

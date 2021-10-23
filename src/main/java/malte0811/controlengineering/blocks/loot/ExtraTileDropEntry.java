@@ -19,10 +19,7 @@ public class ExtraTileDropEntry extends LootPoolSingletonContainer {
     public static final ResourceLocation ID = new ResourceLocation(ControlEngineering.MODID, "extra_tile_drop");
 
     protected ExtraTileDropEntry(
-            int weightIn,
-            int qualityIn,
-            LootItemCondition[] conditionsIn,
-            LootItemFunction[] functionsIn
+            int weightIn, int qualityIn, LootItemCondition[] conditionsIn, LootItemFunction[] functionsIn
     ) {
         super(weightIn, qualityIn, conditionsIn, functionsIn);
     }
@@ -30,8 +27,8 @@ public class ExtraTileDropEntry extends LootPoolSingletonContainer {
     @Override
     protected void createItemStack(@Nonnull Consumer<ItemStack> output, @Nonnull LootContext context) {
         BlockEntity te = CELootFunctions.getMasterTile(context);
-        if (te instanceof IExtraDropTile) {
-            ((IExtraDropTile) te).getExtraDrops(output);
+        if (te instanceof IExtraDropTile extraDropTile) {
+            extraDropTile.getExtraDrops(output);
         }
     }
 

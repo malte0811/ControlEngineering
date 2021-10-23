@@ -173,28 +173,28 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCTile> {
         int lastComponentTime = 0;
         nodes.add(new Node<>(HEAD_IDLE, lastComponentTime));
         for (int i = 0; i < job.getTotalComponents(); ++i) {
-            final PlacedComponent nextComponent = job.getComponents().get(i);
+            final PlacedComponent nextComponent = job.components().get(i);
             final Vec2d min = nextComponent.getPosMin();
             final Vec2d max = nextComponent.getPosMax().subtract(new Vec2d(HEAD_SIZE, HEAD_SIZE));
-            final int nextComponentTime = job.getTickPlacingComponent().getInt(i);
+            final int nextComponentTime = job.tickPlacingComponent().getInt(i);
             final double arrivalAtComponent = Mth.lerp(arrival, lastComponentTime, nextComponentTime);
-            nodes.add(new Node<>(new Vec3(min.x, HEAD_TRAVERSAL_HEIGHT, min.y), arrivalAtComponent));
+            nodes.add(new Node<>(new Vec3(min.x(), HEAD_TRAVERSAL_HEIGHT, min.y()), arrivalAtComponent));
             final double downAtComp = Mth.lerp(down, lastComponentTime, nextComponentTime);
             final double doneAtComp = Mth.lerp(done, lastComponentTime, nextComponentTime);
-            Vec2d[] corners = {min, new Vec2d(min.x, max.y), max, new Vec2d(max.x, min.y), min};
+            Vec2d[] corners = {min, new Vec2d(min.x(), max.y()), max, new Vec2d(max.x(), min.y()), min};
             for (int point = 0; point < corners.length; point++) {
                 final double cornerTime = Mth.lerp(
                         point / (double) (corners.length - 1), downAtComp, doneAtComp
                 );
                 nodes.add(new Node<>(
-                        new Vec3(corners[point].x, HEAD_WORK_HEIGHT, corners[point].y), cornerTime
+                        new Vec3(corners[point].x(), HEAD_WORK_HEIGHT, corners[point].y()), cornerTime
                 ));
             }
             final double upAtComp = Mth.lerp(up, lastComponentTime, nextComponentTime);
-            nodes.add(new Node<>(new Vec3(min.x, HEAD_TRAVERSAL_HEIGHT, min.y), upAtComp));
+            nodes.add(new Node<>(new Vec3(min.x(), HEAD_TRAVERSAL_HEIGHT, min.y()), upAtComp));
             lastComponentTime = nextComponentTime;
         }
-        nodes.add(new Node<>(HEAD_IDLE, job.getTotalTicks()));
+        nodes.add(new Node<>(HEAD_IDLE, job.totalTicks()));
         return new PiecewiseAffinePath<>(nodes, Vec3::scale, Vec3::add);
     }
 }

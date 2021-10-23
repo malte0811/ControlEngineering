@@ -80,10 +80,9 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof PanelComponentInstance<?, ?>)) {
+        if (!(obj instanceof PanelComponentInstance<?, ?> inst)) {
             return false;
         }
-        PanelComponentInstance<?, ?> inst = (PanelComponentInstance<?, ?>) obj;
         return getType() == inst.getType() &&
                 getConfig().equals(inst.getConfig()) &&
                 getState().equals(inst.getState());

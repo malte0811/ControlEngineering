@@ -1,7 +1,6 @@
 package malte0811.controlengineering.items;
 
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.util.Constants;
 import malte0811.controlengineering.util.ItemNBTUtil;
 import malte0811.controlengineering.util.TextUtil;
 import net.minecraft.core.NonNullList;
@@ -18,13 +17,10 @@ import java.util.List;
 
 public class EmptyTapeItem extends Item {
     private static final String LENGTH_KEY = "length";
+    public static final String EMPTY_TAPE_BYTES = "controlengineering.tooltip.empty_tape_bytes";
 
     public EmptyTapeItem() {
-        super(
-                new Item.Properties()
-                        .tab(ControlEngineering.ITEM_GROUP)
-                        .stacksTo(1)
-        );
+        super(new Item.Properties().tab(ControlEngineering.ITEM_GROUP).stacksTo(1));
     }
 
     @Override
@@ -45,10 +41,7 @@ public class EmptyTapeItem extends Item {
     ) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         int length = getLength(stack);
-        TextUtil.addTooltipLine(
-                tooltip,
-                new TranslatableComponent(Constants.EMPTY_TAPE_BYTES, length)
-        );
+        TextUtil.addTooltipLine(tooltip, new TranslatableComponent(EMPTY_TAPE_BYTES, length));
     }
 
     public static ItemStack withLength(int length) {

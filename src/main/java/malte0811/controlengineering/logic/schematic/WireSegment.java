@@ -12,40 +12,19 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class WireSegment {
+public record WireSegment(Vec2i start, int length,
+                          malte0811.controlengineering.logic.schematic.WireSegment.WireAxis axis) {
     public static final Codec<WireSegment> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
-                    Vec2i.CODEC.fieldOf("start").forGetter(WireSegment::getStart),
-                    Codec.INT.fieldOf("length").forGetter(WireSegment::getLength),
-                    WireAxis.CODEC.fieldOf("axis").forGetter(WireSegment::getAxis)
+                    Vec2i.CODEC.fieldOf("start").forGetter(WireSegment::start),
+                    Codec.INT.fieldOf("length").forGetter(WireSegment::length),
+                    WireAxis.CODEC.fieldOf("axis").forGetter(WireSegment::axis)
             ).apply(inst, WireSegment::new)
     );
     public static final float WIRE_SPACE = 1 / 8f;
 
-    private final Vec2i start;
-    private final int length;
-    private final WireAxis axis;
-
-    public WireSegment(Vec2i start, int length, WireAxis axis) {
-        this.start = start;
-        this.length = length;
-        this.axis = axis;
-    }
-
-    public Vec2i getStart() {
-        return start;
-    }
-
-    public Vec2i getEnd() {
+    public Vec2i end() {
         return axis.addToCoord(start, length);
-    }
-
-    public int getLength() {
-        return length;
-    }
-
-    public WireAxis getAxis() {
-        return axis;
     }
 
     public boolean containsClosed(Vec2i point) {
@@ -77,14 +56,14 @@ public class WireSegment {
      * intersection is in the interior of at least one of the segments
      */
     public boolean crossesOneOpen(WireSegment other) {
-        if (getAxis() == other.getAxis()) {
+        if (axis() == other.axis()) {
             return false;
-        } else if (getAxis() == WireAxis.Y) {
+        } else if (axis() == WireAxis.Y) {
             return other.crossesOneOpen(this);
         }
         // This: X wire, other: Y wire
-        final int intersectionX = other.getStart().x;
-        final int intersectionY = this.getStart().y;
+        final int intersectionX = other.start().x();
+        final int intersectionY = this.start().y();
         if (!containsClosedOnAxis(intersectionX) || !other.containsClosedOnAxis(intersectionY)) {
             // Intersection does not actually exist
             return false;
@@ -108,38 +87,16 @@ public class WireSegment {
     }
 
     public Vec2i[] getEnds() {
-        return new Vec2i[]{getStart(), getEnd()};
+        return new Vec2i[]{start(), end()};
     }
 
     public void renderWithoutBlobs(PoseStack stack, int color) {
         GuiUtil.fill(
                 stack,
-                getStart().x + WIRE_SPACE, getStart().y + WIRE_SPACE,
-                getEnd().x + 1 - WIRE_SPACE, getEnd().y + 1 - WIRE_SPACE,
+                start().x() + WIRE_SPACE, start().y() + WIRE_SPACE,
+                end().x() + 1 - WIRE_SPACE, end().y() + 1 - WIRE_SPACE,
                 color
         );
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        WireSegment that = (WireSegment) o;
-        return length == that.length && start.equals(that.start) && axis == that.axis;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(start, length, axis);
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", WireSegment.class.getSimpleName() + "[", "]")
-                .add("start=" + start)
-                .add("length=" + length)
-                .add("axis=" + axis)
-                .toString();
     }
 
     public enum WireAxis {
@@ -149,14 +106,14 @@ public class WireSegment {
 
         public Vec2i addToCoord(Vec2i fixed, int inAxisCoord) {
             if (this == X) {
-                return new Vec2i(fixed.x + inAxisCoord, fixed.y);
+                return new Vec2i(fixed.x() + inAxisCoord, fixed.y());
             } else {
-                return new Vec2i(fixed.x, fixed.y + inAxisCoord);
+                return new Vec2i(fixed.x(), fixed.y() + inAxisCoord);
             }
         }
 
         public int get(Vec2i vec) {
-            return this == X ? vec.x : vec.y;
+            return this == X ? vec.x() : vec.y();
         }
 
         public <T> T get(T x, T y) {

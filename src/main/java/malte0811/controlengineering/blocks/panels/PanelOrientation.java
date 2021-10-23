@@ -6,6 +6,8 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 
+import javax.annotation.Nonnull;
+
 public enum PanelOrientation implements StringRepresentable {
     //Placed on the ceiling
     DOWN_NORTH(Direction.DOWN, Direction.NORTH),
@@ -40,6 +42,7 @@ public enum PanelOrientation implements StringRepresentable {
         return getSerializedName();
     }
 
+    @Nonnull
     @Override
     public String getSerializedName() {
         return (top + "_" + front).toLowerCase(Locale.US);

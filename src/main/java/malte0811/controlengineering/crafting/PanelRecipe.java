@@ -17,12 +17,7 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nonnull;
 
 //TODO the final recipe should be something different
-public class PanelRecipe implements CraftingRecipe {
-    private final ResourceLocation id;
-
-    public PanelRecipe(ResourceLocation id) {
-        this.id = id;
-    }
+public record PanelRecipe(ResourceLocation id) implements CraftingRecipe {
 
     @Override
     public boolean matches(@Nonnull CraftingContainer inv, @Nonnull Level worldIn) {

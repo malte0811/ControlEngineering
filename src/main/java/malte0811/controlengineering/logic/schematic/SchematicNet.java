@@ -51,7 +51,7 @@ public class SchematicNet {
     }
 
     public void addSegment(WireSegment segment) {
-        if (segment.getAxis() == X) {
+        if (segment.axis() == X) {
             horizontalSegments.add(segment);
         } else {
             verticalSegments.add(segment);
@@ -83,7 +83,7 @@ public class SchematicNet {
         for (WireSegment segment : allSegments) {
             for (Vec2i end : segment.getEnds()) {
                 if (endsAt.addTo(end, 1) == 2) {
-                    GuiComponent.fill(stack, end.x, end.y, end.x + 1, end.y + 1, color);
+                    GuiComponent.fill(stack, end.x(), end.y(), end.x() + 1, end.y() + 1, color);
                 }
             }
         }
@@ -126,7 +126,7 @@ public class SchematicNet {
     }
 
     private boolean containsPin(PlacedSymbol symbol, SymbolPin pin) {
-        final Vec2i actualPinPos = pin.getPosition().add(symbol.getPosition());
+        final Vec2i actualPinPos = pin.position().add(symbol.getPosition());
         return contains(actualPinPos);
     }
 
@@ -144,8 +144,8 @@ public class SchematicNet {
         // TODO improve using horizontal/vertical structure?
         Map<Vec2i, SchematicNet> indexForPoint = new HashMap<>();
         for (WireSegment segment : allSegments) {
-            final SchematicNet first = indexForPoint.get(segment.getStart());
-            final SchematicNet second = indexForPoint.get(segment.getEnd());
+            final SchematicNet first = indexForPoint.get(segment.start());
+            final SchematicNet second = indexForPoint.get(segment.end());
             final SchematicNet finalNet;
             if (first == null && second == null) {
                 // New net
@@ -184,18 +184,18 @@ public class SchematicNet {
 
     private static void mergeIntervalsIn(WireSegment.WireAxis axis, List<WireSegment> segments) {
         segments.sort(
-                Comparator.<WireSegment>comparingInt(s -> axis.other().get(s.getStart()))
-                        .thenComparing(s -> axis.get(s.getStart()))
+                Comparator.<WireSegment>comparingInt(s -> axis.other().get(s.start()))
+                        .thenComparing(s -> axis.get(s.start()))
         );
         for (int i = 1; i < segments.size(); i++) {
             final WireSegment last = segments.get(i - 1);
             final WireSegment current = segments.get(i);
-            if (last.isOnExtendedWire(current.getStart())) {
-                final int lastEnd = axis.get(last.getEnd());
-                final int currentStart = axis.get(current.getStart());
+            if (last.isOnExtendedWire(current.start())) {
+                final int lastEnd = axis.get(last.end());
+                final int currentStart = axis.get(current.start());
                 if (lastEnd >= currentStart) {
-                    final int addedLength = Math.max(0, axis.get(current.getEnd()) - lastEnd);
-                    segments.set(i - 1, new WireSegment(last.getStart(), last.getLength() + addedLength, axis));
+                    final int addedLength = Math.max(0, axis.get(current.end()) - lastEnd);
+                    segments.set(i - 1, new WireSegment(last.start(), last.length() + addedLength, axis));
                     segments.remove(i);
                     --i;
                 }
@@ -210,7 +210,7 @@ public class SchematicNet {
             for (int yI = 0; yI < verticalSegments.size(); yI++) {
                 final WireSegment vertical = verticalSegments.get(yI);
                 if (horizontal.crossesOneOpen(vertical)) {
-                    final Vec2i intersection = new Vec2i(vertical.getStart().x, horizontal.getStart().y);
+                    final Vec2i intersection = new Vec2i(vertical.start().x(), horizontal.start().y());
                     if (vertical.containsOpen(intersection)) {
                         verticalSegments.remove(yI);
                         --yI;
