@@ -65,8 +65,8 @@ public class PanelTransform {
         //TODO deduplicate?
         worldToPanelTop.translate(0.5, 0.5, 0.5);
         worldToPanelTop.rotate(Math.PI / 2, 0, 1, 0);
-        if (blockData.top == Direction.DOWN && blockData.front.getAxis() == Direction.Axis.Z) {
-            worldToPanelTop.rotateFacing(blockData.front.getOpposite(), -1);
+        if (blockData.top == Direction.DOWN) {
+            worldToPanelTop.rotateFacing(blockData.front, 1);
         } else {
             worldToPanelTop.rotateFacing(blockData.front, -1);
         }
@@ -77,17 +77,6 @@ public class PanelTransform {
 
     public PanelTransform() {
         this(0.25F, (float) Math.toDegrees(Math.atan(0.5)), PanelOrientation.DOWN_NORTH);
-    }
-
-    public ClipContext toPanelRay(Vec3 start, Vec3 end, BlockPos panelPos) {
-        Vec3 offset = Vec3.atLowerCornerOf(panelPos);
-        return new ClipContext(
-                worldToPanelTop.apply(start.subtract(offset)),
-                worldToPanelTop.apply(end.subtract(offset)),
-                ClipContext.Block.VISUAL,
-                ClipContext.Fluid.NONE,
-                null
-        );
     }
 
     public Matrix4 getPanelBottomToWorld() {
@@ -175,33 +164,9 @@ public class PanelTransform {
         return Objects.hash(tileData, panelTopToWorld, panelBottomToWorld, worldToPanelTop);
     }
 
-    private static class TileTransformData {
-        private final float centerHeight;
-        private final float degrees;
-
-        private TileTransformData(float centerHeight, float degrees) {
-            this.centerHeight = centerHeight;
-            this.degrees = degrees;
-        }
-
+    private static record TileTransformData(float centerHeight, float degrees) {
         private TileTransformData() {
             this(0.25F, (float) -Math.toDegrees(Math.atan(0.5)));
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            TileTransformData that = (TileTransformData) o;
-            return Float.compare(that.centerHeight, centerHeight) == 0 && Float.compare(
-                    that.degrees,
-                    degrees
-            ) == 0;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(centerHeight, degrees);
         }
     }
 }

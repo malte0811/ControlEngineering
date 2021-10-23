@@ -53,8 +53,8 @@ public class BakedQuadVertexBuilder extends TransformingVertexBuilder {
                 interpolateUV ? sprite.getU(uv.x) : uv.x,
                 interpolateUV ? sprite.getV(uv.y) : uv.y
         );
-        this.lightmap.read();
-        this.overlay.read();
+        this.lightmap.clear();
+        this.overlay.clear();
         ++nextVertex;
         if (nextVertex == 4) {
             nextVertex = 0;

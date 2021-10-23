@@ -18,7 +18,7 @@ public enum PanelOrientation implements StringRepresentable {
     UP_SOUTH(Direction.UP, Direction.SOUTH),
     UP_WEST(Direction.UP, Direction.WEST),
     //Placed on the wall
-    NORTH(Direction.NORTH, Direction.NORTH),
+    NORTH(Direction.NORTH, Direction.SOUTH),
     EAST(Direction.EAST, NORTH.front),
     SOUTH(Direction.SOUTH, NORTH.front),
     WEST(Direction.WEST, NORTH.front),

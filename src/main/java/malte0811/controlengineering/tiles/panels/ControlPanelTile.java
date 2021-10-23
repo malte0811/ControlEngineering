@@ -105,6 +105,7 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
     @Nonnull
     @Override
     public CompoundTag save(@Nonnull CompoundTag compound) {
+        super.save(compound);
         return writeSyncedData(compound);
     }
 
@@ -185,15 +186,11 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
         ALWAYS;
 
         public boolean shouldSync(boolean changed) {
-            switch (this) {
-                case NEVER:
-                    return false;
-                case IF_CHANGED:
-                    return changed;
-                case ALWAYS:
-                    return true;
-            }
-            throw new UnsupportedOperationException("Unknown sync type " + name());
+            return switch (this) {
+                case NEVER -> false;
+                case IF_CHANGED -> changed;
+                case ALWAYS -> true;
+            };
         }
     }
 }

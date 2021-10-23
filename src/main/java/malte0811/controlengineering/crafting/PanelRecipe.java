@@ -54,7 +54,7 @@ public class PanelRecipe implements CraftingRecipe {
         }
         //TODO
         new PanelTransform(
-                0.25F, (float) Math.toDegrees(Math.atan(0.5)), PanelOrientation.DOWN_NORTH
+                0.25F, (float) -Math.toDegrees(Math.atan(0.5)), PanelOrientation.DOWN_NORTH
         ).addTo(resultNBT);
         result.setTag(resultNBT);
         return result;

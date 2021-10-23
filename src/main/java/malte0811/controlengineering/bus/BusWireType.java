@@ -39,12 +39,6 @@ public class BusWireType extends WireType {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public TextureAtlasSprite getIcon(Connection connection) {
-        return WireType.iconDefaultWire;
-    }
-
-    @Override
     public int getMaxLength() {
         return 16;
     }

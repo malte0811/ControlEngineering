@@ -22,9 +22,7 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
     public PanelOrientation getPlacementData(BlockPlaceContext ctx) {
         Direction top = ctx.getClickedFace();
         Direction front;
-        if (top == Direction.UP) {
-            front = ctx.getHorizontalDirection().getOpposite();
-        } else if (top == Direction.DOWN) {
+        if (top.getAxis().isVertical()) {
             front = ctx.getHorizontalDirection();
         } else {
             front = PanelOrientation.HORIZONTAL_FRONT;
@@ -60,12 +58,7 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
     }
 
     @Override
-    public boolean isValidAtOffset(
-            BlockPos offset,
-            BlockState state,
-            BlockEntity te,
-            PanelOrientation data
-    ) {
+    public boolean isValidAtOffset(BlockPos offset, BlockState state, BlockEntity te, PanelOrientation data) {
         if (state.getBlock() != CEBlocks.CONTROL_PANEL.get()) {
             return false;
         }
@@ -79,12 +72,13 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
 
     @Override
     public void fillTileData(BlockPos offset, BlockEntity te, PanelOrientation data, ItemStack item) {
-        if (BlockPos.ZERO.equals(offset) && te instanceof ControlPanelTile) {
+        if (BlockPos.ZERO.equals(offset) && te instanceof ControlPanelTile panel) {
             CompoundTag nbt = item.getTag();
             if (nbt == null || nbt.isEmpty()) {
-                nbt = te.save(new CompoundTag());
+                nbt = panel.save(new CompoundTag());
             }
-            ((ControlPanelTile) te).readComponentsAndTransform(nbt);
+            panel.readComponentsAndTransform(nbt);
+            panel.setChanged();
         }
     }
 }
