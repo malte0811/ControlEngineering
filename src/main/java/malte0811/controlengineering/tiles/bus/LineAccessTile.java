@@ -13,7 +13,6 @@ import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusConnector;
 import malte0811.controlengineering.bus.LocalBusHandler;
-import malte0811.controlengineering.temp.ImprovedLocalRSHandler;
 import malte0811.controlengineering.tiles.CEIICTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -83,9 +82,9 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
     @Override
     public BusState getEmittedState(ConnectionPoint checkedPoint) {
         BusState ret = BusState.EMPTY;
-        ImprovedLocalRSHandler rs = getRSNet();
+        var rs = getRSNet();
         if (rs != null) {
-            ret = ret.withLine(selectedLine, BusLine.fromRSState(rs.getValuesWithout(redstonePoint)));
+            ret = ret.withLine(selectedLine, BusLine.fromRSState(rs.getValuesExcluding(redstonePoint)));
         }
         return ret;
     }
@@ -152,9 +151,9 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
     }
 
     @Nullable
-    private ImprovedLocalRSHandler getRSNet() {
+    private RedstoneNetworkHandler getRSNet() {
         return getLocalNet(REDSTONE_ID)
-                .getHandler(RedstoneNetworkHandler.ID, ImprovedLocalRSHandler.class);
+                .getHandler(RedstoneNetworkHandler.ID, RedstoneNetworkHandler.class);
     }
 
     private LocalBusHandler getBusNet() {

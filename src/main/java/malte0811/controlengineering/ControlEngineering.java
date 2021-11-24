@@ -16,7 +16,6 @@ import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.keypunch.KeypunchPacket;
 import malte0811.controlengineering.network.logic.LogicPacket;
 import malte0811.controlengineering.network.panellayout.PanelPacket;
-import malte0811.controlengineering.temp.ImprovedLocalRSHandler;
 import malte0811.controlengineering.tiles.CETileEntities;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -63,7 +62,6 @@ public class ControlEngineering {
         CERecipeSerializers.REGISTER.register(modBus);
         CELootFunctions.register();
         modBus.addListener(this::setup);
-        modBus.addListener(this::loadComplete);
         Leafcells.init();
         IEItemRefs.init();
     }
@@ -72,10 +70,6 @@ public class ControlEngineering {
         LocalNetworkHandler.register(LocalBusHandler.NAME, LocalBusHandler::new);
         BusWireType.init();
         registerPackets();
-    }
-
-    public void loadComplete(FMLLoadCompleteEvent ev) {
-        LocalNetworkHandler.register(RedstoneNetworkHandler.ID, ImprovedLocalRSHandler::new);
     }
 
     private void registerPackets() {
