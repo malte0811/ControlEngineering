@@ -24,9 +24,9 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.Constants.BlockFlags;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -105,7 +105,7 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
                 currentPlacedComponents.clear();
                 currentTicksInJob = 0;
                 failed = false;
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
             }
             return InteractionResult.SUCCESS;
         } else {
@@ -113,7 +113,7 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
             if (PanelTopItem.isEmptyPanelTop(heldItem)) {
                 if (!level.isClientSide) {
                     hasPanel = true;
-                    level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
+                    level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
                     Player player = ctx.getPlayer();
                     if (player == null || !player.getAbilities().instabuild) {
                         heldItem.shrink(1);
@@ -136,7 +136,7 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
                 if (!level.isClientSide) {
                     insertedTape = PunchedTapeItem.getBytes(held);
                     held.shrink(1);
-                    level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
+                    level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
                     setChanged();
                 }
                 return InteractionResult.SUCCESS;
@@ -146,7 +146,7 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
                 ItemStack result = PunchedTapeItem.withBytes(insertedTape);
                 insertedTape = new byte[0];
                 ItemUtil.giveOrDrop(ctx.getPlayer(), result);
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), BlockFlags.DEFAULT);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
                 setChanged();
             }
             return InteractionResult.SUCCESS;
@@ -211,12 +211,10 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
         return hasPanel;
     }
 
-    @Nonnull
     @Override
-    public CompoundTag save(@Nonnull CompoundTag compound) {
-        super.save(compound);
+    public void saveAdditional(@Nonnull CompoundTag compound) {
+        super.saveAdditional(compound);
         writeSyncedData(compound);
-        return compound;
     }
 
     @Override

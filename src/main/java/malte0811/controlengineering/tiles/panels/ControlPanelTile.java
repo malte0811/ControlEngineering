@@ -102,11 +102,10 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
         readComponentsAndTransform(in);
     }
 
-    @Nonnull
     @Override
-    public CompoundTag save(@Nonnull CompoundTag compound) {
-        super.save(compound);
-        return writeSyncedData(compound);
+    public void saveAdditional(@Nonnull CompoundTag compound) {
+        super.saveAdditional(compound);
+        writeSyncedData(compound);
     }
 
     public List<PlacedComponent> getComponents() {

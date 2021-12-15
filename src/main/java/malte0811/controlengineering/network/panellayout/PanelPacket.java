@@ -2,13 +2,13 @@ package malte0811.controlengineering.network.panellayout;
 
 import com.google.common.base.Preconditions;
 import malte0811.controlengineering.gui.StackedScreen;
-import malte0811.controlengineering.gui.panel.PanelDesignScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignContainer;
+import malte0811.controlengineering.gui.panel.PanelDesignScreen;
 import malte0811.controlengineering.network.SimplePacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraftforge.fmllegacy.network.NetworkDirection;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
 public class PanelPacket extends SimplePacket {
     private final PanelSubPacket packet;

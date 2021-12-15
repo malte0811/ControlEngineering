@@ -52,7 +52,7 @@ public class PanelCNCBlock extends CEBlock<Direction, PanelCNCTile> {
     }
 
     public static Direction getDirection(PanelCNCTile tile) {
-        return tile.getLevel().getBlockState(tile.getBlockPos()).getValue(FACING);
+        return tile.getBlockState().getValue(FACING);
     }
 
     @Nullable

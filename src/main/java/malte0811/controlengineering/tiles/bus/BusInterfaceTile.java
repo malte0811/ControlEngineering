@@ -1,8 +1,8 @@
 package malte0811.controlengineering.tiles.bus;
 
-import blusunrize.immersiveengineering.api.wires.Connection;
 import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
 import blusunrize.immersiveengineering.api.wires.LocalWireNetwork;
+import blusunrize.immersiveengineering.api.wires.WireType;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.blocks.bus.BusInterfaceBlock;
@@ -21,7 +21,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,7 +54,7 @@ public class BusInterfaceTile extends CEIICTileEntity implements IBusConnector, 
     }
 
     @Override
-    public Vec3 getConnectionOffset(@Nonnull Connection con, ConnectionPoint here) {
+    public Vec3 getConnectionOffset(ConnectionPoint here, ConnectionPoint other, WireType type) {
         return new Vec3(0.5, 0.5, 0.5)
                 .add(Vec3.atLowerCornerOf(getFacing().getNormal()).scale(1. / 16));
     }

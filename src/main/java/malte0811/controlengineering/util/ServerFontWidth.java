@@ -7,7 +7,7 @@ import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
 import malte0811.controlengineering.ControlEngineering;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
-import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

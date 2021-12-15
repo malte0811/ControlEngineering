@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class PanelData {
 
     public PanelData(CompoundTag nbt, PanelOrientation orientation) {
         this(
-                PlacedComponent.readListFromNBT(nbt.getList("components", Constants.NBT.TAG_COMPOUND)),
+                PlacedComponent.readListFromNBT(nbt.getList("components", Tag.TAG_COMPOUND)),
                 PanelTransform.from(nbt, orientation)
         );
     }

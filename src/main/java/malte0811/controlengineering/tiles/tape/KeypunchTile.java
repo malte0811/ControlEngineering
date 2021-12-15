@@ -47,12 +47,10 @@ public class KeypunchTile extends CETileEntity implements SelectionShapeOwner, I
         state = Codecs.readOptional(KeypunchState.CODEC, nbt.get("state")).orElseGet(KeypunchState::new);
     }
 
-    @Nonnull
     @Override
-    public CompoundTag save(@Nonnull CompoundTag compound) {
-        compound = super.save(compound);
+    public void saveAdditional(@Nonnull CompoundTag compound) {
+        super.saveAdditional(compound);
         compound.put("state", Codecs.encode(KeypunchState.CODEC, state));
-        return compound;
     }
 
     private final CachedValue<Direction, SelectionShapes> selectionShapes = new CachedValue<>(

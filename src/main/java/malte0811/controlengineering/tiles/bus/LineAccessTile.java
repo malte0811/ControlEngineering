@@ -1,7 +1,6 @@
 package malte0811.controlengineering.tiles.bus;
 
 import blusunrize.immersiveengineering.api.TargetingInfo;
-import blusunrize.immersiveengineering.api.wires.Connection;
 import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
 import blusunrize.immersiveengineering.api.wires.LocalWireNetwork;
 import blusunrize.immersiveengineering.api.wires.WireType;
@@ -62,10 +61,9 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
 
     @Nonnull
     @Override
-    public CompoundTag save(@Nonnull CompoundTag nbt) {
-        nbt = super.save(nbt);
+    public void saveAdditional(@Nonnull CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.putInt("selectedLine", selectedLine);
-        return nbt;
     }
 
     /*BUS*/
@@ -96,7 +94,7 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
 
     /*GENERAL IIC*/
     @Override
-    public Vec3 getConnectionOffset(@Nonnull Connection con, ConnectionPoint here) {
+    public Vec3 getConnectionOffset(ConnectionPoint here, ConnectionPoint other, WireType type) {
         final double offset;
         if (here.getIndex() == REDSTONE_ID) {
             offset = .25;

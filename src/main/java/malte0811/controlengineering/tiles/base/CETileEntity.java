@@ -3,6 +3,8 @@ package malte0811.controlengineering.tiles.base;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -48,12 +50,16 @@ public abstract class CETileEntity extends BlockEntity implements IHasMasterBase
 
     @Nullable
     @Override
-    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
         CompoundTag data = writeSyncedData(new CompoundTag());
         if (data.isEmpty()) {
             return super.getUpdatePacket();
         } else {
-            return new ClientboundBlockEntityDataPacket(worldPosition, -1, writeSyncedData(new CompoundTag()));
+            //TODO hack
+            return ClientboundBlockEntityDataPacket.create(
+                    this,
+                    be -> ((CETileEntity) be).writeSyncedData(new CompoundTag())
+            );
         }
     }
 

@@ -195,7 +195,7 @@ public class DynamicLogicModel implements BakedModel {
         }
 
         public List<BakedQuad> getQuads() {
-            RenderType currentType = MinecraftForgeClient.getRenderLayer();
+            RenderType currentType = MinecraftForgeClient.getRenderType();
             if (currentType == RenderType.solid()) {
                 return solid;
             } else if (currentType == RenderType.translucent()) {

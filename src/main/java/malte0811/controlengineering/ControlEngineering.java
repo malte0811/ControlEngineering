@@ -1,7 +1,6 @@
 package malte0811.controlengineering;
 
 import blusunrize.immersiveengineering.api.wires.localhandlers.LocalNetworkHandler;
-import blusunrize.immersiveengineering.api.wires.redstone.RedstoneNetworkHandler;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.loot.CELootFunctions;
 import malte0811.controlengineering.bus.BusWireType;
@@ -24,11 +23,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmllegacy.network.NetworkDirection;
-import net.minecraftforge.fmllegacy.network.NetworkRegistry;
-import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

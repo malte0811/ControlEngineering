@@ -10,10 +10,10 @@ import malte0811.controlengineering.controlpanels.model.PanelItemRenderer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.IItemRenderProperties;
-import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -49,7 +49,7 @@ public class PanelTopItem extends Item {
         if (fullNBT == null) {
             return ImmutableList.of();
         }
-        ListTag componentList = fullNBT.getList(COMPONENTS_KEY, Constants.NBT.TAG_COMPOUND);
+        ListTag componentList = fullNBT.getList(COMPONENTS_KEY, Tag.TAG_COMPOUND);
         return PlacedComponent.readListFromNBT(componentList);
     }
 

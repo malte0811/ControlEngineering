@@ -21,7 +21,7 @@ version = project.mod_version
 group = project.maven_group
 archivesBaseName = project.archives_base_name
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = 16
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = 17
 
 sourceSets {
     main {
@@ -57,7 +57,8 @@ processResources {
 }
 
 minecraft {
-    mappings channel: 'parchment', version: version_parchment
+    //TODO mappings channel: 'parchment', version: version_parchment
+    mappings channel: 'official', version: minecraft_version
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -184,3 +185,21 @@ artifacts {
     archives sourcesJar
 }
 
+task speedUpPreRun {
+    doLast {
+        for (String s : new String[]{"Client", "Server", "Data"}) {
+            ant.replace(
+                    file: ".idea/runConfigurations/run"+s+".xml",
+                    // prepareRunX is prepareRuns + compile, but compiling is already handled by IntelliJ
+                    token: "prepareRun"+s,
+                    value: "prepareRuns"
+            )
+        }
+    }
+}
+
+tasks.withType(Task) {
+    if (it.name == "genIntellijRuns") {
+        it.finalizedBy speedUpPreRun
+    }
+}

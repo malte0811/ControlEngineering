@@ -3,8 +3,8 @@ package malte0811.controlengineering.items;
 import blusunrize.immersiveengineering.api.Lib;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public class IEItemRefs {
     public static final RegistryObject<Item> CIRCUIT_BOARD = of("circuit_board");

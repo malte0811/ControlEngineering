@@ -124,13 +124,11 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
         this.state = Codecs.readOptional(KeypunchState.CODEC, nbt.get("state")).orElseGet(KeypunchState::new);
     }
 
-    @Nonnull
     @Override
-    public CompoundTag save(@Nonnull CompoundTag compound) {
-        compound = super.save(compound);
+    public void saveAdditional(@Nonnull CompoundTag compound) {
+        super.saveAdditional(compound);
         compound.put("components", Codecs.encode(COMPONENTS_CODEC, components));
         compound.put("state", Codecs.encode(KeypunchState.CODEC, state));
-        return compound;
     }
 
     public List<PlacedComponent> getComponents() {

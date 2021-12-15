@@ -29,11 +29,11 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -144,12 +144,11 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
         wireStorage.read(in.getCompound("wires"));
     }
 
-    @Nonnull
     @Override
-    public CompoundTag save(@Nonnull CompoundTag compound) {
+    public void saveAdditional(@Nonnull CompoundTag compound) {
+        super.saveAdditional(compound);
         compound.put("schematic", Codecs.encode(Schematic.CODEC, schematic));
         writeSyncedData(compound);
-        return super.save(compound);
     }
 
     @Override
@@ -197,7 +196,7 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
                 tubeStorage.consume(numTubes);
                 wireStorage.consume(numWires);
                 ctx.getItemInHand().shrink(numBoards);
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.DEFAULT);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
                 ItemUtil.giveOrDrop(ctx.getPlayer(), PCBStackItem.forSchematic(schematic));
             } else if (!enoughTubes) {
                 ctx.getPlayer().displayClientMessage(new TranslatableComponent(TOO_FEW_TUBES, numTubes), true);
@@ -224,7 +223,7 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
                 (tile, ctx) -> {
                     InteractionResult ret = getDrawer.apply(tile).interact(ctx);
                     tile.level.sendBlockUpdated(
-                            tile.worldPosition, tile.getBlockState(), tile.getBlockState(), Constants.BlockFlags.DEFAULT
+                            tile.worldPosition, tile.getBlockState(), tile.getBlockState(), Block.UPDATE_ALL
                     );
                     return ret;
                 }

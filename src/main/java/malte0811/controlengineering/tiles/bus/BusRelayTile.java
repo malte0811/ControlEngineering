@@ -1,8 +1,8 @@
 package malte0811.controlengineering.tiles.bus;
 
-import blusunrize.immersiveengineering.api.wires.Connection;
 import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
 import blusunrize.immersiveengineering.api.wires.LocalWireNetwork;
+import blusunrize.immersiveengineering.api.wires.WireType;
 import malte0811.controlengineering.blocks.bus.BusInterfaceBlock;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusConnector;
@@ -12,8 +12,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-
-import javax.annotation.Nonnull;
 
 public class BusRelayTile extends CEIICTileEntity implements IBusConnector {
     public BusRelayTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
@@ -34,7 +32,7 @@ public class BusRelayTile extends CEIICTileEntity implements IBusConnector {
     }
 
     @Override
-    public Vec3 getConnectionOffset(@Nonnull Connection connection, ConnectionPoint connectionPoint) {
+    public Vec3 getConnectionOffset(ConnectionPoint here, ConnectionPoint other, WireType type) {
         return new Vec3(0.5, 0.5, 0.5)
                 .add(Vec3.atLowerCornerOf(getFacing().getNormal()).scale(1.5 / 16));
     }

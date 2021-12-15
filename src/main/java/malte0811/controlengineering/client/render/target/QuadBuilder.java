@@ -1,5 +1,7 @@
 package malte0811.controlengineering.client.render.target;
 
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.util.BitUtils;
 import net.minecraft.client.Minecraft;
@@ -16,8 +18,6 @@ import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
 import java.util.OptionalInt;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -129,7 +129,7 @@ public class QuadBuilder {
 
     @SubscribeEvent
     public static void onTextureStitch(TextureStitchEvent.Pre ev) {
-        if (ev.getMap().location().equals(InventoryMenu.BLOCK_ATLAS)) {
+        if (ev.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
             ev.addSprite(WHITE_WITH_BORDER);
         }
     }

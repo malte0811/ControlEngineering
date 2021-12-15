@@ -33,17 +33,17 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -106,16 +106,14 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
         energy.readNBT(nbt.get("energy"));
     }
 
-    @Nonnull
     @Override
-    public CompoundTag save(@Nonnull CompoundTag compound) {
-        compound = super.save(compound);
+    public void saveAdditional(@Nonnull CompoundTag compound) {
+        super.saveAdditional(compound);
         compound.put("clock", Codecs.encode(ClockInstance.CODEC, clock));
         if (circuit != null) {
             compound.put("circuit", Codecs.encode(Schematic.CODEC, circuit.getFirst()));
         }
         compound.put("energy", energy.writeNBT());
-        return compound;
     }
 
     @Override
@@ -133,9 +131,7 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
             clock = ClockTypes.NEVER.newInstance();
         numTubes = tag.getInt("numTubes");
         requestModelDataUpdate();
-        level.sendBlockUpdated(
-                worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.DEFAULT
-        );
+        level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
     }
 
     @Nonnull

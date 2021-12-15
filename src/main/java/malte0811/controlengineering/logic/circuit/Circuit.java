@@ -13,7 +13,6 @@ import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraftforge.common.util.Constants;
 
 import java.util.*;
 import java.util.function.Function;
@@ -35,7 +34,7 @@ public class Circuit {
     private final Map<PinReference, NetReference> pinToNet;
 
     public static Circuit fromNBT(CompoundTag nbt) {
-        ListTag stages = nbt.getList(STAGES_KEY, Constants.NBT.TAG_LIST);
+        ListTag stages = nbt.getList(STAGES_KEY, Tag.TAG_LIST);
         List<LeafcellInstance<?>> cellsInTopoOrder = Codecs.readOrNull(CELLS_CODEC, stages);
         Map<PinReference, NetReference> pinToNet = new HashMap<>();
         CompoundTag netsNBT = nbt.getCompound(NETS_KEY);
@@ -49,7 +48,7 @@ public class Circuit {
             if (netNBT.getBoolean(IS_INPUT_KEY)) {
                 inputValues.put(netRef, value);
             }
-            for (Tag pinNBT : netNBT.getList(PINS_KEY, Constants.NBT.TAG_COMPOUND)) {
+            for (Tag pinNBT : netNBT.getList(PINS_KEY, Tag.TAG_COMPOUND)) {
                 PinReference pin = Codecs.readOrNull(PinReference.CODEC, pinNBT);
                 if (pin != null && isValidPin(pin, cellsInTopoOrder) && !pinToNet.containsKey(pin)) {
                     pinToNet.put(pin, netRef);

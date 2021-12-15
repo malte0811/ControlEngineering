@@ -42,11 +42,11 @@ public class ClientEvents {
         BlockPos highlighted = target.getBlockPos();
         List<? extends SelectionShapes> selectedStack = getSelectedStack();
         if (selectedStack != null) {
-            PoseStack transform = ev.getMatrix();
+            PoseStack transform = ev.getPoseStack();
             transform.pushPose();
-            Vec3 projectedView = Vec3.atLowerCornerOf(highlighted).subtract(ev.getInfo().getPosition());
+            Vec3 projectedView = Vec3.atLowerCornerOf(highlighted).subtract(ev.getCamera().getPosition());
             transform.translate(projectedView.x, projectedView.y, projectedView.z);
-            VertexConsumer builder = ev.getBuffers().getBuffer(RenderType.lines());
+            VertexConsumer builder = ev.getMultiBufferSource().getBuffer(RenderType.lines());
             final int pushCount = selectedStack.size() - 1;
             for (int i = 0; i < pushCount; ++i) {
                 SelectionShapes nonTopShape = selectedStack.get(i);
