@@ -30,9 +30,7 @@ public abstract class CETileEntity extends BlockEntity implements IHasMasterBase
         return cachedMaster;
     }
 
-    protected CompoundTag writeSyncedData(CompoundTag out) {
-        return out;
-    }
+    protected void writeSyncedData(CompoundTag out) {}
 
     protected void readSyncedData(CompoundTag in) {}
 
@@ -45,22 +43,22 @@ public abstract class CETileEntity extends BlockEntity implements IHasMasterBase
     @Nonnull
     @Override
     public CompoundTag getUpdateTag() {
-        return writeSyncedData(super.getUpdateTag());
+        var updateTag = super.getUpdateTag();
+        writeSyncedData(updateTag);
+        return updateTag;
     }
 
     @Nullable
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
-        CompoundTag data = writeSyncedData(new CompoundTag());
-        if (data.isEmpty()) {
-            return super.getUpdatePacket();
-        } else {
-            //TODO hack
-            return ClientboundBlockEntityDataPacket.create(
-                    this,
-                    be -> ((CETileEntity) be).writeSyncedData(new CompoundTag())
-            );
-        }
+        return ClientboundBlockEntityDataPacket.create(
+                this,
+                be -> {
+                    CompoundTag result = new CompoundTag();
+                    ((CETileEntity) be).writeSyncedData(result);
+                    return result;
+                }
+        );
     }
 
     @Override

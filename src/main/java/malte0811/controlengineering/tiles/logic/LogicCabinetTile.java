@@ -117,10 +117,9 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
     }
 
     @Override
-    protected CompoundTag writeSyncedData(CompoundTag result) {
+    protected void writeSyncedData(CompoundTag result) {
         result.putBoolean("hasClock", clock.getType().isActiveClock());
         result.putInt("numTubes", numTubes);
-        return result;
     }
 
     @Override

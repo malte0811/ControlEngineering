@@ -243,12 +243,11 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
     }
 
     @Override
-    protected CompoundTag writeSyncedData(CompoundTag in) {
+    protected void writeSyncedData(CompoundTag in) {
         in.putByteArray("tape", insertedTape);
         in.putInt("currentTick", currentTicksInJob);
         in.putBoolean("hasPanel", hasPanel);
         in.putBoolean("failed", failed);
-        return in;
     }
 
     public boolean hasFailed() {

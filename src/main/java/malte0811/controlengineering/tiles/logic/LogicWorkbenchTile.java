@@ -132,10 +132,9 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
     }
 
     @Override
-    protected CompoundTag writeSyncedData(CompoundTag out) {
+    protected void writeSyncedData(CompoundTag out) {
         out.put("tubes", tubeStorage.write());
         out.put("wires", wireStorage.write());
-        return out;
     }
 
     @Override

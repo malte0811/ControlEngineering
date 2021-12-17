@@ -92,9 +92,8 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
     }
 
     @Override
-    protected CompoundTag writeSyncedData(CompoundTag out) {
+    protected void writeSyncedData(CompoundTag out) {
         out.merge(new PanelData(this).toNBT());
-        return out;
     }
 
     @Override
