@@ -119,10 +119,6 @@ minecraft {
     }
 }
 
-/*configurations {
-    datagenCompile.extendsFrom(compile)
-}*/
-
 repositories {
     maven { // JEI & Tinkers
         name = 'DVS1 Maven FS'
@@ -142,8 +138,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 	runtimeOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}")
     compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}:api")
-    //TODO why doesn't datagenImpl work as expected?
-    /*datagenI*/implementation fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}:datagen")
+    datagenImplementation fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}:datagen")
     testImplementation('junit:junit:4.13')
 }
 

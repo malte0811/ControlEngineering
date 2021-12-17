@@ -3,9 +3,10 @@
   "pools": [
     {
       "rolls": 1.0,
+      "bonus_rolls": 0.0,
       "entries": [
         {
-          "type": "controlengineering:extra_tile_drop"
+          "type": "controlengineering:extra_be_drop"
         }
       ],
       "conditions": [
@@ -15,7 +16,8 @@
       ]
     },
     {
-      "rolls": 1,
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",

@@ -7,3 +7,6 @@
 - Panel height/angle options
 - Energy requirements for panel layout/creation
 - Tape-to-book machine (Tape printer or similar)
+- Debugger-y thing for panel CNC
+    - error output on tape
+    - possibly transmitted over RS or something like that?
