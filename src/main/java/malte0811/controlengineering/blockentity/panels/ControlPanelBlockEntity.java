@@ -1,5 +1,7 @@
-package malte0811.controlengineering.tiles.panels;
+package malte0811.controlengineering.blockentity.panels;
 
+import malte0811.controlengineering.blockentity.base.CEBlockEntity;
+import malte0811.controlengineering.blockentity.base.IHasMaster;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
@@ -13,8 +15,6 @@ import malte0811.controlengineering.controlpanels.PanelData;
 import malte0811.controlengineering.controlpanels.PanelSelectionShapes;
 import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
-import malte0811.controlengineering.tiles.base.CETileEntity;
-import malte0811.controlengineering.tiles.base.IHasMaster;
 import malte0811.controlengineering.util.Clearable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ControlPanelTile extends CETileEntity implements IBusInterface, SelectionShapeOwner, IHasMaster {
+public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterface, SelectionShapeOwner, IHasMaster {
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private List<PlacedComponent> components = new ArrayList<>();
     private PanelTransform transform = new PanelTransform(
@@ -42,8 +42,8 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
             i -> components.get(i).getComponent().updateTotalState(getTotalState())
     );
 
-    public ControlPanelTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
-        super(tileEntityTypeIn, pos, state);
+    public ControlPanelBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         resetStateHandler();
     }
 
@@ -161,7 +161,7 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
         if (!state.hasProperty(PanelBlock.IS_BASE) || state.getValue(PanelBlock.IS_BASE)) {
             return SingleShape.FULL_BLOCK;
         }
-        ControlPanelTile base = PanelBlock.getBase(level, state, worldPosition);
+        ControlPanelBlockEntity base = PanelBlock.getBase(level, state, worldPosition);
         if (base == null) {
             return SingleShape.FULL_BLOCK;
         }
@@ -174,7 +174,7 @@ public class ControlPanelTile extends CETileEntity implements IBusInterface, Sel
 
     @Nullable
     @Override
-    public ControlPanelTile computeMasterTile(BlockState stateHere) {
+    public ControlPanelBlockEntity computeMasterBE(BlockState stateHere) {
         return PanelBlock.getBase(level, stateHere, worldPosition);
     }
 

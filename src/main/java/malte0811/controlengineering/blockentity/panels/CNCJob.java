@@ -1,4 +1,4 @@
-package malte0811.controlengineering.tiles.panels;
+package malte0811.controlengineering.blockentity.panels;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;

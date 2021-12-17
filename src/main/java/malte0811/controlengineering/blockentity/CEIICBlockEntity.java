@@ -1,4 +1,4 @@
-package malte0811.controlengineering.tiles;
+package malte0811.controlengineering.blockentity;
 
 import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.TargetingInfo;
@@ -16,10 +16,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
-public abstract class CEIICTileEntity extends ImmersiveConnectableBlockEntity {
+public abstract class CEIICBlockEntity extends ImmersiveConnectableBlockEntity {
 
-    public CEIICTileEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
-        super(tileEntityTypeIn, pos, state);
+    public CEIICBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     @Override

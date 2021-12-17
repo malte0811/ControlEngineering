@@ -1,8 +1,8 @@
 package malte0811.controlengineering.controlpanels;
 
 import com.google.common.collect.ImmutableList;
+import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
-import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
@@ -30,8 +30,8 @@ public class PanelData {
         );
     }
 
-    public PanelData(ControlPanelTile tile) {
-        this(tile.getComponents(), tile.getTransform());
+    public PanelData(ControlPanelBlockEntity bEntity) {
+        this(bEntity.getComponents(), bEntity.getTransform());
     }
 
     public CompoundTag toNBT() {

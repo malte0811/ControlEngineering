@@ -1,21 +1,21 @@
-package malte0811.controlengineering.tiles.bus;
+package malte0811.controlengineering.blockentity.bus;
 
 import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
 import blusunrize.immersiveengineering.api.wires.LocalWireNetwork;
 import blusunrize.immersiveengineering.api.wires.WireType;
+import malte0811.controlengineering.blockentity.CEIICBlockEntity;
 import malte0811.controlengineering.blocks.bus.BusInterfaceBlock;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusConnector;
-import malte0811.controlengineering.tiles.CEIICTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-public class BusRelayTile extends CEIICTileEntity implements IBusConnector {
-    public BusRelayTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
-        super(tileEntityTypeIn, pos, state);
+public class BusRelayBlock extends CEIICBlockEntity implements IBusConnector {
+    public BusRelayBlock(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     @Override

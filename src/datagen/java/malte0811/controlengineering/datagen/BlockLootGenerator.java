@@ -1,7 +1,7 @@
 package malte0811.controlengineering.datagen;
 
 import malte0811.controlengineering.blocks.CEBlocks;
-import malte0811.controlengineering.blocks.loot.ExtraTileDropEntry;
+import malte0811.controlengineering.blocks.loot.ExtraBEDropEntry;
 import malte0811.controlengineering.blocks.loot.PanelDropEntry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
@@ -28,9 +28,9 @@ public class BlockLootGenerator implements Consumer<BiConsumer<ResourceLocation,
         //TODO
         // logic workbench => parts in drawers
         // panel designer => ???????
-        registerSelfDropping(CEBlocks.LOGIC_CABINET, tileDrop());
-        registerSelfDropping(CEBlocks.PANEL_CNC, tileDrop());
-        registerSelfDropping(CEBlocks.KEYPUNCH, tileDrop());
+        registerSelfDropping(CEBlocks.LOGIC_CABINET, bEntityDrops());
+        registerSelfDropping(CEBlocks.PANEL_CNC, bEntityDrops());
+        registerSelfDropping(CEBlocks.KEYPUNCH, bEntityDrops());
         register(CEBlocks.CONTROL_PANEL, createPoolBuilder().add(PanelDropEntry.builder()));
         registerAllRemainingAsDefault();
         tables.forEach(out);
@@ -48,9 +48,9 @@ public class BlockLootGenerator implements Consumer<BiConsumer<ResourceLocation,
         register(b, withSelf);
     }
 
-    private LootPool.Builder tileDrop() {
+    private LootPool.Builder bEntityDrops() {
         return createPoolBuilder()
-                .add(ExtraTileDropEntry.builder());
+                .add(ExtraBEDropEntry.builder());
     }
 
     private LootPool.Builder singleItem(ItemLike in) {

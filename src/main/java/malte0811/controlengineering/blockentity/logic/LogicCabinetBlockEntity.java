@@ -1,7 +1,10 @@
-package malte0811.controlengineering.tiles.logic;
+package malte0811.controlengineering.blockentity.logic;
 
 import blusunrize.immersiveengineering.api.utils.client.SinglePropertyModelData;
 import com.mojang.datafixers.util.Pair;
+import malte0811.controlengineering.blockentity.base.CEBlockEntity;
+import malte0811.controlengineering.blockentity.base.IExtraDropBE;
+import malte0811.controlengineering.blockentity.base.IHasMaster;
 import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
 import malte0811.controlengineering.blocks.shapes.*;
 import malte0811.controlengineering.bus.BusState;
@@ -17,9 +20,6 @@ import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.logic.model.DynamicLogicModel;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
-import malte0811.controlengineering.tiles.base.CETileEntity;
-import malte0811.controlengineering.tiles.base.IExtraDropTile;
-import malte0811.controlengineering.tiles.base.IHasMaster;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import malte0811.controlengineering.util.math.MatrixUtils;
@@ -52,8 +52,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwner, IBusInterface,
-        ISchematicTile, IExtraDropTile, IHasMaster {
+public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IBusInterface,
+        ISchematicBE, IExtraDropBE, IHasMaster {
     public static final int MAX_NUM_BOARDS = 4;
     public static final int NUM_TUBES_PER_BOARD = 16;
 
@@ -66,8 +66,8 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
     private int numTubes;
     private BusState currentBusState = BusState.EMPTY;
 
-    public LogicCabinetTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
-        super(tileEntityTypeIn, pos, state);
+    public LogicCabinetBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     public static int getNumBoardsFor(int numTubes) {
@@ -225,7 +225,7 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
 
     private final CachedValue<BlockState, SelectionShapes> selectionShapes = new CachedValue<>(
             this::getBlockState,
-            state -> createSelectionShapes(getFacing(state), computeMasterTile(state), isUpper(state))
+            state -> createSelectionShapes(getFacing(state), computeMasterBE(state), isUpper(state))
     );
 
     @Override
@@ -233,40 +233,40 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
         return selectionShapes.get();
     }
 
-    private static SelectionShapes createSelectionShapes(Direction d, LogicCabinetTile tile, boolean upper) {
+    private static SelectionShapes createSelectionShapes(Direction d, LogicCabinetBlockEntity bEntity, boolean upper) {
         List<SelectionShapes> subshapes = new ArrayList<>(1);
         DirectionalShapeProvider baseShape = upper ? LogicCabinetBlock.TOP_SHAPE : LogicCabinetBlock.BOTTOM_SHAPE;
         if (!upper) {
-            subshapes.add(makeClockInteraction(tile));
+            subshapes.add(makeClockInteraction(bEntity));
         } else {
-            subshapes.add(makeViewDesignInteraction(tile));
+            subshapes.add(makeViewDesignInteraction(bEntity));
         }
-        subshapes.add(makeBoardInteraction(tile, upper));
+        subshapes.add(makeBoardInteraction(bEntity, upper));
         return new ListShapes(
                 baseShape.apply(d), MatrixUtils.inverseFacing(d), subshapes, $ -> InteractionResult.PASS
         );
     }
 
-    private static SelectionShapes makeClockInteraction(LogicCabinetTile tile) {
+    private static SelectionShapes makeClockInteraction(LogicCabinetBlockEntity bEntity) {
         return new SingleShape(
                 ShapeUtils.createPixelRelative(0, 6, 6, 5, 10, 10), ctx -> {
             if (ctx.getPlayer() == null) {
                 return InteractionResult.PASS;
             }
-            ClockGenerator<?> currentClock = tile.clock.getType();
+            ClockGenerator<?> currentClock = bEntity.clock.getType();
             RegistryObject<Item> clockItem = CEItems.CLOCK_GENERATORS.get(currentClock.getRegistryName());
             if (!ctx.getLevel().isClientSide) {
                 if (clockItem != null) {
                     ItemUtil.giveOrDrop(ctx.getPlayer(), new ItemStack(clockItem.get()));
-                    tile.clock = ClockTypes.NEVER.newInstance();
-                    TileUtil.markDirtyAndSync(tile);
+                    bEntity.clock = ClockTypes.NEVER.newInstance();
+                    BEUtil.markDirtyAndSync(bEntity);
                 } else {
                     ItemStack item = ctx.getItemInHand();
                     ClockGenerator<?> newClock = ClockTypes.REGISTRY.get(item.getItem().getRegistryName());
                     if (newClock != null) {
-                        tile.clock = newClock.newInstance();
+                        bEntity.clock = newClock.newInstance();
                         item.shrink(1);
-                        TileUtil.markDirtyAndSync(tile);
+                        BEUtil.markDirtyAndSync(bEntity);
                     }
                 }
             }
@@ -274,7 +274,7 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
         });
     }
 
-    private static SelectionShapes makeBoardInteraction(LogicCabinetTile tile, boolean upper) {
+    private static SelectionShapes makeBoardInteraction(LogicCabinetBlockEntity bEntity, boolean upper) {
         final int yOff = upper ? -16 : 0;
         final VoxelShape fullShape = ShapeUtils.createPixelRelative(
                 1, 11 + yOff, 1, 15, 31 + yOff, 15
@@ -285,25 +285,25 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
                 return InteractionResult.PASS;
             }
             if (!ctx.getLevel().isClientSide) {
-                final Pair<Schematic, BusConnectedCircuit> oldSchematic = tile.circuit;
+                final Pair<Schematic, BusConnectedCircuit> oldSchematic = bEntity.circuit;
                 Pair<Schematic, BusConnectedCircuit> schematic = PCBStackItem.getSchematic(ctx.getItemInHand());
                 if (schematic != null) {
-                    tile.setCircuit(schematic.getFirst());
+                    bEntity.setCircuit(schematic.getFirst());
                     ctx.getItemInHand().shrink(1);
                 } else {
-                    tile.setCircuit(null);
-                    tile.markBusDirty.run();
+                    bEntity.setCircuit(null);
+                    bEntity.markBusDirty.run();
                 }
                 if (oldSchematic != null) {
                     ItemUtil.giveOrDrop(ctx.getPlayer(), PCBStackItem.forSchematic(oldSchematic.getFirst()));
                 }
-                TileUtil.markDirtyAndSync(tile);
+                BEUtil.markDirtyAndSync(bEntity);
             }
             return InteractionResult.SUCCESS;
         });
     }
 
-    private static SelectionShapes makeViewDesignInteraction(LogicCabinetTile tile) {
+    private static SelectionShapes makeViewDesignInteraction(LogicCabinetBlockEntity bEntity) {
         final VoxelShape shape = ShapeUtils.createPixelRelative(
                 15, 1, 4, 16, 11, 12
         );
@@ -313,8 +313,8 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
             if (player == null) {
                 return InteractionResult.PASS;
             }
-            if (player instanceof ServerPlayer && tile.circuit != null) {
-                LogicDesignContainer.makeProvider(tile.level, tile.worldPosition, true)
+            if (player instanceof ServerPlayer && bEntity.circuit != null) {
+                LogicDesignContainer.makeProvider(bEntity.level, bEntity.worldPosition, true)
                         .open((ServerPlayer) player);
             }
             return InteractionResult.SUCCESS;
@@ -344,11 +344,11 @@ public class LogicCabinetTile extends CETileEntity implements SelectionShapeOwne
 
     @Nullable
     @Override
-    public LogicCabinetTile computeMasterTile(BlockState stateHere) {
+    public LogicCabinetBlockEntity computeMasterBE(BlockState stateHere) {
         if (isUpper(stateHere)) {
             BlockEntity below = level.getBlockEntity(worldPosition.below());
-            if (below instanceof LogicCabinetTile) {
-                return (LogicCabinetTile) below;
+            if (below instanceof LogicCabinetBlockEntity) {
+                return (LogicCabinetBlockEntity) below;
             } else {
                 return null;
             }

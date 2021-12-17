@@ -1,7 +1,9 @@
-package malte0811.controlengineering.tiles.panels;
+package malte0811.controlengineering.blockentity.panels;
 
 import blusunrize.immersiveengineering.api.utils.CapabilityReference;
 import com.google.common.collect.ImmutableList;
+import malte0811.controlengineering.blockentity.base.CEBlockEntity;
+import malte0811.controlengineering.blockentity.base.IExtraDropBE;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
@@ -12,8 +14,6 @@ import malte0811.controlengineering.controlpanels.cnc.CNCInstructionParser;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PanelTopItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
-import malte0811.controlengineering.tiles.base.CETileEntity;
-import malte0811.controlengineering.tiles.base.IExtraDropTile;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.Util;
@@ -39,7 +39,7 @@ import java.util.function.Consumer;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, IExtraDropTile {
+public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IExtraDropBE {
     @Nonnull
     private byte[] insertedTape = new byte[0];
     private final CachedValue<byte[], CNCJob> currentJob = new CachedValue<>(
@@ -86,8 +86,8 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
             )
     );
 
-    public PanelCNCTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
-        super(tileEntityTypeIn, pos, state);
+    public PanelCNCBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     private InteractionResult bottomClick(UseOnContext ctx) {
@@ -169,7 +169,7 @@ public class PanelCNCTile extends CETileEntity implements SelectionShapeOwner, I
                     } else {
                         currentPlacedComponents.add(componentToPlace);
                     }
-                    TileUtil.markDirtyAndSync(this);
+                    BEUtil.markDirtyAndSync(this);
                 }
             }
         }

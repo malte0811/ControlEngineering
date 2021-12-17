@@ -1,6 +1,7 @@
 package malte0811.controlengineering.datagen;
 
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
@@ -11,7 +12,6 @@ import malte0811.controlengineering.gui.panel.PanelDesignScreen;
 import malte0811.controlengineering.gui.widget.ColorSelector;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.EmptyTapeItem;
-import malte0811.controlengineering.items.PanelTopItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
@@ -21,7 +21,6 @@ import malte0811.controlengineering.logic.schematic.SchematicChecker;
 import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.ConstantSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.IOSymbol;
-import malte0811.controlengineering.tiles.logic.LogicWorkbenchTile;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
 
@@ -122,15 +121,15 @@ public class LangGenerator extends LanguageProvider {
         add(ColorSelector.GREEN, "Green: %d");
         add(ColorSelector.BLUE, "Blue: %d");
 
-        add(LogicWorkbenchTile.TUBES_EMPTY_KEY, "Vacuum tube storage: Empty");
-        add(LogicWorkbenchTile.WIRES_EMPTY_KEY, "Wire storage: Empty");
+        add(LogicWorkbenchBlockEntity.TUBES_EMPTY_KEY, "Vacuum tube storage: Empty");
+        add(LogicWorkbenchBlockEntity.WIRES_EMPTY_KEY, "Wire storage: Empty");
         add(
-                LogicWorkbenchTile.MORE_BOARDS_THAN_MAX,
+                LogicWorkbenchBlockEntity.MORE_BOARDS_THAN_MAX,
                 "Circuit would need %d circuit boards, but only %d fit in the logic cabinet"
         );
-        add(LogicWorkbenchTile.TOO_FEW_BOARDS_HELD, "%d circuit boards are required");
-        add(LogicWorkbenchTile.TOO_FEW_WIRES, "%d wires are required");
-        add(LogicWorkbenchTile.TOO_FEW_TUBES, "%d vacuum tubes are required");
+        add(LogicWorkbenchBlockEntity.TOO_FEW_BOARDS_HELD, "%d circuit boards are required");
+        add(LogicWorkbenchBlockEntity.TOO_FEW_WIRES, "%d wires are required");
+        add(LogicWorkbenchBlockEntity.TOO_FEW_TUBES, "%d vacuum tubes are required");
 
         add(PanelDesignScreen.REQUIRED_VS_AVAILABLE_TAPE, "%d characters required / %d available");
     }

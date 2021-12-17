@@ -1,8 +1,11 @@
-package malte0811.controlengineering.tiles.panels;
+package malte0811.controlengineering.blockentity.panels;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import malte0811.controlengineering.blockentity.base.CEBlockEntity;
+import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
+import malte0811.controlengineering.blockentity.tape.KeypunchState;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelDesignerBlock;
 import malte0811.controlengineering.blocks.panels.PanelDesignerBlock.Offset;
@@ -12,9 +15,6 @@ import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.cnc.CNCInstructionGenerator;
-import malte0811.controlengineering.tiles.base.CETileEntity;
-import malte0811.controlengineering.tiles.tape.KeypunchState;
-import malte0811.controlengineering.tiles.tape.KeypunchTile;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.math.MatrixUtils;
@@ -36,7 +36,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwner {
+public class PanelDesignerBlockEntity extends CEBlockEntity implements SelectionShapeOwner {
     private static final Codec<List<PlacedComponent>> COMPONENTS_CODEC = Codec.list(PlacedComponent.CODEC);
 
     private final CachedValue<BlockState, SelectionShapes> shapes = new CachedValue<>(
@@ -47,7 +47,7 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
                 VoxelShape baseShape = PanelDesignerBlock.SHAPE.apply(offset, facing);
                 if (offset == Offset.ORIGIN) {
                     Function<UseOnContext, InteractionResult> openUI = makeInteraction(
-                            state, PanelDesignerTile::openUI
+                            state, PanelDesignerBlockEntity::openUI
                     );
                     return new ListShapes(
                             baseShape,
@@ -59,7 +59,7 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
                     );
                 } else if (offset == Offset.BACK_TOP) {
                     Function<UseOnContext, InteractionResult> writeTape = makeInteraction(
-                            state, PanelDesignerTile::writeTape
+                            state, PanelDesignerBlockEntity::writeTape
                     );
                     Function<UseOnContext, InteractionResult> addTape = makeInteraction(
                             state, (t, ctx) -> t.state.removeOrAddClearTape(ctx.getPlayer(), ctx.getItemInHand())
@@ -72,8 +72,8 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
                             MatrixUtils.inverseFacing(facing),
                             ImmutableList.of(
                                     new SingleShape(PanelDesignerBlock.BUTTON, writeTape),
-                                    new SingleShape(KeypunchTile.INPUT_SHAPE, addTape),
-                                    new SingleShape(KeypunchTile.OUTPUT_SHAPE, takeTape)
+                                    new SingleShape(KeypunchBlockEntity.INPUT_SHAPE, addTape),
+                                    new SingleShape(KeypunchBlockEntity.OUTPUT_SHAPE, takeTape)
                             ),
                             $ -> InteractionResult.PASS
                     );
@@ -87,8 +87,8 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
     private List<PlacedComponent> components = new ArrayList<>();
     private KeypunchState state = new KeypunchState();
 
-    public PanelDesignerTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
-        super(tileEntityTypeIn, pos, state);
+    public PanelDesignerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         requiredLength = new CachedValue<>(
                 () -> components,
                 l -> CNCInstructionGenerator.toInstructions(l).length(),
@@ -97,13 +97,13 @@ public class PanelDesignerTile extends CETileEntity implements SelectionShapeOwn
     }
 
     private Function<UseOnContext, InteractionResult> makeInteraction(
-            BlockState state, BiFunction<PanelDesignerTile, UseOnContext, InteractionResult> handler
+            BlockState state, BiFunction<PanelDesignerBlockEntity, UseOnContext, InteractionResult> handler
     ) {
         return ctx -> {
             BlockPos origin = CEBlocks.PANEL_DESIGNER.get().getMainBlock(state, this);
             BlockEntity atOrigin = level.getBlockEntity(origin);
-            if (atOrigin instanceof PanelDesignerTile) {
-                return handler.apply((PanelDesignerTile) atOrigin, ctx);
+            if (atOrigin instanceof PanelDesignerBlockEntity) {
+                return handler.apply((PanelDesignerBlockEntity) atOrigin, ctx);
             } else {
                 return InteractionResult.FAIL;
             }

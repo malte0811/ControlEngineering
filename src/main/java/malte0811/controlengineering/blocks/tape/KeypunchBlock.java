@@ -1,13 +1,13 @@
 package malte0811.controlengineering.blocks.tape;
 
+import malte0811.controlengineering.blockentity.CEBlockEntities;
+import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.BlockPropertyPlacement;
 import malte0811.controlengineering.blocks.shapes.CachedShape;
 import malte0811.controlengineering.blocks.shapes.DirectionalShapeProvider;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.gui.tape.KeypunchContainer;
-import malte0811.controlengineering.tiles.CETileEntities;
-import malte0811.controlengineering.tiles.tape.KeypunchTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -22,10 +22,11 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class KeypunchBlock extends CEBlock<Direction, KeypunchTile> {
+public class KeypunchBlock extends CEBlock<Direction, KeypunchBlockEntity> {
     public static final String CONTAINER_NAME = "screen.controlengineering.keypunch";
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     private static final VoxelShape BASE_SHAPE = Shapes.or(
@@ -41,7 +42,7 @@ public class KeypunchBlock extends CEBlock<Direction, KeypunchTile> {
                 defaultPropertiesNotSolid(),
                 BlockPropertyPlacement.horizontal(FACING),
                 SHAPE_PROVIDER,
-                CETileEntities.KEYPUNCH
+                CEBlockEntities.KEYPUNCH
         );
     }
 

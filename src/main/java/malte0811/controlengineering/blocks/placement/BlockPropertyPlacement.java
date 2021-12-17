@@ -2,8 +2,6 @@ package malte0811.controlengineering.blocks.placement;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
-import java.util.Collection;
-import java.util.function.Function;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -11,6 +9,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+
+import java.util.Collection;
+import java.util.function.Function;
 
 public record BlockPropertyPlacement<T extends Comparable<T>>(
         Property<T> property, Function<BlockPlaceContext, T> getData
@@ -30,7 +31,7 @@ public record BlockPropertyPlacement<T extends Comparable<T>>(
     }
 
     @Override
-    public Pair<T, BlockPos> getPlacementDataAndOffset(BlockState state, BlockEntity te) {
+    public Pair<T, BlockPos> getPlacementDataAndOffset(BlockState state, BlockEntity be) {
         return Pair.of(state.getValue(property), BlockPos.ZERO);
     }
 
@@ -45,7 +46,7 @@ public record BlockPropertyPlacement<T extends Comparable<T>>(
     }
 
     @Override
-    public boolean isValidAtOffset(BlockPos offset, BlockState state, BlockEntity te, T data) {
+    public boolean isValidAtOffset(BlockPos offset, BlockState state, BlockEntity be, T data) {
         return state.getValue(property) == data;
     }
 }

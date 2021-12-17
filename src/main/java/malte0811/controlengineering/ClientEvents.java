@@ -6,10 +6,10 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Transformation;
+import malte0811.controlengineering.blockentity.bus.LineAccessBlockEntity;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.gui.misc.BusSignalSelector;
-import malte0811.controlengineering.tiles.bus.LineAccessTile;
 import malte0811.controlengineering.util.RaytraceUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -19,7 +19,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -74,14 +73,13 @@ public class ClientEvents {
             return;
         }
         final ItemStack held = mc.player.getItemInHand(InteractionHand.MAIN_HAND);
-        final HitResult mop = mc.hitResult;
-        if (!(mop instanceof BlockHitResult)) {
+        if (!(mc.hitResult instanceof BlockHitResult mop)) {
             return;
         }
         List<String> lines = new ArrayList<>();
-        final BlockPos pos = ((BlockHitResult) mop).getBlockPos();
-        final BlockEntity te = mc.player.level.getBlockEntity(pos);
-        if (te instanceof LineAccessTile access && held.is(IETags.screwdrivers)) {
+        final BlockPos pos = mop.getBlockPos();
+        if (mc.player.level.getBlockEntity(pos) instanceof LineAccessBlockEntity access
+                && held.is(IETags.screwdrivers)) {
             lines.add(I18n.get(BusSignalSelector.BUS_LINE_INDEX_KEY, access.selectedLine));
         }
         List<? extends SelectionShapes> shapeStack = getSelectedStack();
@@ -136,8 +134,7 @@ public class ClientEvents {
         if (world == null || player == null) {
             return null;
         }
-        BlockEntity te = world.getBlockEntity(highlighted);
-        if (te instanceof SelectionShapeOwner shapeOwner) {
+        if (world.getBlockEntity(highlighted) instanceof SelectionShapeOwner shapeOwner) {
             List<? extends SelectionShapes> selectedStack = shapeOwner.getShape()
                     .getTargeted(RaytraceUtils.create(player, mc.getFrameTime(), Vec3.atLowerCornerOf(highlighted)));
             if (!selectedStack.isEmpty()) {

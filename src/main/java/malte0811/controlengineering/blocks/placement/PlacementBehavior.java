@@ -24,7 +24,7 @@ public interface PlacementBehavior<T> {
             }
 
             @Override
-            public Pair<Unit, BlockPos> getPlacementDataAndOffset(BlockState state, BlockEntity te) {
+            public Pair<Unit, BlockPos> getPlacementDataAndOffset(BlockState state, BlockEntity be) {
                 return Pair.of(Unit.INSTANCE, BlockPos.ZERO);
             }
 
@@ -42,7 +42,7 @@ public interface PlacementBehavior<T> {
             public boolean isValidAtOffset(
                     BlockPos offset,
                     BlockState actualState,
-                    BlockEntity te,
+                    BlockEntity be,
                     Unit data
             ) {
                 return BlockPos.ZERO.equals(offset) && actualState == state.get();
@@ -52,13 +52,13 @@ public interface PlacementBehavior<T> {
 
     T getPlacementData(BlockPlaceContext ctx);
 
-    Pair<T, BlockPos> getPlacementDataAndOffset(BlockState state, BlockEntity te);
+    Pair<T, BlockPos> getPlacementDataAndOffset(BlockState state, BlockEntity be);
 
     Collection<BlockPos> getPlacementOffsets(T data);
 
     BlockState getStateForOffset(Block owner, BlockPos offset, T data);
 
-    default void fillTileData(BlockPos offset, BlockEntity te, T data, ItemStack item) {}
+    default void fillBEData(BlockPos offset, BlockEntity be, T data, ItemStack item) {}
 
-    boolean isValidAtOffset(BlockPos offset, BlockState state, BlockEntity te, T data);
+    boolean isValidAtOffset(BlockPos offset, BlockState state, BlockEntity be, T data);
 }

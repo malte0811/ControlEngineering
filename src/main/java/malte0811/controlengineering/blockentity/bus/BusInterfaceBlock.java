@@ -1,17 +1,16 @@
-package malte0811.controlengineering.tiles.bus;
+package malte0811.controlengineering.blockentity.bus;
 
 import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
 import blusunrize.immersiveengineering.api.wires.LocalWireNetwork;
 import blusunrize.immersiveengineering.api.wires.WireType;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
-import malte0811.controlengineering.blocks.bus.BusInterfaceBlock;
+import malte0811.controlengineering.blockentity.CEIICBlockEntity;
+import malte0811.controlengineering.blockentity.base.INeighborChangeListener;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusConnector;
 import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.bus.LocalBusHandler;
-import malte0811.controlengineering.tiles.CEIICTileEntity;
-import malte0811.controlengineering.tiles.base.INeighborChangeListener;
 import malte0811.controlengineering.util.Clearable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -27,22 +26,22 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class BusInterfaceTile extends CEIICTileEntity implements IBusConnector, INeighborChangeListener {
+public class BusInterfaceBlock extends CEIICBlockEntity implements IBusConnector, INeighborChangeListener {
     private final Map<Direction, Pair<WeakReference<IBusInterface>, Runnable>> clearers = new EnumMap<>(Direction.class);
 
-    public BusInterfaceTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
-        super(tileEntityTypeIn, pos, state);
+    public BusInterfaceBlock(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     @Override
     public void onBusUpdated(ConnectionPoint updatedPoint) {
         BusState state = getBusHandler(updatedPoint).getState();
-        getConnectedTile().forEach(iBusInterface -> iBusInterface.onBusUpdated(state));
+        getConnectedBE().forEach(iBusInterface -> iBusInterface.onBusUpdated(state));
     }
 
     @Override
     public BusState getEmittedState(ConnectionPoint checkedPoint) {
-        return getConnectedTile()
+        return getConnectedBE()
                 .stream()
                 .map(IBusInterface::getEmittedState)
                 .reduce(BusState.EMPTY, BusState::merge);
@@ -59,7 +58,7 @@ public class BusInterfaceTile extends CEIICTileEntity implements IBusConnector, 
                 .add(Vec3.atLowerCornerOf(getFacing().getNormal()).scale(1. / 16));
     }
 
-    private Collection<IBusInterface> getConnectedTile() {
+    private Collection<IBusInterface> getConnectedBE() {
         Collection<IBusInterface> ret = new ArrayList<>();
         Direction facing = getFacing();
         BlockEntity neighbor = level.getBlockEntity(worldPosition.relative(facing));
@@ -81,7 +80,7 @@ public class BusInterfaceTile extends CEIICTileEntity implements IBusConnector, 
     }
 
     private Direction getFacing() {
-        return getBlockState().getValue(BusInterfaceBlock.FACING);
+        return getBlockState().getValue(malte0811.controlengineering.blocks.bus.BusInterfaceBlock.FACING);
     }
 
     @Override

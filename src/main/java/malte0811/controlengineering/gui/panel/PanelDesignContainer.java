@@ -1,5 +1,6 @@
 package malte0811.controlengineering.gui.panel;
 
+import malte0811.controlengineering.blockentity.panels.PanelDesignerBlockEntity;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.gui.CEContainer;
 import malte0811.controlengineering.gui.CEContainers;
@@ -8,32 +9,32 @@ import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.panellayout.FullSync;
 import malte0811.controlengineering.network.panellayout.PanelPacket;
 import malte0811.controlengineering.network.panellayout.PanelSubPacket;
-import malte0811.controlengineering.tiles.panels.PanelDesignerTile;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.level.Level;
+
 import java.util.List;
 
 public class PanelDesignContainer extends CEContainer<PanelSubPacket> {
-    private final PanelDesignerTile designerTile;
+    private final PanelDesignerBlockEntity designerBE;
 
     public PanelDesignContainer(ContainerLevelAccess pos, int id) {
         super(CEContainers.PANEL_DESIGN.get(), pos, id);
-        designerTile = pos.evaluate(Level::getBlockEntity)
-                .map(te -> te instanceof PanelDesignerTile ? (PanelDesignerTile) te : null)
+        designerBE = pos.evaluate(Level::getBlockEntity)
+                .map(be -> be instanceof PanelDesignerBlockEntity designer ? designer : null)
                 .orElseThrow(RuntimeException::new);
-        if (designerTile.getLevel().isClientSide())
-            designerTile.getKeypunch().setAvailable(0);
+        if (designerBE.getLevel().isClientSide())
+            designerBE.getKeypunch().setAvailable(0);
         addDataSlot(new DataSlot() {
             @Override
             public int get() {
-                return designerTile.getKeypunch().getAvailable();
+                return designerBE.getKeypunch().getAvailable();
             }
 
             @Override
             public void set(int pValue) {
-                designerTile.getKeypunch().setAvailable(pValue);
+                designerBE.getKeypunch().setAvailable(pValue);
             }
         });
     }
@@ -44,7 +45,7 @@ public class PanelDesignContainer extends CEContainer<PanelSubPacket> {
 
     @Override
     protected PanelSubPacket getInitialSync() {
-        return new FullSync(designerTile.getComponents());
+        return new FullSync(designerBE.getComponents());
     }
 
     @Override
@@ -53,14 +54,14 @@ public class PanelDesignContainer extends CEContainer<PanelSubPacket> {
     }
 
     public List<PlacedComponent> getComponents() {
-        return designerTile.getComponents();
+        return designerBE.getComponents();
     }
 
     public int getRequiredTapeLength() {
-        return designerTile.getLengthRequired();
+        return designerBE.getLengthRequired();
     }
 
     public int getAvailableTapeLength() {
-        return designerTile.getKeypunch().getAvailable();
+        return designerBE.getKeypunch().getAvailable();
     }
 }

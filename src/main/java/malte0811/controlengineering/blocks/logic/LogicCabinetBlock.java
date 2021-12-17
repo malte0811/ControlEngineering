@@ -1,11 +1,11 @@
 package malte0811.controlengineering.blocks.logic;
 
+import malte0811.controlengineering.blockentity.CEBlockEntities;
+import malte0811.controlengineering.blockentity.logic.LogicCabinetBlockEntity;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.HorizontalStructurePlacement;
 import malte0811.controlengineering.blocks.shapes.DirectionalShapeProvider;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
-import malte0811.controlengineering.tiles.CETileEntities;
-import malte0811.controlengineering.tiles.logic.LogicCabinetTile;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -22,7 +22,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class LogicCabinetBlock extends CEBlock<Direction, LogicCabinetTile> {
+public class LogicCabinetBlock extends CEBlock<Direction, LogicCabinetBlockEntity> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final IntegerProperty HEIGHT = IntegerProperty.create("height", 0, 1);
 
@@ -50,7 +50,7 @@ public class LogicCabinetBlock extends CEBlock<Direction, LogicCabinetTile> {
                 defaultPropertiesNotSolid(),
                 HorizontalStructurePlacement.column(FACING, HEIGHT),
                 FromBlockFunction.either((state, world, pos) -> state.getValue(HEIGHT) > 0, BOTTOM_SHAPE, TOP_SHAPE),
-                CETileEntities.LOGIC_CABINET
+                CEBlockEntities.LOGIC_CABINET
         );
     }
 
@@ -66,7 +66,7 @@ public class LogicCabinetBlock extends CEBlock<Direction, LogicCabinetTile> {
             Level pLevel, @Nonnull BlockState pState, @Nonnull BlockEntityType<T> pBlockEntityType
     ) {
         if (!pLevel.isClientSide && pState.getValue(HEIGHT) == 0)
-            return createTickerHelper(pBlockEntityType, LogicCabinetTile::tick);
+            return createTickerHelper(pBlockEntityType, LogicCabinetBlockEntity::tick);
         return null;
     }
 }

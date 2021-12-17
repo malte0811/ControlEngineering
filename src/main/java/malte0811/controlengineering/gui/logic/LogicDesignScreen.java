@@ -5,6 +5,8 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.blockentity.logic.LogicCabinetBlockEntity;
+import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity.AvailableIngredients;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.logic.schematic.ConnectedPin;
@@ -15,8 +17,6 @@ import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
 import malte0811.controlengineering.network.logic.*;
-import malte0811.controlengineering.tiles.logic.LogicCabinetTile;
-import malte0811.controlengineering.tiles.logic.LogicWorkbenchTile.AvailableIngredients;
 import malte0811.controlengineering.util.GuiUtil;
 import malte0811.controlengineering.util.TextUtil;
 import malte0811.controlengineering.util.math.Vec2d;
@@ -179,7 +179,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         transform.translate(width - TOTAL_BORDER - 17, height - TOTAL_BORDER - 17, 0);
         final int numTubes = schematic.getNumTubes();
         final int numWires = schematic.getWireLength();
-        final int numBoards = LogicCabinetTile.getNumBoardsFor(numTubes);
+        final int numBoards = LogicCabinetBlockEntity.getNumBoardsFor(numTubes);
         renderIngredient(transform, null, numBoards, IEItemRefs.CIRCUIT_BOARD);
         transform.translate(0, -16, 0);
         renderIngredient(

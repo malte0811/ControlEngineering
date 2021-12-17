@@ -3,22 +3,22 @@ package malte0811.controlengineering.blocks.loot;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.tiles.base.IExtraDropTile;
+import malte0811.controlengineering.blockentity.base.IExtraDropBE;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public class ExtraTileDropEntry extends LootPoolSingletonContainer {
-    public static final ResourceLocation ID = new ResourceLocation(ControlEngineering.MODID, "extra_tile_drop");
+public class ExtraBEDropEntry extends LootPoolSingletonContainer {
+    public static final ResourceLocation ID = new ResourceLocation(ControlEngineering.MODID, "extra_be_drop");
 
-    protected ExtraTileDropEntry(
+    protected ExtraBEDropEntry(
             int weightIn, int qualityIn, LootItemCondition[] conditionsIn, LootItemFunction[] functionsIn
     ) {
         super(weightIn, qualityIn, conditionsIn, functionsIn);
@@ -26,26 +26,25 @@ public class ExtraTileDropEntry extends LootPoolSingletonContainer {
 
     @Override
     protected void createItemStack(@Nonnull Consumer<ItemStack> output, @Nonnull LootContext context) {
-        BlockEntity te = CELootFunctions.getMasterTile(context);
-        if (te instanceof IExtraDropTile extraDropTile) {
-            extraDropTile.getExtraDrops(output);
+        if (CELootFunctions.getMasterBE(context) instanceof IExtraDropBE extraDropBE) {
+            extraDropBE.getExtraDrops(output);
         }
     }
 
     public static LootPoolSingletonContainer.Builder<?> builder() {
-        return simpleBuilder(ExtraTileDropEntry::new);
+        return simpleBuilder(ExtraBEDropEntry::new);
     }
 
     @Nonnull
     @Override
     public LootPoolEntryType getType() {
-        return CELootFunctions.tileDrop;
+        return CELootFunctions.bEntityDrop;
     }
 
-    public static class Serializer extends LootPoolSingletonContainer.Serializer<ExtraTileDropEntry> {
+    public static class Serializer extends LootPoolSingletonContainer.Serializer<ExtraBEDropEntry> {
         @Nonnull
         @Override
-        protected ExtraTileDropEntry deserialize(
+        protected ExtraBEDropEntry deserialize(
                 @Nonnull JsonObject json,
                 @Nonnull JsonDeserializationContext context,
                 int weight,
@@ -53,7 +52,7 @@ public class ExtraTileDropEntry extends LootPoolSingletonContainer {
                 @Nonnull LootItemCondition[] conditions,
                 @Nonnull LootItemFunction[] functions
         ) {
-            return new ExtraTileDropEntry(weight, quality, conditions, functions);
+            return new ExtraBEDropEntry(weight, quality, conditions, functions);
         }
     }
 }

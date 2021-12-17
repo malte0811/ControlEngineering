@@ -1,4 +1,4 @@
-package malte0811.controlengineering.tiles.base;
+package malte0811.controlengineering.blockentity.base;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -13,11 +13,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class CETileEntity extends BlockEntity implements IHasMasterBase {
+public abstract class CEBlockEntity extends BlockEntity implements IHasMasterBase {
     private BlockEntity cachedMaster;
 
-    public CETileEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
-        super(tileEntityTypeIn, pos, state);
+    public CEBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     @Override
@@ -55,7 +55,7 @@ public abstract class CETileEntity extends BlockEntity implements IHasMasterBase
                 this,
                 be -> {
                     CompoundTag result = new CompoundTag();
-                    ((CETileEntity) be).writeSyncedData(result);
+                    ((CEBlockEntity) be).writeSyncedData(result);
                     return result;
                 }
         );

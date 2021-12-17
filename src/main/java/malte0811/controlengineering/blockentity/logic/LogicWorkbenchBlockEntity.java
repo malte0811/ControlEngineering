@@ -1,8 +1,9 @@
-package malte0811.controlengineering.tiles.logic;
+package malte0811.controlengineering.blockentity.logic;
 
 import blusunrize.immersiveengineering.api.IETags;
 import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
@@ -14,7 +15,6 @@ import malte0811.controlengineering.items.PCBStackItem;
 import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
-import malte0811.controlengineering.tiles.base.CETileEntity;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.ItemUtil;
 import malte0811.controlengineering.util.math.MatrixUtils;
@@ -41,7 +41,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOwner, ISchematicTile {
+public class LogicWorkbenchBlockEntity extends CEBlockEntity implements SelectionShapeOwner, ISchematicBE {
     public static final String TUBES_EMPTY_KEY = ControlEngineering.MODID + ".gui.tubesEmpty";
     public static final String WIRES_EMPTY_KEY = ControlEngineering.MODID + ".gui.wiresEmpty";
     public static final String MORE_BOARDS_THAN_MAX = ControlEngineering.MODID + ".gui.moreThanMaxBoards";
@@ -65,10 +65,10 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
                 VoxelShape baseShape = LogicWorkbenchBlock.SHAPE.apply(offset, facing);
                 if (offset == LogicWorkbenchBlock.Offset.TOP_RIGHT) {
                     Function<UseOnContext, InteractionResult> create = makeInteraction(
-                            state, LogicWorkbenchTile::handleCreationClick
+                            state, LogicWorkbenchBlockEntity::handleCreationClick
                     );
                     SelectionShapes wireDrawer = makeDrawerShape(
-                            state, LogicWorkbenchBlock.WIRE_DRAWER_TOP_RIGHT, te -> te.wireStorage
+                            state, LogicWorkbenchBlock.WIRE_DRAWER_TOP_RIGHT, be -> be.wireStorage
                     );
                     return new ListShapes(
                             baseShape,
@@ -78,10 +78,10 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
                     );
                 } else if (offset == LogicWorkbenchBlock.Offset.TOP_LEFT) {
                     SelectionShapes wireDrawer = makeDrawerShape(
-                            state, LogicWorkbenchBlock.WIRE_DRAWER, te -> te.wireStorage
+                            state, LogicWorkbenchBlock.WIRE_DRAWER, be -> be.wireStorage
                     );
                     SelectionShapes tubeDrawer = makeDrawerShape(
-                            state, LogicWorkbenchBlock.TUBE_DRAWER, te -> te.tubeStorage
+                            state, LogicWorkbenchBlock.TUBE_DRAWER, be -> be.tubeStorage
                     );
                     return new ListShapes(
                             baseShape,
@@ -90,20 +90,20 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
                             $ -> InteractionResult.PASS
                     );
                 } else {
-                    return new SingleShape(baseShape, makeInteraction(state, LogicWorkbenchTile::handleMainClick));
+                    return new SingleShape(baseShape, makeInteraction(state, LogicWorkbenchBlockEntity::handleMainClick));
                 }
             }
     );
 
-    public LogicWorkbenchTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
-        super(tileEntityTypeIn, pos, state);
+    public LogicWorkbenchBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     private Function<UseOnContext, InteractionResult> makeInteraction(
-            BlockState state, BiFunction<LogicWorkbenchTile, UseOnContext, InteractionResult> handler
+            BlockState state, BiFunction<LogicWorkbenchBlockEntity, UseOnContext, InteractionResult> handler
     ) {
         return ctx -> {
-            LogicWorkbenchTile atOrigin = getMainTile(state);
+            LogicWorkbenchBlockEntity atOrigin = getMainBE(state);
             if (atOrigin != null) {
                 return handler.apply(atOrigin, ctx);
             } else {
@@ -113,14 +113,14 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
     }
 
     @Nullable
-    private LogicWorkbenchTile getMainTile(BlockState state) {
+    private LogicWorkbenchBlockEntity getMainBE(BlockState state) {
         if (level == null) {
             return null;
         }
         BlockPos origin = CEBlocks.LOGIC_WORKBENCH.get().getMainBlock(state, this);
         BlockEntity atOrigin = level.getBlockEntity(origin);
-        if (atOrigin instanceof LogicWorkbenchTile) {
-            return (LogicWorkbenchTile) atOrigin;
+        if (atOrigin instanceof LogicWorkbenchBlockEntity originWB) {
+            return originWB;
         } else {
             return null;
         }
@@ -176,10 +176,10 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
             return InteractionResult.FAIL;
         }
         final int numTubes = circuit.get().getNumTubes();
-        final int numBoards = LogicCabinetTile.getNumBoardsFor(numTubes);
-        if (numBoards > LogicCabinetTile.MAX_NUM_BOARDS) {
+        final int numBoards = LogicCabinetBlockEntity.getNumBoardsFor(numTubes);
+        if (numBoards > LogicCabinetBlockEntity.MAX_NUM_BOARDS) {
             ctx.getPlayer().displayClientMessage(
-                    new TranslatableComponent(MORE_BOARDS_THAN_MAX, numBoards, LogicCabinetTile.MAX_NUM_BOARDS),
+                    new TranslatableComponent(MORE_BOARDS_THAN_MAX, numBoards, LogicCabinetBlockEntity.MAX_NUM_BOARDS),
                     true
             );
             return InteractionResult.FAIL;
@@ -215,20 +215,20 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
     }
 
     private SelectionShapes makeDrawerShape(
-            BlockState state, VoxelShape shape, Function<LogicWorkbenchTile, CircuitIngredientDrawer> getDrawer
+            BlockState state, VoxelShape shape, Function<LogicWorkbenchBlockEntity, CircuitIngredientDrawer> getDrawer
     ) {
         Function<UseOnContext, InteractionResult> onClick = makeInteraction(
                 state,
-                (tile, ctx) -> {
-                    InteractionResult ret = getDrawer.apply(tile).interact(ctx);
-                    tile.level.sendBlockUpdated(
-                            tile.worldPosition, tile.getBlockState(), tile.getBlockState(), Block.UPDATE_ALL
+                (bEntity, ctx) -> {
+                    InteractionResult ret = getDrawer.apply(bEntity).interact(ctx);
+                    bEntity.level.sendBlockUpdated(
+                            bEntity.worldPosition, bEntity.getBlockState(), bEntity.getBlockState(), Block.UPDATE_ALL
                     );
                     return ret;
                 }
         );
         return new SingleShape(shape, onClick).setTextGetter(() -> {
-            final LogicWorkbenchTile main = getMainTile(state);
+            final LogicWorkbenchBlockEntity main = getMainBE(state);
             if (main == null) {
                 return null;
             }
@@ -254,9 +254,9 @@ public class LogicWorkbenchTile extends CETileEntity implements SelectionShapeOw
         private final ItemStack availableTubes;
         private final ItemStack availableWires;
 
-        public AvailableIngredients(LogicWorkbenchTile tile) {
-            this.availableTubes = tile.getTubeStorage().getStored();
-            this.availableWires = tile.getWireStorage().getStored();
+        public AvailableIngredients(LogicWorkbenchBlockEntity bEntity) {
+            this.availableTubes = bEntity.getTubeStorage().getStored();
+            this.availableWires = bEntity.getWireStorage().getStored();
         }
 
         public ItemStack getAvailableTubes() {

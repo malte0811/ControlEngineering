@@ -1,4 +1,4 @@
-package malte0811.controlengineering.tiles.base;
+package malte0811.controlengineering.blockentity.base;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
 

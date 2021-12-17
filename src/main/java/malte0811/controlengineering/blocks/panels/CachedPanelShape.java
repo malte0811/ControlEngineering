@@ -1,9 +1,9 @@
 package malte0811.controlengineering.blocks.panels;
 
+import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.shapes.CachedShape;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.controlpanels.PanelTransform;
-import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import malte0811.controlengineering.util.ShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class CachedPanelShape extends CachedShape<PanelTransform> {
 
     @Override
     protected PanelTransform getKey(BlockState state, BlockGetter world, BlockPos pos) {
-        ControlPanelTile base = PanelBlock.getBase(world, state, pos);
+        ControlPanelBlockEntity base = PanelBlock.getBase(world, state, pos);
         if (base != null) {
             return base.getTransform();
         } else {

@@ -2,9 +2,9 @@ package malte0811.controlengineering.blocks.panels;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.placement.PlacementBehavior;
-import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -31,7 +31,7 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
     }
 
     @Override
-    public Pair<PanelOrientation, BlockPos> getPlacementDataAndOffset(BlockState state, BlockEntity te) {
+    public Pair<PanelOrientation, BlockPos> getPlacementDataAndOffset(BlockState state, BlockEntity be) {
         PanelOrientation orientation = state.getValue(PanelOrientation.PROPERTY);
         BlockPos offset;
         if (state.getValue(PanelBlock.IS_BASE)) {
@@ -55,7 +55,7 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
     }
 
     @Override
-    public boolean isValidAtOffset(BlockPos offset, BlockState state, BlockEntity te, PanelOrientation data) {
+    public boolean isValidAtOffset(BlockPos offset, BlockState state, BlockEntity be, PanelOrientation data) {
         if (state.getBlock() != CEBlocks.CONTROL_PANEL.get()) {
             return false;
         }
@@ -68,8 +68,8 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
     }
 
     @Override
-    public void fillTileData(BlockPos offset, BlockEntity te, PanelOrientation data, ItemStack item) {
-        if (BlockPos.ZERO.equals(offset) && te instanceof ControlPanelTile panel) {
+    public void fillBEData(BlockPos offset, BlockEntity bEntity, PanelOrientation data, ItemStack item) {
+        if (BlockPos.ZERO.equals(offset) && bEntity instanceof ControlPanelBlockEntity panel) {
             CompoundTag nbt = item.getTag();
             if (nbt == null || nbt.isEmpty()) {
                 nbt = panel.save(new CompoundTag());

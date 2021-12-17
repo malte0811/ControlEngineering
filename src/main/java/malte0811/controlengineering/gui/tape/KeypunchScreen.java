@@ -2,6 +2,7 @@ package malte0811.controlengineering.gui.tape;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.blockentity.tape.KeypunchState;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.gui.widgets.Keyboard;
 import malte0811.controlengineering.gui.widgets.KeyboardButton;
@@ -9,7 +10,6 @@ import malte0811.controlengineering.network.keypunch.Backspace;
 import malte0811.controlengineering.network.keypunch.KeypunchPacket;
 import malte0811.controlengineering.network.keypunch.KeypunchSubPacket;
 import malte0811.controlengineering.network.keypunch.TypeChar;
-import malte0811.controlengineering.tiles.tape.KeypunchState;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;

@@ -1,18 +1,19 @@
-package malte0811.controlengineering.tiles.base;
+package malte0811.controlengineering.blockentity.base;
 
-import javax.annotation.Nullable;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import javax.annotation.Nullable;
+
 public interface IHasMaster extends IHasMasterBase {
     @Nullable
-    BlockEntity computeMasterTile(BlockState stateHere);
+    BlockEntity computeMasterBE(BlockState stateHere);
 
-    default BlockEntity getOrComputeMasterTile(BlockState stateHere) {
+    default BlockEntity getOrComputeMasterBE(BlockState stateHere) {
         if (getCachedMaster() != null) {
             return getCachedMaster();
         } else {
-            return computeMasterTile(stateHere);
+            return computeMasterBE(stateHere);
         }
     }
 }

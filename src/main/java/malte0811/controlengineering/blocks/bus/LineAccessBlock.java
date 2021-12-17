@@ -1,13 +1,13 @@
 package malte0811.controlengineering.blocks.bus;
 
 import blusunrize.immersiveengineering.api.IETags;
+import malte0811.controlengineering.blockentity.CEBlockEntities;
+import malte0811.controlengineering.blockentity.bus.LineAccessBlockEntity;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.BlockPropertyPlacement;
 import malte0811.controlengineering.blocks.shapes.DirectionalShapeProvider;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.bus.BusWireType;
-import malte0811.controlengineering.tiles.CETileEntities;
-import malte0811.controlengineering.tiles.bus.LineAccessTile;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,7 +17,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
@@ -30,7 +29,7 @@ import javax.annotation.Nonnull;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class LineAccessBlock extends CEBlock<Direction, LineAccessTile> {
+public class LineAccessBlock extends CEBlock<Direction, LineAccessBlockEntity> {
     public static final Property<Direction> FACING = DirectionProperty.create(
             "facing", DirectionUtils.BY_HORIZONTAL_INDEX
     );
@@ -47,7 +46,7 @@ public class LineAccessBlock extends CEBlock<Direction, LineAccessTile> {
                 defaultPropertiesNotSolid(),
                 BlockPropertyPlacement.horizontal(FACING),
                 new DirectionalShapeProvider(FromBlockFunction.getProperty(FACING), NORTH_SHAPE),
-                CETileEntities.LINE_ACCESS
+                CEBlockEntities.LINE_ACCESS
         );
     }
 
@@ -68,12 +67,9 @@ public class LineAccessBlock extends CEBlock<Direction, LineAccessTile> {
             @Nonnull BlockHitResult hit
     ) {
         ItemStack held = player.getItemInHand(handIn);
-        if (held.is(IETags.screwdrivers)) {
-            BlockEntity te = worldIn.getBlockEntity(pos);
-            if (te instanceof LineAccessTile lineTile) {
-                lineTile.selectedLine = (lineTile.selectedLine + 1) % BusWireType.NUM_LINES;
-                return InteractionResult.SUCCESS;
-            }
+        if (held.is(IETags.screwdrivers) && worldIn.getBlockEntity(pos) instanceof LineAccessBlockEntity lineBE) {
+            lineBE.selectedLine = (lineBE.selectedLine + 1) % BusWireType.NUM_LINES;
+            return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
     }

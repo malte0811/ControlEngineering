@@ -1,4 +1,4 @@
-package malte0811.controlengineering.tiles.tape;
+package malte0811.controlengineering.blockentity.tape;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
@@ -13,6 +13,7 @@ import malte0811.controlengineering.util.ItemUtil;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+
 import java.util.Arrays;
 import java.util.List;
 

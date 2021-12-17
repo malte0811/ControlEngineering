@@ -1,10 +1,10 @@
 package malte0811.controlengineering.blocks.panels;
 
+import malte0811.controlengineering.blockentity.CEBlockEntities;
+import malte0811.controlengineering.blockentity.panels.PanelCNCBlockEntity;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.BlockPropertyPlacement;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
-import malte0811.controlengineering.tiles.CETileEntities;
-import malte0811.controlengineering.tiles.panels.PanelCNCTile;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -21,7 +21,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class PanelCNCBlock extends CEBlock<Direction, PanelCNCTile> {
+public class PanelCNCBlock extends CEBlock<Direction, PanelCNCBlockEntity> {
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public static final VoxelShape BASE = Shapes.box(0, 0, 0, 1, 2 / 16., 1);
@@ -41,7 +41,7 @@ public class PanelCNCBlock extends CEBlock<Direction, PanelCNCTile> {
                 defaultPropertiesNotSolid(),
                 BlockPropertyPlacement.horizontal(FACING),
                 FromBlockFunction.constant(SHAPE),
-                CETileEntities.PANEL_CNC
+                CEBlockEntities.PANEL_CNC
         );
     }
 
@@ -51,8 +51,8 @@ public class PanelCNCBlock extends CEBlock<Direction, PanelCNCTile> {
         builder.add(FACING);
     }
 
-    public static Direction getDirection(PanelCNCTile tile) {
-        return tile.getBlockState().getValue(FACING);
+    public static Direction getDirection(PanelCNCBlockEntity bEntity) {
+        return bEntity.getBlockState().getValue(FACING);
     }
 
     @Nullable
@@ -60,6 +60,6 @@ public class PanelCNCBlock extends CEBlock<Direction, PanelCNCTile> {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
             @Nonnull Level pLevel, @Nonnull BlockState pState, @Nonnull BlockEntityType<T> pBlockEntityType
     ) {
-        return createTickerHelper(pBlockEntityType, PanelCNCTile::tick);
+        return createTickerHelper(pBlockEntityType, PanelCNCBlockEntity::tick);
     }
 }

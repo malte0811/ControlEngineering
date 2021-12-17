@@ -1,7 +1,7 @@
-package malte0811.controlengineering.tiles.logic;
+package malte0811.controlengineering.blockentity.logic;
 
 import malte0811.controlengineering.logic.schematic.Schematic;
 
-public interface ISchematicTile {
+public interface ISchematicBE {
     Schematic getSchematic();
 }

@@ -1,6 +1,7 @@
 package malte0811.controlengineering;
 
 import blusunrize.immersiveengineering.api.wires.localhandlers.LocalNetworkHandler;
+import malte0811.controlengineering.blockentity.CEBlockEntities;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.loot.CELootFunctions;
 import malte0811.controlengineering.bus.BusWireType;
@@ -15,7 +16,6 @@ import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.keypunch.KeypunchPacket;
 import malte0811.controlengineering.network.logic.LogicPacket;
 import malte0811.controlengineering.network.panellayout.PanelPacket;
-import malte0811.controlengineering.tiles.CETileEntities;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -54,7 +54,7 @@ public class ControlEngineering {
     public ControlEngineering() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         CEBlocks.REGISTER.register(modBus);
-        CETileEntities.REGISTER.register(modBus);
+        CEBlockEntities.REGISTER.register(modBus);
         CEItems.REGISTER.register(modBus);
         CEContainers.REGISTER.register(modBus);
         CERecipeSerializers.REGISTER.register(modBus);

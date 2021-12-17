@@ -1,18 +1,18 @@
 package malte0811.controlengineering.blocks.panels;
 
+import malte0811.controlengineering.blockentity.CEBlockEntities;
+import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.CEBlock;
-import malte0811.controlengineering.tiles.CETileEntities;
-import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+
 import javax.annotation.Nonnull;
 
-public class PanelBlock extends CEBlock<PanelOrientation, ControlPanelTile> {
+public class PanelBlock extends CEBlock<PanelOrientation, ControlPanelBlockEntity> {
     public static final BooleanProperty IS_BASE = BooleanProperty.create("base");
 
     public PanelBlock() {
@@ -20,11 +20,11 @@ public class PanelBlock extends CEBlock<PanelOrientation, ControlPanelTile> {
                 defaultPropertiesNotSolid(),
                 new PanelPlacementBehavior(),
                 CachedPanelShape.create(),
-                CETileEntities.CONTROL_PANEL
+                CEBlockEntities.CONTROL_PANEL
         );
     }
 
-    public static ControlPanelTile getBase(BlockGetter world, BlockState state, BlockPos pos) {
+    public static ControlPanelBlockEntity getBase(BlockGetter world, BlockState state, BlockPos pos) {
         BlockPos masterPos;
         if (state.getValue(IS_BASE)) {
             masterPos = pos;
@@ -32,8 +32,7 @@ public class PanelBlock extends CEBlock<PanelOrientation, ControlPanelTile> {
             PanelOrientation po = state.getValue(PanelOrientation.PROPERTY);
             masterPos = pos.relative(po.top, -1);
         }
-        BlockEntity te = world.getBlockEntity(masterPos);
-        return te instanceof ControlPanelTile panel ? panel : null;
+        return world.getBlockEntity(masterPos) instanceof ControlPanelBlockEntity panel ? panel : null;
     }
 
     @Override

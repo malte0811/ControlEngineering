@@ -13,14 +13,14 @@ import java.util.Objects;
 
 //All transforms are for the "top" block of the control panel
 public class PanelTransform {
-    private static final Codec<TileTransformData> CODEC = RecordCodecBuilder.create(
+    private static final Codec<BETransformData> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
                     Codec.FLOAT.fieldOf("height").forGetter(p -> p.centerHeight),
                     Codec.FLOAT.fieldOf("angle").forGetter(p -> p.degrees)
-            ).apply(inst, TileTransformData::new)
+            ).apply(inst, BETransformData::new)
     );
 
-    private final TileTransformData tileData;
+    private final BETransformData bEntityData;
     //Transforms panel top coords (x, 0, y) to world coords
     private final Matrix4f panelTopToWorld;
     //Transforms rotated world coords (panel base) to actual world coords
@@ -28,12 +28,12 @@ public class PanelTransform {
     private final Matrix4f worldToPanelTop;
 
     public PanelTransform(float centerHeight, float degrees, PanelOrientation blockData) {
-        this(new TileTransformData(centerHeight, degrees), blockData);
+        this(new BETransformData(centerHeight, degrees), blockData);
     }
 
-    public PanelTransform(TileTransformData tileData, PanelOrientation blockData) {
-        this.tileData = tileData;
-        final float radians = (float) Math.toRadians(tileData.degrees);
+    public PanelTransform(BETransformData bEntityData, PanelOrientation blockData) {
+        this.bEntityData = bEntityData;
+        final float radians = (float) Math.toRadians(bEntityData.degrees);
         final float borderHeight = (float) getFrontHeight();
 
         panelBottomToWorld = TransformCaches.makePanelBottomToWorld(blockData);
@@ -61,32 +61,32 @@ public class PanelTransform {
     }
 
     public double getTopFaceHeight() {
-        return 1 / Math.cos(Math.toRadians(tileData.degrees));
+        return 1 / Math.cos(Math.toRadians(bEntityData.degrees));
     }
 
     public void addTo(CompoundTag out) {
-        Codecs.add(CODEC, tileData, out, "transform");
+        Codecs.add(CODEC, bEntityData, out, "transform");
     }
 
     public double getFrontHeight() {
-        final double radians = Math.toRadians(tileData.degrees);
-        return tileData.centerHeight - (Math.tan(radians) / 2);
+        final double radians = Math.toRadians(bEntityData.degrees);
+        return bEntityData.centerHeight - (Math.tan(radians) / 2);
     }
 
     public double getBackHeight() {
-        final double radians = Math.toRadians(tileData.degrees);
-        return tileData.centerHeight + (Math.tan(radians) / 2);
+        final double radians = Math.toRadians(bEntityData.degrees);
+        return bEntityData.centerHeight + (Math.tan(radians) / 2);
     }
 
     public static PanelTransform from(CompoundTag nbt, PanelOrientation orientation) {
-        TileTransformData tile = Codecs.read(CODEC, nbt, "transform")
+        BETransformData beData = Codecs.read(CODEC, nbt, "transform")
                 .result()
-                .orElseGet(TileTransformData::new);
-        return new PanelTransform(tile, orientation);
+                .orElseGet(BETransformData::new);
+        return new PanelTransform(beData, orientation);
     }
 
     public double getCenterHeight() {
-        return tileData.centerHeight;
+        return bEntityData.centerHeight;
     }
 
     public Vec3[] getBottomVertices() {
@@ -122,7 +122,7 @@ public class PanelTransform {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PanelTransform that = (PanelTransform) o;
-        return tileData.equals(that.tileData) &&
+        return bEntityData.equals(that.bEntityData) &&
                 panelTopToWorld.equals(that.panelTopToWorld) &&
                 panelBottomToWorld.equals(that.panelBottomToWorld) &&
                 worldToPanelTop.equals(that.worldToPanelTop);
@@ -130,11 +130,11 @@ public class PanelTransform {
 
     @Override
     public int hashCode() {
-        return Objects.hash(tileData, panelTopToWorld, panelBottomToWorld, worldToPanelTop);
+        return Objects.hash(bEntityData, panelTopToWorld, panelBottomToWorld, worldToPanelTop);
     }
 
-    private static record TileTransformData(float centerHeight, float degrees) {
-        private TileTransformData() {
+    private static record BETransformData(float centerHeight, float degrees) {
+        private BETransformData() {
             this(0.25F, (float) -Math.toDegrees(Math.atan(0.5)));
         }
     }

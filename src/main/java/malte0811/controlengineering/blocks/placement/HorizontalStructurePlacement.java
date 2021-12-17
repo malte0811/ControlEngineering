@@ -4,10 +4,6 @@ import blusunrize.immersiveengineering.api.utils.DirectionUtils;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.mojang.datafixers.util.Pair;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Function;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -18,6 +14,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
 
 public class HorizontalStructurePlacement<T extends Comparable<T>> implements PlacementBehavior<Direction> {
     private final Property<Direction> facingProperty;
@@ -47,7 +48,7 @@ public class HorizontalStructurePlacement<T extends Comparable<T>> implements Pl
     }
 
     @Override
-    public Pair<Direction, BlockPos> getPlacementDataAndOffset(BlockState state, BlockEntity te) {
+    public Pair<Direction, BlockPos> getPlacementDataAndOffset(BlockState state, BlockEntity be) {
         T offset = state.getValue(this.offsetProperty);
         Direction facing = state.getValue(this.facingProperty);
         return Pair.of(facing, getPhysicalOffset(facing, offset));
@@ -70,7 +71,7 @@ public class HorizontalStructurePlacement<T extends Comparable<T>> implements Pl
     }
 
     @Override
-    public boolean isValidAtOffset(BlockPos physicalOffset, BlockState state, BlockEntity te, Direction data) {
+    public boolean isValidAtOffset(BlockPos physicalOffset, BlockState state, BlockEntity be, Direction data) {
         if (!state.hasProperty(facingProperty)
                 || !state.hasProperty(offsetProperty)
                 || state.getValue(facingProperty) != data) {

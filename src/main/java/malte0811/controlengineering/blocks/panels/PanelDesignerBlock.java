@@ -2,14 +2,14 @@ package malte0811.controlengineering.blocks.panels;
 
 import blusunrize.immersiveengineering.api.IEProperties;
 import com.google.common.collect.ImmutableMap;
+import malte0811.controlengineering.blockentity.CEBlockEntities;
+import malte0811.controlengineering.blockentity.panels.PanelDesignerBlockEntity;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.HorizontalStructurePlacement;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.HorizontalWithExtraShape;
 import malte0811.controlengineering.blocks.tape.KeypunchBlock;
 import malte0811.controlengineering.gui.panel.PanelDesignContainer;
-import malte0811.controlengineering.tiles.CETileEntities;
-import malte0811.controlengineering.tiles.panels.PanelDesignerTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.TextComponent;
@@ -25,13 +25,14 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Locale;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class PanelDesignerBlock extends CEBlock<Direction, PanelDesignerTile> {
+public class PanelDesignerBlock extends CEBlock<Direction, PanelDesignerBlockEntity> {
     public static final Property<Offset> OFFSET = EnumProperty.create("offset", Offset.class);
     public static final Property<Direction> FACING = IEProperties.FACING_HORIZONTAL;
     public static final VoxelShape TABLE_TOP = createPixelRelative(0, 13, 0, 16, 16, 16);
@@ -72,7 +73,7 @@ public class PanelDesignerBlock extends CEBlock<Direction, PanelDesignerTile> {
                 defaultPropertiesNotSolid(),
                 new HorizontalStructurePlacement<>(FACING, OFFSET, Offset::getOffset),
                 SHAPE,
-                CETileEntities.PANEL_DESIGNER
+                CEBlockEntities.PANEL_DESIGNER
         );
     }
 

@@ -7,6 +7,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Quaternion;
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.blockentity.panels.CNCJob;
+import malte0811.controlengineering.blockentity.panels.PanelCNCBlockEntity;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.client.render.tape.TapeDrive;
 import malte0811.controlengineering.client.render.utils.ModelRenderUtils;
@@ -14,8 +16,6 @@ import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath;
 import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath.Node;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
-import malte0811.controlengineering.tiles.panels.CNCJob;
-import malte0811.controlengineering.tiles.panels.PanelCNCTile;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -33,7 +33,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCTile> {
+public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity> {
     //TODO reset?
     private static final ResettableLazy<TextureAtlasSprite> MODEL_TEXTURE = new ResettableLazy<>(
             () -> {
@@ -54,7 +54,7 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCTile> {
 
     @Override
     public void render(
-            @Nonnull PanelCNCTile tile,
+            @Nonnull PanelCNCBlockEntity cnc,
             float partialTicks,
             @Nonnull PoseStack transform,
             @Nonnull MultiBufferSource buffers,
@@ -62,19 +62,19 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCTile> {
             int overlay
     ) {
         transform.pushPose();
-        rotateAroundCenter(-PanelCNCBlock.getDirection(tile).toYRot(), transform);
+        rotateAroundCenter(-PanelCNCBlock.getDirection(cnc).toYRot(), transform);
         transform.scale(1 / 16f, 1 / 16f, 1 / 16f);
         //TODO hasPanel => isActive
-        final double tick = tile.getCurrentTicksInJob() + (tile.hasPanel() ? partialTicks : 0);
+        final double tick = cnc.getCurrentTicksInJob() + (cnc.hasPanel() ? partialTicks : 0);
         transform.pushPose();
         transform.translate(0, 14, 0);
-        renderTape(tile, buffers, transform, light, overlay, tick);
+        renderTape(cnc, buffers, transform, light, overlay, tick);
         transform.popPose();
         transform.pushPose();
         transform.translate(1, 2, 1);
         transform.scale(14f / 16, 14f / 16, 14f / 16);
-        renderCurrentPanelState(tile, buffers, transform, light, overlay);
-        renderHead(tile, buffers, transform, light, overlay, tick);
+        renderCurrentPanelState(cnc, buffers, transform, light, overlay);
+        renderHead(cnc, buffers, transform, light, overlay, tick);
         transform.popPose();
         transform.popPose();
     }
@@ -86,10 +86,10 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCTile> {
     }
 
     private void renderCurrentPanelState(
-            PanelCNCTile tile, MultiBufferSource buffers, PoseStack transform, int light, int overlay
+            PanelCNCBlockEntity cnc, MultiBufferSource buffers, PoseStack transform, int light, int overlay
     ) {
         VertexConsumer builder = buffers.getBuffer(RenderType.solid());
-        if (tile.hasPanel()) {
+        if (cnc.hasPanel()) {
             VertexConsumer forTexture = MODEL_TEXTURE.get().wrap(builder);
             TransformingVertexBuilder finalWrapped = new TransformingVertexBuilder(
                     forTexture, transform, DefaultVertexFormat.BLOCK
@@ -105,18 +105,18 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCTile> {
             finalWrapped.vertex(16, 0, 0).uv(maxU, minV).endVertex();
         }
         //TODO cache?
-        ComponentRenderers.renderAll(tile.getCurrentPlacedComponents(), new PoseStack())
+        ComponentRenderers.renderAll(cnc.getCurrentPlacedComponents(), new PoseStack())
                 .renderTo(buffers, transform, light, overlay);
     }
 
     private void renderTape(
-            PanelCNCTile tile, MultiBufferSource buffer, PoseStack transform, int light, int overlay, double ticks
+            PanelCNCBlockEntity cncBE, MultiBufferSource buffer, PoseStack transform, int light, int overlay, double ticks
     ) {
-        final long totLength = tile.getTapeLength();
+        final long totLength = cncBE.getTapeLength();
         if (totLength > 0) {
-            CNCJob currentJob = tile.getCurrentJob();
+            CNCJob currentJob = cncBE.getCurrentJob();
             Preconditions.checkNotNull(currentJob);
-            //TODO put into TE in some way? Or make static(ish)?
+            //TODO put into BE in some way? Or make static(ish)?
             TapeDrive testWheel = new TapeDrive(
                     totLength + 1, 2, 1,
                     new Vec2d(5, 8), new Vec2d(7, 5),
@@ -128,12 +128,12 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCTile> {
     }
 
     private void renderHead(
-            PanelCNCTile tile, MultiBufferSource buffer, PoseStack transform, int light, int overlay, double ticks
+            PanelCNCBlockEntity cncBE, MultiBufferSource buffer, PoseStack transform, int light, int overlay, double ticks
     ) {
         Vec3 currentPos;
-        if (tile.getCurrentJob() != null && !tile.hasFailed()) {
+        if (cncBE.getCurrentJob() != null && !cncBE.hasFailed()) {
             //TODO cache path!
-            currentPos = createPathFor(tile.getCurrentJob()).getPosAt(ticks);
+            currentPos = createPathFor(cncBE.getCurrentJob()).getPosAt(ticks);
         } else {
             currentPos = HEAD_IDLE;
         }

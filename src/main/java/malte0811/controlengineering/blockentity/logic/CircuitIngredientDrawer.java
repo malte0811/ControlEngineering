@@ -1,4 +1,4 @@
-package malte0811.controlengineering.tiles.logic;
+package malte0811.controlengineering.blockentity.logic;
 
 import malte0811.controlengineering.util.ItemUtil;
 import net.minecraft.nbt.CompoundTag;

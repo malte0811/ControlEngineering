@@ -1,4 +1,4 @@
-package malte0811.controlengineering.tiles.bus;
+package malte0811.controlengineering.blockentity.bus;
 
 import blusunrize.immersiveengineering.api.TargetingInfo;
 import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
@@ -7,12 +7,11 @@ import blusunrize.immersiveengineering.api.wires.WireType;
 import blusunrize.immersiveengineering.api.wires.redstone.IRedstoneConnector;
 import blusunrize.immersiveengineering.api.wires.redstone.RedstoneNetworkHandler;
 import com.google.common.collect.ImmutableList;
-import malte0811.controlengineering.blocks.bus.LineAccessBlock;
+import malte0811.controlengineering.blockentity.CEIICBlockEntity;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusConnector;
 import malte0811.controlengineering.bus.LocalBusHandler;
-import malte0811.controlengineering.tiles.CEIICTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -28,7 +27,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Objects;
 
-public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IRedstoneConnector {
+public class LineAccessBlockEntity extends CEIICBlockEntity implements IBusConnector, IRedstoneConnector {
     private static final int REDSTONE_ID = 0;
     private static final int BUS_ID = 1;
 
@@ -37,8 +36,8 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
     private ConnectionPoint redstonePoint;
     private ConnectionPoint busPoint;
 
-    public LineAccessTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
-        super(tileEntityTypeIn, pos, state);
+    public LineAccessBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         reinitConnectionPoints();
     }
 
@@ -102,7 +101,7 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
             offset = -.25;
         }
         return new Vec3(0.5, 7 / 16., 0.5).add(
-                Vec3.atLowerCornerOf(getBlockState().getValue(LineAccessBlock.FACING).getNormal())
+                Vec3.atLowerCornerOf(getBlockState().getValue(malte0811.controlengineering.blocks.bus.LineAccessBlock.FACING).getNormal())
                         .scale(offset)
         );
     }
@@ -110,7 +109,7 @@ public class LineAccessTile extends CEIICTileEntity implements IBusConnector, IR
     @Nullable
     @Override
     public ConnectionPoint getTargetedPoint(TargetingInfo info, Vec3i offset) {
-        Direction facing = getBlockState().getValue(LineAccessBlock.FACING);
+        Direction facing = getBlockState().getValue(malte0811.controlengineering.blocks.bus.LineAccessBlock.FACING);
         Vec3i normal = facing.getNormal();
         if (normal.getX() * (info.hitX - .5) + normal.getY() * (info.hitY - .5) + normal.getZ() * (info.hitZ - .5) < 0) {
             return busPoint;

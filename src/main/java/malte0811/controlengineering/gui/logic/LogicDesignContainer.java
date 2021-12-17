@@ -1,5 +1,7 @@
 package malte0811.controlengineering.gui.logic;
 
+import malte0811.controlengineering.blockentity.logic.ISchematicBE;
+import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.gui.CEContainer;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.gui.ContainerScreenManager;
@@ -9,13 +11,12 @@ import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.logic.FullSync;
 import malte0811.controlengineering.network.logic.LogicPacket;
 import malte0811.controlengineering.network.logic.LogicSubPacket;
-import malte0811.controlengineering.tiles.logic.ISchematicTile;
-import malte0811.controlengineering.tiles.logic.LogicWorkbenchTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.Level;
+
 import java.util.Optional;
 
 public class LogicDesignContainer extends CEContainer<LogicSubPacket> {
@@ -41,19 +42,19 @@ public class LogicDesignContainer extends CEContainer<LogicSubPacket> {
         );
     }
 
-    public Optional<LogicWorkbenchTile.AvailableIngredients> getAvailableIngredients() {
-        return getTile(LogicWorkbenchTile.class).map(LogicWorkbenchTile::getCosts);
+    public Optional<LogicWorkbenchBlockEntity.AvailableIngredients> getAvailableIngredients() {
+        return getBE(LogicWorkbenchBlockEntity.class).map(LogicWorkbenchBlockEntity::getCosts);
     }
 
     public Schematic getSchematic() {
-        return getTile(ISchematicTile.class)
-                .map(ISchematicTile::getSchematic)
+        return getBE(ISchematicBE.class)
+                .map(ISchematicBE::getSchematic)
                 .orElseThrow(RuntimeException::new);
     }
 
-    private <T> Optional<T> getTile(Class<T> tileType) {
+    private <T> Optional<T> getBE(Class<T> clazz) {
         return pos.evaluate(Level::getBlockEntity)
-                .map(te -> tileType.isAssignableFrom(te.getClass()) ? tileType.cast(te) : null);
+                .map(be -> clazz.isAssignableFrom(be.getClass()) ? clazz.cast(be) : null);
     }
 
     @Override

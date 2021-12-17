@@ -1,11 +1,11 @@
 package malte0811.controlengineering.blocks;
 
 import com.mojang.datafixers.util.Pair;
+import malte0811.controlengineering.blockentity.base.IHasMaster;
 import malte0811.controlengineering.blocks.placement.PlacementBehavior;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.gui.CustomDataContainerProvider;
-import malte0811.controlengineering.tiles.base.IHasMaster;
 import malte0811.controlengineering.util.RaytraceUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -37,22 +37,22 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends Block implements EntityBlock {
+public abstract class CEBlock<PlacementData, BE extends BlockEntity> extends Block implements EntityBlock {
     public final PlacementBehavior<PlacementData> placementBehavior;
     private final FromBlockFunction<VoxelShape> getShape;
     @Nullable
-    private final RegistryObject<BlockEntityType<Tile>> tileType;
+    private final RegistryObject<BlockEntityType<BE>> beType;
 
     public CEBlock(
             Properties properties,
             PlacementBehavior<PlacementData> placement,
             FromBlockFunction<VoxelShape> getShape,
-            @Nullable RegistryObject<BlockEntityType<Tile>> tileType
+            @Nullable RegistryObject<BlockEntityType<BE>> beType
     ) {
         super(properties);
         this.placementBehavior = placement;
         this.getShape = getShape;
-        this.tileType = tileType;
+        this.beType = beType;
     }
 
     @Override
@@ -63,11 +63,11 @@ public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends B
             @Nonnull BlockState newState,
             boolean isMoving
     ) {
-        BlockEntity te = worldIn.getBlockEntity(pos);
-        if (te instanceof IHasMaster hasMaster) {
-            hasMaster.setCachedMaster(hasMaster.computeMasterTile(state));
+        BlockEntity bEntity = worldIn.getBlockEntity(pos);
+        if (bEntity instanceof IHasMaster hasMaster) {
+            hasMaster.setCachedMaster(hasMaster.computeMasterBE(state));
         }
-        Pair<PlacementData, BlockPos> dataAndOffset = placementBehavior.getPlacementDataAndOffset(state, te);
+        Pair<PlacementData, BlockPos> dataAndOffset = placementBehavior.getPlacementDataAndOffset(state, bEntity);
         super.onRemove(state, worldIn, pos, newState, isMoving);
         for (BlockPos offset : placementBehavior.getPlacementOffsets(dataAndOffset.getFirst())) {
             BlockPos relative = offset.subtract(dataAndOffset.getSecond());
@@ -75,8 +75,8 @@ public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends B
                 //TODO stop callee from running this loop again
                 BlockPos absolute = pos.offset(relative);
                 BlockState offsetState = worldIn.getBlockState(absolute);
-                BlockEntity offsetTile = worldIn.getBlockEntity(absolute);
-                if (placementBehavior.isValidAtOffset(offset, offsetState, offsetTile, dataAndOffset.getFirst())) {
+                BlockEntity offsetBE = worldIn.getBlockEntity(absolute);
+                if (placementBehavior.isValidAtOffset(offset, offsetState, offsetBE, dataAndOffset.getFirst())) {
                     worldIn.setBlockAndUpdate(absolute, Blocks.AIR.defaultBlockState());
                 }
             }
@@ -102,8 +102,8 @@ public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends B
             @Nonnull BlockPos pos,
             @Nonnull CollisionContext context
     ) {
-        BlockEntity tile = reader.getBlockEntity(pos);
-        if (tile instanceof SelectionShapeOwner shapeOwner) {
+        BlockEntity bEntity = reader.getBlockEntity(pos);
+        if (bEntity instanceof SelectionShapeOwner shapeOwner) {
             VoxelShape selShape = shapeOwner.getShape().mainShape();
             if (selShape != null) {
                 return selShape;
@@ -128,8 +128,7 @@ public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends B
             @Nonnull InteractionHand handIn,
             @Nonnull BlockHitResult hit
     ) {
-        BlockEntity tile = worldIn.getBlockEntity(pos);
-        if (tile instanceof SelectionShapeOwner shapeOwner) {
+        if (worldIn.getBlockEntity(pos) instanceof SelectionShapeOwner shapeOwner) {
             return shapeOwner.getShape()
                     .onUse(
                             new UseOnContext(player, handIn, hit),
@@ -153,16 +152,16 @@ public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends B
     @Nullable
     @Override
     public BlockEntity newBlockEntity(@Nonnull BlockPos pPos, @Nonnull BlockState pState) {
-        if (this.tileType != null) {
-            return this.tileType.get().create(pPos, pState);
+        if (this.beType != null) {
+            return this.beType.get().create(pPos, pState);
         } else {
             return null;
         }
     }
 
-    public BlockPos getMainBlock(BlockState state, BlockEntity te) {
-        Pair<PlacementData, BlockPos> data = placementBehavior.getPlacementDataAndOffset(state, te);
-        return te.getBlockPos().subtract(data.getSecond());
+    public BlockPos getMainBlock(BlockState state, BlockEntity bEntity) {
+        Pair<PlacementData, BlockPos> data = placementBehavior.getPlacementDataAndOffset(state, bEntity);
+        return bEntity.getBlockPos().subtract(data.getSecond());
     }
 
     protected static BlockBehaviour.Properties defaultProperties() {
@@ -177,9 +176,9 @@ public abstract class CEBlock<PlacementData, Tile extends BlockEntity> extends B
 
     @Nullable
     protected <A extends BlockEntity>
-    BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> actual, Consumer<? super Tile> ticker) {
-        if (tileType != null && tileType.get() == actual)
-            return (pLevel, pPos, pState, pBlockEntity) -> ticker.accept((Tile) pBlockEntity);
+    BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> actual, Consumer<? super BE> ticker) {
+        if (beType != null && beType.get() == actual)
+            return (pLevel, pPos, pState, pBlockEntity) -> ticker.accept((BE) pBlockEntity);
         return null;
     }
 }

@@ -1,6 +1,6 @@
 package malte0811.controlengineering.blocks.loot;
 
-import malte0811.controlengineering.tiles.base.IHasMaster;
+import malte0811.controlengineering.blockentity.base.IHasMaster;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -9,14 +9,15 @@ import net.minecraft.world.level.storage.loot.Serializer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+
 import javax.annotation.Nullable;
 
 public class CELootFunctions {
-    public static LootPoolEntryType tileDrop;
+    public static LootPoolEntryType bEntityDrop;
     public static LootPoolEntryType controlPanel;
 
     public static void register() {
-        tileDrop = registerEntry(ExtraTileDropEntry.ID, new ExtraTileDropEntry.Serializer());
+        bEntityDrop = registerEntry(ExtraBEDropEntry.ID, new ExtraBEDropEntry.Serializer());
         controlPanel = registerEntry(PanelDropEntry.ID, new PanelDropEntry.Serializer());
     }
 
@@ -30,14 +31,14 @@ public class CELootFunctions {
     }
 
     @Nullable
-    public static BlockEntity getMasterTile(LootContext ctx) {
+    public static BlockEntity getMasterBE(LootContext ctx) {
         if (!ctx.hasParam(LootContextParams.BLOCK_ENTITY)) {
             return null;
         }
-        BlockEntity te = ctx.getParamOrNull(LootContextParams.BLOCK_ENTITY);
-        if (te instanceof IHasMaster)
-            return ((IHasMaster) te).getOrComputeMasterTile(ctx.getParamOrNull(LootContextParams.BLOCK_STATE));
+        BlockEntity be = ctx.getParamOrNull(LootContextParams.BLOCK_ENTITY);
+        if (be instanceof IHasMaster hasMaster)
+            return hasMaster.getOrComputeMasterBE(ctx.getParamOrNull(LootContextParams.BLOCK_STATE));
         else
-            return te;
+            return be;
     }
 }

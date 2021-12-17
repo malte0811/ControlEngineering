@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -36,7 +37,7 @@ public class CEBlockItem<PlacementData> extends BlockItem {
             BlockPos pos = context.getClickedPos().offset(offset);
             BlockState stateToPlace = placementBehavior.getStateForOffset(getBlock(), offset, data);
             context.getLevel().setBlockAndUpdate(pos, stateToPlace);
-            placementBehavior.fillTileData(offset, context.getLevel().getBlockEntity(pos), data, context.getItemInHand());
+            placementBehavior.fillBEData(offset, context.getLevel().getBlockEntity(pos), data, context.getItemInHand());
         }
         return true;
     }

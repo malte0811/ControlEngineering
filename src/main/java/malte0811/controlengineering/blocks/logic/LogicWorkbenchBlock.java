@@ -1,13 +1,13 @@
 package malte0811.controlengineering.blocks.logic;
 
 import com.google.common.collect.ImmutableMap;
+import malte0811.controlengineering.blockentity.CEBlockEntities;
+import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.HorizontalStructurePlacement;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.HorizontalWithExtraShape;
 import malte0811.controlengineering.gui.logic.LogicDesignContainer;
-import malte0811.controlengineering.tiles.CETileEntities;
-import malte0811.controlengineering.tiles.logic.LogicWorkbenchTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
@@ -21,13 +21,14 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Locale;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> {
+public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchBlockEntity> {
     public static final Property<Offset> OFFSET = EnumProperty.create("offset", Offset.class);
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     private static final VoxelShape TABLE_TOP = createPixelRelative(0, 13, 0, 16, 16, 16);
@@ -70,7 +71,7 @@ public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchTile> 
                 defaultPropertiesNotSolid(),
                 new HorizontalStructurePlacement<>(FACING, OFFSET, Offset::getOffset),
                 SHAPE,
-                CETileEntities.LOGIC_WORKBENCH
+                CEBlockEntities.LOGIC_WORKBENCH
         );
     }
 

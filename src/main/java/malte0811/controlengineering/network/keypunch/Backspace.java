@@ -1,6 +1,6 @@
 package malte0811.controlengineering.network.keypunch;
 
-import malte0811.controlengineering.tiles.tape.KeypunchState;
+import malte0811.controlengineering.blockentity.tape.KeypunchState;
 import net.minecraft.network.FriendlyByteBuf;
 
 public class Backspace extends KeypunchSubPacket {

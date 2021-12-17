@@ -1,46 +1,47 @@
 package malte0811.controlengineering.controlpanels;
 
 import com.mojang.math.Matrix4f;
+import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.panels.CachedPanelShape;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
-import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.BiConsumer;
 
 public class PanelSelectionShapes extends SelectionShapes {
-    private final ControlPanelTile tile;
+    private final ControlPanelBlockEntity bEntity;
 
-    public PanelSelectionShapes(ControlPanelTile tile) {
-        this.tile = tile;
+    public PanelSelectionShapes(ControlPanelBlockEntity bEntity) {
+        this.bEntity = bEntity;
     }
 
     @Override
     @Nullable
     public VoxelShape mainShape() {
-        return CachedPanelShape.getPanelShape(tile.getTransform());
+        return CachedPanelShape.getPanelShape(bEntity.getTransform());
     }
 
     @Nonnull
     @Override
     public Matrix4f outerToInnerPosition() {
-        return tile.getTransform().getWorldToPanelTop();
+        return bEntity.getTransform().getWorldToPanelTop();
     }
 
     @Nonnull
     @Override
     public List<? extends SelectionShapes> innerShapes() {
-        return tile.getComponents();
+        return bEntity.getComponents();
     }
 
     @Override
     public void plotBox(BiConsumer<Vec3, Vec3> drawLine) {
-        PanelTransform transform = tile.getTransform();
+        PanelTransform transform = bEntity.getTransform();
         Vec3[] bottomVertices = transform.getBottomVertices();
         Vec3[] topVertices = transform.getTopVertices();
         for (int i = 0; i < 4; ++i) {
@@ -52,9 +53,9 @@ public class PanelSelectionShapes extends SelectionShapes {
 
     @Override
     public InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType) {
-        if (defaultType.shouldSwing() && !tile.getLevel().isClientSide) {
-            tile.updateBusState(ControlPanelTile.SyncType.ALWAYS);
-            tile.setChanged();
+        if (defaultType.shouldSwing() && !bEntity.getLevel().isClientSide) {
+            bEntity.updateBusState(ControlPanelBlockEntity.SyncType.ALWAYS);
+            bEntity.setChanged();
         }
         return defaultType;
     }

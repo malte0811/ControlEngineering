@@ -3,17 +3,17 @@ package malte0811.controlengineering.blocks.loot;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.CEBlocks;
-import malte0811.controlengineering.tiles.panels.ControlPanelTile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
@@ -26,8 +26,7 @@ public class PanelDropEntry extends LootPoolSingletonContainer {
 
     @Override
     protected void createItemStack(@Nonnull Consumer<ItemStack> stackConsumer, @Nonnull LootContext context) {
-        BlockEntity tile = CELootFunctions.getMasterTile(context);
-        if (tile instanceof ControlPanelTile panel) {
+        if (CELootFunctions.getMasterBE(context) instanceof ControlPanelBlockEntity panel) {
             CompoundTag tag = panel.getData().copy(true).toNBT();
             ItemStack toDrop = new ItemStack(CEBlocks.CONTROL_PANEL.get(), 1);
             toDrop.setTag(tag);
