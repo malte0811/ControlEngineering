@@ -2,8 +2,10 @@ package malte0811.controlengineering.blockentity.panels;
 
 import blusunrize.immersiveengineering.api.utils.CapabilityReference;
 import com.google.common.collect.ImmutableList;
+import malte0811.controlengineering.blockentity.MultiblockBEType;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.base.IExtraDropBE;
+import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
@@ -29,8 +31,14 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.EnergyStorage;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.registries.DeferredRegister;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -68,6 +76,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
                 }
             }
     );
+    private final EnergyStorage energy = new EnergyStorage(800);
 
     private final CachedValue<Direction, SelectionShapes> bottomSelectionShapes = new CachedValue<>(
             () -> getBlockState().getValue(PanelCNCBlock.FACING),
@@ -219,12 +228,14 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
     public void saveAdditional(@Nonnull CompoundTag compound) {
         super.saveAdditional(compound);
         writeSyncedData(compound);
+        compound.put("energy", energy.serializeNBT());
     }
 
     @Override
     public void load(@Nonnull CompoundTag nbt) {
         super.load(nbt);
         readSyncedData(nbt);
+        energy.deserializeNBT(nbt.get("energy"));
     }
 
     @Override
@@ -277,5 +288,43 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
     @Override
     public AABB getRenderBoundingBox() {
         return renderBB.get();
+    }
+
+    public static MultiblockBEType<PanelCNCBlockEntity, ?> register(DeferredRegister<BlockEntityType<?>> register) {
+        return MultiblockBEType.makeType(
+                register, "panel_cnc", PanelCNCBlockEntity::new, Dummy::new, CEBlocks.PANEL_CNC, PanelCNCBlock::isMaster
+        );
+    }
+
+    private static class Dummy extends CEBlockEntity {
+        private LazyOptional<IEnergyStorage> energyRef = null;
+
+        public Dummy(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+            super(type, pos, state);
+        }
+
+        @Nonnull
+        @Override
+        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+            if (cap == CapabilityEnergy.ENERGY && CapabilityUtils.isNullOr(Direction.UP, side)) {
+                if (energyRef == null) {
+                    if (level.getBlockEntity(worldPosition.below()) instanceof PanelCNCBlockEntity paneCNC) {
+                        energyRef = CapabilityUtils.constantOptional(paneCNC.energy);
+                    } else {
+                        return LazyOptional.empty();
+                    }
+                }
+                return energyRef.cast();
+            }
+            return super.getCapability(cap, side);
+        }
+
+        @Override
+        public void invalidateCaps() {
+            super.invalidateCaps();
+            if (energyRef != null) {
+                energyRef.invalidate();
+            }
+        }
     }
 }

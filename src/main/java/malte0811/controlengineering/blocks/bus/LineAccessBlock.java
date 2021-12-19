@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class LineAccessBlock extends CEBlock<Direction, LineAccessBlockEntity> {
+public class LineAccessBlock extends CEBlock<Direction> {
     public static final Property<Direction> FACING = DirectionProperty.create(
             "facing", DirectionUtils.BY_HORIZONTAL_INDEX
     );

@@ -2,7 +2,6 @@ package malte0811.controlengineering.blocks.logic;
 
 import com.google.common.collect.ImmutableMap;
 import malte0811.controlengineering.blockentity.CEBlockEntities;
-import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.HorizontalStructurePlacement;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
@@ -28,7 +27,7 @@ import java.util.Locale;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchBlockEntity> {
+public class LogicWorkbenchBlock extends CEBlock<Direction> {
     public static final Property<Offset> OFFSET = EnumProperty.create("offset", Offset.class);
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     private static final VoxelShape TABLE_TOP = createPixelRelative(0, 13, 0, 16, 16, 16);

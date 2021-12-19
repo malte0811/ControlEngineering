@@ -47,12 +47,12 @@ public class CEItems {
     private static final RegistryObject<CEBlockItem<Direction>> LOGIC_WORKBENCH = blockItemCE(CEBlocks.LOGIC_WORKBENCH);
     private static final RegistryObject<CEBlockItem<Direction>> PANEL_DESIGNER = blockItemCE(CEBlocks.PANEL_DESIGNER);
 
-    private static <T> RegistryObject<CEBlockItem<T>> blockItemCE(RegistryObject<? extends CEBlock<T, ?>> block) {
+    private static <T> RegistryObject<CEBlockItem<T>> blockItemCE(RegistryObject<? extends CEBlock<T>> block) {
         return blockItemCE(block, simpleItemProperties());
     }
 
     private static <T> RegistryObject<CEBlockItem<T>> blockItemCE(
-            RegistryObject<? extends CEBlock<T, ?>> block,
+            RegistryObject<? extends CEBlock<T>> block,
             Item.Properties properties
     ) {
         return REGISTER.register(block.getId().getPath(), () -> new CEBlockItem<>(block.get(), properties));

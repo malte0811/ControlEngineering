@@ -36,7 +36,6 @@ public abstract class CEBlockEntity extends BlockEntity implements IHasMasterBas
 
     @Override
     public void handleUpdateTag(CompoundTag tag) {
-        super.handleUpdateTag(tag);
         readSyncedData(tag);
     }
 

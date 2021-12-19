@@ -1,7 +1,6 @@
 package malte0811.controlengineering.blocks.tape;
 
 import malte0811.controlengineering.blockentity.CEBlockEntities;
-import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.BlockPropertyPlacement;
 import malte0811.controlengineering.blocks.shapes.CachedShape;
@@ -26,7 +25,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class KeypunchBlock extends CEBlock<Direction, KeypunchBlockEntity> {
+public class KeypunchBlock extends CEBlock<Direction> {
     public static final String CONTAINER_NAME = "screen.controlengineering.keypunch";
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     private static final VoxelShape BASE_SHAPE = Shapes.or(

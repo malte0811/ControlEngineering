@@ -21,7 +21,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -36,16 +35,14 @@ import net.minecraftforge.registries.RegistryObject;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
-public abstract class CEBlock<PlacementData, BE extends BlockEntity> extends Block implements EntityBlock {
+public abstract class CEBlock<PlacementData> extends Block implements EntityBlock {
     public final PlacementBehavior<PlacementData> placementBehavior;
     private final FromBlockFunction<VoxelShape> getShape;
     @Nullable
-    private final BiFunction<BlockPos, BlockState, BE> beType;
+    private final BiFunction<BlockPos, BlockState, ? extends BlockEntity> beType;
 
-    public CEBlock(
+    public <BE extends BlockEntity> CEBlock(
             Properties properties,
             PlacementBehavior<PlacementData> placement,
             FromBlockFunction<VoxelShape> getShape,
@@ -58,7 +55,7 @@ public abstract class CEBlock<PlacementData, BE extends BlockEntity> extends Blo
             Properties properties,
             PlacementBehavior<PlacementData> placement,
             FromBlockFunction<VoxelShape> getShape,
-            @Nullable BiFunction<BlockPos, BlockState, BE> beType
+            @Nullable BiFunction<BlockPos, BlockState, ? extends BlockEntity> beType
     ) {
         super(properties);
         this.placementBehavior = placement;
@@ -183,16 +180,5 @@ public abstract class CEBlock<PlacementData, BE extends BlockEntity> extends Blo
 
     protected static BlockBehaviour.Properties defaultPropertiesNotSolid() {
         return defaultProperties().noOcclusion().isRedstoneConductor(($1, $2, $3) -> false).dynamicShape();
-    }
-
-    @Nullable
-    protected <A extends BlockEntity>
-    BlockEntityTicker<A> createTickerHelper(
-            Supplier<BlockEntityType<BE>> expected, BlockEntityType<A> actual, Consumer<? super BE> ticker
-    ) {
-        if (actual == expected.get()) {
-            return (pLevel, pPos, pState, pBlockEntity) -> ticker.accept((BE) pBlockEntity);
-        }
-        return null;
     }
 }

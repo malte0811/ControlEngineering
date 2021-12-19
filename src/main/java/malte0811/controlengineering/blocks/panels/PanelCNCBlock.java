@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class PanelCNCBlock extends CEBlock<Direction, PanelCNCBlockEntity> implements IModelOffsetProvider {
+public class PanelCNCBlock extends CEBlock<Direction> implements IModelOffsetProvider {
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final Property<Integer> HEIGHT = IntegerProperty.create("height", 0, 1);
 

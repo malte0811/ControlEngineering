@@ -18,7 +18,7 @@ import javax.annotation.Nonnull;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class BusInterfaceBlock extends CEBlock<Direction, malte0811.controlengineering.blockentity.bus.BusInterfaceBlock> {
+public class BusInterfaceBlock extends CEBlock<Direction> {
     public static final Property<Direction> FACING = DirectionProperty.create("facing", Direction.values());
     private static final VoxelShape NORTH_SHAPE = Shapes.or(
             createPixelRelative(4, 4, 0, 12, 12, 2),

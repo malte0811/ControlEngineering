@@ -15,7 +15,6 @@ import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
-import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.panels.PanelDesignerBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
@@ -48,15 +47,13 @@ public class CEBlockEntities {
             "line_access", createBEType(LineAccessBlockEntity::new, CEBlocks.LINE_ACCESS)
     );
 
-    public static MultiblockBEType<ControlPanelBlockEntity> CONTROL_PANEL = makeMBType(
+    public static MultiblockBEType<ControlPanelBlockEntity, ControlPanelBlockEntity> CONTROL_PANEL = makeMBType(
             "control_panel", ControlPanelBlockEntity::new, CEBlocks.CONTROL_PANEL, PanelBlock::isMaster
     );
 
-    public static MultiblockBEType<PanelCNCBlockEntity> PANEL_CNC = makeMBType(
-            "panel_cnc", PanelCNCBlockEntity::new, CEBlocks.PANEL_CNC, PanelCNCBlock::isMaster
-    );
+    public static MultiblockBEType<PanelCNCBlockEntity, ?> PANEL_CNC = PanelCNCBlockEntity.register(REGISTER);
 
-    public static MultiblockBEType<PanelDesignerBlockEntity> PANEL_DESIGNER = makeMBType(
+    public static MultiblockBEType<PanelDesignerBlockEntity, ?> PANEL_DESIGNER = makeMBType(
             "panel_designer", PanelDesignerBlockEntity::new, CEBlocks.PANEL_DESIGNER, PanelDesignerBlock::isMaster
     );
 
@@ -64,11 +61,11 @@ public class CEBlockEntities {
             "keypunch", createBEType(KeypunchBlockEntity::new, CEBlocks.KEYPUNCH)
     );
 
-    public static MultiblockBEType<LogicCabinetBlockEntity> LOGIC_CABINET = makeMBType(
+    public static MultiblockBEType<LogicCabinetBlockEntity, ?> LOGIC_CABINET = makeMBType(
             "logic_cabinet", LogicCabinetBlockEntity::new, CEBlocks.LOGIC_CABINET, LogicCabinetBlock::isMaster
     );
 
-    public static MultiblockBEType<LogicWorkbenchBlockEntity> LOGIC_WORKBENCH = makeMBType(
+    public static MultiblockBEType<LogicWorkbenchBlockEntity, ?> LOGIC_WORKBENCH = makeMBType(
             "logic_workbench", LogicWorkbenchBlockEntity::new, CEBlocks.LOGIC_WORKBENCH, LogicWorkbenchBlock::isMaster
     );
 
@@ -86,7 +83,7 @@ public class CEBlockEntities {
         };
     }
 
-    public static <T extends BlockEntity> MultiblockBEType<T> makeMBType(
+    public static <T extends BlockEntity> MultiblockBEType<T, T> makeMBType(
             String name, BEConstructor<T> make, RegistryObject<? extends Block> valid, Predicate<BlockState> isMaster
     ) {
         return MultiblockBEType.makeType(REGISTER, name, make, valid, isMaster);

@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class ControlPanelItem extends CEBlockItem<PanelOrientation> {
-    public ControlPanelItem(CEBlock<PanelOrientation, ?> blockIn, Properties builder) {
+    public ControlPanelItem(CEBlock<PanelOrientation> blockIn, Properties builder) {
         super(blockIn, builder);
     }
 

@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import javax.annotation.Nonnull;
 
-public class PanelBlock extends CEBlock<PanelOrientation, ControlPanelBlockEntity> {
+public class PanelBlock extends CEBlock<PanelOrientation> {
     public static final BooleanProperty IS_BASE = BooleanProperty.create("base");
 
     public PanelBlock() {

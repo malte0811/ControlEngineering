@@ -22,7 +22,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class LogicCabinetBlock extends CEBlock<Direction, LogicCabinetBlockEntity> {
+public class LogicCabinetBlock extends CEBlock<Direction> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final IntegerProperty HEIGHT = IntegerProperty.create("height", 0, 1);
 

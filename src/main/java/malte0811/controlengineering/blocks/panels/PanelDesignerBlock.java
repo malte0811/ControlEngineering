@@ -3,7 +3,6 @@ package malte0811.controlengineering.blocks.panels;
 import blusunrize.immersiveengineering.api.IEProperties;
 import com.google.common.collect.ImmutableMap;
 import malte0811.controlengineering.blockentity.CEBlockEntities;
-import malte0811.controlengineering.blockentity.panels.PanelDesignerBlockEntity;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.HorizontalStructurePlacement;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
@@ -32,7 +31,7 @@ import java.util.Locale;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class PanelDesignerBlock extends CEBlock<Direction, PanelDesignerBlockEntity> {
+public class PanelDesignerBlock extends CEBlock<Direction> {
     public static final Property<Offset> OFFSET = EnumProperty.create("offset", Offset.class);
     public static final Property<Direction> FACING = IEProperties.FACING_HORIZONTAL;
     public static final VoxelShape TABLE_TOP = createPixelRelative(0, 13, 0, 16, 16, 16);
