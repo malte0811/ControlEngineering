@@ -27,6 +27,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -67,30 +69,28 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
             }
     );
 
-    private final CachedValue<Direction, SelectionShapes> selectionShapes = new CachedValue<>(
+    private final CachedValue<Direction, SelectionShapes> bottomSelectionShapes = new CachedValue<>(
             () -> getBlockState().getValue(PanelCNCBlock.FACING),
             facing -> new ListShapes(
-                    PanelCNCBlock.SHAPE,
+                    Shapes.block(),
                     MatrixUtils.inverseFacing(facing),
                     ImmutableList.of(
-                            new SingleShape(
-                                    createPixelRelative(1, 0, 1, 15, 2, 15),
-                                    this::bottomClick
-                            ),
-                            new SingleShape(
-                                    createPixelRelative(2, 14, 4, 14, 16, 12),
-                                    this::topClick
-                            )
+                            new SingleShape(createPixelRelative(1, 14, 1, 15, 16, 15), this::panelClick),
+                            new SingleShape(createPixelRelative(2, 4, 0, 14, 12, 2), this::tapeClick)
                     ),
                     ctx -> InteractionResult.PASS
             )
+    );
+
+    private static final SelectionShapes topSelectionShapes = new SingleShape(
+            PanelCNCBlock.UPPER_SHAPE, $ -> InteractionResult.PASS
     );
 
     public PanelCNCBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
-    private InteractionResult bottomClick(UseOnContext ctx) {
+    private InteractionResult panelClick(UseOnContext ctx) {
         if (level == null) {
             return InteractionResult.PASS;
         }
@@ -126,7 +126,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
         }
     }
 
-    private InteractionResult topClick(UseOnContext ctx) {
+    private InteractionResult tapeClick(UseOnContext ctx) {
         if (isJobRunning()) {
             return InteractionResult.FAIL;
         }
@@ -187,7 +187,11 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
 
     @Override
     public SelectionShapes getShape() {
-        return selectionShapes.get();
+        if (getBlockState().getValue(PanelCNCBlock.HEIGHT) == 0) {
+            return bottomSelectionShapes.get();
+        } else {
+            return topSelectionShapes;
+        }
     }
 
     @Nullable
@@ -262,5 +266,16 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
         if (hasPanel) {
             dropper.accept(PanelTopItem.createWithComponents(currentPlacedComponents));
         }
+    }
+
+    private final CachedValue<BlockPos, AABB> renderBB = new CachedValue<>(
+            () -> worldPosition, pos -> new AABB(
+            pos.getX(), pos.getY(), pos.getZ(),
+            pos.getX() + 1, pos.getY() + 2, pos.getZ() + 2
+    ));
+
+    @Override
+    public AABB getRenderBoundingBox() {
+        return renderBB.get();
     }
 }

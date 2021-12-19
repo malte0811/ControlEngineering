@@ -2,6 +2,7 @@ package malte0811.controlengineering.datagen;
 
 import blusunrize.immersiveengineering.api.Lib;
 import blusunrize.immersiveengineering.data.blockstates.ConnectorBlockBuilder;
+import blusunrize.immersiveengineering.data.models.SplitModelBuilder;
 import com.google.common.collect.ImmutableMap;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlocks;
@@ -20,6 +21,7 @@ import malte0811.controlengineering.datagen.modelbuilder.LogicCabinetBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -34,6 +36,7 @@ import net.minecraftforge.client.model.generators.loaders.OBJLoaderBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.List;
 import java.util.Map;
 
 public class BlockstateGenerator extends BlockStateProvider {
@@ -59,7 +62,7 @@ public class BlockstateGenerator extends BlockStateProvider {
 
         panelModel();
         horizontalRotated(CEBlocks.KEYPUNCH, KeypunchBlock.FACING, obj("keypunch.obj"));
-        horizontalRotated(CEBlocks.PANEL_CNC, PanelCNCBlock.FACING, obj("panel_cnc.obj"));
+        panelCNCModel();
         logicCabinetModel();
         rotatedWithOffset(
                 CEBlocks.LOGIC_WORKBENCH,
@@ -106,14 +109,20 @@ public class BlockstateGenerator extends BlockStateProvider {
                 logicModel,
                 ImmutableMap.of(LogicCabinetBlock.HEIGHT, 0)
         );
-        horizontalRotated(
-                CEBlocks.LOGIC_CABINET,
-                LogicCabinetBlock.FACING,
-                EMPTY_MODEL.model,
-                ImmutableMap.of(LogicCabinetBlock.HEIGHT, 1)
-        );
+        emptyModel(CEBlocks.LOGIC_CABINET, ImmutableMap.of(LogicCabinetBlock.HEIGHT, 1));
         itemModels().getBuilder(ItemModels.name(CEBlocks.LOGIC_CABINET))
                 .parent(chassis);
+    }
+
+    private void panelCNCModel() {
+        var mainModel = obj("panel_cnc.obj");
+        itemModels().getBuilder(ItemModels.name(CEBlocks.PANEL_CNC)).parent(mainModel);
+        var splitModel = models().getBuilder("panel_cnc_split")
+                .customLoader(SplitModelBuilder::begin)
+                .innerModel(mainModel)
+                .parts(List.of(Vec3i.ZERO, new Vec3i(0, 1, 0)))
+                .end();
+        horizontalRotated(CEBlocks.PANEL_CNC, PanelCNCBlock.FACING, splitModel);
     }
 
     private <T extends Comparable<T>> void rotatedWithOffset(
@@ -164,10 +173,6 @@ public class BlockstateGenerator extends BlockStateProvider {
         itemModels().getBuilder(ItemModels.name(block)).parent(mainModel);
     }
 
-    private ResourceLocation forgeLoc(String path) {
-        return new ResourceLocation("forge", path);
-    }
-
     private void horizontalRotated(RegistryObject<? extends Block> b, Property<Direction> facing, ModelFile model) {
         horizontalRotated(b, facing, model, ImmutableMap.of());
     }
@@ -182,8 +187,8 @@ public class BlockstateGenerator extends BlockStateProvider {
             PartialBlockstate partial = getVariantBuilder(b.get())
                     .partialState()
                     .with(facing, d);
-            for (Map.Entry<Property<?>, Comparable<?>> entry : additional.entrySet()) {
-                partial = withUnchecked(partial, entry.getKey(), entry.getValue());
+            for (var fixedProperty : additional.entrySet()) {
+                partial = withUnchecked(partial, fixedProperty.getKey(), fixedProperty.getValue());
             }
             partial.modelForState()
                     .rotationY((int) d.toYRot())
@@ -191,6 +196,16 @@ public class BlockstateGenerator extends BlockStateProvider {
                     .addModel();
         }
         itemModels().getBuilder(ItemModels.name(b)).parent(model);
+    }
+
+    private void emptyModel(RegistryObject<? extends Block> b, Map<Property<?>, Comparable<?>> additional) {
+        var partialState = getVariantBuilder(b.get()).partialState();
+        for (var fixedProperty : additional.entrySet()) {
+            partialState = withUnchecked(partialState, fixedProperty.getKey(), fixedProperty.getValue());
+        }
+        partialState.modelForState()
+                .modelFile(EMPTY_MODEL.model)
+                .addModel();
     }
 
     private <T extends Comparable<T>>

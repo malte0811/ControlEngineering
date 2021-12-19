@@ -12,22 +12,22 @@ public class ModelRenderUtils {
             UVCoord minUV, UVCoord maxUV
     ) {
         final double lowerOffset = (diameterHigh - diameterLow) / 2;
-        final float deltaU = (maxUV.u - minUV.u) / NUM_TUBE_FACES;
+        final float deltaV = (maxUV.v - minUV.v) / NUM_TUBE_FACES;
         for (int leftVertex = 0; leftVertex < NUM_TUBE_FACES; ++leftVertex) {
             final Vec3 normal = tubeNormal(leftVertex);
             out.setNormal(normal);
 
             final int rightVertex = leftVertex + 1;
-            final float leftU = deltaU * leftVertex + minUV.u;
-            final float rightU = deltaU * rightVertex + minUV.u;
+            final float leftV = deltaV * leftVertex + minUV.v;
+            final float rightV = deltaV * rightVertex + minUV.v;
             out.pos(tubeVertex(rightVertex, diameterLow, lowerOffset, yMin))
-                    .uv(rightU, minUV.v).endVertex();
+                    .uv(minUV.u, rightV).endVertex();
             out.pos(tubeVertex(rightVertex, diameterHigh, 0, yMax))
-                    .uv(rightU, maxUV.v).endVertex();
+                    .uv(maxUV.u, rightV).endVertex();
             out.pos(tubeVertex(leftVertex, diameterHigh, 0, yMax))
-                    .uv(leftU, maxUV.v).endVertex();
+                    .uv(maxUV.u, leftV).endVertex();
             out.pos(tubeVertex(leftVertex, diameterLow, lowerOffset, yMin))
-                    .uv(leftU, minUV.v).endVertex();
+                    .uv(minUV.u, leftV).endVertex();
         }
     }
 

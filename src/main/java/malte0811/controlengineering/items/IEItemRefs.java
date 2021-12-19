@@ -9,7 +9,6 @@ import net.minecraftforge.registries.RegistryObject;
 public class IEItemRefs {
     public static final RegistryObject<Item> CIRCUIT_BOARD = of("circuit_board");
     public static final RegistryObject<Item> TUBE = of("electron_tube");
-    public static final RegistryObject<Item> LV_WIRE_COIL = of("wirecoil_copper");
     public static final RegistryObject<Item> WIRE = of("wire_copper");
 
     // Classload early

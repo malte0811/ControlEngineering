@@ -35,19 +35,30 @@ import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public abstract class CEBlock<PlacementData, BE extends BlockEntity> extends Block implements EntityBlock {
     public final PlacementBehavior<PlacementData> placementBehavior;
     private final FromBlockFunction<VoxelShape> getShape;
     @Nullable
-    private final RegistryObject<BlockEntityType<BE>> beType;
+    private final BiFunction<BlockPos, BlockState, BE> beType;
 
     public CEBlock(
             Properties properties,
             PlacementBehavior<PlacementData> placement,
             FromBlockFunction<VoxelShape> getShape,
             @Nullable RegistryObject<BlockEntityType<BE>> beType
+    ) {
+        this(properties, placement, getShape, (bp, bs) -> beType.get().create(bp, bs));
+    }
+
+    public CEBlock(
+            Properties properties,
+            PlacementBehavior<PlacementData> placement,
+            FromBlockFunction<VoxelShape> getShape,
+            @Nullable BiFunction<BlockPos, BlockState, BE> beType
     ) {
         super(properties);
         this.placementBehavior = placement;
@@ -153,7 +164,7 @@ public abstract class CEBlock<PlacementData, BE extends BlockEntity> extends Blo
     @Override
     public BlockEntity newBlockEntity(@Nonnull BlockPos pPos, @Nonnull BlockState pState) {
         if (this.beType != null) {
-            return this.beType.get().create(pPos, pState);
+            return this.beType.apply(pPos, pState);
         } else {
             return null;
         }
@@ -176,9 +187,12 @@ public abstract class CEBlock<PlacementData, BE extends BlockEntity> extends Blo
 
     @Nullable
     protected <A extends BlockEntity>
-    BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> actual, Consumer<? super BE> ticker) {
-        if (beType != null && beType.get() == actual)
+    BlockEntityTicker<A> createTickerHelper(
+            Supplier<BlockEntityType<BE>> expected, BlockEntityType<A> actual, Consumer<? super BE> ticker
+    ) {
+        if (actual == expected.get()) {
             return (pLevel, pPos, pState, pBlockEntity) -> ticker.accept((BE) pBlockEntity);
+        }
         return null;
     }
 }

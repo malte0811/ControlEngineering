@@ -13,6 +13,7 @@ import malte0811.controlengineering.blockentity.panels.PanelCNCBlockEntity;
 import malte0811.controlengineering.blockentity.panels.PanelDesignerBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.blocks.CEBlocks;
+import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -47,8 +48,8 @@ public class CEBlockEntities {
             "control_panel", createBEType(ControlPanelBlockEntity::new, CEBlocks.CONTROL_PANEL)
     );
 
-    public static RegistryObject<BlockEntityType<PanelCNCBlockEntity>> PANEL_CNC = REGISTER.register(
-            "panel_cnc", createBEType(PanelCNCBlockEntity::new, CEBlocks.PANEL_CNC)
+    public static MultiblockBEType<PanelCNCBlockEntity> PANEL_CNC = MultiblockBEType.makeType(
+            REGISTER, "panel_cnc", PanelCNCBlockEntity::new, CEBlocks.PANEL_CNC, PanelCNCBlock::isMaster
     );
 
     public static RegistryObject<BlockEntityType<PanelDesignerBlockEntity>> PANEL_DESIGNER = REGISTER.register(
@@ -67,17 +68,21 @@ public class CEBlockEntities {
             "logic_workbench", createBEType(LogicWorkbenchBlockEntity::new, CEBlocks.LOGIC_WORKBENCH)
     );
 
-    private static <T extends BlockEntity> Supplier<BlockEntityType<T>> createBEType(
-            Function3<BlockEntityType<?>, BlockPos, BlockState, T> createTE, RegistryObject<? extends Block> valid
+    public static <T extends BlockEntity> Supplier<BlockEntityType<T>> createBEType(
+            BEConstructor<T> createTE, Supplier<? extends Block> valid
     ) {
         return () -> {
             Mutable<BlockEntityType<T>> type = new MutableObject<>();
             type.setValue(new BlockEntityType<>(
-                    (pos, state) -> createTE.apply(type.getValue(), pos, state),
+                    (pos, state) -> createTE.create(type.getValue(), pos, state),
                     ImmutableSet.of(valid.get()),
                     null
             ));
             return type.getValue();
         };
+    }
+
+    public interface BEConstructor<T extends BlockEntity> {
+        T create(BlockEntityType<T> type, BlockPos pos, BlockState state);
     }
 }

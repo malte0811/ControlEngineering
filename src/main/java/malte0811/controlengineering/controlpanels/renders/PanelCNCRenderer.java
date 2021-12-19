@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.panels.CNCJob;
 import malte0811.controlengineering.blockentity.panels.PanelCNCBlockEntity;
@@ -67,11 +68,13 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
         //TODO hasPanel => isActive
         final double tick = cnc.getCurrentTicksInJob() + (cnc.hasPanel() ? partialTicks : 0);
         transform.pushPose();
-        transform.translate(0, 14, 0);
+        transform.translate(0, 16, 14);
+        transform.mulPose(new Quaternion(new Vector3f(1, 0, 0), 90, true));//TODO extract
         renderTape(cnc, buffers, transform, light, overlay, tick);
         transform.popPose();
+        transform.translate(0, 16, 0);
         transform.pushPose();
-        transform.translate(1, 2, 1);
+        transform.translate(1, 0, 1);
         transform.scale(14f / 16, 14f / 16, 14f / 16);
         renderCurrentPanelState(cnc, buffers, transform, light, overlay);
         renderHead(cnc, buffers, transform, light, overlay, tick);
@@ -155,12 +158,12 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
     private void renderHeadModel(TransformingVertexBuilder builder, float yMin) {
         final float yMax = 12;
         final float headHeight = 1;
-        final ModelRenderUtils.UVCoord tipMin = new ModelRenderUtils.UVCoord(36 / 64f, 12 / 32f);
-        final ModelRenderUtils.UVCoord tipMax = new ModelRenderUtils.UVCoord(40 / 64f, 14 / 32f);
+        final ModelRenderUtils.UVCoord tipMin = new ModelRenderUtils.UVCoord(16 / 64f, 10 / 32f);
+        final ModelRenderUtils.UVCoord tipMax = new ModelRenderUtils.UVCoord(18 / 64f, 14 / 32f);
         ModelRenderUtils.renderTube(builder, 0, HEAD_SIZE, yMin, yMin + headHeight, tipMin, tipMax);
-        final ModelRenderUtils.UVCoord shaftMin = new ModelRenderUtils.UVCoord(36 / 64f, 12 / 32f);
+        final ModelRenderUtils.UVCoord shaftMin = new ModelRenderUtils.UVCoord(18 / 64f, 10 / 32f);
         final float shaftLength = yMax - yMin - headHeight;
-        final ModelRenderUtils.UVCoord shaftMax = new ModelRenderUtils.UVCoord(40 / 64f, (12 - shaftLength) / 32f);
+        final ModelRenderUtils.UVCoord shaftMax = new ModelRenderUtils.UVCoord((30 - shaftLength) / 64f, 14 / 32f);
         ModelRenderUtils.renderTube(builder, HEAD_SIZE, HEAD_SIZE, yMin + headHeight, yMax, shaftMin, shaftMax);
     }
 

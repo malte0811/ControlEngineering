@@ -15,20 +15,8 @@
       "model": "controlengineering:block/combined_logic_cabinet",
       "y": 270
     },
-    "facing=north,height=1": {
-      "model": "immersiveengineering:block/ie_empty",
-      "y": 180
-    },
-    "facing=south,height=1": {
+    "height=1": {
       "model": "immersiveengineering:block/ie_empty"
-    },
-    "facing=west,height=1": {
-      "model": "immersiveengineering:block/ie_empty",
-      "y": 90
-    },
-    "facing=east,height=1": {
-      "model": "immersiveengineering:block/ie_empty",
-      "y": 270
     }
   }
 }

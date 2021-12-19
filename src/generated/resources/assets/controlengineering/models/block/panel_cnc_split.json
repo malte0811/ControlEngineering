@@ -1,0 +1,17 @@
+{
+  "loader": "immersiveengineering:basic_split",
+  "dynamic": false,
+  "base_model": "controlengineering:block/panel_cnc_obj",
+  "split_parts": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      0
+    ]
+  ]
+}

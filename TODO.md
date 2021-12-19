@@ -9,4 +9,5 @@
 - Tape-to-book machine (Tape printer or similar)
 - Debugger-y thing for panel CNC
     - error output on tape
-    - possibly transmitted over RS or something like that?
+    - transmitted over RS
+- Related: TTY/Keypunch-y thing with a "bottom" block that can receive and transmit over RS

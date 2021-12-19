@@ -66,7 +66,7 @@ public class LogicCabinetBlock extends CEBlock<Direction, LogicCabinetBlockEntit
             Level pLevel, @Nonnull BlockState pState, @Nonnull BlockEntityType<T> pBlockEntityType
     ) {
         if (!pLevel.isClientSide && pState.getValue(HEIGHT) == 0)
-            return createTickerHelper(pBlockEntityType, LogicCabinetBlockEntity::tick);
+            return createTickerHelper(CEBlockEntities.LOGIC_CABINET, pBlockEntityType, LogicCabinetBlockEntity::tick);
         return null;
     }
 }
