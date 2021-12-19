@@ -24,10 +24,11 @@ public class ServerFontWidth {
                         .getResourceManager()
                         .getResource(new ResourceLocation(ControlEngineering.MODID, FILE_NAME));
                 JsonElement json = new JsonParser().parse(new InputStreamReader(resource.getInputStream()));
-                widths = new Int2FloatOpenHashMap();
+                var widthsLocal = new Int2FloatOpenHashMap();
                 for (Map.Entry<String, JsonElement> entry : json.getAsJsonObject().entrySet()) {
-                    widths.put(Integer.parseInt(entry.getKey()), entry.getValue().getAsFloat());
+                    widthsLocal.put(Integer.parseInt(entry.getKey()), entry.getValue().getAsFloat());
                 }
+                widths = widthsLocal;
             } catch (IOException e) {
                 throw new RuntimeException();
             }
