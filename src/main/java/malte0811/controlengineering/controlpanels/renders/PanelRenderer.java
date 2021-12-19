@@ -45,9 +45,6 @@ public class PanelRenderer implements BlockEntityRenderer<ControlPanelBlockEntit
             int combinedOverlay
     ) {
         BlockState state = panelBE.getBlockState();
-        if (state.getValue(PanelBlock.IS_BASE)) {
-            return;
-        }
         panelBE = PanelBlock.getBase(panelBE.getLevel(), state, panelBE.getBlockPos());
         if (panelBE == null) {
             return;

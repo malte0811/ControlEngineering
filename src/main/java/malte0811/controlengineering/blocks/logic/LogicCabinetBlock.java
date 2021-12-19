@@ -65,8 +65,12 @@ public class LogicCabinetBlock extends CEBlock<Direction, LogicCabinetBlockEntit
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
             Level pLevel, @Nonnull BlockState pState, @Nonnull BlockEntityType<T> pBlockEntityType
     ) {
-        if (!pLevel.isClientSide && pState.getValue(HEIGHT) == 0)
-            return createTickerHelper(CEBlockEntities.LOGIC_CABINET, pBlockEntityType, LogicCabinetBlockEntity::tick);
+        if (!pLevel.isClientSide)
+            return CEBlockEntities.LOGIC_CABINET.makeMasterTicker(pBlockEntityType, LogicCabinetBlockEntity::tick);
         return null;
+    }
+
+    public static boolean isMaster(BlockState state) {
+        return state.getValue(HEIGHT) == 0;
     }
 }

@@ -26,13 +26,17 @@ public class PanelBlock extends CEBlock<PanelOrientation, ControlPanelBlockEntit
 
     public static ControlPanelBlockEntity getBase(BlockGetter world, BlockState state, BlockPos pos) {
         BlockPos masterPos;
-        if (state.getValue(IS_BASE)) {
+        if (isMaster(state)) {
             masterPos = pos;
         } else {
             PanelOrientation po = state.getValue(PanelOrientation.PROPERTY);
             masterPos = pos.relative(po.top, -1);
         }
         return world.getBlockEntity(masterPos) instanceof ControlPanelBlockEntity panel ? panel : null;
+    }
+
+    public static boolean isMaster(BlockState state) {
+        return state.getValue(IS_BASE);
     }
 
     @Override

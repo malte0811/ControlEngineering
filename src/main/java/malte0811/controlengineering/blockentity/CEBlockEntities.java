@@ -1,7 +1,6 @@
 package malte0811.controlengineering.blockentity;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Function3;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.bus.BusInterfaceBlock;
 import malte0811.controlengineering.blockentity.bus.BusRelayBlock;
@@ -13,7 +12,11 @@ import malte0811.controlengineering.blockentity.panels.PanelCNCBlockEntity;
 import malte0811.controlengineering.blockentity.panels.PanelDesignerBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.blocks.CEBlocks;
+import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
+import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
+import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
+import malte0811.controlengineering.blocks.panels.PanelDesignerBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -25,6 +28,7 @@ import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class CEBlockEntities {
@@ -44,28 +48,28 @@ public class CEBlockEntities {
             "line_access", createBEType(LineAccessBlockEntity::new, CEBlocks.LINE_ACCESS)
     );
 
-    public static RegistryObject<BlockEntityType<ControlPanelBlockEntity>> CONTROL_PANEL = REGISTER.register(
-            "control_panel", createBEType(ControlPanelBlockEntity::new, CEBlocks.CONTROL_PANEL)
+    public static MultiblockBEType<ControlPanelBlockEntity> CONTROL_PANEL = makeMBType(
+            "control_panel", ControlPanelBlockEntity::new, CEBlocks.CONTROL_PANEL, PanelBlock::isMaster
     );
 
-    public static MultiblockBEType<PanelCNCBlockEntity> PANEL_CNC = MultiblockBEType.makeType(
-            REGISTER, "panel_cnc", PanelCNCBlockEntity::new, CEBlocks.PANEL_CNC, PanelCNCBlock::isMaster
+    public static MultiblockBEType<PanelCNCBlockEntity> PANEL_CNC = makeMBType(
+            "panel_cnc", PanelCNCBlockEntity::new, CEBlocks.PANEL_CNC, PanelCNCBlock::isMaster
     );
 
-    public static RegistryObject<BlockEntityType<PanelDesignerBlockEntity>> PANEL_DESIGNER = REGISTER.register(
-            "panel_designer", createBEType(PanelDesignerBlockEntity::new, CEBlocks.PANEL_DESIGNER)
+    public static MultiblockBEType<PanelDesignerBlockEntity> PANEL_DESIGNER = makeMBType(
+            "panel_designer", PanelDesignerBlockEntity::new, CEBlocks.PANEL_DESIGNER, PanelDesignerBlock::isMaster
     );
 
     public static RegistryObject<BlockEntityType<KeypunchBlockEntity>> KEYPUNCH = REGISTER.register(
             "keypunch", createBEType(KeypunchBlockEntity::new, CEBlocks.KEYPUNCH)
     );
 
-    public static RegistryObject<BlockEntityType<LogicCabinetBlockEntity>> LOGIC_CABINET = REGISTER.register(
-            "logic_cabinet", createBEType(LogicCabinetBlockEntity::new, CEBlocks.LOGIC_CABINET)
+    public static MultiblockBEType<LogicCabinetBlockEntity> LOGIC_CABINET = makeMBType(
+            "logic_cabinet", LogicCabinetBlockEntity::new, CEBlocks.LOGIC_CABINET, LogicCabinetBlock::isMaster
     );
 
-    public static RegistryObject<BlockEntityType<LogicWorkbenchBlockEntity>> LOGIC_WORKBENCH = REGISTER.register(
-            "logic_workbench", createBEType(LogicWorkbenchBlockEntity::new, CEBlocks.LOGIC_WORKBENCH)
+    public static MultiblockBEType<LogicWorkbenchBlockEntity> LOGIC_WORKBENCH = makeMBType(
+            "logic_workbench", LogicWorkbenchBlockEntity::new, CEBlocks.LOGIC_WORKBENCH, LogicWorkbenchBlock::isMaster
     );
 
     public static <T extends BlockEntity> Supplier<BlockEntityType<T>> createBEType(
@@ -80,6 +84,12 @@ public class CEBlockEntities {
             ));
             return type.getValue();
         };
+    }
+
+    public static <T extends BlockEntity> MultiblockBEType<T> makeMBType(
+            String name, BEConstructor<T> make, RegistryObject<? extends Block> valid, Predicate<BlockState> isMaster
+    ) {
+        return MultiblockBEType.makeType(REGISTER, name, make, valid, isMaster);
     }
 
     public interface BEConstructor<T extends BlockEntity> {

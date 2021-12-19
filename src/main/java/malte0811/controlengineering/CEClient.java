@@ -23,7 +23,7 @@ public class CEClient {
 
     @SubscribeEvent
     public static void registerBERs(EntityRenderersEvent.RegisterRenderers ev) {
-        ev.registerBlockEntityRenderer(CEBlockEntities.CONTROL_PANEL.get(), PanelRenderer::new);
+        ev.registerBlockEntityRenderer(CEBlockEntities.CONTROL_PANEL.dummy().get(), PanelRenderer::new);
         ev.registerBlockEntityRenderer(CEBlockEntities.PANEL_CNC.master().get(), PanelCNCRenderer::new);
     }
 }

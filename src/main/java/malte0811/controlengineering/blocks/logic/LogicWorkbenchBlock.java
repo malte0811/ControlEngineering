@@ -89,6 +89,10 @@ public class LogicWorkbenchBlock extends CEBlock<Direction, LogicWorkbenchBlockE
         return LogicDesignContainer.makeProvider(worldIn, pos, false);
     }
 
+    public static boolean isMaster(BlockState state) {
+        return state.getValue(OFFSET) == Offset.ORIGIN;
+    }
+
     public enum Offset implements StringRepresentable {
         ORIGIN(0, 0),
         FRONT_RIGHT(1, 0),

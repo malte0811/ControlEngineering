@@ -94,6 +94,10 @@ public class PanelDesignerBlock extends CEBlock<Direction, PanelDesignerBlockEnt
         );
     }
 
+    public static boolean isMaster(BlockState state) {
+        return state.getValue(OFFSET) == Offset.ORIGIN;
+    }
+
     public enum Offset implements StringRepresentable {
         ORIGIN(0, 0),
         BACK(0, -1),
