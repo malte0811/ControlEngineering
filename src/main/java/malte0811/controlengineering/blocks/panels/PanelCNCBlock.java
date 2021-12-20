@@ -24,6 +24,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
@@ -63,7 +64,13 @@ public class PanelCNCBlock extends CEBlock<Direction> implements IModelOffsetPro
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
             @Nonnull Level pLevel, @Nonnull BlockState pState, @Nonnull BlockEntityType<T> pBlockEntityType
     ) {
-        return CEBlockEntities.PANEL_CNC.makeMasterTicker(pBlockEntityType, PanelCNCBlockEntity::tick);
+        Consumer<PanelCNCBlockEntity> tick;
+        if (pLevel.isClientSide) {
+            tick = PanelCNCBlockEntity::clientTick;
+        } else {
+            tick = PanelCNCBlockEntity::tick;
+        }
+        return CEBlockEntities.PANEL_CNC.makeMasterTicker(pBlockEntityType, tick);
     }
 
     public static boolean isMaster(BlockState blockState) {

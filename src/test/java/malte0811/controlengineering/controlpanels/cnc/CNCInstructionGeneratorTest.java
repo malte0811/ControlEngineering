@@ -47,6 +47,6 @@ public class CNCInstructionGeneratorTest {
         );
         CNCInstructionParser.ParserResult parsed = CNCInstructionParser.parse(generated);
         Assert.assertFalse(parsed.isError());
-        Assert.assertEquals(comps, parsed.getComponents());
+        Assert.assertEquals(comps, parsed.components());
     }
 }

@@ -65,8 +65,7 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
         transform.pushPose();
         rotateAroundCenter(-PanelCNCBlock.getDirection(cnc).toYRot(), transform);
         transform.scale(1 / 16f, 1 / 16f, 1 / 16f);
-        //TODO hasPanel => isActive
-        final double tick = cnc.getCurrentTicksInJob() + (cnc.hasPanel() ? partialTicks : 0);
+        final double tick = cnc.getCurrentTicksInJob() + (cnc.getState() == PanelCNCBlockEntity.State.RUNNING ? partialTicks : 0);
         transform.pushPose();
         transform.translate(0, 16, 14);
         transform.mulPose(new Quaternion(new Vector3f(1, 0, 0), 90, true));//TODO extract
@@ -92,7 +91,7 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
             PanelCNCBlockEntity cnc, MultiBufferSource buffers, PoseStack transform, int light, int overlay
     ) {
         VertexConsumer builder = buffers.getBuffer(RenderType.solid());
-        if (cnc.hasPanel()) {
+        if (cnc.getState().hasPanel()) {
             VertexConsumer forTexture = MODEL_TEXTURE.get().wrap(builder);
             TransformingVertexBuilder finalWrapped = new TransformingVertexBuilder(
                     forTexture, transform, DefaultVertexFormat.BLOCK
@@ -134,7 +133,7 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
             PanelCNCBlockEntity cncBE, MultiBufferSource buffer, PoseStack transform, int light, int overlay, double ticks
     ) {
         Vec3 currentPos;
-        if (cncBE.getCurrentJob() != null && !cncBE.hasFailed()) {
+        if (cncBE.getCurrentJob() != null && cncBE.getState().isInProcess()) {
             //TODO cache path!
             currentPos = createPathFor(cncBE.getCurrentJob()).getPosAt(ticks);
         } else {

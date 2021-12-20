@@ -175,19 +175,14 @@ public class CNCInstructionParser {
         }
     }
 
-    public static class ParserResult {
-        private final ImmutableList<PlacedComponent> components;
-        private final IntList componentEnds;
-        private final int errorAt;
+    public record ParserResult(ImmutableList<PlacedComponent> components, IntList componentEnds, int errorAt) {
 
         private ParserResult(
                 List<PlacedComponent> components,
                 IntList componentEnds,
                 int errorAt
         ) {
-            this.components = ImmutableList.copyOf(components);
-            this.componentEnds = IntLists.unmodifiable(componentEnds);
-            this.errorAt = errorAt;
+            this(ImmutableList.copyOf(components), IntLists.unmodifiable(componentEnds), errorAt);
         }
 
         public static ParserResult success(List<PlacedComponent> components, IntList componentEnds) {
@@ -201,19 +196,6 @@ public class CNCInstructionParser {
 
         public boolean isError() {
             return errorAt >= 0;
-        }
-
-        public int getErrorPosition() {
-            Preconditions.checkState(isError());
-            return errorAt;
-        }
-
-        public IntList getComponentEnds() {
-            return componentEnds;
-        }
-
-        public ImmutableList<PlacedComponent> getComponents() {
-            return components;
         }
     }
 }

@@ -12,19 +12,22 @@ public record CNCJob(
         ImmutableList<PlacedComponent> components,
         IntList tickPlacingComponent,
         IntList tapeProgressAfterComponent,
-        int totalTicks
+        int totalTicks,
+        //TODO output over debug port
+        int errorPosInTape
 ) {
     public static CNCJob createFor(CNCInstructionParser.ParserResult parserData) {
         final int timePerComponent = 60;
-        IntList tickEnds = new IntArrayList(parserData.getComponents().size());
-        for (int i = 0; i < parserData.getComponentEnds().size(); ++i) {
+        IntList tickEnds = new IntArrayList(parserData.components().size());
+        for (int i = 0; i < parserData.componentEnds().size(); ++i) {
             tickEnds.add(timePerComponent * (i + 1));
         }
         return new CNCJob(
-                parserData.getComponents(),
+                parserData.components(),
                 tickEnds,
-                parserData.getComponentEnds(),
-                timePerComponent * parserData.getComponentEnds().size() + timePerComponent / 2
+                parserData.componentEnds(),
+                timePerComponent * parserData.componentEnds().size() + timePerComponent / 2,
+                parserData.errorAt()
         );
     }
 

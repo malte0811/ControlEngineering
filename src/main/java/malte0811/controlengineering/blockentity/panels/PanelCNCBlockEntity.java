@@ -2,6 +2,7 @@ package malte0811.controlengineering.blockentity.panels;
 
 import blusunrize.immersiveengineering.api.utils.CapabilityReference;
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
 import malte0811.controlengineering.blockentity.MultiblockBEType;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.base.IExtraDropBE;
@@ -18,15 +19,16 @@ import malte0811.controlengineering.items.PanelTopItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.math.MatrixUtils;
+import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -50,23 +52,24 @@ import java.util.function.Consumer;
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
 public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IExtraDropBE {
-    @Nonnull
-    private byte[] insertedTape = new byte[0];
+    private static final int ENERGY_CONSUMPTION = 40;
+
+    @Nullable
+    private byte[] insertedTape = null;
     private final CachedValue<byte[], CNCJob> currentJob = new CachedValue<>(
             () -> insertedTape,
             tape -> {
-                if (tape.length > 0) {
+                if (tape != null) {
                     return CNCJob.createFor(CNCInstructionParser.parse(BitUtils.toString(tape)));
                 } else {
                     return null;
                 }
             },
             Arrays::equals,
-            b -> Arrays.copyOf(b, b.length)
+            b -> b == null ? null : Arrays.copyOf(b, b.length)
     );
     private int currentTicksInJob;
-    private boolean hasPanel;
-    private boolean failed = false;
+    private State state = State.EMPTY;
     private final List<PlacedComponent> currentPlacedComponents = new ArrayList<>();
     private final List<CapabilityReference<IItemHandler>> neighborInventories = Util.make(
             new ArrayList<>(),
@@ -76,7 +79,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
                 }
             }
     );
-    private final EnergyStorage energy = new EnergyStorage(800);
+    private final EnergyStorage energy = new EnergyStorage(20 * ENERGY_CONSUMPTION);
 
     private final CachedValue<Direction, SelectionShapes> bottomSelectionShapes = new CachedValue<>(
             () -> getBlockState().getValue(PanelCNCBlock.FACING),
@@ -103,95 +106,90 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
         if (level == null) {
             return InteractionResult.PASS;
         }
-        if (hasPanel()) {
-            if (!hasFinishedJob()) {
-                return InteractionResult.FAIL;
-            }
+        if (state.canTakePanel()) {
             if (!level.isClientSide && ctx.getPlayer() != null) {
                 ItemStack result = PanelTopItem.createWithComponents(currentPlacedComponents);
                 ItemUtil.giveOrDrop(ctx.getPlayer(), result);
-                hasPanel = false;
                 currentPlacedComponents.clear();
                 currentTicksInJob = 0;
-                failed = false;
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+                setState(state.removePanel());
             }
             return InteractionResult.SUCCESS;
-        } else {
+        } else if (!state.hasPanel()) {
             ItemStack heldItem = ctx.getItemInHand();
             if (PanelTopItem.isEmptyPanelTop(heldItem)) {
                 if (!level.isClientSide) {
-                    hasPanel = true;
-                    level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+                    setState(state.addPanel());
                     Player player = ctx.getPlayer();
                     if (player == null || !player.getAbilities().instabuild) {
                         heldItem.shrink(1);
                     }
                 }
                 return InteractionResult.SUCCESS;
-            } else {
-                return InteractionResult.FAIL;
             }
         }
+        return InteractionResult.FAIL;
     }
 
     private InteractionResult tapeClick(UseOnContext ctx) {
-        if (isJobRunning()) {
-            return InteractionResult.FAIL;
-        }
         final ItemStack held = ctx.getItemInHand();
-        if (insertedTape.length == 0) {
+        if (!state.hasTape()) {
             if (CEItems.PUNCHED_TAPE.get() == held.getItem()) {
                 if (!level.isClientSide) {
                     insertedTape = PunchedTapeItem.getBytes(held);
-                    held.shrink(1);
-                    level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
-                    setChanged();
+                    setState(state.addTape());
+                    Player player = ctx.getPlayer();
+                    if (player == null || !player.getAbilities().instabuild) {
+                        held.shrink(1);
+                    }
                 }
                 return InteractionResult.SUCCESS;
             }
-        } else if (!hasPanel()) {
+        } else if (state.canTakeTape()) {
             if (!level.isClientSide) {
                 ItemStack result = PunchedTapeItem.withBytes(insertedTape);
-                insertedTape = new byte[0];
+                insertedTape = null;
+                setState(state.removeTape());
                 ItemUtil.giveOrDrop(ctx.getPlayer(), result);
-                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
-                setChanged();
             }
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.FAIL;
     }
 
+    public void clientTick() {
+        if (state == State.RUNNING) {
+            ++currentTicksInJob;
+        }
+    }
+
     public void tick() {
-        if (isJobRunning()) {
+        if (state.isInProcess()) {
+            if (energy.extractEnergy(ENERGY_CONSUMPTION, true) < ENERGY_CONSUMPTION) {
+                setState(State.NO_ENERGY);
+                return;
+            }
+            energy.extractEnergy(ENERGY_CONSUMPTION, false);
+            setState(State.RUNNING);
             ++currentTicksInJob;
             int nextComponent = currentPlacedComponents.size();
             CNCJob job = currentJob.get();
             if (nextComponent < job.getTotalComponents()) {
                 if (!level.isClientSide && currentTicksInJob >= job.tickPlacingComponent().getInt(nextComponent)) {
                     PlacedComponent componentToPlace = job.components().get(nextComponent);
-                    if (!ItemUtil.tryConsumeItemsFrom(
-                            componentToPlace.getComponent().getType().getCost(), neighborInventories
-                    )) {
-                        failed = true;
+                    var componentCost = componentToPlace.getComponent().getType().getCost();
+                    if (!ItemUtil.tryConsumeItemsFrom(componentCost, neighborInventories)) {
+                        setState(State.FAILED);
                     } else {
                         currentPlacedComponents.add(componentToPlace);
+                        BEUtil.markDirtyAndSync(this);
                     }
-                    BEUtil.markDirtyAndSync(this);
                 }
             }
+            if (currentTicksInJob >= job.totalTicks()) {
+                setState(job.errorPosInTape() >= 0 ? State.FAILED : State.DONE);
+            }
         }
-    }
-
-    private boolean hasFinishedJob() {
-        CNCJob job = currentJob.get();
-        return job != null && (failed || currentTicksInJob >= job.totalTicks());
-    }
-
-    private boolean isJobRunning() {
-        CNCJob job = currentJob.get();
-        return hasPanel && job != null && !failed && currentTicksInJob < job.totalTicks();
     }
 
     @Override
@@ -209,7 +207,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
     }
 
     public int getTapeLength() {
-        return insertedTape.length;
+        return insertedTape != null ? insertedTape.length : 0;
     }
 
     public int getCurrentTicksInJob() {
@@ -220,8 +218,8 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
         return currentPlacedComponents;
     }
 
-    public boolean hasPanel() {
-        return hasPanel;
+    public State getState() {
+        return state;
     }
 
     @Override
@@ -240,41 +238,30 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
 
     @Override
     protected void readSyncedData(CompoundTag compound) {
-        insertedTape = compound.getByteArray("tape");
+        insertedTape = compound.contains("tape", Tag.TAG_BYTE_ARRAY) ? compound.getByteArray("tape") : null;
         currentTicksInJob = compound.getInt("currentTick");
-        hasPanel = compound.getBoolean("hasPanel");
-        failed = compound.getBoolean("failed");
+        state = State.VALUES[compound.getInt("state")];
         currentPlacedComponents.clear();
-        CNCJob job = currentJob.get();
-        if (job != null) {
-            int numComponents = 0;
-            final int lastTickToConsider = currentTicksInJob - (failed ? 1 : 0);
-            while (numComponents < job.getTotalComponents() &&
-                    job.tickPlacingComponent().getInt(numComponents) <= lastTickToConsider) {
-                currentPlacedComponents.add(job.components().get(numComponents));
-                ++numComponents;
-            }
-        }
+        Codecs.readOptional(Codec.list(PlacedComponent.CODEC), compound.get("components"))
+                .ifPresent(currentPlacedComponents::addAll);
     }
 
     @Override
     protected void writeSyncedData(CompoundTag in) {
-        in.putByteArray("tape", insertedTape);
+        if (insertedTape != null) {
+            in.putByteArray("tape", insertedTape);
+        }
         in.putInt("currentTick", currentTicksInJob);
-        in.putBoolean("hasPanel", hasPanel);
-        in.putBoolean("failed", failed);
-    }
-
-    public boolean hasFailed() {
-        return failed;
+        in.putInt("state", state.ordinal());
+        in.put("components", Codecs.encode(Codec.list(PlacedComponent.CODEC), currentPlacedComponents));
     }
 
     @Override
     public void getExtraDrops(Consumer<ItemStack> dropper) {
-        if (insertedTape.length > 0) {
+        if (insertedTape != null) {
             dropper.accept(PunchedTapeItem.withBytes(insertedTape));
         }
-        if (hasPanel) {
+        if (state.hasPanel()) {
             dropper.accept(PanelTopItem.createWithComponents(currentPlacedComponents));
         }
     }
@@ -294,6 +281,13 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
         return MultiblockBEType.makeType(
                 register, "panel_cnc", PanelCNCBlockEntity::new, Dummy::new, CEBlocks.PANEL_CNC, PanelCNCBlock::isMaster
         );
+    }
+
+    private void setState(State state) {
+        if (state != this.state) {
+            this.state = state;
+            BEUtil.markDirtyAndSync(this);
+        }
     }
 
     private static class Dummy extends CEBlockEntity {
@@ -325,6 +319,70 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
             if (energyRef != null) {
                 energyRef.invalidate();
             }
+        }
+    }
+
+    public enum State {
+        EMPTY,
+        HAS_TAPE,
+        HAS_PANEL,
+        RUNNING,
+        NO_ENERGY,
+        FAILED,
+        DONE;
+
+        public static final State[] VALUES = values();
+
+        public boolean canTakePanel() {
+            return hasPanel() && !isInProcess();
+        }
+
+        public boolean hasPanel() {
+            return this == HAS_PANEL || this == RUNNING || this == NO_ENERGY || this == FAILED || this == DONE;
+        }
+
+        public boolean isInProcess() {
+            return this == RUNNING || this == NO_ENERGY;
+        }
+
+        public State removePanel() {
+            return switch (this) {
+                case HAS_PANEL -> EMPTY;
+                case FAILED, DONE -> HAS_TAPE;
+                default -> throw new RuntimeException(name());
+            };
+        }
+
+        public State addPanel() {
+            return switch (this) {
+                case EMPTY -> HAS_PANEL;
+                case HAS_TAPE -> RUNNING;
+                default -> throw new RuntimeException(name());
+            };
+        }
+
+        public State addTape() {
+            return switch (this) {
+                case EMPTY -> HAS_TAPE;
+                case HAS_PANEL -> RUNNING;
+                default -> throw new RuntimeException(name());
+            };
+        }
+
+        public boolean canTakeTape() {
+            return hasTape() && !isInProcess();
+        }
+
+        public State removeTape() {
+            return switch (this) {
+                case HAS_TAPE -> EMPTY;
+                case FAILED, DONE -> HAS_PANEL;
+                default -> throw new RuntimeException(name());
+            };
+        }
+
+        public boolean hasTape() {
+            return this == HAS_TAPE || this == RUNNING || this == NO_ENERGY || this == FAILED || this == DONE;
         }
     }
 }

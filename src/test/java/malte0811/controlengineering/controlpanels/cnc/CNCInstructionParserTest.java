@@ -26,7 +26,7 @@ public class CNCInstructionParserTest {
             PlacedComponent... expected
     ) {
         Assert.assertFalse(result.isError());
-        Assert.assertEquals(ImmutableList.copyOf(expected), result.getComponents());
+        Assert.assertEquals(ImmutableList.copyOf(expected), result.components());
     }
 
     private void assertFailure(
@@ -34,7 +34,7 @@ public class CNCInstructionParserTest {
             PlacedComponent... expected
     ) {
         Assert.assertTrue(result.isError());
-        Assert.assertEquals(ImmutableList.copyOf(expected), result.getComponents());
+        Assert.assertEquals(ImmutableList.copyOf(expected), result.components());
     }
 
     @BeforeClass
