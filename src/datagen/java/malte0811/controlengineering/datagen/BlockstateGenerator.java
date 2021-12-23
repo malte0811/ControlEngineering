@@ -61,8 +61,8 @@ public class BlockstateGenerator extends BlockStateProvider {
         );
 
         panelModel();
-        horizontalRotated(CEBlocks.KEYPUNCH, KeypunchBlock.FACING, obj("keypunch.obj"));
-        panelCNCModel();
+        column2(obj("panel_cnc.obj"), CEBlocks.PANEL_CNC, PanelCNCBlock.FACING);
+        column2(obj("keypunch.obj"), CEBlocks.KEYPUNCH, KeypunchBlock.FACING);
         logicCabinetModel();
         rotatedWithOffset(
                 CEBlocks.LOGIC_WORKBENCH,
@@ -114,15 +114,14 @@ public class BlockstateGenerator extends BlockStateProvider {
                 .parent(chassis);
     }
 
-    private void panelCNCModel() {
-        var mainModel = obj("panel_cnc.obj");
-        itemModels().getBuilder(ItemModels.name(CEBlocks.PANEL_CNC)).parent(mainModel);
-        var splitModel = models().getBuilder("panel_cnc_split")
+    private void column2(ModelFile mainModel, RegistryObject<? extends Block> block, Property<Direction> facing) {
+        itemModels().getBuilder(ItemModels.name(block)).parent(mainModel);
+        var splitModel = models().getBuilder(mainModel.getLocation().getPath() + "_split")
                 .customLoader(SplitModelBuilder::begin)
                 .innerModel(mainModel)
                 .parts(List.of(Vec3i.ZERO, new Vec3i(0, 1, 0)))
                 .end();
-        horizontalRotated(CEBlocks.PANEL_CNC, PanelCNCBlock.FACING, splitModel);
+        horizontalRotated(block, facing, splitModel);
     }
 
     private <T extends Comparable<T>> void rotatedWithOffset(

@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -30,7 +30,7 @@ import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
 public class PanelCNCBlock extends CEBlock<Direction> implements IModelOffsetProvider {
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final Property<Integer> HEIGHT = IntegerProperty.create("height", 0, 1);
+    public static final Property<Boolean> UPPER = BooleanProperty.create("upper");
 
     public static final VoxelShape UPPER_SHAPE = Shapes.or(
             createPixelRelative(0, 0, 0, 1, 16, 1),
@@ -43,8 +43,8 @@ public class PanelCNCBlock extends CEBlock<Direction> implements IModelOffsetPro
     public PanelCNCBlock() {
         super(
                 defaultPropertiesNotSolid(),
-                HorizontalStructurePlacement.column(FACING, HEIGHT),
-                FromBlockFunction.either((state, $, $1) -> state.getValue(HEIGHT) == 1, Shapes.block(), UPPER_SHAPE),
+                HorizontalStructurePlacement.column2(FACING, UPPER),
+                FromBlockFunction.eitherFlat(FromBlockFunction.getProperty(UPPER), Shapes.block(), UPPER_SHAPE),
                 CEBlockEntities.PANEL_CNC
         );
     }
@@ -52,7 +52,7 @@ public class PanelCNCBlock extends CEBlock<Direction> implements IModelOffsetPro
     @Override
     protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(FACING, HEIGHT);
+        builder.add(FACING, UPPER);
     }
 
     public static Direction getDirection(PanelCNCBlockEntity bEntity) {
@@ -74,11 +74,11 @@ public class PanelCNCBlock extends CEBlock<Direction> implements IModelOffsetPro
     }
 
     public static boolean isMaster(BlockState blockState) {
-        return blockState.getValue(HEIGHT) == 0;
+        return !blockState.getValue(UPPER);
     }
 
     @Override
     public BlockPos getModelOffset(BlockState state, @Nullable Vec3i size) {
-        return new BlockPos(0, state.getValue(HEIGHT), 0);
+        return new BlockPos(0, state.getValue(UPPER) ? 1 : 0, 0);
     }
 }

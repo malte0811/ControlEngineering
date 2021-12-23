@@ -1,18 +1,18 @@
 {
   "variants": {
     "facing=north": {
-      "model": "controlengineering:block/keypunch_obj",
+      "model": "controlengineering:block/keypunch_obj_split",
       "y": 180
     },
     "facing=south": {
-      "model": "controlengineering:block/keypunch_obj"
+      "model": "controlengineering:block/keypunch_obj_split"
     },
     "facing=west": {
-      "model": "controlengineering:block/keypunch_obj",
+      "model": "controlengineering:block/keypunch_obj_split",
       "y": 90
     },
     "facing=east": {
-      "model": "controlengineering:block/keypunch_obj",
+      "model": "controlengineering:block/keypunch_obj_split",
       "y": 270
     }
   }

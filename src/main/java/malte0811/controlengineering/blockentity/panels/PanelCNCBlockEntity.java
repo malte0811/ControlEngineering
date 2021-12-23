@@ -194,10 +194,10 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
 
     @Override
     public SelectionShapes getShape() {
-        if (getBlockState().getValue(PanelCNCBlock.HEIGHT) == 0) {
-            return bottomSelectionShapes.get();
-        } else {
+        if (getBlockState().getValue(PanelCNCBlock.UPPER)) {
             return topSelectionShapes;
+        } else {
+            return bottomSelectionShapes.get();
         }
     }
 

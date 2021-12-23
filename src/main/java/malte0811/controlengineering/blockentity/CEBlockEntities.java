@@ -57,9 +57,7 @@ public class CEBlockEntities {
             "panel_designer", PanelDesignerBlockEntity::new, CEBlocks.PANEL_DESIGNER, PanelDesignerBlock::isMaster
     );
 
-    public static RegistryObject<BlockEntityType<KeypunchBlockEntity>> KEYPUNCH = REGISTER.register(
-            "keypunch", createBEType(KeypunchBlockEntity::new, CEBlocks.KEYPUNCH)
-    );
+    public static MultiblockBEType<KeypunchBlockEntity, ?> KEYPUNCH = KeypunchBlockEntity.register(REGISTER);
 
     public static MultiblockBEType<LogicCabinetBlockEntity, ?> LOGIC_CABINET = makeMBType(
             "logic_cabinet", LogicCabinetBlockEntity::new, CEBlocks.LOGIC_CABINET, LogicCabinetBlock::isMaster

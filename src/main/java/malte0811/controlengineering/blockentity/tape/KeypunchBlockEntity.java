@@ -1,7 +1,9 @@
 package malte0811.controlengineering.blockentity.tape;
 
+import malte0811.controlengineering.blockentity.MultiblockBEType;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.base.IExtraDropBE;
+import malte0811.controlengineering.blockentity.base.IHasMaster;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
@@ -22,8 +24,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.registries.DeferredRegister;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,9 +35,9 @@ import java.util.function.Consumer;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class KeypunchBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IExtraDropBE {
-    public static final VoxelShape INPUT_SHAPE = createPixelRelative(11, 6, 2, 15, 9, 4);
-    public static final VoxelShape OUTPUT_SHAPE = createPixelRelative(2, 6, 1, 6, 10, 5);
+public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE {
+    public static final VoxelShape INPUT_SHAPE = createPixelRelative(11, 3, 2, 15, 6, 4);
+    public static final VoxelShape OUTPUT_SHAPE = createPixelRelative(2, 3, 1, 6, 7, 5);
 
     private KeypunchState state = new KeypunchState();
 
@@ -53,38 +57,6 @@ public class KeypunchBlockEntity extends CEBlockEntity implements SelectionShape
         compound.put("state", Codecs.encode(KeypunchState.CODEC, state));
     }
 
-    private final CachedValue<Direction, SelectionShapes> selectionShapes = new CachedValue<>(
-            () -> getBlockState().getValue(KeypunchBlock.FACING), f -> createSelectionShapes(f, this)
-    );
-
-    @Override
-    public SelectionShapes getShape() {
-        return selectionShapes.get();
-    }
-
-    private static SelectionShapes createSelectionShapes(Direction d, KeypunchBlockEntity bEntity) {
-        List<SelectionShapes> subshapes = new ArrayList<>(2);
-        // Punched tape output
-        subshapes.add(new SingleShape(
-                OUTPUT_SHAPE, ctx -> bEntity.getState().removeWrittenTape(ctx.getPlayer())
-        ));
-        // Add clear tape to input/take it from input
-        subshapes.add(new SingleShape(
-                INPUT_SHAPE, ctx -> bEntity.getState().removeOrAddClearTape(ctx.getPlayer(), ctx.getItemInHand())
-        ));
-        return new ListShapes(
-                KeypunchBlock.SHAPE_PROVIDER.apply(d),
-                MatrixUtils.inverseFacing(d),
-                subshapes,
-                ctx -> {
-                    CEBlocks.KEYPUNCH.get().openContainer(
-                            ctx.getPlayer(), bEntity.getBlockState(), ctx.getLevel(), ctx.getClickedPos()
-                    );
-                    return InteractionResult.SUCCESS;
-                }
-        );
-    }
-
     public KeypunchState getState() {
         return state;
     }
@@ -99,6 +71,58 @@ public class KeypunchBlockEntity extends CEBlockEntity implements SelectionShape
             System.arraycopy(state.getData().toByteArray(), 0, bytes, 0, state.getData().size());
             Arrays.fill(bytes, state.getData().size(), bytes.length, BitUtils.fixParity((byte) 0xff));
             dropper.accept(PunchedTapeItem.withBytes(bytes));
+        }
+    }
+
+    public static MultiblockBEType<KeypunchBlockEntity, ?> register(DeferredRegister<BlockEntityType<?>> register) {
+        return MultiblockBEType.makeType(
+                register, "keypunch", KeypunchBlockEntity::new, Dummy::new, CEBlocks.KEYPUNCH, KeypunchBlock::isMaster
+        );
+    }
+
+    private static class Dummy extends CEBlockEntity implements SelectionShapeOwner, IHasMaster<KeypunchBlockEntity> {
+        private final CachedValue<Direction, SelectionShapes> selectionShapes = new CachedValue<>(
+                () -> getBlockState().getValue(KeypunchBlock.FACING),
+                f -> createSelectionShapes(f, getOrComputeMasterBE(getBlockState()))
+        );
+
+        public Dummy(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+            super(type, pos, state);
+        }
+
+        @Override
+        public SelectionShapes getShape() {
+            return selectionShapes.get();
+        }
+
+        private static SelectionShapes createSelectionShapes(Direction d, KeypunchBlockEntity bEntity) {
+            List<SelectionShapes> subshapes = new ArrayList<>(2);
+            // Punched tape output
+            subshapes.add(new SingleShape(
+                    OUTPUT_SHAPE, ctx -> bEntity.getState().removeWrittenTape(ctx.getPlayer())
+            ));
+            // Add clear tape to input/take it from input
+            subshapes.add(new SingleShape(
+                    INPUT_SHAPE, ctx -> bEntity.getState().removeOrAddClearTape(ctx.getPlayer(), ctx.getItemInHand())
+            ));
+            return new ListShapes(
+                    KeypunchBlock.SHAPE_PROVIDER.apply(d),
+                    MatrixUtils.inverseFacing(d),
+                    subshapes,
+                    ctx -> {
+                        CEBlocks.KEYPUNCH.get().openContainer(
+                                ctx.getPlayer(), bEntity.getBlockState(), ctx.getLevel(), ctx.getClickedPos().below()
+                        );
+                        return InteractionResult.SUCCESS;
+                    }
+            );
+        }
+
+        @Nullable
+        @Override
+        public KeypunchBlockEntity computeMasterBE(BlockState stateHere) {
+            var beBelow = level.getBlockEntity(worldPosition.below());
+            return beBelow instanceof KeypunchBlockEntity keypunch ? keypunch : null;
         }
     }
 }

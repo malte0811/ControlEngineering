@@ -42,6 +42,10 @@ public class HorizontalStructurePlacement<T extends Comparable<T>> implements Pl
         return new HorizontalStructurePlacement<>(facing, columnHeight, BlockPos.ZERO::above);
     }
 
+    public static HorizontalStructurePlacement<Boolean> column2(Property<Direction> facing, Property<Boolean> upper) {
+        return new HorizontalStructurePlacement<>(facing, upper, b -> (b ? BlockPos.ZERO.above() : BlockPos.ZERO));
+    }
+
     @Override
     public Direction getPlacementData(BlockPlaceContext ctx) {
         return ctx.getHorizontalDirection();

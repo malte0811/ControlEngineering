@@ -5,13 +5,13 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 
-public interface IHasMaster extends IHasMasterBase {
+public interface IHasMaster<T extends BlockEntity> extends IHasMasterBase {
     @Nullable
-    BlockEntity computeMasterBE(BlockState stateHere);
+    T computeMasterBE(BlockState stateHere);
 
-    default BlockEntity getOrComputeMasterBE(BlockState stateHere) {
+    default T getOrComputeMasterBE(BlockState stateHere) {
         if (getCachedMaster() != null) {
-            return getCachedMaster();
+            return (T) getCachedMaster();
         } else {
             return computeMasterBE(stateHere);
         }

@@ -22,7 +22,7 @@ public interface FromBlockFunction<T> {
         return switchOn(useSecond, ImmutableMap.of(false, first, true, second));
     }
 
-    static <T> FromBlockFunction<T> either(FromBlockFunction<Boolean> useSecond, T first, T second) {
+    static <T> FromBlockFunction<T> eitherFlat(FromBlockFunction<Boolean> useSecond, T first, T second) {
         return either(useSecond, constant(first), constant(second));
     }
 
