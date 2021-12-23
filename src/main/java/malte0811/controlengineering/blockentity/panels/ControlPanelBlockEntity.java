@@ -28,7 +28,8 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterface, SelectionShapeOwner, IHasMaster {
+public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterface, SelectionShapeOwner,
+        IHasMaster<ControlPanelBlockEntity> {
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private List<PlacedComponent> components = new ArrayList<>();
     private PanelTransform transform = new PanelTransform(
@@ -146,12 +147,6 @@ public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterf
     @Override
     public void setRemoved() {
         super.setRemoved();
-        this.markBusDirty.run();
-    }
-
-    @Override
-    public void onChunkUnloaded() {
-        super.onChunkUnloaded();
         this.markBusDirty.run();
     }
 

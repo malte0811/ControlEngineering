@@ -97,14 +97,6 @@ public class BusInterfaceBlock extends CEIICBlockEntity implements IBusConnector
     }
 
     @Override
-    public void onChunkUnloaded() {
-        super.onChunkUnloaded();
-        clearers.values().stream()
-                .map(Pair::getSecond)
-                .forEach(Runnable::run);
-    }
-
-    @Override
     public void onNeighborChanged(BlockPos neighbor) {
         //TODO more intelligent approach?
         getBusHandler(new ConnectionPoint(worldPosition, 0)).requestUpdate();

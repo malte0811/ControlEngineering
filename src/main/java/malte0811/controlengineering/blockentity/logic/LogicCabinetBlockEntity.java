@@ -53,7 +53,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IBusInterface,
-        ISchematicBE, IExtraDropBE, IHasMaster {
+        ISchematicBE, IExtraDropBE, IHasMaster<LogicCabinetBlockEntity> {
     public static final int MAX_NUM_BOARDS = 4;
     public static final int NUM_TUBES_PER_BOARD = 16;
 
@@ -190,12 +190,6 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     @Override
     public void setRemoved() {
         super.setRemoved();
-        this.markBusDirty.run();
-    }
-
-    @Override
-    public void onChunkUnloaded() {
-        super.onChunkUnloaded();
         this.markBusDirty.run();
     }
 
