@@ -57,8 +57,7 @@ processResources {
 }
 
 minecraft {
-    //TODO mappings channel: 'parchment', version: version_parchment
-    mappings channel: 'official', version: minecraft_version
+    mappings channel: 'parchment', version: version_parchment
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
