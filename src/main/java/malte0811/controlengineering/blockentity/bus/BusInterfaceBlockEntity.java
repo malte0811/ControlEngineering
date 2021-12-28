@@ -1,5 +1,6 @@
 package malte0811.controlengineering.blockentity.bus;
 
+import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
 import blusunrize.immersiveengineering.api.wires.LocalWireNetwork;
 import blusunrize.immersiveengineering.api.wires.WireType;
@@ -7,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.blockentity.CEIICBlockEntity;
 import malte0811.controlengineering.blockentity.base.INeighborChangeListener;
+import malte0811.controlengineering.blocks.bus.BusInterfaceBlock;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusConnector;
 import malte0811.controlengineering.bus.IBusInterface;
@@ -20,31 +22,34 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumMap;
-import java.util.Map;
 
-public class BusInterfaceBlock extends CEIICBlockEntity implements IBusConnector, INeighborChangeListener {
-    private final Map<Direction, Pair<WeakReference<IBusInterface>, Runnable>> clearers = new EnumMap<>(Direction.class);
+public class BusInterfaceBlockEntity extends CEIICBlockEntity implements IBusConnector, INeighborChangeListener {
+    private Pair<WeakReference<IBusInterface>, Runnable> clearer = null;
 
-    public BusInterfaceBlock(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+    public BusInterfaceBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
     @Override
     public void onBusUpdated(ConnectionPoint updatedPoint) {
-        BusState state = getBusHandler(updatedPoint).getState();
-        getConnectedBE().forEach(iBusInterface -> iBusInterface.onBusUpdated(state));
+        var connected = getConnectedBE();
+        if (connected != null) {
+            var handler = getBusHandler(updatedPoint);
+            connected.onBusUpdated(handler.getState());
+        }
     }
 
     @Override
     public BusState getEmittedState(ConnectionPoint checkedPoint) {
-        return getConnectedBE()
-                .stream()
-                .map(IBusInterface::getEmittedState)
-                .reduce(BusState.EMPTY, BusState::merge);
+        var connected = getConnectedBE();
+        if (connected != null) {
+            return connected.getEmittedState();
+        } else {
+            return BusState.EMPTY;
+        }
     }
 
     @Override
@@ -58,29 +63,25 @@ public class BusInterfaceBlock extends CEIICBlockEntity implements IBusConnector
                 .add(Vec3.atLowerCornerOf(getFacing().getNormal()).scale(1. / 16));
     }
 
-    private Collection<IBusInterface> getConnectedBE() {
-        Collection<IBusInterface> ret = new ArrayList<>();
+    @Nullable
+    private IBusInterface getConnectedBE() {
         Direction facing = getFacing();
         BlockEntity neighbor = level.getBlockEntity(worldPosition.relative(facing));
-        if (neighbor instanceof IBusInterface) {
-            IBusInterface i = (IBusInterface) neighbor;
-            if (i.canConnect(facing.getOpposite())) {
-                Pair<WeakReference<IBusInterface>, Runnable> existing = clearers.get(facing);
-                if (existing == null || existing.getFirst().get() != i) {
-                    Pair<Clearable<Runnable>, Runnable> newClearer = Clearable.create(() -> getBusHandler(new ConnectionPoint(
-                            worldPosition, 0
-                    )).requestUpdate());
-                    i.addMarkDirtyCallback(newClearer.getFirst());
-                    clearers.put(facing, Pair.of(new WeakReference<>(i), newClearer.getSecond()));
-                }
-                ret.add(i);
+        if (neighbor instanceof IBusInterface busInterface && busInterface.canConnect(facing.getOpposite())) {
+            if (clearer == null || clearer.getFirst().get() != busInterface) {
+                Pair<Clearable<Runnable>, Runnable> newClearer = Clearable.create(
+                        () -> getBusHandler(new ConnectionPoint(worldPosition, 0)).requestUpdate()
+                );
+                busInterface.addMarkDirtyCallback(newClearer.getFirst());
+                clearer = Pair.of(new WeakReference<>(busInterface), newClearer.getSecond());
             }
+            return busInterface;
         }
-        return ret;
+        return null;
     }
 
     private Direction getFacing() {
-        return getBlockState().getValue(malte0811.controlengineering.blocks.bus.BusInterfaceBlock.FACING);
+        return getBlockState().getValue(BusInterfaceBlock.FACING);
     }
 
     @Override
@@ -91,14 +92,22 @@ public class BusInterfaceBlock extends CEIICBlockEntity implements IBusConnector
     @Override
     public void setRemoved() {
         super.setRemoved();
-        clearers.values().stream()
-                .map(Pair::getSecond)
-                .forEach(Runnable::run);
+        if (clearer != null) {
+            clearer.getSecond().run();
+        }
     }
 
     @Override
     public void onNeighborChanged(BlockPos neighbor) {
         //TODO more intelligent approach?
         getBusHandler(new ConnectionPoint(worldPosition, 0)).requestUpdate();
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (!level.isClientSide()) {
+            ApiUtils.addFutureServerTask(level, this::getConnectedBE, true);
+        }
     }
 }

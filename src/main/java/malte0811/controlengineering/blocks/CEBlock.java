@@ -2,6 +2,7 @@ package malte0811.controlengineering.blocks;
 
 import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.blockentity.base.IHasMaster;
+import malte0811.controlengineering.blockentity.base.INeighborChangeListener;
 import malte0811.controlengineering.blocks.placement.PlacementBehavior;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
@@ -164,6 +166,14 @@ public abstract class CEBlock<PlacementData> extends Block implements EntityBloc
             return this.beType.apply(pPos, pState);
         } else {
             return null;
+        }
+    }
+
+    @Override
+    public void onNeighborChange(BlockState state, LevelReader world, BlockPos pos, BlockPos neighbor) {
+        super.onNeighborChange(state, world, pos, neighbor);
+        if (world.getBlockEntity(pos) instanceof INeighborChangeListener listener) {
+            listener.onNeighborChanged(neighbor);
         }
     }
 

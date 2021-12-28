@@ -2,7 +2,7 @@ package malte0811.controlengineering.blockentity;
 
 import com.google.common.collect.ImmutableSet;
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.blockentity.bus.BusInterfaceBlock;
+import malte0811.controlengineering.blockentity.bus.BusInterfaceBlockEntity;
 import malte0811.controlengineering.blockentity.bus.BusRelayBlock;
 import malte0811.controlengineering.blockentity.bus.LineAccessBlockEntity;
 import malte0811.controlengineering.blockentity.logic.LogicCabinetBlockEntity;
@@ -39,8 +39,8 @@ public class CEBlockEntities {
             "bus_relay", createBEType(BusRelayBlock::new, CEBlocks.BUS_RELAY)
     );
 
-    public static RegistryObject<BlockEntityType<BusInterfaceBlock>> BUS_INTERFACE = REGISTER.register(
-            "bus_interface", createBEType(BusInterfaceBlock::new, CEBlocks.BUS_INTERFACE)
+    public static RegistryObject<BlockEntityType<BusInterfaceBlockEntity>> BUS_INTERFACE = REGISTER.register(
+            "bus_interface", createBEType(BusInterfaceBlockEntity::new, CEBlocks.BUS_INTERFACE)
     );
 
     public static RegistryObject<BlockEntityType<LineAccessBlockEntity>> LINE_ACCESS = REGISTER.register(
