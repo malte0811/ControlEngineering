@@ -38,7 +38,7 @@ public class BusInterfaceBlockEntity extends CEIICBlockEntity implements IBusCon
         var connected = getConnectedBE();
         if (connected != null) {
             var handler = getBusHandler(updatedPoint);
-            connected.onBusUpdated(handler.getState());
+            connected.onBusUpdated(handler.getState(), handler.getStateWithout(updatedPoint, this));
         }
     }
 

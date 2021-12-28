@@ -107,7 +107,7 @@ public class KeypunchState {
         return numLost + numPrinted;
     }
 
-    public boolean tryTypeChar(byte typed) {
-        return tryTypeAll(ByteLists.singleton(BitUtils.fixParity(typed))) >= 1;
+    public boolean tryTypeChar(byte typed, boolean fixParity) {
+        return tryTypeAll(ByteLists.singleton(fixParity ? BitUtils.fixParity(typed) : typed)) >= 1;
     }
 }

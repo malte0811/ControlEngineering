@@ -121,9 +121,9 @@ public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterf
     }
 
     @Override
-    public void onBusUpdated(BusState newState) {
-        if (!newState.equals(inputState)) {
-            this.inputState = newState;
+    public void onBusUpdated(BusState totalState, BusState otherState) {
+        if (!totalState.equals(inputState)) {
+            this.inputState = totalState;
             this.updateBusState(SyncType.IF_CHANGED);
         }
     }

@@ -2,6 +2,7 @@ package malte0811.controlengineering.blocks.tape;
 
 import blusunrize.immersiveengineering.api.client.IModelOffsetProvider;
 import malte0811.controlengineering.blockentity.CEBlockEntities;
+import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.HorizontalStructurePlacement;
 import malte0811.controlengineering.blocks.shapes.CachedShape;
@@ -17,6 +18,9 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -78,5 +82,16 @@ public class KeypunchBlock extends CEBlock<Direction> implements IModelOffsetPro
     @Override
     public BlockPos getModelOffset(BlockState state, @Nullable Vec3i size) {
         return state.getValue(UPPER) ? BlockPos.ZERO.above() : BlockPos.ZERO;
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            @Nonnull Level pLevel, @Nonnull BlockState pState, @Nonnull BlockEntityType<T> pBlockEntityType
+    ) {
+        if (!pLevel.isClientSide()) {
+            return CEBlockEntities.KEYPUNCH.makeMasterTicker(pBlockEntityType, KeypunchBlockEntity::tickServer);
+        }
+        return super.getTicker(pLevel, pState, pBlockEntityType);
     }
 }

@@ -1,6 +1,5 @@
 package malte0811.controlengineering.bus;
 
-import blusunrize.immersiveengineering.api.wires.redstone.RedstoneNetworkHandler;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 
@@ -19,10 +18,6 @@ public class BusLine {
         this(new int[LINE_SIZE]);
     }
 
-    public BusLine(RedstoneNetworkHandler rsHandler) {
-        this(rsHandler::getValue);
-    }
-
     private BusLine(Int2IntFunction rsValues) {
         int[] values = new int[LINE_SIZE];
         for (int i = 0; i < LINE_SIZE; ++i) {
@@ -31,7 +26,7 @@ public class BusLine {
         this.values = values;
     }
 
-    private BusLine(int[] values) {
+    public BusLine(int[] values) {
         Preconditions.checkArgument(values.length == LINE_SIZE);
         for (int val : values) {
             Preconditions.checkArgument(val >= MIN_VALID_VALUE && val <= MAX_VALID_VALUE);

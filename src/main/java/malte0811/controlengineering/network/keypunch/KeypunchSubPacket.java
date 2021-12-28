@@ -1,5 +1,6 @@
 package malte0811.controlengineering.network.keypunch;
 
+import it.unimi.dsi.fastutil.bytes.ByteConsumer;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.blockentity.tape.KeypunchState;
@@ -44,6 +45,8 @@ public abstract class KeypunchSubPacket {
     protected abstract void write(FriendlyByteBuf out);
 
     public abstract boolean process(KeypunchState state);
+
+    public void process(ByteConsumer remotePrint) {}
 
     public boolean allowSendingToServer() {
         return true;

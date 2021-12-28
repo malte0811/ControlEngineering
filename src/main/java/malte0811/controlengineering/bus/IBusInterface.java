@@ -4,7 +4,7 @@ import malte0811.controlengineering.util.Clearable;
 import net.minecraft.core.Direction;
 
 public interface IBusInterface {
-    void onBusUpdated(BusState newState);
+    void onBusUpdated(BusState totalState, BusState otherState);
 
     BusState getEmittedState();
 

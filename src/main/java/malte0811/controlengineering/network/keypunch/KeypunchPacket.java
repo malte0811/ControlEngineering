@@ -5,9 +5,7 @@ import malte0811.controlengineering.gui.tape.KeypunchContainer;
 import malte0811.controlengineering.gui.tape.KeypunchScreen;
 import malte0811.controlengineering.network.SimplePacket;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -31,11 +29,14 @@ public class KeypunchPacket extends SimplePacket {
     protected void processOnThread(NetworkEvent.Context ctx) {
         if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             Preconditions.checkState(packet.allowSendingToServer());
-            AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
-            if (activeContainer instanceof KeypunchContainer keypunch) {
-                packet.process(keypunch.getState());
-                keypunch.sendToListeningPlayersExcept(ctx.getSender(), packet);
-                keypunch.markDirty();
+            if (ctx.getSender().containerMenu instanceof KeypunchContainer keypunch) {
+                if (keypunch.isLoopback()) {
+                    packet.process(keypunch.getState());
+                    keypunch.sendToListeningPlayersExcept(ctx.getSender(), packet);
+                    keypunch.markDirty();
+                } else {
+                    packet.process(keypunch.getKeypunchBE()::queueForRemotePrint);
+                }
             }
         } else {
             processOnClient();
@@ -43,10 +44,9 @@ public class KeypunchPacket extends SimplePacket {
     }
 
     private void processOnClient() {
-        Screen openScreen = Minecraft.getInstance().screen;
-        if (openScreen instanceof KeypunchScreen) {
-            packet.process(((KeypunchScreen) openScreen).getState());
-            ((KeypunchScreen) openScreen).updateData();
+        if (Minecraft.getInstance().screen instanceof KeypunchScreen punchScreen) {
+            packet.process(punchScreen.getState());
+            punchScreen.updateData();
         }
     }
 }

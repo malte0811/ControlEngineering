@@ -151,7 +151,7 @@ public class KeypunchScreen extends Screen implements MenuAccess<KeypunchContain
     }
 
     private boolean processAndSend(KeypunchSubPacket packet) {
-        if (packet.process(state)) {
+        if (!container.isLoopback() || packet.process(state)) {
             updateData();
             ControlEngineering.NETWORK.sendToServer(new KeypunchPacket(packet));
             return true;

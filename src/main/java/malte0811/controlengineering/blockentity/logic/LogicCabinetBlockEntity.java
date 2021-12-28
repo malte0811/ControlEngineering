@@ -142,11 +142,11 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     }
 
     @Override
-    public void onBusUpdated(BusState newState) {
+    public void onBusUpdated(BusState totalState, BusState otherState) {
         if (circuit != null) {
-            circuit.getSecond().updateInputs(newState);
+            circuit.getSecond().updateInputs(totalState);
         }
-        this.currentBusState = newState;
+        this.currentBusState = totalState;
     }
 
     @Override
