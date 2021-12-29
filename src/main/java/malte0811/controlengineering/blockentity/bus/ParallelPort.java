@@ -4,80 +4,88 @@ import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.bytes.ByteList;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusState;
+import malte0811.controlengineering.logic.clock.ClockGenerator.ClockInstance;
+import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.util.BitUtils;
+import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.Optional;
 
-//TODO extra clock line/ClockInstance? Would allow sending zero-bytes
 public class ParallelPort {
-    private final ByteList remotePrintQueue;
-    private byte lastBusState;
-    private boolean lastTickHigh;
+    private static final int BUS_LINE = 0;
+    private static final int CLOCK_INDEX = Byte.SIZE;
+
+    private final ByteList transmitQueue;
+    private boolean sendingFirst;
+    private ClockInstance<?> receiveClock;
 
     public ParallelPort() {
-        remotePrintQueue = new ByteArrayList();
-        lastTickHigh = false;
-        lastBusState = 0;
+        transmitQueue = new ByteArrayList();
+        receiveClock = ClockTypes.NEVER.newInstance();
     }
 
     public ParallelPort(CompoundTag nbt) {
-        remotePrintQueue = new ByteArrayList(nbt.getByteArray("remotePrintQueue"));
-        lastBusState = nbt.getByte("lastBusState");
-        lastTickHigh = nbt.getBoolean("lastTickHigh");
+        transmitQueue = new ByteArrayList(nbt.getByteArray("remotePrintQueue"));
+        sendingFirst = nbt.getBoolean("sendingFirst");
+        receiveClock = Codecs.readOptional(ClockInstance.CODEC, nbt.get("clock"))
+                .orElse(ClockTypes.NEVER.newInstance());
+    }
+
+    public void setReceiveClock(ClockInstance<?> receiveClock) {
+        this.receiveClock = receiveClock;
     }
 
     public boolean tick() {
-        //TODO receiving???
-
-        if (lastTickHigh) {
-            remotePrintQueue.removeByte(0);
-            lastTickHigh = false;
-            return true;
+        boolean updateRS = false;
+        if (sendingFirst && !transmitQueue.isEmpty()) {
+            transmitQueue.removeByte(0);
+            sendingFirst = false;
+            updateRS = true;
         }
-        if (!remotePrintQueue.isEmpty()) {
-            lastTickHigh = true;
-            return true;
+        if (!transmitQueue.isEmpty()) {
+            sendingFirst = true;
+            updateRS = true;
         }
-        return false;
+        return updateRS;
     }
 
     public BusState getOutputState() {
-        if (!lastTickHigh) {
+        if (!sendingFirst || transmitQueue.isEmpty()) {
             return BusState.EMPTY;
         }
-        byte toSend = remotePrintQueue.getByte(0);
+        byte toSend = transmitQueue.getByte(0);
         int[] line = new int[BusLine.LINE_SIZE];
         for (int i = 0; i < Byte.SIZE; ++i) {
             line[i] = BitUtils.getBit(toSend, i) ? BusLine.MAX_VALID_VALUE : BusLine.MIN_VALID_VALUE;
         }
-        return BusState.EMPTY.withLine(0, new BusLine(line));
+        line[CLOCK_INDEX] = BusLine.MAX_VALID_VALUE;
+        return BusState.EMPTY.withLine(BUS_LINE, new BusLine(line));
     }
 
     public Optional<Byte> onBusStateChange(BusState inputState) {
+        boolean triggerSignal = inputState.getLine(BUS_LINE).getValue(CLOCK_INDEX) != 0;
+        if (!receiveClock.tick(triggerSignal)) {
+            return Optional.empty();
+        }
         byte inputByte = 0;
         for (int i = 0; i < Byte.SIZE; ++i) {
-            if (inputState.getLine(0).getValue(i) != 0) {
+            if (inputState.getLine(BUS_LINE).getValue(i) != 0) {
                 inputByte |= 1 << i;
             }
         }
-        Optional<Byte> result = Optional.empty();
-        if (lastBusState == 0 && inputByte != 0) {
-            result = Optional.of(inputByte);
-        }
-        lastBusState = inputByte;
-        return result;
+        return Optional.of(inputByte);
     }
 
     public CompoundTag toNBT() {
         CompoundTag result = new CompoundTag();
-        result.putByteArray("remotePrintQueue", remotePrintQueue.toByteArray());
-        result.putByte("lastBusState", lastBusState);
-        result.putBoolean("lastTickHigh", lastTickHigh);
+        result.putByteArray("remotePrintQueue", transmitQueue.toByteArray());
+        result.putBoolean("sendingFirst", sendingFirst);
+        result.put("clock", Codecs.encode(ClockInstance.CODEC, receiveClock));
         return result;
     }
 
     public void queueChar(byte out) {
-        remotePrintQueue.add(out);
+        transmitQueue.add(out);
     }
 }
