@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 
-public abstract class ClockGenerator<State> extends TypedRegistryEntry<State> {
+public abstract class ClockGenerator<State> extends TypedRegistryEntry<State, ClockGenerator.ClockInstance<State>> {
     protected ClockGenerator(State initialState, Codec<State> stateCodec) {
         super(initialState, stateCodec);
     }
@@ -14,8 +14,8 @@ public abstract class ClockGenerator<State> extends TypedRegistryEntry<State> {
     public abstract State nextState(State oldState, boolean triggerSignal);
 
     @Override
-    public ClockInstance<State> newInstance() {
-        return new ClockInstance<>(this, getInitialState());
+    public ClockInstance<State> newInstance(State state) {
+        return new ClockInstance<>(this, state);
     }
 
     public boolean isActiveClock() {
@@ -23,16 +23,10 @@ public abstract class ClockGenerator<State> extends TypedRegistryEntry<State> {
     }
 
     public static class ClockInstance<State> extends TypedInstance<State, ClockGenerator<State>> {
-        public static final Codec<ClockInstance<?>> CODEC = TypedInstance.makeCodec(
-                ClockTypes.REGISTRY, ClockInstance::makeUnchecked
-        );
+        public static final Codec<ClockInstance<?>> CODEC = TypedInstance.makeCodec(ClockTypes.REGISTRY);
 
         public ClockInstance(ClockGenerator<State> stateClockGenerator, State currentState) {
             super(stateClockGenerator, currentState);
-        }
-
-        private static <T> ClockInstance<T> makeUnchecked(ClockGenerator<T> type, Object state) {
-            return new ClockInstance<>(type, (T) state);
         }
 
         public boolean tick(boolean triggerIn) {

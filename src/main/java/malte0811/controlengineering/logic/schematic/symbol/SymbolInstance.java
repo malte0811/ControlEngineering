@@ -5,12 +5,11 @@ import com.mojang.serialization.Codec;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+
 import java.util.List;
 
 public class SymbolInstance<State> extends TypedInstance<State, SchematicSymbol<State>> {
-    public static final Codec<SymbolInstance<?>> CODEC = makeCodec(
-            SchematicSymbols.REGISTRY, SymbolInstance::makeUnchecked
-    );
+    public static final Codec<SymbolInstance<?>> CODEC = makeCodec(SchematicSymbols.REGISTRY);
 
     public SymbolInstance(SchematicSymbol<State> stateSchematicSymbol, State currentState) {
         super(stateSchematicSymbol, currentState);
@@ -43,9 +42,5 @@ public class SymbolInstance<State> extends TypedInstance<State, SchematicSymbol<
     @Override
     public String toString() {
         return "[type=" + getType() + ", state=" + getCurrentState() + "]";
-    }
-
-    private static <T> SymbolInstance<T> makeUnchecked(SchematicSymbol<T> type, Object state) {
-        return new SymbolInstance<>(type, (T) state);
     }
 }

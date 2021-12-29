@@ -7,18 +7,19 @@ import malte0811.controlengineering.logic.schematic.SchematicNet;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
-public abstract class SchematicSymbol<State> extends TypedRegistryEntry<State> {
+public abstract class SchematicSymbol<State> extends TypedRegistryEntry<State, SymbolInstance<State>> {
     protected SchematicSymbol(State initialState, Codec<State> stateCodec) {
         super(initialState, stateCodec);
     }
 
     @Override
-    public SymbolInstance<State> newInstance() {
-        return new SymbolInstance<>(this, getInitialState());
+    public SymbolInstance<State> newInstance(State state) {
+        return new SymbolInstance<>(this, state);
     }
 
     protected abstract void renderCustom(PoseStack transform, int x, int y, @Nullable State state);

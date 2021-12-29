@@ -1,14 +1,15 @@
 package malte0811.controlengineering.util.typereg;
 
 import com.google.common.base.Preconditions;
-import javax.annotation.Nullable;
 import net.minecraft.resources.ResourceLocation;
+
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class TypedRegistry<T extends TypedRegistryEntry<?>> {
+public class TypedRegistry<T extends TypedRegistryEntry<?, ?>> {
     private final Map<ResourceLocation, T> entries = new LinkedHashMap<>();
 
     public <T2 extends T> T2 register(ResourceLocation name, T2 instance) {

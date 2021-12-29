@@ -119,7 +119,10 @@ public class PanelLayout extends AbstractWidget {
     private <T> void configure(Vec2d pos, PanelComponentInstance<T, ?> instance) {
         DataProviderScreen<T> screen = DataProviderScreen.makeFor(
                 TextComponent.EMPTY, instance.getConfig(), config -> {
-                    processAndSend(new Replace(new PlacedComponent(instance.getType().newInstance(config), pos)));
+                    processAndSend(new Replace(new PlacedComponent(
+                            instance.getType().newInstanceFromCfg(config),
+                            pos
+                    )));
                 }
         );
         if (screen != null) {

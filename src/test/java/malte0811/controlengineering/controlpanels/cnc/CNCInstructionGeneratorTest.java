@@ -24,19 +24,22 @@ public class CNCInstructionGeneratorTest {
     public void test() {
         List<PlacedComponent> comps = ImmutableList.of(
                 new PlacedComponent(
-                        PanelComponents.BUTTON.newInstance(new ColorAndSignal(0xff0000, new BusSignalRef(0, 2))),
+                        PanelComponents.BUTTON.newInstanceFromCfg(new ColorAndSignal(0xff0000, new BusSignalRef(0, 2))),
                         new Vec2d(1, 1)
                 ),
                 new PlacedComponent(
-                        PanelComponents.BUTTON.newInstance(new ColorAndSignal(0xff00, new BusSignalRef(0, 3))),
+                        PanelComponents.BUTTON.newInstanceFromCfg(new ColorAndSignal(0xff00, new BusSignalRef(0, 3))),
                         new Vec2d(3, 1)
                 ),
                 new PlacedComponent(
-                        PanelComponents.INDICATOR.newInstance(new ColorAndSignal(0xffff00, new BusSignalRef(0, 4))),
+                        PanelComponents.INDICATOR.newInstanceFromCfg(new ColorAndSignal(
+                                0xffff00,
+                                new BusSignalRef(0, 4)
+                        )),
                         new Vec2d(2, 1.5)
                 ),
                 new PlacedComponent(
-                        PanelComponents.LABEL.newInstance(new ColorAndText(0xff00, "a test\\?\"''")),
+                        PanelComponents.LABEL.newInstanceFromCfg(new ColorAndText(0xff00, "a test\\?\"''")),
                         new Vec2d(1, 5)
                 )
         );

@@ -6,9 +6,10 @@ import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.resources.ResourceLocation;
+
 import java.util.Map;
 
-public abstract class LeafcellType<State> extends TypedRegistryEntry<State> {
+public abstract class LeafcellType<State> extends TypedRegistryEntry<State, LeafcellInstance<State>> {
     static final TypedRegistry<LeafcellType<?>> REGISTRY = new TypedRegistry<>();
 
     public static <T extends LeafcellType<?>> T register(ResourceLocation name, T type) {
@@ -38,8 +39,8 @@ public abstract class LeafcellType<State> extends TypedRegistryEntry<State> {
     }
 
     @Override
-    public LeafcellInstance<State> newInstance() {
-        return new LeafcellInstance<>(this, getInitialState());
+    public LeafcellInstance<State> newInstance(State state) {
+        return new LeafcellInstance<>(this, state);
     }
 
     public abstract State nextState(Object2DoubleMap<String> inputSignals, State currentState);

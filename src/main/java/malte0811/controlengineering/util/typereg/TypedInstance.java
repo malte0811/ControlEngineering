@@ -1,16 +1,11 @@
 package malte0811.controlengineering.util.typereg;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.Dynamic;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.function.BiFunction;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
 
 // Not "logically" abstract, but the using the class itself causes general issues with the type system
-public abstract class TypedInstance<State, Type extends TypedRegistryEntry<State>> {
+public abstract class TypedInstance<State, Type extends TypedRegistryEntry<State, ?>> {
     private final Type type;
     protected State currentState;
 
@@ -27,30 +22,20 @@ public abstract class TypedInstance<State, Type extends TypedRegistryEntry<State
         return currentState;
     }
 
-    DataResult<Dynamic<?>> serializeState() {
-        return getType().getStateCodec().encodeStart(NbtOps.INSTANCE, getCurrentState())
-                .map(nbt -> new Dynamic<>(NbtOps.INSTANCE, nbt));
+    protected static <T extends TypedRegistryEntry<?, ? extends I>, I extends TypedInstance<?, ? extends T>>
+    Codec<I> makeCodec(TypedRegistry<T> registry) {
+        Codec<T> typeCodec = ResourceLocation.CODEC.flatXmap(
+                rl -> {
+                    T value = registry.get(rl);
+                    return value != null ? DataResult.success(value) : DataResult.error("Unknown key: " + rl);
+                },
+                t -> DataResult.success(t.getRegistryName())
+        );
+        return typeCodec.dispatch(i -> i.getType(), (TypedRegistryEntry<?, ? extends I> t) -> instanceCodec(t));
     }
 
-    protected static <I extends TypedInstance<?, ?>, T extends TypedRegistryEntry<?>>
-    Codec<I> makeCodec(TypedRegistry<T> registry, BiFunction<T, Object, I> makeUncheck) {
-        Codec<Pair<ResourceLocation, Dynamic<?>>> baseCodec = RecordCodecBuilder.create(
-                inst -> inst.group(
-                        ResourceLocation.CODEC.fieldOf("key").forGetter(Pair::getFirst),
-                        Codec.PASSTHROUGH.fieldOf("data").forGetter(Pair::getSecond)
-                ).apply(inst, Pair::of)
-        );
-        return baseCodec.flatXmap(
-                p -> {
-                    T entry = registry.get(p.getFirst());
-                    if (entry == null) {
-                        return DataResult.error("No such entry");
-                    } else {
-                        return entry.getStateCodec().decode(p.getSecond())
-                                .map(p2 -> makeUncheck.apply(entry, p2.getFirst()));
-                    }
-                },
-                t -> t.serializeState().map(d -> Pair.of(t.getType().getRegistryName(), d))
-        );
+    private static <S, I extends TypedInstance<?, ?>>
+    Codec<I> instanceCodec(TypedRegistryEntry<S, ? extends I> type) {
+        return type.getStateCodec().xmap(state -> type.newInstance(state), i -> (S) i.getCurrentState());
     }
 }

@@ -19,7 +19,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public abstract class PanelComponentType<Config, State> extends TypedRegistryEntry<Pair<Config, State>> {
+public abstract class PanelComponentType<Config, State>
+        extends TypedRegistryEntry<Pair<Config, State>, PanelComponentInstance<Config, State>> {
     private final Vec2d size;
     private final SerialCodecParser<Config> configParser;
     private final String translationKey;
@@ -37,21 +38,21 @@ public abstract class PanelComponentType<Config, State> extends TypedRegistryEnt
     }
 
     @Override
-    public PanelComponentInstance<Config, State> newInstance() {
-        return new PanelComponentInstance<>(this, getInitialState());
+    public PanelComponentInstance<Config, State> newInstance(Pair<Config, State> state) {
+        return new PanelComponentInstance<>(this, state);
     }
 
-    public PanelComponentInstance<Config, State> newInstance(Config config) {
+    public PanelComponentInstance<Config, State> newInstanceFromCfg(Config config) {
         return new PanelComponentInstance<>(this, Pair.of(config, getInitialState().getSecond()));
     }
 
     @Nullable
     public PanelComponentInstance<Config, State> newInstance(FriendlyByteBuf from) {
-        return configParser.parse(from).map(this::newInstance).result().orElse(null);
+        return configParser.parse(from).map(this::newInstanceFromCfg).result().orElse(null);
     }
 
     public DataResult<PanelComponentInstance<Config, State>> newInstance(List<String> data) {
-        return configParser.parse(data).map(this::newInstance);
+        return configParser.parse(data).map(this::newInstanceFromCfg);
     }
 
     public SerialCodecParser<Config> getConfigParser() {

@@ -8,14 +8,13 @@ import malte0811.controlengineering.util.typereg.TypedInstance;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
+
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
 public final class PanelComponentInstance<Config, State> extends TypedInstance<Pair<Config, State>, PanelComponentType<Config, State>> {
-    public static final Codec<PanelComponentInstance<?, ?>> CODEC = TypedInstance.makeCodec(
-            PanelComponents.REGISTRY, PanelComponentInstance::makeUnchecked
-    );
+    public static final Codec<PanelComponentInstance<?, ?>> CODEC = TypedInstance.makeCodec(PanelComponents.REGISTRY);
 
     public PanelComponentInstance(PanelComponentType<Config, State> type, Pair<Config, State> state) {
         super(type, state);
@@ -66,11 +65,6 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
     public void updateTotalState(BusState totalState) {
         State newState = getType().updateTotalState(getConfig(), getState(), totalState);
         currentState = Pair.of(getConfig(), newState);
-    }
-
-    private static <Config, State>
-    PanelComponentInstance<Config, State> makeUnchecked(PanelComponentType<Config, State> type, Object state) {
-        return new PanelComponentInstance<>(type, (Pair<Config, State>) state);
     }
 
     public PanelComponentInstance<?, ?> copy(boolean clearState) {

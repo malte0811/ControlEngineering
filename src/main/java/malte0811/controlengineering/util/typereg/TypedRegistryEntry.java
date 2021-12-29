@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
 
-public abstract class TypedRegistryEntry<StateType> {
+public abstract class TypedRegistryEntry<StateType, InstanceType extends TypedInstance<StateType, ?>> {
     private final StateType initialState;
     private final Codec<StateType> stateCodec;
     private ResourceLocation registryName;
@@ -31,5 +31,9 @@ public abstract class TypedRegistryEntry<StateType> {
         this.registryName = registryName;
     }
 
-    public abstract TypedInstance<StateType, ? extends TypedRegistryEntry<StateType>> newInstance();
+    public abstract InstanceType newInstance(StateType state);
+
+    public final InstanceType newInstance() {
+        return newInstance(getInitialState());
+    }
 }

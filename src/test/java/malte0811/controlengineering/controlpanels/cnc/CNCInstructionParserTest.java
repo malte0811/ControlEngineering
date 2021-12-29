@@ -14,10 +14,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class CNCInstructionParserTest {
-    private static final PanelComponentInstance<?, ?> BUTTON = PanelComponents.BUTTON.newInstance(
+    private static final PanelComponentInstance<?, ?> BUTTON = PanelComponents.BUTTON.newInstanceFromCfg(
             new ColorAndSignal(0xffffff, new BusSignalRef(1, 2))
     );
-    private static final PanelComponentInstance<?, ?> INDICATOR = PanelComponents.INDICATOR.newInstance(
+    private static final PanelComponentInstance<?, ?> INDICATOR = PanelComponents.INDICATOR.newInstanceFromCfg(
             new ColorAndSignal(0xff00, new BusSignalRef(2, 1))
     );
 
@@ -108,7 +108,7 @@ public class CNCInstructionParserTest {
         assertSuccess(
                 result,
                 new PlacedComponent(
-                        PanelComponents.LABEL.newInstance(new ColorAndText(0xff, "This is a test")),
+                        PanelComponents.LABEL.newInstanceFromCfg(new ColorAndText(0xff, "This is a test")),
                         new Vec2d(1, 1)
                 )
         );
@@ -119,7 +119,10 @@ public class CNCInstructionParserTest {
         CNCInstructionParser.ParserResult result = CNCInstructionParser.parse("label 1 1 0 test");
         assertSuccess(
                 result,
-                new PlacedComponent(PanelComponents.LABEL.newInstance(new ColorAndText(0, "test")), new Vec2d(1, 1))
+                new PlacedComponent(
+                        PanelComponents.LABEL.newInstanceFromCfg(new ColorAndText(0, "test")),
+                        new Vec2d(1, 1)
+                )
         );
     }
 
