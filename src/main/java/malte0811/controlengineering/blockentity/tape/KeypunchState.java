@@ -1,6 +1,5 @@
 package malte0811.controlengineering.blockentity.tape;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
@@ -10,58 +9,51 @@ import malte0811.controlengineering.items.EmptyTapeItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.ItemUtil;
+import malte0811.controlengineering.util.serialization.Codecs;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class KeypunchState {
-    public static final Codec<KeypunchState> CODEC = RecordCodecBuilder.create(
-            inst -> inst.group(
-                    Codec.BYTE.listOf().fieldOf("data").forGetter(KeypunchState::getData),
-                    Codec.INT.fieldOf("available").forGetter(KeypunchState::getAvailable),
-                    Codec.INT.fieldOf("numErased").forGetter(KeypunchState::getErased)
-            ).apply(inst, KeypunchState::new)
-    );
+    private final Runnable markDirty;
+    private final Data data;
 
-    private final ByteList data;
-    private int available;
-    private int numErased;
-
-    public KeypunchState() {
-        this(ImmutableList.of(), 0, 0);
+    public KeypunchState(Runnable markDirty) {
+        this(markDirty, new Data());
     }
 
-    public KeypunchState(List<Byte> data, int available, int numErased) {
-        this(new ByteArrayList(data), available, numErased);
+    public KeypunchState(Runnable markDirty, Tag nbt) {
+        this(markDirty, Codecs.readOptional(Data.CODEC, nbt).orElseGet(Data::new));
     }
 
-    public KeypunchState(ByteList data, int available, int numErased) {
+    private KeypunchState(Runnable markDirty, Data data) {
+        this.markDirty = markDirty;
         this.data = data;
-        this.available = available;
-        this.numErased = numErased;
     }
 
     public ByteList getData() {
-        return data;
+        return data.data;
     }
 
     public int getAvailable() {
-        return available;
+        return data.available;
     }
 
     public void setAvailable(int available) {
-        this.available = available;
+        data.available = available;
+        this.markDirty.run();
     }
 
     public int getErased() {
-        return numErased;
+        return data.numErased;
     }
 
     public void setErased(int numErased) {
-        this.numErased = numErased;
+        data.numErased = numErased;
+        this.markDirty.run();
     }
 
     public void addAvailable(int length) {
@@ -73,6 +65,7 @@ public class KeypunchState {
         if (!written.isEmpty() && player != null) {
             ItemUtil.giveOrDrop(player, PunchedTapeItem.withBytes(written.toByteArray()));
             written.clear();
+            this.markDirty.run();
             return InteractionResult.SUCCESS;
         } else {
             return InteractionResult.FAIL;
@@ -104,10 +97,38 @@ public class KeypunchState {
         final int numPrinted = Math.min(bytes.size() - numLost, getAvailable());
         setAvailable(getAvailable() - numPrinted);
         getData().addAll(bytes.subList(numLost, numLost + numPrinted));
+        this.markDirty.run();
         return numLost + numPrinted;
     }
 
     public boolean tryTypeChar(byte typed, boolean fixParity) {
         return tryTypeAll(ByteLists.singleton(fixParity ? BitUtils.fixParity(typed) : typed)) >= 1;
+    }
+
+    public Tag toNBT() {
+        return Codecs.encode(Data.CODEC, data);
+    }
+
+    private static class Data {
+        private static final Codec<Data> CODEC = RecordCodecBuilder.create(
+                inst -> inst.group(
+                        Codecs.BYTE_LIST_CODEC.fieldOf("data").forGetter(d -> d.data),
+                        Codec.INT.fieldOf("available").forGetter(d -> d.available),
+                        Codec.INT.fieldOf("numErased").forGetter(d -> d.numErased)
+                ).apply(inst, Data::new)
+        );
+        private final ByteList data;
+        private int available;
+        private int numErased;
+
+        private Data(ByteList data, int available, int numErased) {
+            this.data = data;
+            this.available = available;
+            this.numErased = numErased;
+        }
+
+        private Data() {
+            this(new ByteArrayList(), 0, 0);
+        }
     }
 }

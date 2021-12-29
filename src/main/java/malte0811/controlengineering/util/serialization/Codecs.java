@@ -5,13 +5,17 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import it.unimi.dsi.fastutil.bytes.ByteList;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Codecs {
@@ -24,6 +28,9 @@ public class Codecs {
             i -> DirectionUtils.VALUES[i],
             Direction::ordinal
     );
+
+    public static final Codec<ByteList> BYTE_LIST_CODEC = Codec.BYTE.listOf()
+            .xmap(ByteArrayList::new, Function.identity());
 
     public static <K, V> Codec<Map<K, V>> codecForMap(Codec<K> key, Codec<V> value) {
         return Codec.list(safePair(key, value))

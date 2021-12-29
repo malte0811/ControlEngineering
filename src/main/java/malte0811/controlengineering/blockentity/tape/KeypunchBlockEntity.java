@@ -21,7 +21,6 @@ import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.Clearable;
 import malte0811.controlengineering.util.math.MatrixUtils;
-import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -46,7 +45,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
     public static final VoxelShape OUTPUT_SHAPE = createPixelRelative(2, 3, 1, 6, 7, 5);
 
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
-    private KeypunchState state = new KeypunchState();
+    private KeypunchState state = new KeypunchState(this::setChanged);
     private boolean loopback = true;
     private ParallelPort busInterface = new ParallelPort();
 
@@ -64,7 +63,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
     public void load(@Nonnull CompoundTag nbt) {
         super.load(nbt);
         readSyncedData(nbt);
-        state = Codecs.readOptional(KeypunchState.CODEC, nbt.get("state")).orElseGet(KeypunchState::new);
+        state = new KeypunchState(this::setChanged, nbt.get("state"));
         busInterface = new ParallelPort(nbt.getCompound("busInterface"));
     }
 
@@ -72,7 +71,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
     public void saveAdditional(@Nonnull CompoundTag compound) {
         super.saveAdditional(compound);
         writeSyncedData(compound);
-        compound.put("state", Codecs.encode(KeypunchState.CODEC, state));
+        compound.put("state", state.toNBT());
         compound.put("busInterface", busInterface.toNBT());
     }
 

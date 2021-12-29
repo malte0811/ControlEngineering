@@ -85,7 +85,7 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
     private final CachedValue<List<PlacedComponent>, Integer> requiredLength;
 
     private List<PlacedComponent> components = new ArrayList<>();
-    private KeypunchState state = new KeypunchState();
+    private KeypunchState state = new KeypunchState(this::setChanged);
 
     public PanelDesignerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -121,14 +121,14 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
         components = new ArrayList<>(
                 Codecs.readOptional(COMPONENTS_CODEC, nbt.get("components")).orElse(ImmutableList.of())
         );
-        this.state = Codecs.readOptional(KeypunchState.CODEC, nbt.get("state")).orElseGet(KeypunchState::new);
+        this.state = new KeypunchState(this::setChanged, nbt.get("state"));
     }
 
     @Override
     public void saveAdditional(@Nonnull CompoundTag compound) {
         super.saveAdditional(compound);
         compound.put("components", Codecs.encode(COMPONENTS_CODEC, components));
-        compound.put("state", Codecs.encode(KeypunchState.CODEC, state));
+        compound.put("state", state.toNBT());
     }
 
     public List<PlacedComponent> getComponents() {
