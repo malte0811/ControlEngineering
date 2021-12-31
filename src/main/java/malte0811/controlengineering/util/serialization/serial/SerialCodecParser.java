@@ -2,10 +2,11 @@ package malte0811.controlengineering.util.serialization.serial;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+import malte0811.controlengineering.util.FastDataResult;
 import malte0811.controlengineering.util.serialization.ListBasedCodec;
 import net.minecraft.network.FriendlyByteBuf;
+
 import java.util.List;
 
 public abstract class SerialCodecParser<T> {
@@ -26,16 +27,16 @@ public abstract class SerialCodecParser<T> {
         this.baseCodec = baseCodec;
     }
 
-    public final DataResult<T> parse(List<String> parts) {
+    public final FastDataResult<T> parse(List<String> parts) {
         return parse(new StringListStorage(parts));
     }
 
-    public final DataResult<T> parse(FriendlyByteBuf parts) {
+    public final FastDataResult<T> parse(FriendlyByteBuf parts) {
         return parse(new PacketBufferStorage(parts));
     }
 
-    public final DataResult<T> parse(SerialStorage parts) {
-        return toJson(parts).flatMap(json -> baseCodec.parse(JsonOps.INSTANCE, json));
+    public final FastDataResult<T> parse(SerialStorage parts) {
+        return toJson(parts).flatMapDFU(json -> baseCodec.parse(JsonOps.INSTANCE, json));
     }
 
     public final List<String> stringify(T in) {
@@ -48,7 +49,7 @@ public abstract class SerialCodecParser<T> {
         addTo(in, new PacketBufferStorage(out));
     }
 
-    protected abstract DataResult<JsonElement> toJson(SerialStorage parts);
+    protected abstract FastDataResult<JsonElement> toJson(SerialStorage parts);
 
     public abstract void addTo(T in, SerialStorage parts);
 }

@@ -4,8 +4,8 @@ import blusunrize.immersiveengineering.api.crafting.IngredientWithSize;
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import malte0811.controlengineering.bus.BusState;
+import malte0811.controlengineering.util.FastDataResult;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.serialization.Codecs;
 import malte0811.controlengineering.util.serialization.serial.SerialCodecParser;
@@ -48,10 +48,10 @@ public abstract class PanelComponentType<Config, State>
 
     @Nullable
     public PanelComponentInstance<Config, State> newInstance(FriendlyByteBuf from) {
-        return configParser.parse(from).map(this::newInstanceFromCfg).result().orElse(null);
+        return configParser.parse(from).map(this::newInstanceFromCfg).orElse(null);
     }
 
-    public DataResult<PanelComponentInstance<Config, State>> newInstance(List<String> data) {
+    public FastDataResult<PanelComponentInstance<Config, State>> newInstance(List<String> data) {
         return configParser.parse(data).map(this::newInstanceFromCfg);
     }
 

@@ -8,13 +8,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.cnc.CNCInstructionParser;
 
+import javax.annotation.Nullable;
+
 public record CNCJob(
         ImmutableList<PlacedComponent> components,
         IntList tickPlacingComponent,
         IntList tapeProgressAfterComponent,
         int totalTicks,
-        //TODO output over debug port
-        int errorPosInTape
+        @Nullable String error
 ) {
     public static CNCJob createFor(CNCInstructionParser.ParserResult parserData) {
         final int timePerComponent = 60;
@@ -27,7 +28,7 @@ public record CNCJob(
                 tickEnds,
                 parserData.componentEnds(),
                 timePerComponent * parserData.componentEnds().size() + timePerComponent / 2,
-                parserData.errorAt()
+                parserData.error()
         );
     }
 

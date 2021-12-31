@@ -46,8 +46,8 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
 
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private KeypunchState state = new KeypunchState(this::setChanged);
-    //TODO default to false and add switch!
-    private boolean loopback = true;
+    //TODO default to true and add switch!
+    private boolean loopback = false;
     private ParallelPort busInterface = new ParallelPort();
 
     public KeypunchBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {

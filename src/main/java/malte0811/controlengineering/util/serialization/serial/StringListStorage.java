@@ -1,7 +1,7 @@
 package malte0811.controlengineering.util.serialization.serial;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.DataResult;
+import malte0811.controlengineering.util.FastDataResult;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayDeque;
@@ -35,11 +35,12 @@ public class StringListStorage implements SerialStorage {
     }
 
     @Override
-    public DataResult<Integer> readInt(int base) {
+    public FastDataResult<Integer> readInt(int base) {
+        String token = poll();
         try {
-            return DataResult.success(Integer.parseInt(poll(), base));
+            return FastDataResult.success(Integer.parseInt(token, base));
         } catch (Exception x) {
-            return DataResult.error(x.getMessage());
+            return FastDataResult.error(token + " is not a base-" + base + " integer");
         }
     }
 
@@ -49,11 +50,11 @@ public class StringListStorage implements SerialStorage {
     }
 
     @Override
-    public DataResult<String> readString() {
+    public FastDataResult<String> readString() {
         if (!data.isEmpty()) {
-            return DataResult.success(data.poll());
+            return FastDataResult.success(data.poll());
         } else {
-            return DataResult.error("No more data");
+            return FastDataResult.error("No more data");
         }
     }
 
@@ -63,11 +64,12 @@ public class StringListStorage implements SerialStorage {
     }
 
     @Override
-    public DataResult<Boolean> readBoolean() {
+    public FastDataResult<Boolean> readBoolean() {
+        String token = poll();
         try {
-            return DataResult.success(Boolean.parseBoolean(poll()));
+            return FastDataResult.success(Boolean.parseBoolean(token));
         } catch (Exception x) {
-            return DataResult.error(x.getMessage());
+            return FastDataResult.error(token + " is not a boolean");
         }
     }
 

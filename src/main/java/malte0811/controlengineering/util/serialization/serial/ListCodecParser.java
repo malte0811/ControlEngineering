@@ -1,9 +1,8 @@
 package malte0811.controlengineering.util.serialization.serial;
 
-import com.google.common.base.Preconditions;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.DataResult;
+import malte0811.controlengineering.util.FastDataResult;
 import malte0811.controlengineering.util.serialization.ListBasedCodec;
 
 import java.util.List;
@@ -20,18 +19,17 @@ public class ListCodecParser<T> extends SerialCodecParser<T> {
     }
 
     @Override
-    protected DataResult<JsonElement> toJson(SerialStorage parts) {
+    protected FastDataResult<JsonElement> toJson(SerialStorage parts) {
         JsonObject result = new JsonObject();
         for (ParserField<T, ?> f : fields) {
-            DataResult<JsonElement> fieldValue = f.parser.toJson(parts);
-            if (fieldValue.result().isPresent()) {
-                result.add(f.field.name(), fieldValue.result().get());
+            FastDataResult<JsonElement> fieldValue = f.parser.toJson(parts);
+            if (fieldValue.isError()) {
+                return FastDataResult.error(f.field.name() + ": " + fieldValue.getErrorMessage());
             } else {
-                Preconditions.checkState(fieldValue.error().isPresent());
-                return fieldValue.mapError(s -> f.field.name() + ": " + s);
+                result.add(f.field.name(), fieldValue.get());
             }
         }
-        return DataResult.success(result);
+        return FastDataResult.success(result);
     }
 
     @Override

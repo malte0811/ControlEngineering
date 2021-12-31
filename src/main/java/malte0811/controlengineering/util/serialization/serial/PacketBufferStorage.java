@@ -1,6 +1,6 @@
 package malte0811.controlengineering.util.serialization.serial;
 
-import com.mojang.serialization.DataResult;
+import malte0811.controlengineering.util.FastDataResult;
 import net.minecraft.network.FriendlyByteBuf;
 
 public class PacketBufferStorage implements SerialStorage {
@@ -16,8 +16,8 @@ public class PacketBufferStorage implements SerialStorage {
     }
 
     @Override
-    public DataResult<Integer> readInt(int base) {
-        return DataResult.success(buffer.readVarInt());
+    public FastDataResult<Integer> readInt(int base) {
+        return FastDataResult.success(buffer.readVarInt());
     }
 
     @Override
@@ -26,8 +26,8 @@ public class PacketBufferStorage implements SerialStorage {
     }
 
     @Override
-    public DataResult<String> readString() {
-        return DataResult.success(buffer.readUtf());
+    public FastDataResult<String> readString() {
+        return FastDataResult.success(buffer.readUtf());
     }
 
     @Override
@@ -36,7 +36,7 @@ public class PacketBufferStorage implements SerialStorage {
     }
 
     @Override
-    public DataResult<Boolean> readBoolean() {
-        return DataResult.success(buffer.readBoolean());
+    public FastDataResult<Boolean> readBoolean() {
+        return FastDataResult.success(buffer.readBoolean());
     }
 }

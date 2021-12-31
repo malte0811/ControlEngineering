@@ -86,4 +86,10 @@ public class ParallelPort {
     public void queueChar(byte out) {
         transmitQueue.add(out);
     }
+
+    public void queueStringWithParity(String message) {
+        for (byte b : message.getBytes()) {
+            queueChar(BitUtils.fixParity(b));
+        }
+    }
 }

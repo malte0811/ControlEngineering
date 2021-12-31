@@ -1,6 +1,6 @@
 package malte0811.controlengineering.util.serialization.serial;
 
-import com.mojang.serialization.DataResult;
+import malte0811.controlengineering.util.FastDataResult;
 
 public interface SerialStorage {
     void writeInt(int value, int base);
@@ -13,21 +13,21 @@ public interface SerialStorage {
         writeInt(value, 16);
     }
 
-    DataResult<Integer> readInt(int base);
+    FastDataResult<Integer> readInt(int base);
 
-    default DataResult<Integer> readInt() {
+    default FastDataResult<Integer> readInt() {
         return readInt(10);
     }
 
-    default DataResult<Integer> readHexInt() {
+    default FastDataResult<Integer> readHexInt() {
         return readInt(16);
     }
 
     void writeString(String value);
 
-    DataResult<String> readString();
+    FastDataResult<String> readString();
 
     void writeBoolean(boolean value);
 
-    DataResult<Boolean> readBoolean();
+    FastDataResult<Boolean> readBoolean();
 }

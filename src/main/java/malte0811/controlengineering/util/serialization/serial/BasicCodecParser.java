@@ -3,12 +3,13 @@ package malte0811.controlengineering.util.serialization.serial;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+import malte0811.controlengineering.util.FastDataResult;
+import net.minecraft.Util;
+
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import net.minecraft.Util;
 
 public class BasicCodecParser<T> extends SerialCodecParser<T> {
     public static final Codec<Integer> HEX_INT = Codec.INT.xmap(Function.identity(), Function.identity());
@@ -23,11 +24,11 @@ public class BasicCodecParser<T> extends SerialCodecParser<T> {
             }
     ).build();
 
-    private final Function<SerialStorage, DataResult<T>> parse;
+    private final Function<SerialStorage, FastDataResult<T>> parse;
     private final BiConsumer<SerialStorage, T> stringify;
 
     private BasicCodecParser(
-            Codec<T> codec, Function<SerialStorage, DataResult<T>> parse, BiConsumer<SerialStorage, T> stringify
+            Codec<T> codec, Function<SerialStorage, FastDataResult<T>> parse, BiConsumer<SerialStorage, T> stringify
     ) {
         super(codec);
         this.parse = parse;
@@ -36,7 +37,7 @@ public class BasicCodecParser<T> extends SerialCodecParser<T> {
 
     public static <T> void register(
             Codec<T> base,
-            Function<SerialStorage, DataResult<T>> parse,
+            Function<SerialStorage, FastDataResult<T>> parse,
             BiConsumer<SerialStorage, T> stringify,
             ImmutableMap.Builder<Codec<?>, BasicCodecParser<?>> out
     ) {
@@ -45,9 +46,9 @@ public class BasicCodecParser<T> extends SerialCodecParser<T> {
     }
 
     @Override
-    protected DataResult<JsonElement> toJson(SerialStorage parts) {
+    protected FastDataResult<JsonElement> toJson(SerialStorage parts) {
         return parse.apply(parts)
-                .flatMap(t -> baseCodec.encodeStart(JsonOps.INSTANCE, t));
+                .flatMapDFU(t -> baseCodec.encodeStart(JsonOps.INSTANCE, t));
     }
 
     @Override

@@ -6,12 +6,16 @@ import com.mojang.serialization.Codec;
 import malte0811.controlengineering.blockentity.MultiblockBEType;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.base.IExtraDropBE;
+import malte0811.controlengineering.blockentity.bus.ParallelPort;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
+import malte0811.controlengineering.bus.BusState;
+import malte0811.controlengineering.bus.IBusInterface;
+import malte0811.controlengineering.bus.MarkDirtyHandler;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.cnc.CNCInstructionParser;
 import malte0811.controlengineering.items.CEItems;
@@ -51,7 +55,7 @@ import java.util.function.Consumer;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IExtraDropBE {
+public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IExtraDropBE, IBusInterface {
     private static final int ENERGY_CONSUMPTION = 40;
 
     @Nullable
@@ -80,6 +84,8 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
             }
     );
     private final EnergyStorage energy = new EnergyStorage(20 * ENERGY_CONSUMPTION);
+    private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();//TODO hook up
+    private ParallelPort dataOutput = new ParallelPort();
 
     private final CachedValue<Direction, SelectionShapes> bottomSelectionShapes = new CachedValue<>(
             () -> getBlockState().getValue(PanelCNCBlock.FACING),
@@ -164,6 +170,9 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
     }
 
     public void tick() {
+        if (dataOutput.tickTX()) {
+            markBusDirty.run();
+        }
         if (state.isInProcess()) {
             if (energy.extractEnergy(ENERGY_CONSUMPTION, true) < ENERGY_CONSUMPTION) {
                 setState(State.NO_ENERGY);
@@ -179,6 +188,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
                     PlacedComponent componentToPlace = job.components().get(nextComponent);
                     var componentCost = componentToPlace.getComponent().getType().getCost();
                     if (!ItemUtil.tryConsumeItemsFrom(componentCost, neighborInventories)) {
+                        dataOutput.queueStringWithParity("Unable to consume items for component number " + nextComponent);
                         setState(State.FAILED);
                     } else {
                         currentPlacedComponents.add(componentToPlace);
@@ -187,7 +197,12 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
                 }
             }
             if (currentTicksInJob >= job.totalTicks()) {
-                setState(job.errorPosInTape() >= 0 ? State.FAILED : State.DONE);
+                if (job.error() != null) {
+                    dataOutput.queueStringWithParity(job.error());
+                    setState(State.FAILED);
+                } else {
+                    setState(State.DONE);
+                }
             }
         }
     }
@@ -227,6 +242,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
         super.saveAdditional(compound);
         writeSyncedData(compound);
         compound.put("energy", energy.serializeNBT());
+        compound.put("dataOutput", dataOutput.toNBT());
     }
 
     @Override
@@ -234,6 +250,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
         super.load(nbt);
         readSyncedData(nbt);
         energy.deserializeNBT(nbt.get("energy"));
+        dataOutput = new ParallelPort(nbt.getCompound("dataOutput"));
     }
 
     @Override
@@ -288,6 +305,34 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
             this.state = state;
             BEUtil.markDirtyAndSync(this);
         }
+    }
+
+
+    @Override
+    public void onBusUpdated(BusState totalState, BusState otherState) {
+        dataOutput.onBusStateChange(otherState);
+        setChanged();
+    }
+
+    @Override
+    public BusState getEmittedState() {
+        return dataOutput.getOutputState();
+    }
+
+    @Override
+    public boolean canConnect(Direction fromSide) {
+        return fromSide == getBlockState().getValue(PanelCNCBlock.FACING).getOpposite();
+    }
+
+    @Override
+    public void addMarkDirtyCallback(Clearable<Runnable> markDirty) {
+        this.markBusDirty.addCallback(markDirty);
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        this.markBusDirty.run();
     }
 
     private static class Dummy extends CEBlockEntity {
