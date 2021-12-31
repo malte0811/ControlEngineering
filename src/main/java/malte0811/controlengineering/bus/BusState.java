@@ -2,6 +2,7 @@ package malte0811.controlengineering.bus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BusState {
     public static final BusState EMPTY = new BusState();
@@ -65,5 +66,18 @@ public class BusState {
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BusState busState = (BusState) o;
+        return lines.equals(busState.lines);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(lines);
     }
 }
