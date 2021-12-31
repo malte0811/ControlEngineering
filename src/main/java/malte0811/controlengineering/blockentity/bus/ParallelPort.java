@@ -4,10 +4,7 @@ import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.bytes.ByteList;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusState;
-import malte0811.controlengineering.logic.clock.ClockGenerator.ClockInstance;
-import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.util.BitUtils;
-import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.Optional;
@@ -18,25 +15,21 @@ public class ParallelPort {
 
     private final ByteList transmitQueue;
     private boolean sendingFirst;
-    private ClockInstance<?> receiveClock;
+    private byte currentInput;
+    private boolean triggerHigh;
 
     public ParallelPort() {
         transmitQueue = new ByteArrayList();
-        receiveClock = ClockTypes.NEVER.newInstance();
     }
 
     public ParallelPort(CompoundTag nbt) {
         transmitQueue = new ByteArrayList(nbt.getByteArray("remotePrintQueue"));
         sendingFirst = nbt.getBoolean("sendingFirst");
-        receiveClock = Codecs.readOptional(ClockInstance.CODEC, nbt.get("clock"))
-                .orElse(ClockTypes.NEVER.newInstance());
+        currentInput = nbt.getByte("currentInput");
+        triggerHigh = nbt.getBoolean("triggerHigh");
     }
 
-    public void setReceiveClock(ClockInstance<?> receiveClock) {
-        this.receiveClock = receiveClock;
-    }
-
-    public boolean tick() {
+    public boolean tickTX() {
         boolean updateRS = false;
         if (sendingFirst && !transmitQueue.isEmpty()) {
             transmitQueue.removeByte(0);
@@ -48,6 +41,14 @@ public class ParallelPort {
             updateRS = true;
         }
         return updateRS;
+    }
+
+    public Optional<Byte> tickRX() {
+        if (triggerHigh) {
+            return Optional.of(currentInput);
+        } else {
+            return Optional.empty();
+        }
     }
 
     public BusState getOutputState() {
@@ -63,25 +64,22 @@ public class ParallelPort {
         return BusState.EMPTY.withLine(BUS_LINE, new BusLine(line));
     }
 
-    public Optional<Byte> onBusStateChange(BusState inputState) {
-        boolean triggerSignal = inputState.getLine(BUS_LINE).getValue(CLOCK_INDEX) != 0;
-        if (!receiveClock.tick(triggerSignal)) {
-            return Optional.empty();
-        }
-        byte inputByte = 0;
+    public void onBusStateChange(BusState inputState) {
+        triggerHigh = inputState.getLine(BUS_LINE).getValue(CLOCK_INDEX) != 0;
+        currentInput = 0;
         for (int i = 0; i < Byte.SIZE; ++i) {
             if (inputState.getLine(BUS_LINE).getValue(i) != 0) {
-                inputByte |= 1 << i;
+                currentInput |= 1 << i;
             }
         }
-        return Optional.of(inputByte);
     }
 
     public CompoundTag toNBT() {
         CompoundTag result = new CompoundTag();
         result.putByteArray("remotePrintQueue", transmitQueue.toByteArray());
         result.putBoolean("sendingFirst", sendingFirst);
-        result.put("clock", Codecs.encode(ClockInstance.CODEC, receiveClock));
+        result.putByte("currentInput", currentInput);
+        result.putBoolean("triggerHigh", triggerHigh);
         return result;
     }
 

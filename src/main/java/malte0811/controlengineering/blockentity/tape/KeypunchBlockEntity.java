@@ -46,6 +46,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
 
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private KeypunchState state = new KeypunchState(this::setChanged);
+    //TODO default to false and add switch!
     private boolean loopback = true;
     private ParallelPort busInterface = new ParallelPort();
 
@@ -54,9 +55,17 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
     }
 
     public void tickServer() {
-        if (!loopback && busInterface.tick()) {
+        if (loopback) {
+            return;
+        }
+        if (busInterface.tickTX()) {
             markBusDirty.run();
         }
+        //TODO probably does not sync!
+        busInterface.tickRX().ifPresent(read -> {
+            state.tryTypeChar(read, false);
+            setChanged();
+        });
     }
 
     @Override
@@ -113,11 +122,8 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
     @Override
     public void onBusUpdated(BusState totalState, BusState otherState) {
         if (!loopback) {
-            //TODO probably does not sync!
-            busInterface.onBusStateChange(otherState).ifPresent(read -> {
-                state.tryTypeChar(read, false);
-                setChanged();
-            });
+            busInterface.onBusStateChange(otherState);
+            setChanged();
         }
     }
 
