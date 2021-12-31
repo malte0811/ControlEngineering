@@ -2,16 +2,13 @@ package malte0811.controlengineering.gui.tape;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
+import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
-import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.gui.ScreenUtils;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.RedstoneTapeUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
@@ -77,7 +74,7 @@ public class TapeRender {
     }
 
     private void renderChars(PoseStack matrixStack, byte[] shownBytes) {
-        double vOffset = yStart + TAPE_WIDTH + 1 + font.get().lineHeight / 2.;
+        double vOffset = yStart + TAPE_WIDTH + 1;
         final int delta = 8;
         forEachRow(matrixStack, shownBytes, delta, vOffset, (transform, currentByte) -> {
                     char asChar = (char) BitUtils.clearParity(currentByte);
@@ -98,7 +95,7 @@ public class TapeRender {
 
     private void renderRSAndColor(PoseStack matrixStack, byte[] shownBytes) {
         final int sideSpace = -2;
-        final double vOffset = yStart + TAPE_WIDTH + font.get().lineHeight + 2;
+        final double vOffset = yStart + TAPE_WIDTH + font.get().lineHeight - 2;
         final float rsSize = 16 + 2 * sideSpace;
         TextureAtlas texture = Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
         TextureAtlasSprite sprite = texture.getSprite(new ResourceLocation("block/redstone_dust_dot"));
