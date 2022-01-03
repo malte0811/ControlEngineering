@@ -3,9 +3,9 @@ package malte0811.controlengineering.client;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.model.SpecialModelLoader;
-import malte0811.controlengineering.controlpanels.model.PanelModel;
-import malte0811.controlengineering.controlpanels.renders.PanelRenderer;
-import malte0811.controlengineering.logic.model.DynamicLogicModelLoader;
+import malte0811.controlengineering.client.model.logic.DynamicLogicModelLoader;
+import malte0811.controlengineering.client.model.panel.PanelModel;
+import malte0811.controlengineering.client.render.panel.PanelRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelRegistryEvent;

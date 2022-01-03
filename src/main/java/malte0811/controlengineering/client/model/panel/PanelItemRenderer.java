@@ -1,4 +1,4 @@
-package malte0811.controlengineering.controlpanels.model;
+package malte0811.controlengineering.client.model.panel;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;

@@ -1,4 +1,4 @@
-package malte0811.controlengineering.controlpanels.renders;
+package malte0811.controlengineering.client.render.panel;
 
 import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.google.common.base.Preconditions;
@@ -17,6 +17,7 @@ import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath;
 import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath.Node;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
+import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;

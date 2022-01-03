@@ -1,4 +1,4 @@
-package malte0811.controlengineering.logic.model;
+package malte0811.controlengineering.client.model.logic;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;

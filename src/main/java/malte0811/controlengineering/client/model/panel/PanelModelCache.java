@@ -1,4 +1,4 @@
-package malte0811.controlengineering.controlpanels.model;
+package malte0811.controlengineering.client.model.panel;
 
 import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
@@ -8,13 +8,13 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Transformation;
+import malte0811.controlengineering.client.render.panel.PanelRenderer;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
 import malte0811.controlengineering.controlpanels.PanelData;
 import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
-import malte0811.controlengineering.controlpanels.renders.PanelRenderer;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderType;
@@ -25,6 +25,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;

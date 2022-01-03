@@ -1,12 +1,12 @@
-package malte0811.controlengineering.controlpanels.model;
+package malte0811.controlengineering.client.model.panel;
 
 import blusunrize.immersiveengineering.api.utils.client.CombinedModelData;
 import blusunrize.immersiveengineering.api.utils.client.SinglePropertyModelData;
 import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
+import malte0811.controlengineering.client.render.panel.PanelRenderer;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.controlpanels.PanelData;
-import malte0811.controlengineering.controlpanels.renders.PanelRenderer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;

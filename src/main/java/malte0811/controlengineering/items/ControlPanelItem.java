@@ -2,8 +2,8 @@ package malte0811.controlengineering.items;
 
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
+import malte0811.controlengineering.client.model.panel.PanelItemRenderer;
 import malte0811.controlengineering.controlpanels.PanelData;
-import malte0811.controlengineering.controlpanels.model.PanelItemRenderer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.client.IItemRenderProperties;

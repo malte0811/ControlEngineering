@@ -1,12 +1,12 @@
-package malte0811.controlengineering.controlpanels.renders;
+package malte0811.controlengineering.client.render.panel;
 
 import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
+import malte0811.controlengineering.client.model.panel.PanelModelCache;
 import malte0811.controlengineering.client.render.target.MixedModel;
-import malte0811.controlengineering.controlpanels.model.PanelModelCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;

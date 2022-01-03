@@ -3,7 +3,7 @@ package malte0811.controlengineering.datagen.modelbuilder;
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
 import malte0811.controlengineering.client.ModelLoaders;
-import malte0811.controlengineering.logic.model.DynamicLogicModelLoader;
+import malte0811.controlengineering.client.model.logic.DynamicLogicModelLoader;
 import net.minecraftforge.client.model.generators.CustomLoaderBuilder;
 import net.minecraftforge.client.model.generators.ModelBuilder;
 import net.minecraftforge.client.model.generators.ModelFile;
