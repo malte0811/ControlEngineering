@@ -2,6 +2,7 @@ package malte0811.controlengineering.datagen;
 
 import blusunrize.immersiveengineering.api.Lib;
 import blusunrize.immersiveengineering.data.blockstates.ConnectorBlockBuilder;
+import blusunrize.immersiveengineering.data.models.SpecialModelBuilder;
 import blusunrize.immersiveengineering.data.models.SplitModelBuilder;
 import com.google.common.collect.ImmutableMap;
 import malte0811.controlengineering.ControlEngineering;
@@ -62,7 +63,7 @@ public class BlockstateGenerator extends BlockStateProvider {
 
         panelModel();
         column2(obj("panel_cnc.obj"), CEBlocks.PANEL_CNC, PanelCNCBlock.FACING);
-        column2(obj("keypunch.obj"), CEBlocks.KEYPUNCH, KeypunchBlock.FACING);
+        keypunchModel();
         logicCabinetModel();
         rotatedWithOffset(
                 CEBlocks.LOGIC_WORKBENCH,
@@ -112,6 +113,27 @@ public class BlockstateGenerator extends BlockStateProvider {
         emptyModel(CEBlocks.LOGIC_CABINET, ImmutableMap.of(LogicCabinetBlock.HEIGHT, 1));
         itemModels().getBuilder(ItemModels.name(CEBlocks.LOGIC_CABINET))
                 .parent(chassis);
+    }
+
+    private void keypunchModel() {
+        BlockModelBuilder staticModel = obj("keypunch.obj", modLoc("transform/block_half_size"));
+        BlockModelBuilder combinedModel = models().getBuilder("combined_keypunch")
+                .customLoader(CompositeModelBuilder::begin)
+                .submodel("static", staticModel)
+                .submodel("dynamic", models().getBuilder("dynamic_keypunch")
+                        .customLoader(SpecialModelBuilder.forLoader(ModelLoaders.KEYPUNCH_SWITCH))
+                        .end()
+                )
+                .end();
+        horizontalRotated(
+                CEBlocks.KEYPUNCH,
+                KeypunchBlock.FACING,
+                combinedModel,
+                ImmutableMap.of(KeypunchBlock.UPPER, false)
+        );
+        emptyModel(CEBlocks.KEYPUNCH, ImmutableMap.of(KeypunchBlock.UPPER, true));
+        itemModels().getBuilder(ItemModels.name(CEBlocks.KEYPUNCH))
+                .parent(staticModel);
     }
 
     private void column2(ModelFile mainModel, RegistryObject<? extends Block> block, Property<Direction> facing) {

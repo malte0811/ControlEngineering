@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -31,7 +32,7 @@ public class PanelModel implements BakedModel {
     private final PanelModelCache CACHED_MODELS = new PanelModelCache(MixedModel.SOLID_STATIC);
     private final ItemTransforms transforms;
 
-    public PanelModel(ItemTransforms transforms) {
+    public PanelModel(ItemTransforms transforms, ModelState transform) {
         this.transforms = transforms;
     }
 

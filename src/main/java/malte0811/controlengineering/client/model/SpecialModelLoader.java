@@ -6,11 +6,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.resources.model.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -22,16 +18,16 @@ import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class SpecialModelLoader implements IModelLoader<SpecialModelLoader.SpecialModelGeometry> {
-    private final Function<ItemTransforms, ? extends BakedModel> modelMaker;
+    private final BiFunction<ItemTransforms, ModelState, ? extends BakedModel> modelMaker;
     private final Collection<Material> materials;
 
     public SpecialModelLoader(
-            Function<ItemTransforms, ? extends BakedModel> modelMaker,
+            BiFunction<ItemTransforms, ModelState, ? extends BakedModel> modelMaker,
             ResourceLocation... materials
     ) {
         this.modelMaker = modelMaker;
@@ -62,7 +58,7 @@ public class SpecialModelLoader implements IModelLoader<SpecialModelLoader.Speci
                 ItemOverrides overrides,
                 ResourceLocation modelLocation
         ) {
-            return modelMaker.apply(owner.getCameraTransforms());
+            return modelMaker.apply(owner.getCameraTransforms(), modelTransform);
         }
 
         @Override

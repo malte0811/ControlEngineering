@@ -3,6 +3,7 @@ package malte0811.controlengineering.client;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.model.SpecialModelLoader;
+import malte0811.controlengineering.client.model.keypunch.KeypunchSwitchModel;
 import malte0811.controlengineering.client.model.logic.DynamicLogicModelLoader;
 import malte0811.controlengineering.client.model.panel.PanelModel;
 import malte0811.controlengineering.client.render.panel.PanelRenderer;
@@ -19,11 +20,17 @@ public class ModelLoaders {
     public static final ResourceLocation LOGIC_CABINET = new ResourceLocation(
             ControlEngineering.MODID, "dynamic_logic"
     );
+    public static final ResourceLocation KEYPUNCH_SWITCH = new ResourceLocation(
+            ControlEngineering.MODID, "keypunch_switch"
+    );
 
     @SubscribeEvent
     public static void registerModelLoaders(ModelRegistryEvent ev) {
         ModelLoaderRegistry.registerLoader(PANEL_MODEL, new SpecialModelLoader(
                 PanelModel::new, PanelRenderer.PANEL_TEXTURE_LOC
+        ));
+        ModelLoaderRegistry.registerLoader(KEYPUNCH_SWITCH, new SpecialModelLoader(
+                KeypunchSwitchModel::new, KeypunchSwitchModel.TEXTURE_LOC
         ));
         ModelLoaderRegistry.registerLoader(LOGIC_CABINET, new DynamicLogicModelLoader());
     }

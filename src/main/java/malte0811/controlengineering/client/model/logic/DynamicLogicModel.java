@@ -5,11 +5,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.client.model.CEBakedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
-public class DynamicLogicModel implements BakedModel {
+public class DynamicLogicModel extends CEBakedModel {
     private static final Random RANDOM = new Random(1234);
     private static final Vec2[] TUBE_OFFSETS;
     private static final float[] BOARD_HEIGHTS = {16.5f / 16f, 21.5f / 16f, 12.5f / 16f, 26.5f / 16f,};
@@ -90,14 +90,6 @@ public class DynamicLogicModel implements BakedModel {
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(
-            @Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand
-    ) {
-        return getQuads(state, side, rand, EmptyModelData.INSTANCE);
-    }
-
-    @Nonnull
-    @Override
-    public List<BakedQuad> getQuads(
             @Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData
     ) {
         ModelData data = extraData.getData(DATA);
@@ -120,36 +112,10 @@ public class DynamicLogicModel implements BakedModel {
         return quads;
     }
 
-    @Override
-    public boolean useAmbientOcclusion() {
-        return true;
-    }
-
-    @Override
-    public boolean isGui3d() {
-        return false;
-    }
-
-    @Override
-    public boolean usesBlockLight() {
-        return false;
-    }
-
-    @Override
-    public boolean isCustomRenderer() {
-        return false;
-    }
-
     @Nonnull
     @Override
     public TextureAtlasSprite getParticleIcon() {
         return particles;
-    }
-
-    @Nonnull
-    @Override
-    public ItemOverrides getOverrides() {
-        return ItemOverrides.EMPTY;
     }
 
     private class FixedTubeModel {
@@ -206,13 +172,5 @@ public class DynamicLogicModel implements BakedModel {
         }
     }
 
-    public static class ModelData {
-        private final int numTubes;
-        private final boolean hasClock;
-
-        public ModelData(int numTubes, boolean hasClock) {
-            this.numTubes = numTubes;
-            this.hasClock = hasClock;
-        }
-    }
+    public record ModelData(int numTubes, boolean hasClock) {}
 }

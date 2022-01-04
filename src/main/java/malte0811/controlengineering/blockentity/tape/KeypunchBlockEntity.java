@@ -17,6 +17,7 @@ import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.bus.MarkDirtyHandler;
 import malte0811.controlengineering.items.EmptyTapeItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
+import malte0811.controlengineering.util.BEUtil;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.Clearable;
@@ -26,8 +27,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.registries.DeferredRegister;
 
@@ -40,15 +43,20 @@ import java.util.function.Consumer;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, IBusInterface {
+public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, IBusInterface, SelectionShapeOwner {
+    public static final VoxelShape SWITCH_SHAPE = createPixelRelative(6, 13, 0, 10, 16, 1);
     public static final VoxelShape INPUT_SHAPE = createPixelRelative(11, 3, 2, 15, 6, 4);
     public static final VoxelShape OUTPUT_SHAPE = createPixelRelative(2, 3, 1, 6, 7, 5);
 
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private KeypunchState state = new KeypunchState(this::setChanged);
-    //TODO default to true and add switch!
-    private boolean loopback = false;
+    private boolean loopback = true;
     private ParallelPort busInterface = new ParallelPort();
+
+    private final CachedValue<Direction, SelectionShapes> selectionShapes = new CachedValue<>(
+            () -> getBlockState().getValue(KeypunchBlock.FACING),
+            f -> createSelectionShapes(f, this)
+    );
 
     public KeypunchBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -87,7 +95,11 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
     @Override
     protected void readSyncedData(CompoundTag in) {
         super.readSyncedData(in);
+        final boolean oldLoopback = loopback;
         loopback = in.getBoolean("loopback");
+        if (loopback != oldLoopback && level != null) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+        }
     }
 
     @Override
@@ -159,6 +171,36 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
     public void queueForRemotePrint(byte toAdd) {
         Preconditions.checkState(!loopback);
         busInterface.queueChar(BitUtils.fixParity(toAdd));
+    }
+
+    @Override
+    public SelectionShapes getShape() {
+        return selectionShapes.get();
+    }
+
+    private static SelectionShapes createSelectionShapes(Direction d, KeypunchBlockEntity bEntity) {
+        List<SelectionShapes> subshapes = new ArrayList<>(1);
+        subshapes.add(new SingleShape(SWITCH_SHAPE, $ -> {
+            if (!bEntity.level.isClientSide()) {
+                bEntity.loopback = !bEntity.loopback;
+                BEUtil.markDirtyAndSync(bEntity);
+            }
+            return InteractionResult.SUCCESS;
+        }).setTextGetter(() -> {
+            //TODO localize!
+            return "Loopback: " + bEntity.isLoopback();
+        }));
+        return new ListShapes(
+                Shapes.block(),
+                MatrixUtils.inverseFacing(d),
+                subshapes,
+                ctx -> {
+                    CEBlocks.KEYPUNCH.get().openContainer(
+                            ctx.getPlayer(), bEntity.getBlockState(), ctx.getLevel(), ctx.getClickedPos()
+                    );
+                    return InteractionResult.SUCCESS;
+                }
+        );
     }
 
     private static class Dummy extends CEBlockEntity implements SelectionShapeOwner, IHasMaster<KeypunchBlockEntity> {

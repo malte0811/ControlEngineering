@@ -1,0 +1,15 @@
+{
+  "loader": "forge:composite",
+  "parts": {
+    "static": {
+      "parent": "controlengineering:transform/block_half_size",
+      "loader": "forge:obj",
+      "model": "controlengineering:models/keypunch.obj",
+      "detectCullableFaces": false,
+      "flip-v": true
+    },
+    "dynamic": {
+      "loader": "controlengineering:keypunch_switch"
+    }
+  }
+}
