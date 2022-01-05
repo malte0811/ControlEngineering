@@ -19,10 +19,10 @@ import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.ItemUtil;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import malte0811.controlengineering.util.serialization.Codecs;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.InteractionResult;
@@ -234,9 +234,10 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
             }
             final CircuitIngredientDrawer drawer = getDrawer.apply(main);
             if (drawer.getStored().isEmpty()) {
-                return I18n.get(drawer.getEmptyKey());
+                return new TranslatableComponent(drawer.getEmptyKey());
             } else {
-                return drawer.getStored().getCount() + " x " + drawer.getStored().getHoverName().getString();
+                return new TextComponent(drawer.getStored().getCount() + " x ")
+                        .append(drawer.getStored().getHoverName().getString());
             }
         });
     }

@@ -1,6 +1,7 @@
 package malte0811.controlengineering.blockentity.tape;
 
 import com.google.common.base.Preconditions;
+import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.MultiblockBEType;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.base.IExtraDropBE;
@@ -25,6 +26,7 @@ import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -47,6 +49,8 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
     public static final VoxelShape SWITCH_SHAPE = createPixelRelative(6, 13, 0, 10, 16, 1);
     public static final VoxelShape INPUT_SHAPE = createPixelRelative(11, 3, 2, 15, 6, 4);
     public static final VoxelShape OUTPUT_SHAPE = createPixelRelative(2, 3, 1, 6, 7, 5);
+    public static final String LOOPBACK_KEY = ControlEngineering.MODID + ".gui.loopback";
+    public static final String REMOTE_KEY = ControlEngineering.MODID + ".gui.no_loopback";
 
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private KeypunchState state = new KeypunchState(this::setChanged);
@@ -186,10 +190,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
                 BEUtil.markDirtyAndSync(bEntity);
             }
             return InteractionResult.SUCCESS;
-        }).setTextGetter(() -> {
-            //TODO localize!
-            return "Loopback: " + bEntity.isLoopback();
-        }));
+        }).setTextGetter(() -> new TranslatableComponent(bEntity.isLoopback() ? LOOPBACK_KEY : REMOTE_KEY)));
         return new ListShapes(
                 Shapes.block(),
                 MatrixUtils.inverseFacing(d),

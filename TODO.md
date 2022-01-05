@@ -7,7 +7,3 @@
 - Panel height/angle options
 - Energy requirements for panel layout/creation
 - Tape-to-book machine (Tape printer or similar)
-- Debugger-y thing for panel CNC
-    - error output on tape
-    - transmitted over RS
-- Related: TTY/Keypunch-y thing with a "bottom" block that can receive and transmit over RS

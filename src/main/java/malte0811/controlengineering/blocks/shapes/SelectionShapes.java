@@ -3,22 +3,23 @@ package malte0811.controlengineering.blocks.shapes;
 import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public abstract class SelectionShapes {
-    private Supplier<String> getText = () -> null;
+    private Supplier<Component> getText = () -> null;
 
     @Nullable
     public abstract VoxelShape mainShape();
@@ -30,11 +31,11 @@ public abstract class SelectionShapes {
     public abstract List<? extends SelectionShapes> innerShapes();
 
     @Nullable
-    public final String getOverlayText() {
+    public final Component getOverlayText() {
         return getText.get();
     }
 
-    public SelectionShapes setTextGetter(Supplier<String> getText) {
+    public SelectionShapes setTextGetter(Supplier<Component> getText) {
         this.getText = getText;
         return this;
     }

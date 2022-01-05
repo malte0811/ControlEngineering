@@ -13,8 +13,9 @@ import malte0811.controlengineering.gui.misc.BusSignalSelector;
 import malte0811.controlengineering.util.RaytraceUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -76,16 +77,16 @@ public class ClientEvents {
         if (!(mc.hitResult instanceof BlockHitResult mop)) {
             return;
         }
-        List<String> lines = new ArrayList<>();
+        List<Component> lines = new ArrayList<>();
         final BlockPos pos = mop.getBlockPos();
         if (mc.player.level.getBlockEntity(pos) instanceof LineAccessBlockEntity access
                 && held.is(IETags.screwdrivers)) {
-            lines.add(I18n.get(BusSignalSelector.BUS_LINE_INDEX_KEY, access.selectedLine));
+            lines.add(new TranslatableComponent(BusSignalSelector.BUS_LINE_INDEX_KEY, access.selectedLine));
         }
         List<? extends SelectionShapes> shapeStack = getSelectedStack();
         if (shapeStack != null) {
             for (int i = shapeStack.size() - 1; i >= 0; i--) {
-                final String line = shapeStack.get(i).getOverlayText();
+                final Component line = shapeStack.get(i).getOverlayText();
                 if (line != null) {
                     lines.add(line);
                 }

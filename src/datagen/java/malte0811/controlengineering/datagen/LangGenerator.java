@@ -2,6 +2,7 @@ package malte0811.controlengineering.datagen;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
+import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
@@ -132,6 +133,9 @@ public class LangGenerator extends LanguageProvider {
         add(LogicWorkbenchBlockEntity.TOO_FEW_TUBES, "%d vacuum tubes are required");
 
         add(PanelDesignScreen.REQUIRED_VS_AVAILABLE_TAPE, "%d characters required / %d available");
+
+        add(KeypunchBlockEntity.LOOPBACK_KEY, "Loopback");
+        add(KeypunchBlockEntity.REMOTE_KEY, "Remote transmission");
     }
 
     private void add(LeafcellType<?> type, String name) {
