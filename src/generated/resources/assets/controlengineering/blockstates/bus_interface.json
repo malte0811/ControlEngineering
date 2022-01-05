@@ -1,33 +1,33 @@
 {
   "variants": {
     "facing=down": {
-      "model": "controlengineering:block/bus_interface_obj_connector",
+      "model": "controlengineering:block/bus_interface_obj",
       "uvlock": true
     },
     "facing=up": {
-      "model": "controlengineering:block/bus_interface_obj_connector",
+      "model": "controlengineering:block/bus_interface_obj",
       "x": 180,
       "uvlock": true
     },
     "facing=north": {
-      "model": "controlengineering:block/bus_interface_obj_connector",
+      "model": "controlengineering:block/bus_interface_obj",
       "x": 90,
       "y": 180,
       "uvlock": true
     },
     "facing=south": {
-      "model": "controlengineering:block/bus_interface_obj_connector",
+      "model": "controlengineering:block/bus_interface_obj",
       "x": 90,
       "uvlock": true
     },
     "facing=west": {
-      "model": "controlengineering:block/bus_interface_obj_connector",
+      "model": "controlengineering:block/bus_interface_obj",
       "x": 90,
       "y": 90,
       "uvlock": true
     },
     "facing=east": {
-      "model": "controlengineering:block/bus_interface_obj_connector",
+      "model": "controlengineering:block/bus_interface_obj",
       "x": 90,
       "y": 270,
       "uvlock": true

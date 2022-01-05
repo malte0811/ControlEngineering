@@ -95,7 +95,7 @@ public class LineAccessBlockEntity extends CEIICBlockEntity implements IBusConne
     @Override
     public Vec3 getConnectionOffset(ConnectionPoint here, ConnectionPoint other, WireType type) {
         final double offset;
-        if (here.getIndex() == REDSTONE_ID) {
+        if (here.index() == REDSTONE_ID) {
             offset = .25;
         } else {
             offset = -.25;
@@ -121,7 +121,7 @@ public class LineAccessBlockEntity extends CEIICBlockEntity implements IBusConne
     @Override
     public boolean canConnectCable(WireType wireType, ConnectionPoint connectionPoint, Vec3i offset) {
         //TODO only allow one connection
-        if (connectionPoint.getIndex() == BUS_ID) {
+        if (connectionPoint.index() == BUS_ID) {
             return IBusConnector.super.canConnectCable(wireType, connectionPoint, offset);
         } else {
             return wireType.getCategory().equals(WireType.REDSTONE_CATEGORY);

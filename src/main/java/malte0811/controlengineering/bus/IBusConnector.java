@@ -19,8 +19,7 @@ public interface IBusConnector extends IImmersiveConnectable {
     }
 
     default LocalBusHandler getBusHandler(ConnectionPoint cp) {
-        return getLocalNet(cp.getIndex())
-                .getHandler(LocalBusHandler.NAME, LocalBusHandler.class);
+        return getLocalNet(cp.index()).getHandler(LocalBusHandler.NAME, LocalBusHandler.class);
     }
 
     default boolean isBusPoint(ConnectionPoint cp) {

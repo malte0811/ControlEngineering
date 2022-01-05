@@ -20,7 +20,6 @@ import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.datagen.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.datagen.modelbuilder.LogicCabinetBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.data.DataGenerator;
@@ -51,15 +50,9 @@ public class BlockstateGenerator extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        registerConnector(
-                obj("bus_relay.obj"), CEBlocks.BUS_RELAY, 90, RenderType.solid(), BusRelayBlock.FACING
-        );
-        registerConnector(
-                obj("line_access.obj"), CEBlocks.LINE_ACCESS, 0, RenderType.cutout(), LineAccessBlock.FACING
-        );
-        registerConnector(
-                obj("bus_interface.obj"), CEBlocks.BUS_INTERFACE, 90, RenderType.solid(), BusInterfaceBlock.FACING
-        );
+        registerConnector(obj("bus_relay.obj"), CEBlocks.BUS_RELAY, 90, BusRelayBlock.FACING);
+        registerConnector(obj("line_access.obj"), CEBlocks.LINE_ACCESS, 0, LineAccessBlock.FACING);
+        registerConnector(obj("bus_interface.obj"), CEBlocks.BUS_INTERFACE, 90, BusInterfaceBlock.FACING);
 
         panelModel();
         column2(obj("panel_cnc.obj"), CEBlocks.PANEL_CNC, PanelCNCBlock.FACING);
@@ -183,13 +176,11 @@ public class BlockstateGenerator extends BlockStateProvider {
             ModelFile mainModel,
             RegistryObject<? extends Block> block,
             int xForHorizontal,
-            RenderType layer,
             Property<Direction> facing
     ) {
-        ConnectorBlockBuilder.builder(models(), getVariantBuilder(block.get()), ($1, $2) -> {})
+        ConnectorBlockBuilder.builder(getVariantBuilder(block.get()))
                 .rotationData(facing, xForHorizontal)
                 .fixedModel(mainModel)
-                .layers(layer)
                 .build();
         itemModels().getBuilder(ItemModels.name(block)).parent(mainModel);
     }
