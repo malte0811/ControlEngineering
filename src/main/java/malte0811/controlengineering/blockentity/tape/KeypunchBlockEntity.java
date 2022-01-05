@@ -1,6 +1,7 @@
 package malte0811.controlengineering.blockentity.tape;
 
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.MultiblockBEType;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
@@ -16,6 +17,7 @@ import malte0811.controlengineering.blocks.tape.KeypunchBlock;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.bus.MarkDirtyHandler;
+import malte0811.controlengineering.gui.tape.KeypunchContainer;
 import malte0811.controlengineering.items.EmptyTapeItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.util.BEUtil;
@@ -41,6 +43,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
@@ -53,6 +56,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
     public static final String REMOTE_KEY = ControlEngineering.MODID + ".gui.no_loopback";
 
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
+    private final Set<KeypunchContainer> onTapeChanged = new ReferenceOpenHashSet<>();
     private KeypunchState state = new KeypunchState(this::setChanged);
     private boolean loopback = true;
     private ParallelPort busInterface = new ParallelPort();
@@ -73,9 +77,11 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
         if (busInterface.tickTX()) {
             markBusDirty.run();
         }
-        //TODO probably does not sync!
         busInterface.tickRX().ifPresent(read -> {
             state.tryTypeChar(read, false);
+            for (KeypunchContainer c : onTapeChanged) {
+                c.onTypedOnServer(read);
+            }
             setChanged();
         });
     }
@@ -85,6 +91,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
         super.load(nbt);
         readSyncedData(nbt);
         state = new KeypunchState(this::setChanged, nbt.get("state"));
+        onTapeChanged.forEach(KeypunchContainer::resyncFullTape);
         busInterface = new ParallelPort(nbt.getCompound("busInterface"));
     }
 
@@ -177,6 +184,10 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
         busInterface.queueChar(BitUtils.fixParity(toAdd));
     }
 
+    public Set<KeypunchContainer> getOpenContainers() {
+        return onTapeChanged;
+    }
+
     @Override
     public SelectionShapes getShape() {
         return selectionShapes.get();
@@ -222,9 +233,11 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
         private static SelectionShapes createSelectionShapes(Direction d, KeypunchBlockEntity bEntity) {
             List<SelectionShapes> subshapes = new ArrayList<>(2);
             // Punched tape output
-            subshapes.add(new SingleShape(
-                    OUTPUT_SHAPE, ctx -> bEntity.getState().removeWrittenTape(ctx.getPlayer())
-            ));
+            subshapes.add(new SingleShape(OUTPUT_SHAPE, ctx -> {
+                var result = bEntity.getState().removeWrittenTape(ctx.getPlayer());
+                bEntity.onTapeChanged.forEach(KeypunchContainer::resyncFullTape);
+                return result;
+            }));
             // Add clear tape to input/take it from input
             subshapes.add(new SingleShape(
                     INPUT_SHAPE, ctx -> bEntity.getState().removeOrAddClearTape(ctx.getPlayer(), ctx.getItemInHand())

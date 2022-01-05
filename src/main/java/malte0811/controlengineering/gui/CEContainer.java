@@ -39,6 +39,10 @@ public abstract class CEContainer<PacketType> extends AbstractContainerMenu {
         return expectedBlock == null || stillValid(pos, playerIn, expectedBlock);
     }
 
+    public void sendToListeningPlayers(PacketType data) {
+        sendToListeningPlayersExcept(null, data);
+    }
+
     public void sendToListeningPlayersExcept(@Nullable ServerPlayer excluded, PacketType data) {
         for (var player : listeners) {
             if (player != excluded) {
@@ -63,10 +67,17 @@ public abstract class CEContainer<PacketType> extends AbstractContainerMenu {
 
     private void addListener(ServerPlayer serverPlayer) {
         if (!listeners.contains(serverPlayer)) {
+            if (listeners.isEmpty()) {
+                onFirstOpened();
+            }
             listeners.add(serverPlayer);
             sendTo(serverPlayer, getInitialSync());
         }
     }
+
+    protected void onFirstOpened() {}
+
+    protected void onLastClosed() {}
 
     @SubscribeEvent
     public static void openContainer(PlayerContainerEvent.Open ev) {
@@ -88,5 +99,8 @@ public abstract class CEContainer<PacketType> extends AbstractContainerMenu {
             return;
         }
         ceContainer.listeners.remove(serverPlayer);
+        if (ceContainer.listeners.isEmpty()) {
+            ceContainer.onLastClosed();
+        }
     }
 }

@@ -11,6 +11,7 @@ import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.keypunch.FullSync;
 import malte0811.controlengineering.network.keypunch.KeypunchPacket;
 import malte0811.controlengineering.network.keypunch.KeypunchSubPacket;
+import malte0811.controlengineering.network.keypunch.TypeChar;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -57,5 +58,25 @@ public class KeypunchContainer extends CEContainer<KeypunchSubPacket> {
 
     public boolean isLoopback() {
         return keypunchBE.isLoopback();
+    }
+
+    public void onTypedOnServer(byte data) {
+        sendToListeningPlayers(new TypeChar(data));
+    }
+
+    public void resyncFullTape() {
+        sendToListeningPlayers(getInitialSync());
+    }
+
+    @Override
+    protected void onFirstOpened() {
+        super.onFirstOpened();
+        keypunchBE.getOpenContainers().add(this);
+    }
+
+    @Override
+    protected void onLastClosed() {
+        super.onLastClosed();
+        keypunchBE.getOpenContainers().remove(this);
     }
 }
