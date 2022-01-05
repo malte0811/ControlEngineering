@@ -1,12 +1,11 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.WireSegment;
 import malte0811.controlengineering.util.GuiUtil;
 import malte0811.controlengineering.util.math.Vec2i;
-import com.mojang.blaze3d.vertex.PoseStack;
-import java.util.Objects;
 
 public record SymbolPin(Vec2i position, SignalType type, PinDirection direction, String pinName)  {
 
@@ -30,7 +29,6 @@ public record SymbolPin(Vec2i position, SignalType type, PinDirection direction,
         return new SymbolPin(x, y, SignalType.DIGITAL, PinDirection.INPUT, name);
     }
 
-    //TODO check usages and replace with isCombOut as necessary
     public boolean isOutput() {
         return direction.isOutput();
     }

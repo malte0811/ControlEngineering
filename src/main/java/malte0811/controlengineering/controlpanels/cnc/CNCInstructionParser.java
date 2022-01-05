@@ -159,7 +159,7 @@ public class CNCInstructionParser {
             }
             ++currentPos;
         }
-        //TODO localize?
+        // Can't be localized, text needs to be available on the server
         if (isEscaped) {
             return FastDataResult.error("Tape ends in escape sequence");
         }

@@ -85,8 +85,8 @@ public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterf
     }
 
     @Override
-    public void setLevel(@Nonnull Level pLevel) {
-        super.setLevel(pLevel);
+    public void setLevel(@Nonnull Level level) {
+        super.setLevel(level);
         if (!level.isClientSide) {
             resetStateHandler();
         }
@@ -135,8 +135,7 @@ public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterf
 
     @Override
     public boolean canConnect(Direction fromSide) {
-        //TODO? At least forbid for panel top?
-        return true;
+        return PanelBlock.isMaster(getBlockState());
     }
 
     @Override

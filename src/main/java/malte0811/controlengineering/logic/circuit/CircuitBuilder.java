@@ -8,7 +8,6 @@ import malte0811.controlengineering.logic.cells.SignalType;
 
 import java.util.*;
 
-// TODO account for delayed nets
 public class CircuitBuilder {
     private final List<LeafcellInstance<?>> cells = new ArrayList<>();
     private final Map<PinReference, NetReference> pins = new HashMap<>();

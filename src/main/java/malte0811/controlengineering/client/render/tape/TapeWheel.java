@@ -23,7 +23,6 @@ public class TapeWheel {
     private static final int NUM_CORNERS = 6;
     private static final double TAPE_WIDTH = 1;
     private static final List<Vec2d> CORNERS_NORMALIZED;
-    //TODO this should be a custom sprite
     private static final ResettableLazy<TextureAtlasSprite> TEXTURE = new ResettableLazy<>(QuadBuilder::getWhiteTexture);
     private static final List<Pair<Integer, Double>> offsetAndHeight = ImmutableList.of(
             Pair.of(0, 0.),

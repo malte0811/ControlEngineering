@@ -16,6 +16,7 @@ import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.bus.MarkDirtyHandler;
+import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.cnc.CNCInstructionParser;
 import malte0811.controlengineering.items.CEItems;
@@ -36,6 +37,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -84,8 +86,10 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
             }
     );
     private final EnergyStorage energy = new EnergyStorage(20 * ENERGY_CONSUMPTION);
-    private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();//TODO hook up
+    private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private ParallelPort dataOutput = new ParallelPort();
+    // Used and initialized by the renderer
+    public CachedValue<CNCJob, PiecewiseAffinePath<Vec3>> headPath;
 
     private final CachedValue<Direction, SelectionShapes> bottomSelectionShapes = new CachedValue<>(
             () -> getBlockState().getValue(PanelCNCBlock.FACING),

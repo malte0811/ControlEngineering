@@ -58,7 +58,6 @@ public class LineAccessBlockEntity extends CEIICBlockEntity implements IBusConne
         selectedLine = nbt.getInt("selectedLine");
     }
 
-    @Nonnull
     @Override
     public void saveAdditional(@Nonnull CompoundTag nbt) {
         super.saveAdditional(nbt);
@@ -120,7 +119,9 @@ public class LineAccessBlockEntity extends CEIICBlockEntity implements IBusConne
 
     @Override
     public boolean canConnectCable(WireType wireType, ConnectionPoint connectionPoint, Vec3i offset) {
-        //TODO only allow one connection
+        if (countRealWiresAt(connectionPoint) > 0) {
+            return false;
+        }
         if (connectionPoint.index() == BUS_ID) {
             return IBusConnector.super.canConnectCable(wireType, connectionPoint, offset);
         } else {

@@ -1,12 +1,9 @@
 package malte0811.controlengineering.blockentity;
 
-import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.TargetingInfo;
-import blusunrize.immersiveengineering.api.wires.Connection;
-import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
-import blusunrize.immersiveengineering.api.wires.IImmersiveConnectable;
-import blusunrize.immersiveengineering.api.wires.WireType;
+import blusunrize.immersiveengineering.api.wires.*;
 import blusunrize.immersiveengineering.api.wires.impl.ImmersiveConnectableBlockEntity;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -15,6 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.function.Predicate;
 
 public abstract class CEIICBlockEntity extends ImmersiveConnectableBlockEntity {
 
@@ -61,11 +59,18 @@ public abstract class CEIICBlockEntity extends ImmersiveConnectableBlockEntity {
         return getBlockPos();
     }
 
-    //TODO Workaround for Forge#7926
-    @Override
-    public void clearRemoved()
-    {
-        super.clearRemoved();
-        ApiUtils.addFutureServerTask(level, this::onLoad);
+    protected LocalWireNetwork getLocalNet(ConnectionPoint cp) {
+        Preconditions.checkArgument(cp.position().equals(worldPosition));
+        return super.getLocalNet(cp.index());
+    }
+
+    protected Collection<Connection> getConnections(ConnectionPoint cp) {
+        return getLocalNet(cp).getConnections(cp);
+    }
+
+    protected int countRealWiresAt(ConnectionPoint cp) {
+        return (int) getConnections(cp).stream()
+                .filter(Predicate.not(Connection::isInternal))
+                .count();
     }
 }

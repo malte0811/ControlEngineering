@@ -24,7 +24,7 @@ public class ListCodecParser<T> extends SerialCodecParser<T> {
         for (ParserField<T, ?> f : fields) {
             FastDataResult<JsonElement> fieldValue = f.parser.toJson(parts);
             if (fieldValue.isError()) {
-                return FastDataResult.error(f.field.name() + ": " + fieldValue.getErrorMessage());
+                return FastDataResult.stringError(f.field.name() + ": " + fieldValue.getErrorMessage());
             } else {
                 result.add(f.field.name(), fieldValue.get());
             }

@@ -2,6 +2,9 @@ package malte0811.controlengineering.client.render.panel;
 
 import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.google.common.base.Preconditions;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -12,12 +15,14 @@ import malte0811.controlengineering.blockentity.panels.CNCJob;
 import malte0811.controlengineering.blockentity.panels.PanelCNCBlockEntity;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.client.render.tape.TapeDrive;
+import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.client.render.utils.ModelRenderUtils;
 import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath;
 import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath.Node;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
+import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -34,6 +39,7 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity> {
     //TODO reset?
@@ -45,11 +51,18 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
                 return atlas.getSprite(new ResourceLocation(ControlEngineering.MODID, "block/panel_cnc"));
             }
     );
+    private static final LoadingCache<List<PlacedComponent>, MixedModel> MODEL_CACHE = CacheBuilder.newBuilder()
+            .expireAfterAccess(10, TimeUnit.SECONDS)
+            .build(CacheLoader.from(comps -> ComponentRenderers.renderAll(comps, new PoseStack())));
+    private static final TapeDrive TAPE_DRIVE = new TapeDrive(
+            2, 1, new Vec2d(5, 8), new Vec2d(7, 5), new Vec2d(11, 8), new Vec2d(9, 5)
+    );
 
     private static final double HEAD_SIZE = 0.5;
     private static final double HEAD_TRAVERSAL_HEIGHT = 3;
     private static final double HEAD_WORK_HEIGHT = -1;
     private static final Vec3 HEAD_IDLE = new Vec3(8 - HEAD_SIZE / 2, 5, 8 - HEAD_SIZE / 2);
+    private static final Quaternion TAPE_ROTATION = new Quaternion(new Vector3f(1, 0, 0), 90, true);
 
     public PanelCNCRenderer(BlockEntityRendererProvider.Context ctx) {
     }
@@ -69,7 +82,7 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
         final double tick = cnc.getCurrentTicksInJob() + (cnc.getState() == PanelCNCBlockEntity.State.RUNNING ? partialTicks : 0);
         transform.pushPose();
         transform.translate(0, 16, 14);
-        transform.mulPose(new Quaternion(new Vector3f(1, 0, 0), 90, true));//TODO extract
+        transform.mulPose(TAPE_ROTATION);
         renderTape(cnc, buffers, transform, light, overlay, tick);
         transform.popPose();
         transform.translate(0, 16, 0);
@@ -107,9 +120,7 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
             finalWrapped.vertex(16, 0, 16).uv(maxU, maxV).endVertex();
             finalWrapped.vertex(16, 0, 0).uv(maxU, minV).endVertex();
         }
-        //TODO cache?
-        ComponentRenderers.renderAll(cnc.getCurrentPlacedComponents(), new PoseStack())
-                .renderTo(buffers, transform, light, overlay);
+        MODEL_CACHE.getUnchecked(cnc.getCurrentPlacedComponents()).renderTo(buffers, transform, light, overlay);
     }
 
     private void renderTape(
@@ -119,14 +130,9 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
         if (totLength > 0) {
             CNCJob currentJob = cncBE.getCurrentJob();
             Preconditions.checkNotNull(currentJob);
-            //TODO put into BE in some way? Or make static(ish)?
-            TapeDrive testWheel = new TapeDrive(
-                    totLength + 1, 2, 1,
-                    new Vec2d(5, 8), new Vec2d(7, 5),
-                    new Vec2d(11, 8), new Vec2d(9, 5)
-            );
-            testWheel.updateTapeProgress(currentJob.getTapeProgressAtTime(ticks));
-            testWheel.render(buffer.getBuffer(RenderType.solid()), transform, light, overlay);
+            TAPE_DRIVE.setTotalLength(totLength + 1);
+            TAPE_DRIVE.updateTapeProgress(currentJob.getTapeProgressAtTime(ticks));
+            TAPE_DRIVE.render(buffer.getBuffer(RenderType.solid()), transform, light, overlay);
         }
     }
 
@@ -135,14 +141,15 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
     ) {
         Vec3 currentPos;
         if (cncBE.getCurrentJob() != null && cncBE.getState().isInProcess()) {
-            //TODO cache path!
-            currentPos = createPathFor(cncBE.getCurrentJob()).getPosAt(ticks);
+            if (cncBE.headPath == null) {
+                cncBE.headPath = new CachedValue<>(cncBE::getCurrentJob, PanelCNCRenderer::createPathFor);
+            }
+            currentPos = cncBE.headPath.get().getPosAt(ticks);
         } else {
             currentPos = HEAD_IDLE;
         }
         transform.pushPose();
         transform.translate(currentPos.x, 0, currentPos.z);
-        //TODO pull out
         VertexConsumer solidBuffer = buffer.getBuffer(RenderType.solid());
         VertexConsumer forTexture = MODEL_TEXTURE.get().wrap(solidBuffer);
         TransformingVertexBuilder innerBuilder = new TransformingVertexBuilder(
@@ -167,7 +174,7 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
         ModelRenderUtils.renderTube(builder, HEAD_SIZE, HEAD_SIZE, yMin + headHeight, yMax, shaftMin, shaftMax);
     }
 
-    private PiecewiseAffinePath<Vec3> createPathFor(CNCJob job) {
+    private static PiecewiseAffinePath<Vec3> createPathFor(CNCJob job) {
         final double arrival = 0.5;
         final double down = arrival + 1 / 16.;
         final double done = 15 / 16.;

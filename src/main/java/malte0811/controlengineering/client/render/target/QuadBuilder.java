@@ -6,7 +6,6 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.util.BitUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -18,6 +17,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.OptionalInt;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -121,10 +121,10 @@ public class QuadBuilder {
     }
 
     public static TextureAtlasSprite getWhiteTexture() {
-        return Minecraft.getInstance()
+        return Objects.requireNonNull(Minecraft.getInstance()
                 .getModelManager()
-                .getAtlas(TextureAtlas.LOCATION_BLOCKS)
-                .getSprite(WHITE_WITH_BORDER);
+                .getAtlas(InventoryMenu.BLOCK_ATLAS)
+                .getSprite(WHITE_WITH_BORDER));
     }
 
     @SubscribeEvent
