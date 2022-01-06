@@ -43,7 +43,7 @@ import java.util.function.Supplier;
 import static net.minecraft.util.Mth.ceil;
 import static net.minecraft.util.Mth.floor;
 
-public class LogicDesignScreen extends StackedScreen implements MenuAccess<LogicDesignContainer> {
+public class LogicDesignScreen extends StackedScreen implements MenuAccess<LogicDesignMenu> {
     public static final String COMPONENTS_KEY = ControlEngineering.MODID + ".gui.components";
     public static final String ENABLE_DRC_KEY = ControlEngineering.MODID + ".gui.drcOn";
     public static final String DISABLE_DRC_KEY = ControlEngineering.MODID + ".gui.drcOff";
@@ -54,7 +54,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     private static final int TOTAL_BORDER = TRANSLUCENT_BORDER_SIZE + WHITE_BORDER_SIZE;
     public static final int BASE_SCALE = 3;
 
-    private final LogicDesignContainer container;
+    private final LogicDesignMenu container;
     private Schematic schematic;
     @Nullable
     private Vec2i currentWireStart = null;
@@ -69,7 +69,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     private double centerX = 0;
     private double centerY = 0;
 
-    public LogicDesignScreen(LogicDesignContainer container, Component title) {
+    public LogicDesignScreen(LogicDesignMenu container, Component title) {
         super(title);
         this.schematic = new Schematic();
         this.container = container;
@@ -174,7 +174,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     }
 
     private void renderIngredients(PoseStack transform) {
-        Optional<AvailableIngredients> stored = container.getAvailableIngredients();
+        AvailableIngredients stored = container.getAvailableIngredients();
         transform.pushPose();
         transform.translate(width - TOTAL_BORDER - 17, height - TOTAL_BORDER - 17, 0);
         final int numTubes = schematic.getNumTubes();
@@ -183,12 +183,12 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         renderIngredient(transform, null, numBoards, IEItemRefs.CIRCUIT_BOARD);
         transform.translate(0, -16, 0);
         renderIngredient(
-                transform, stored.map(AvailableIngredients::getAvailableTubes).orElse(null), numTubes, IEItemRefs.TUBE
+                transform, stored != null ? stored.getAvailableTubes() : null, numTubes, IEItemRefs.TUBE
         );
         transform.translate(0, -16, 0);
         //TODO fix default
         renderIngredient(
-                transform, stored.map(AvailableIngredients::getAvailableWires).orElse(null), numWires, IEItemRefs.WIRE
+                transform, stored != null ? stored.getAvailableWires() : null, numWires, IEItemRefs.WIRE
         );
         transform.popPose();
     }
@@ -465,7 +465,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
 
     @Nonnull
     @Override
-    public LogicDesignContainer getMenu() {
+    public LogicDesignMenu getMenu() {
         return container;
     }
 

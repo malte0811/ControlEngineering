@@ -18,7 +18,7 @@ import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 
-public class KeypunchScreen extends Screen implements MenuAccess<KeypunchContainer> {
+public class KeypunchScreen extends Screen implements MenuAccess<KeypunchMenu> {
     private static final int KEY_SIZE = 20;
     private static final int NUM_VISIBLE_CHARS = 23;
     // TODO review once a sound exists
@@ -33,13 +33,13 @@ public class KeypunchScreen extends Screen implements MenuAccess<KeypunchContain
     private static final SubTexture CAPS_KEY = new SubTexture(TEXTURE, 0, 144, 32, 160);
     private static final SubTexture SPACE_KEY = new SubTexture(TEXTURE, 0, 160, 128, 176);
 
-    private final KeypunchContainer container;
+    private final KeypunchMenu container;
     private final KeypunchState state;
     private final TapeRender tapeRender;
 
     private boolean isCapsLock;
 
-    public KeypunchScreen(KeypunchContainer container, Component title) {
+    public KeypunchScreen(KeypunchMenu container, Component title) {
         super(title);
         this.container = container;
         this.state = container.getState();
@@ -142,7 +142,7 @@ public class KeypunchScreen extends Screen implements MenuAccess<KeypunchContain
 
     @Nonnull
     @Override
-    public KeypunchContainer getMenu() {
+    public KeypunchMenu getMenu() {
         return container;
     }
 

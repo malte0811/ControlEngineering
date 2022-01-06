@@ -15,6 +15,7 @@ import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.cnc.CNCInstructionGenerator;
+import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.math.MatrixUtils;
@@ -22,12 +23,16 @@ import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -84,7 +89,7 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
     );
     private final CachedValue<List<PlacedComponent>, Integer> requiredLength;
 
-    private List<PlacedComponent> components = new ArrayList<>();
+    private final List<PlacedComponent> components = new ArrayList<>();
     private KeypunchState state = new KeypunchState(this::setChanged);
 
     public PanelDesignerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -102,8 +107,8 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
         return ctx -> {
             BlockPos origin = CEBlocks.PANEL_DESIGNER.get().getMainBlock(state, this);
             BlockEntity atOrigin = level.getBlockEntity(origin);
-            if (atOrigin instanceof PanelDesignerBlockEntity) {
-                return handler.apply((PanelDesignerBlockEntity) atOrigin, ctx);
+            if (atOrigin instanceof PanelDesignerBlockEntity master) {
+                return handler.apply(master, ctx);
             } else {
                 return InteractionResult.FAIL;
             }
@@ -118,9 +123,8 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
     @Override
     public void load(@Nonnull CompoundTag nbt) {
         super.load(nbt);
-        components = new ArrayList<>(
-                Codecs.readOptional(COMPONENTS_CODEC, nbt.get("components")).orElse(ImmutableList.of())
-        );
+        components.clear();
+        components.addAll(Codecs.readOptional(COMPONENTS_CODEC, nbt.get("components")).orElse(ImmutableList.of()));
         this.state = new KeypunchState(this::setChanged, nbt.get("state"));
     }
 
@@ -136,8 +140,10 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
     }
 
     private InteractionResult openUI(UseOnContext ctx) {
-        if (!level.isClientSide) {
-            CEBlocks.PANEL_DESIGNER.get().openContainer(ctx.getPlayer(), getBlockState(), level, worldPosition);
+        if (ctx.getPlayer() instanceof ServerPlayer serverPlayer) {
+            NetworkHooks.openGui(serverPlayer, new SimpleMenuProvider(
+                    CEContainers.PANEL_DESIGN.argConstructor(this), TextComponent.EMPTY
+            ));
         }
         return InteractionResult.SUCCESS;
     }

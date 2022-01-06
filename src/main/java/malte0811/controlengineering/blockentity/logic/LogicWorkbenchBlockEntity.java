@@ -4,12 +4,15 @@ import blusunrize.immersiveengineering.api.IETags;
 import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
+import malte0811.controlengineering.blockentity.base.IHasMaster;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
+import malte0811.controlengineering.gui.CEContainers;
+import malte0811.controlengineering.gui.misc.SyncContainer;
 import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.items.PCBStackItem;
 import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
@@ -22,10 +25,16 @@ import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -41,7 +50,8 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class LogicWorkbenchBlockEntity extends CEBlockEntity implements SelectionShapeOwner, ISchematicBE {
+public class LogicWorkbenchBlockEntity extends CEBlockEntity implements SelectionShapeOwner, ISchematicBE, MenuProvider,
+        IHasMaster<LogicWorkbenchBlockEntity> {
     public static final String TUBES_EMPTY_KEY = ControlEngineering.MODID + ".gui.tubesEmpty";
     public static final String WIRES_EMPTY_KEY = ControlEngineering.MODID + ".gui.wiresEmpty";
     public static final String MORE_BOARDS_THAN_MAX = ControlEngineering.MODID + ".gui.moreThanMaxBoards";
@@ -103,7 +113,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
             BlockState state, BiFunction<LogicWorkbenchBlockEntity, UseOnContext, InteractionResult> handler
     ) {
         return ctx -> {
-            LogicWorkbenchBlockEntity atOrigin = getMainBE(state);
+            LogicWorkbenchBlockEntity atOrigin = getOrComputeMasterBE(state);
             if (atOrigin != null) {
                 return handler.apply(atOrigin, ctx);
             } else {
@@ -113,7 +123,8 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
     }
 
     @Nullable
-    private LogicWorkbenchBlockEntity getMainBE(BlockState state) {
+    @Override
+    public LogicWorkbenchBlockEntity computeMasterBE(BlockState state) {
         if (level == null) {
             return null;
         }
@@ -228,7 +239,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
                 }
         );
         return new SingleShape(shape, onClick).setTextGetter(() -> {
-            final LogicWorkbenchBlockEntity main = getMainBE(state);
+            final LogicWorkbenchBlockEntity main = getOrComputeMasterBE(state);
             if (main == null) {
                 return null;
             }
@@ -251,13 +262,30 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
         return new AvailableIngredients(this);
     }
 
+    @Nonnull
+    @Override
+    public Component getDisplayName() {
+        return TextComponent.EMPTY;
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int pContainerId, @Nonnull Inventory pInventory, @Nonnull Player pPlayer) {
+        return CEContainers.LOGIC_DESIGN_EDIT.makeNew(pContainerId, this);
+    }
+
     public static class AvailableIngredients {
-        private final ItemStack availableTubes;
-        private final ItemStack availableWires;
+        private ItemStack availableTubes;
+        private ItemStack availableWires;
 
         public AvailableIngredients(LogicWorkbenchBlockEntity bEntity) {
             this.availableTubes = bEntity.getTubeStorage().getStored();
             this.availableWires = bEntity.getWireStorage().getStored();
+        }
+
+        public AvailableIngredients() {
+            this.availableTubes = ItemStack.EMPTY;
+            this.availableWires = ItemStack.EMPTY;
         }
 
         public ItemStack getAvailableTubes() {
@@ -266,6 +294,14 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
 
         public ItemStack getAvailableWires() {
             return availableWires;
+        }
+
+        public Slot makeTubeSlot(int id) {
+            return SyncContainer.makeSyncSlot(id, s -> availableTubes = s, () -> availableTubes);
+        }
+
+        public Slot makeWireSlot(int id) {
+            return SyncContainer.makeSyncSlot(id, s -> availableWires = s, () -> availableWires);
         }
     }
 }

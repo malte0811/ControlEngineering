@@ -17,7 +17,7 @@ import malte0811.controlengineering.blocks.tape.KeypunchBlock;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.bus.MarkDirtyHandler;
-import malte0811.controlengineering.gui.tape.KeypunchContainer;
+import malte0811.controlengineering.gui.tape.KeypunchMenu;
 import malte0811.controlengineering.items.EmptyTapeItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.util.BEUtil;
@@ -56,7 +56,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
     public static final String REMOTE_KEY = ControlEngineering.MODID + ".gui.no_loopback";
 
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
-    private final Set<KeypunchContainer> onTapeChanged = new ReferenceOpenHashSet<>();
+    private final Set<KeypunchMenu> onTapeChanged = new ReferenceOpenHashSet<>();
     private KeypunchState state = new KeypunchState(this::setChanged);
     private boolean loopback = true;
     private ParallelPort busInterface = new ParallelPort();
@@ -79,7 +79,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
         }
         busInterface.tickRX().ifPresent(read -> {
             state.tryTypeChar(read, false);
-            for (KeypunchContainer c : onTapeChanged) {
+            for (KeypunchMenu c : onTapeChanged) {
                 c.onTypedOnServer(read);
             }
             setChanged();
@@ -91,7 +91,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
         super.load(nbt);
         readSyncedData(nbt);
         state = new KeypunchState(this::setChanged, nbt.get("state"));
-        onTapeChanged.forEach(KeypunchContainer::resyncFullTape);
+        onTapeChanged.forEach(KeypunchMenu::resyncFullTape);
         busInterface = new ParallelPort(nbt.getCompound("busInterface"));
     }
 
@@ -184,7 +184,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
         busInterface.queueChar(BitUtils.fixParity(toAdd));
     }
 
-    public Set<KeypunchContainer> getOpenContainers() {
+    public Set<KeypunchMenu> getOpenContainers() {
         return onTapeChanged;
     }
 
@@ -235,7 +235,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
             // Punched tape output
             subshapes.add(new SingleShape(OUTPUT_SHAPE, ctx -> {
                 var result = bEntity.getState().removeWrittenTape(ctx.getPlayer());
-                bEntity.onTapeChanged.forEach(KeypunchContainer::resyncFullTape);
+                bEntity.onTapeChanged.forEach(KeypunchMenu::resyncFullTape);
                 return result;
             }));
             // Add clear tape to input/take it from input

@@ -2,11 +2,11 @@ package malte0811.controlengineering.blocks.logic;
 
 import com.google.common.collect.ImmutableMap;
 import malte0811.controlengineering.blockentity.CEBlockEntities;
+import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.HorizontalStructurePlacement;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.HorizontalWithExtraShape;
-import malte0811.controlengineering.gui.logic.LogicDesignContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
@@ -82,10 +82,11 @@ public class LogicWorkbenchBlock extends CEBlock<Direction> {
 
     @Nullable
     @Override
-    public MenuProvider getMenuProvider(
-            @Nonnull BlockState state, @Nonnull Level worldIn, @Nonnull BlockPos pos
-    ) {
-        return LogicDesignContainer.makeProvider(worldIn, pos, false);
+    public MenuProvider getMenuProvider(@Nonnull BlockState state, @Nonnull Level worldIn, @Nonnull BlockPos pos) {
+        if (worldIn.getBlockEntity(pos) instanceof LogicWorkbenchBlockEntity workbenchHere) {
+            return workbenchHere.getOrComputeMasterBE(state);
+        }
+        return null;
     }
 
     public static boolean isMaster(BlockState state) {

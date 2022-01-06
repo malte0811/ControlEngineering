@@ -11,7 +11,7 @@ import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.bus.MarkDirtyHandler;
 import malte0811.controlengineering.client.model.logic.DynamicLogicModel;
-import malte0811.controlengineering.gui.logic.LogicDesignContainer;
+import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PCBStackItem;
 import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
@@ -27,9 +27,11 @@ import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -43,6 +45,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
@@ -304,12 +307,10 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         return new SingleShape(
                 shape, ctx -> {
             final Player player = ctx.getPlayer();
-            if (player == null) {
-                return InteractionResult.PASS;
-            }
-            if (player instanceof ServerPlayer && bEntity.circuit != null) {
-                LogicDesignContainer.makeProvider(bEntity.level, bEntity.worldPosition, true)
-                        .open((ServerPlayer) player);
+            if (player instanceof ServerPlayer serverPlayer && bEntity.circuit != null) {
+                NetworkHooks.openGui(serverPlayer, new SimpleMenuProvider(
+                        (id, $, $2) -> CEContainers.LOGIC_DESIGN_VIEW.makeNew(id, bEntity), TextComponent.EMPTY
+                ));
             }
             return InteractionResult.SUCCESS;
         });

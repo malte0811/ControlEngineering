@@ -1,18 +1,22 @@
 package malte0811.controlengineering.gui;
 
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.gui.logic.LogicDesignContainer;
-import malte0811.controlengineering.gui.panel.PanelDesignContainer;
-import malte0811.controlengineering.gui.tape.KeypunchContainer;
-import net.minecraft.network.FriendlyByteBuf;
+import malte0811.controlengineering.blockentity.panels.PanelDesignerBlockEntity;
+import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
+import malte0811.controlengineering.gui.logic.LogicDesignMenu;
+import malte0811.controlengineering.gui.logic.LogicDesignMenu.LogicDesignMenuType;
+import malte0811.controlengineering.gui.panel.PanelDesignMenu;
+import malte0811.controlengineering.gui.tape.KeypunchMenu;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.network.IContainerFactory;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 public class CEContainers {
@@ -20,23 +24,53 @@ public class CEContainers {
             ForgeRegistries.CONTAINERS, ControlEngineering.MODID
     );
 
-    public static final RegistryObject<MenuType<KeypunchContainer>> KEYPUNCH = REGISTER.register(
-            "keypunch", createNoInv(KeypunchContainer::new)
+    public static final ArgMenuType<KeypunchMenu, KeypunchBlockEntity> KEYPUNCH = new ArgMenuType<>(
+            REGISTER.register("keypunch", createNoInv(KeypunchMenu::new)), KeypunchMenu::new
     );
 
-    public static final RegistryObject<MenuType<LogicDesignContainer>> LOGIC_DESIGN = REGISTER.register(
-            "logic_design", createNoInv(LogicDesignContainer::new)
+    public static final LogicDesignMenuType LOGIC_DESIGN_VIEW = LogicDesignMenu.makeType(
+            "logic_design_view", true, REGISTER
     );
 
-    public static final RegistryObject<MenuType<PanelDesignContainer>> PANEL_DESIGN = REGISTER.register(
-            "panel_layout", createNoInv(PanelDesignContainer::new)
+    public static final LogicDesignMenuType LOGIC_DESIGN_EDIT = LogicDesignMenu.makeType(
+            "logic_design_edit", false, REGISTER
     );
 
-    private static <T extends AbstractContainerMenu> Supplier<MenuType<T>> createNoInv(BiFunction<Integer, FriendlyByteBuf, T> factory) {
-        return create((id, inv, data) -> factory.apply(id, data));
+    public static final ArgMenuType<PanelDesignMenu, PanelDesignerBlockEntity> PANEL_DESIGN = new ArgMenuType<>(
+            REGISTER.register("panel_layout", createNoInv(PanelDesignMenu::new)), PanelDesignMenu::new
+    );
+
+    private static <T extends AbstractContainerMenu>
+    Supplier<MenuType<T>> createNoInv(NoInvMenuFactory<T> factory) {
+        return create((type, id, inv) -> factory.create(type, id));
     }
 
-    private static <T extends AbstractContainerMenu> Supplier<MenuType<T>> create(IContainerFactory<T> factory) {
-        return () -> new MenuType<>(factory);
+    private static <T extends AbstractContainerMenu>
+    Supplier<MenuType<T>> create(ArgMenuFactory<T, Inventory> factory) {
+        return () -> {
+            Mutable<MenuType<T>> result = new MutableObject<>();
+            result.setValue(new MenuType<>((id, inv) -> factory.create(result.getValue(), id, inv)));
+            return result.getValue();
+        };
+    }
+
+    public record ArgMenuType<M extends AbstractContainerMenu, Arg>(
+            RegistryObject<MenuType<M>> type, ArgMenuFactory<M, Arg> construct
+    ) {
+        public MenuConstructor argConstructor(Arg arg) {
+            return (id, $, $2) -> construct.create(type.get(), id, arg);
+        }
+
+        public MenuType<M> get() {
+            return type.get();
+        }
+    }
+
+    private interface NoInvMenuFactory<M extends AbstractContainerMenu> {
+        M create(MenuType<?> type, int id);
+    }
+
+    private interface ArgMenuFactory<M extends AbstractContainerMenu, Arg> {
+        M create(MenuType<?> type, int id, Arg extra);
     }
 }

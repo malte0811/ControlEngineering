@@ -8,14 +8,13 @@ import malte0811.controlengineering.blocks.placement.HorizontalStructurePlacemen
 import malte0811.controlengineering.blocks.shapes.CachedShape;
 import malte0811.controlengineering.blocks.shapes.DirectionalShapeProvider;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
-import malte0811.controlengineering.gui.tape.KeypunchContainer;
+import malte0811.controlengineering.gui.CEContainers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -63,12 +62,15 @@ public class KeypunchBlock extends CEBlock<Direction> implements IModelOffsetPro
     public MenuProvider getMenuProvider(
             @Nonnull BlockState state, @Nonnull Level worldIn, @Nonnull BlockPos pos
     ) {
-        return new SimpleMenuProvider(
-                (id, inv, player) -> new KeypunchContainer(
-                        id, ContainerLevelAccess.create(worldIn, getMasterPos(state, pos))
-                ),
-                new TranslatableComponent(CONTAINER_NAME)
-        );
+        var masterPos = getMasterPos(state, pos);
+        var keypunchBE = worldIn.getBlockEntity(masterPos);
+        if (keypunchBE instanceof KeypunchBlockEntity keypunch) {
+            return new SimpleMenuProvider(
+                    CEContainers.KEYPUNCH.argConstructor(keypunch), new TranslatableComponent(CONTAINER_NAME)
+            );
+        } else {
+            return null;
+        }
     }
 
     public static boolean isMaster(BlockState state) {

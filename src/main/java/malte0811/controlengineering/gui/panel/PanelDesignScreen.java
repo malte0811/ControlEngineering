@@ -15,15 +15,15 @@ import net.minecraft.util.Mth;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class PanelDesignScreen extends StackedScreen implements MenuAccess<PanelDesignContainer> {
+public class PanelDesignScreen extends StackedScreen implements MenuAccess<PanelDesignMenu> {
     public static final String REQUIRED_VS_AVAILABLE_TAPE = ControlEngineering.MODID + ".gui.reqVsAvTape";
     private static final int BORDER = 20;
     @Nonnull
-    private final PanelDesignContainer container;
+    private final PanelDesignMenu container;
     private int panelLayoutXMin;
     private int panelLayoutYMax;
 
-    public PanelDesignScreen(@Nonnull PanelDesignContainer container, Component title) {
+    public PanelDesignScreen(@Nonnull PanelDesignMenu container, Component title) {
         super(title);
         this.container = container;
     }
@@ -78,7 +78,7 @@ public class PanelDesignScreen extends StackedScreen implements MenuAccess<Panel
 
     @Nonnull
     @Override
-    public PanelDesignContainer getMenu() {
+    public PanelDesignMenu getMenu() {
         return container;
     }
 }

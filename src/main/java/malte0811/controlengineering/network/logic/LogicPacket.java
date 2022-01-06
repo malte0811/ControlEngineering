@@ -2,7 +2,7 @@ package malte0811.controlengineering.network.logic;
 
 import com.google.common.base.Preconditions;
 import malte0811.controlengineering.gui.StackedScreen;
-import malte0811.controlengineering.gui.logic.LogicDesignContainer;
+import malte0811.controlengineering.gui.logic.LogicDesignMenu;
 import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.network.SimplePacket;
 import net.minecraft.network.FriendlyByteBuf;
@@ -31,11 +31,11 @@ public class LogicPacket extends SimplePacket {
         if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             Preconditions.checkState(packet.allowSendingToServer());
             AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
-            if (activeContainer instanceof LogicDesignContainer && !((LogicDesignContainer) activeContainer).readOnly) {
-                packet.process(((LogicDesignContainer) activeContainer).getSchematic(), $ -> {
+            if (activeContainer instanceof LogicDesignMenu && !((LogicDesignMenu) activeContainer).readOnly) {
+                packet.process(((LogicDesignMenu) activeContainer).getSchematic(), $ -> {
                     throw new RuntimeException();
                 });
-                ((LogicDesignContainer) activeContainer).sendToListeningPlayersExcept(ctx.getSender(), packet);
+                ((LogicDesignMenu) activeContainer).sendToListeningPlayersExcept(ctx.getSender(), packet);
             }
         } else {
             processOnClient();

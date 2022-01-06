@@ -8,15 +8,9 @@ import malte0811.controlengineering.blocks.placement.HorizontalStructurePlacemen
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
 import malte0811.controlengineering.blocks.shapes.HorizontalWithExtraShape;
 import malte0811.controlengineering.blocks.tape.KeypunchBlock;
-import malte0811.controlengineering.gui.panel.PanelDesignContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -26,7 +20,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Locale;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
@@ -80,17 +73,6 @@ public class PanelDesignerBlock extends CEBlock<Direction> {
     protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(OFFSET, FACING);
-    }
-
-    @Nullable
-    @Override
-    public MenuProvider getMenuProvider(
-            @Nonnull BlockState state, @Nonnull Level worldIn, @Nonnull BlockPos pos
-    ) {
-        return new SimpleMenuProvider(
-                (id, inv, player) -> new PanelDesignContainer(ContainerLevelAccess.create(worldIn, pos), id),
-                TextComponent.EMPTY
-        );
     }
 
     public static boolean isMaster(BlockState state) {

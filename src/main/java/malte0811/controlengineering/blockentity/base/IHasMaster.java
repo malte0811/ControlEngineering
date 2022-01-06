@@ -9,6 +9,7 @@ public interface IHasMaster<T extends BlockEntity> extends IHasMasterBase {
     @Nullable
     T computeMasterBE(BlockState stateHere);
 
+    @Nullable
     default T getOrComputeMasterBE(BlockState stateHere) {
         if (getCachedMaster() != null) {
             return (T) getCachedMaster();

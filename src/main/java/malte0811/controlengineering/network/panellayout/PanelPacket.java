@@ -2,7 +2,7 @@ package malte0811.controlengineering.network.panellayout;
 
 import com.google.common.base.Preconditions;
 import malte0811.controlengineering.gui.StackedScreen;
-import malte0811.controlengineering.gui.panel.PanelDesignContainer;
+import malte0811.controlengineering.gui.panel.PanelDesignMenu;
 import malte0811.controlengineering.gui.panel.PanelDesignScreen;
 import malte0811.controlengineering.network.SimplePacket;
 import net.minecraft.network.FriendlyByteBuf;
@@ -31,7 +31,7 @@ public class PanelPacket extends SimplePacket {
         if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             Preconditions.checkState(packet.allowSendingToServer());
             AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
-            if (activeContainer instanceof PanelDesignContainer panelContainer) {
+            if (activeContainer instanceof PanelDesignMenu panelContainer) {
                 packet.process(panelContainer.getComponents());
                 panelContainer.sendToListeningPlayersExcept(ctx.getSender(), packet);
                 panelContainer.markDirty();

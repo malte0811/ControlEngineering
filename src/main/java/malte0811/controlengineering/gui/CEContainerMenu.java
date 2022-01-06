@@ -5,12 +5,7 @@ import malte0811.controlengineering.network.SimplePacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -20,23 +15,27 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 @Mod.EventBusSubscriber(modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public abstract class CEContainer<PacketType> extends AbstractContainerMenu {
+public abstract class CEContainerMenu<PacketType> extends AbstractContainerMenu {
     private final List<ServerPlayer> listeners = new ArrayList<>();
-    protected final ContainerLevelAccess pos;
-    @Nullable
-    private final Block expectedBlock;
+    private final Predicate<Player> isValid;
+    private final Runnable setChanged;
 
-    protected CEContainer(@Nullable MenuType<?> type, ContainerLevelAccess pos, int id) {
+    protected CEContainerMenu(@Nullable MenuType<?> type, int id, Predicate<Player> isValid, Runnable setChanged) {
         super(type, id);
-        this.pos = pos;
-        this.expectedBlock = this.pos.evaluate(Level::getBlockState).map(BlockState::getBlock).orElse(null);
+        this.isValid = isValid;
+        this.setChanged = setChanged;
+    }
+
+    protected CEContainerMenu(@Nullable MenuType<?> type, int id) {
+        this(type, id, $ -> true, () -> {});
     }
 
     @Override
     public boolean stillValid(@Nonnull Player playerIn) {
-        return expectedBlock == null || stillValid(pos, playerIn, expectedBlock);
+        return isValid.test(playerIn);
     }
 
     public void sendToListeningPlayers(PacketType data) {
@@ -62,7 +61,7 @@ public abstract class CEContainer<PacketType> extends AbstractContainerMenu {
     protected abstract PacketType getInitialSync();
 
     public void markDirty() {
-        pos.evaluate(Level::getBlockEntity).ifPresent(BlockEntity::setChanged);
+        setChanged.run();
     }
 
     private void addListener(ServerPlayer serverPlayer) {
@@ -81,7 +80,7 @@ public abstract class CEContainer<PacketType> extends AbstractContainerMenu {
 
     @SubscribeEvent
     public static void openContainer(PlayerContainerEvent.Open ev) {
-        if (!(ev.getContainer() instanceof CEContainer<?> ceContainer)) {
+        if (!(ev.getContainer() instanceof CEContainerMenu<?> ceContainer)) {
             return;
         }
         if (!(ev.getPlayer() instanceof ServerPlayer serverPlayer)) {
@@ -92,7 +91,7 @@ public abstract class CEContainer<PacketType> extends AbstractContainerMenu {
 
     @SubscribeEvent
     public static void closeContainer(PlayerContainerEvent.Close ev) {
-        if (!(ev.getContainer() instanceof CEContainer<?> ceContainer)) {
+        if (!(ev.getContainer() instanceof CEContainerMenu<?> ceContainer)) {
             return;
         }
         if (!(ev.getPlayer() instanceof ServerPlayer serverPlayer)) {

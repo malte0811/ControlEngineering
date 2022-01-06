@@ -1,7 +1,7 @@
 package malte0811.controlengineering.network.keypunch;
 
 import com.google.common.base.Preconditions;
-import malte0811.controlengineering.gui.tape.KeypunchContainer;
+import malte0811.controlengineering.gui.tape.KeypunchMenu;
 import malte0811.controlengineering.gui.tape.KeypunchScreen;
 import malte0811.controlengineering.network.SimplePacket;
 import net.minecraft.client.Minecraft;
@@ -29,13 +29,13 @@ public class KeypunchPacket extends SimplePacket {
     protected void processOnThread(NetworkEvent.Context ctx) {
         if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             Preconditions.checkState(packet.allowSendingToServer());
-            if (ctx.getSender().containerMenu instanceof KeypunchContainer keypunch) {
+            if (ctx.getSender().containerMenu instanceof KeypunchMenu keypunch) {
                 if (keypunch.isLoopback()) {
                     packet.process(keypunch.getState());
                     keypunch.sendToListeningPlayersExcept(ctx.getSender(), packet);
                     keypunch.markDirty();
                 } else {
-                    packet.process(keypunch.getKeypunchBE()::queueForRemotePrint);
+                    packet.process(keypunch.getPrintNonLoopback());
                 }
             }
         } else {
