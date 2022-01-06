@@ -3,9 +3,10 @@ package malte0811.controlengineering.client;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.model.SpecialModelLoader;
-import malte0811.controlengineering.client.model.keypunch.KeypunchSwitchModel;
 import malte0811.controlengineering.client.model.logic.DynamicLogicModelLoader;
 import malte0811.controlengineering.client.model.panel.PanelModel;
+import malte0811.controlengineering.client.model.tape.KeypunchSwitchModel;
+import malte0811.controlengineering.client.model.tape.SequencerSwitchModel;
 import malte0811.controlengineering.client.render.panel.PanelRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -23,6 +24,9 @@ public class ModelLoaders {
     public static final ResourceLocation KEYPUNCH_SWITCH = new ResourceLocation(
             ControlEngineering.MODID, "keypunch_switch"
     );
+    public static final ResourceLocation SEQUENCER_SWITCH = new ResourceLocation(
+            ControlEngineering.MODID, "sequencer_switch"
+    );
 
     @SubscribeEvent
     public static void registerModelLoaders(ModelRegistryEvent ev) {
@@ -31,6 +35,9 @@ public class ModelLoaders {
         ));
         ModelLoaderRegistry.registerLoader(KEYPUNCH_SWITCH, new SpecialModelLoader(
                 KeypunchSwitchModel::new, KeypunchSwitchModel.TEXTURE_LOC
+        ));
+        ModelLoaderRegistry.registerLoader(SEQUENCER_SWITCH, new SpecialModelLoader(
+                SequencerSwitchModel::new, SequencerSwitchModel.TEXTURE_LOC
         ));
         ModelLoaderRegistry.registerLoader(LOGIC_CABINET, new DynamicLogicModelLoader());
     }

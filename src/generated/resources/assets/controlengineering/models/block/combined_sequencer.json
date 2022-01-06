@@ -1,0 +1,15 @@
+{
+  "loader": "forge:composite",
+  "parts": {
+    "static": {
+      "parent": "minecraft:block/block",
+      "loader": "forge:obj",
+      "model": "controlengineering:models/sequencer.obj",
+      "detectCullableFaces": false,
+      "flip-v": true
+    },
+    "dynamic": {
+      "loader": "controlengineering:sequencer_switch"
+    }
+  }
+}

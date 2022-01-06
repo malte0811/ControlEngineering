@@ -15,9 +15,6 @@ import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PCBStackItem;
 import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
-import malte0811.controlengineering.logic.clock.ClockGenerator;
-import malte0811.controlengineering.logic.clock.ClockGenerator.ClockInstance;
-import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import malte0811.controlengineering.util.*;
@@ -63,8 +60,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     private final CEEnergyStorage energy = new CEEnergyStorage(2048, 2 * 128, 128);
     @Nullable
     private Pair<Schematic, BusConnectedCircuit> circuit;
-    @Nonnull
-    private ClockInstance<?> clock = ClockTypes.NEVER.newInstance();
+    private final ClockSlot clock = new ClockSlot();
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private int numTubes;
     private BusState currentBusState = BusState.EMPTY;
@@ -85,7 +81,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         final Direction facing = getFacing(getBlockState());
         final Direction clockFace = facing.getCounterClockWise();
         boolean rsIn = level.getSignal(worldPosition.relative(clockFace), clockFace.getOpposite()) > 0;
-        if (!clock.tick(rsIn)) {
+        if (!clock.getClock().tick(rsIn)) {
             return;
         }
         // Inputs are updated in onBusUpdated
@@ -97,10 +93,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     @Override
     public void load(@Nonnull CompoundTag nbt) {
         super.load(nbt);
-        clock = Codecs.readOrNull(ClockInstance.CODEC, nbt.getCompound("clock"));
-        if (clock == null) {
-            clock = ClockTypes.NEVER.newInstance();
-        }
+        clock.load(nbt.get("clock"));
         if (nbt.contains("circuit")) {
             setCircuit(Codecs.readOrNull(Schematic.CODEC, nbt.get("circuit")));
         } else {
@@ -112,7 +105,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     @Override
     public void saveAdditional(@Nonnull CompoundTag compound) {
         super.saveAdditional(compound);
-        compound.put("clock", Codecs.encode(ClockInstance.CODEC, clock));
+        compound.put("clock", clock.toNBT());
         if (circuit != null) {
             compound.put("circuit", Codecs.encode(Schematic.CODEC, circuit.getFirst()));
         }
@@ -121,16 +114,13 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
 
     @Override
     protected void writeSyncedData(CompoundTag result) {
-        result.putBoolean("hasClock", clock.getType().isActiveClock());
+        result.put("hasClock", clock.toClientNBT());
         result.putInt("numTubes", numTubes);
     }
 
     @Override
     protected void readSyncedData(CompoundTag tag) {
-        if (tag.getBoolean("hasClock"))
-            clock = ClockTypes.ALWAYS_ON.newInstance();
-        else
-            clock = ClockTypes.NEVER.newInstance();
+        clock.loadClientNBT(tag.get("hasClock"));
         numTubes = tag.getInt("numTubes");
         requestModelDataUpdate();
         level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
@@ -140,7 +130,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     @Override
     public IModelData getModelData() {
         return new SinglePropertyModelData<>(
-                new DynamicLogicModel.ModelData(numTubes, clock.getType().isActiveClock()), DynamicLogicModel.DATA
+                new DynamicLogicModel.ModelData(numTubes, clock.isPresent()), DynamicLogicModel.DATA
         );
     }
 
@@ -246,29 +236,9 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
 
     private static SelectionShapes makeClockInteraction(LogicCabinetBlockEntity bEntity) {
         return new SingleShape(
-                ShapeUtils.createPixelRelative(0, 6, 6, 5, 10, 10), ctx -> {
-            if (ctx.getPlayer() == null) {
-                return InteractionResult.PASS;
-            }
-            ClockGenerator<?> currentClock = bEntity.clock.getType();
-            RegistryObject<Item> clockItem = CEItems.CLOCK_GENERATORS.get(currentClock.getRegistryName());
-            if (!ctx.getLevel().isClientSide) {
-                if (clockItem != null) {
-                    ItemUtil.giveOrDrop(ctx.getPlayer(), new ItemStack(clockItem.get()));
-                    bEntity.clock = ClockTypes.NEVER.newInstance();
-                    BEUtil.markDirtyAndSync(bEntity);
-                } else {
-                    ItemStack item = ctx.getItemInHand();
-                    ClockGenerator<?> newClock = ClockTypes.REGISTRY.get(item.getItem().getRegistryName());
-                    if (newClock != null) {
-                        bEntity.clock = newClock.newInstance();
-                        item.shrink(1);
-                        BEUtil.markDirtyAndSync(bEntity);
-                    }
-                }
-            }
-            return InteractionResult.SUCCESS;
-        });
+                ShapeUtils.createPixelRelative(0, 6, 6, 5, 10, 10),
+                ctx -> bEntity.clock.click(ctx, () -> BEUtil.markDirtyAndSync(bEntity))
+        );
     }
 
     private static SelectionShapes makeBoardInteraction(LogicCabinetBlockEntity bEntity, boolean upper) {

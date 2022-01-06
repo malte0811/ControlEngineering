@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import malte0811.controlengineering.util.math.Vec2d;
 
-public class TapeDrive {
+public class TapeDriveRender {
     private double totalLength;
     private double lambda;
     private final double emptyRadius;
@@ -14,7 +14,7 @@ public class TapeDrive {
     private final TapeWheel rightWheel;
     private final Vec2d rightCenter;
 
-    public TapeDrive(
+    public TapeDriveRender(
             double fullRadius, double emptyRadius,
             Vec2d leftCenter, Vec2d leftTarget,
             Vec2d rightCenter, Vec2d rightTarget

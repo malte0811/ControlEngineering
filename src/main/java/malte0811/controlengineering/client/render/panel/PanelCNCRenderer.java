@@ -14,7 +14,7 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.panels.CNCJob;
 import malte0811.controlengineering.blockentity.panels.PanelCNCBlockEntity;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
-import malte0811.controlengineering.client.render.tape.TapeDrive;
+import malte0811.controlengineering.client.render.tape.TapeDriveRender;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.client.render.utils.ModelRenderUtils;
 import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath;
@@ -54,7 +54,7 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
     private static final LoadingCache<List<PlacedComponent>, MixedModel> MODEL_CACHE = CacheBuilder.newBuilder()
             .expireAfterAccess(10, TimeUnit.SECONDS)
             .build(CacheLoader.from(comps -> ComponentRenderers.renderAll(comps, new PoseStack())));
-    private static final TapeDrive TAPE_DRIVE = new TapeDrive(
+    private static final TapeDriveRender TAPE_DRIVE = new TapeDriveRender(
             2, 1, new Vec2d(5, 8), new Vec2d(7, 5), new Vec2d(11, 8), new Vec2d(9, 5)
     );
 

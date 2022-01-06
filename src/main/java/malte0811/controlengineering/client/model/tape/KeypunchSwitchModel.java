@@ -1,4 +1,4 @@
-package malte0811.controlengineering.client.model.keypunch;
+package malte0811.controlengineering.client.model.tape;
 
 import blusunrize.immersiveengineering.api.utils.client.SinglePropertyModelData;
 import com.google.common.base.Suppliers;

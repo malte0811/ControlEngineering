@@ -38,6 +38,7 @@ public class LangGenerator extends LanguageProvider {
         addBlock(CEBlocks.LINE_ACCESS, "Line Access");
         addBlock(CEBlocks.PANEL_CNC, "Control Panel CNC");
         addBlock(CEBlocks.KEYPUNCH, "Keyboard Perforator");
+        addBlock(CEBlocks.SEQUENCER, "Signal Sequencer");
         addBlock(CEBlocks.PANEL_DESIGNER, "Panel Designer");
 
         addItem(CEItems.EMPTY_TAPE, "Empty Tape");

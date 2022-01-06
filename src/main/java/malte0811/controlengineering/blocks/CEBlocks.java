@@ -10,6 +10,7 @@ import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.panels.PanelDesignerBlock;
 import malte0811.controlengineering.blocks.tape.KeypunchBlock;
+import malte0811.controlengineering.blocks.tape.SequencerBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -40,6 +41,8 @@ public class CEBlocks {
     );
 
     public static final RegistryObject<KeypunchBlock> KEYPUNCH = REGISTER.register("keypunch", KeypunchBlock::new);
+
+    public static final RegistryObject<SequencerBlock> SEQUENCER = REGISTER.register("sequencer", SequencerBlock::new);
 
     public static final RegistryObject<LogicCabinetBlock> LOGIC_CABINET = REGISTER.register(
             "logic_cabinet",

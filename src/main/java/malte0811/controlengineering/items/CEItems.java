@@ -42,6 +42,7 @@ public class CEItems {
             () -> new ControlPanelItem(CEBlocks.CONTROL_PANEL.get(), simpleItemProperties())
     );
     private static final RegistryObject<CEBlockItem<Direction>> KEYPUNCH = blockItemCE(CEBlocks.KEYPUNCH);
+    private static final RegistryObject<CEBlockItem<Direction>> SEQUENCER = blockItemCE(CEBlocks.SEQUENCER);
     private static final RegistryObject<CEBlockItem<Direction>> PANEL_CNC = blockItemCE(CEBlocks.PANEL_CNC);
     private static final RegistryObject<CEBlockItem<Direction>> LOGIC_CABINET = blockItemCE(CEBlocks.LOGIC_CABINET);
     private static final RegistryObject<CEBlockItem<Direction>> LOGIC_WORKBENCH = blockItemCE(CEBlocks.LOGIC_WORKBENCH);

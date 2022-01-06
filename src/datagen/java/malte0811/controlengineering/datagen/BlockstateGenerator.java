@@ -16,6 +16,7 @@ import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.panels.PanelDesignerBlock;
 import malte0811.controlengineering.blocks.tape.KeypunchBlock;
+import malte0811.controlengineering.blocks.tape.SequencerBlock;
 import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.datagen.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.datagen.modelbuilder.LogicCabinetBuilder;
@@ -57,6 +58,7 @@ public class BlockstateGenerator extends BlockStateProvider {
         panelModel();
         column2(obj("panel_cnc.obj"), CEBlocks.PANEL_CNC, PanelCNCBlock.FACING);
         keypunchModel();
+        sequencerModel();
         logicCabinetModel();
         rotatedWithOffset(
                 CEBlocks.LOGIC_WORKBENCH,
@@ -106,6 +108,23 @@ public class BlockstateGenerator extends BlockStateProvider {
         emptyModel(CEBlocks.LOGIC_CABINET, ImmutableMap.of(LogicCabinetBlock.HEIGHT, 1));
         itemModels().getBuilder(ItemModels.name(CEBlocks.LOGIC_CABINET))
                 .parent(chassis);
+    }
+
+    private void sequencerModel() {
+        BlockModelBuilder staticModel = obj("sequencer.obj", mcLoc("block/block"));
+        BlockModelBuilder combinedModel = models().getBuilder("combined_sequencer")
+                .customLoader(CompositeModelBuilder::begin)
+                .submodel("static", staticModel)
+                .submodel("dynamic", models().getBuilder("dynamic_sequencer")
+                        .customLoader(SpecialModelBuilder.forLoader(ModelLoaders.SEQUENCER_SWITCH))
+                        .end())
+                .end();
+        horizontalRotated(
+                CEBlocks.SEQUENCER,
+                SequencerBlock.FACING,
+                combinedModel
+        );
+        itemModels().getBuilder(ItemModels.name(CEBlocks.SEQUENCER)).parent(staticModel);
     }
 
     private void keypunchModel() {
