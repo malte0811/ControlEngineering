@@ -60,6 +60,11 @@ public class TapeDrive {
         return Objects.requireNonNull(insertedTape);
     }
 
+    @Nullable
+    public byte[] getNullableTapeContent() {
+        return insertedTape;
+    }
+
     public boolean hasTape() {
         return insertedTape != null;
     }

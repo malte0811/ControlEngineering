@@ -64,7 +64,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
             () -> setState(state.addTape()), () -> setState(state.removeTape()), () -> state.canTakeTape()
     );
     private final CachedValue<byte[], CNCJob> currentJob = new CachedValue<>(
-            tape::getTapeContent,
+            tape::getNullableTapeContent,
             tape -> {
                 if (tape != null) {
                     return CNCJob.createFor(CNCInstructionParser.parse(BitUtils.toString(tape)));

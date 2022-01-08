@@ -16,6 +16,7 @@ public class ParallelPort {
     private final ByteList transmitQueue;
     private boolean sendingFirst;
     private byte currentInput;
+    private boolean lastTriggerHigh;
     private boolean triggerHigh;
 
     public ParallelPort() {
@@ -27,6 +28,7 @@ public class ParallelPort {
         sendingFirst = nbt.getBoolean("sendingFirst");
         currentInput = nbt.getByte("currentInput");
         triggerHigh = nbt.getBoolean("triggerHigh");
+        lastTriggerHigh = nbt.getBoolean("lastTriggerHigh");
     }
 
     public boolean tickTX() {
@@ -35,8 +37,7 @@ public class ParallelPort {
             transmitQueue.removeByte(0);
             sendingFirst = false;
             updateRS = true;
-        }
-        if (!transmitQueue.isEmpty()) {
+        } else if (!transmitQueue.isEmpty()) {
             sendingFirst = true;
             updateRS = true;
         }
@@ -44,11 +45,14 @@ public class ParallelPort {
     }
 
     public Optional<Byte> tickRX() {
-        if (triggerHigh) {
-            return Optional.of(currentInput);
+        Optional<Byte> result;
+        if (triggerHigh && !lastTriggerHigh) {
+            result = Optional.of(currentInput);
         } else {
-            return Optional.empty();
+            result = Optional.empty();
         }
+        lastTriggerHigh = triggerHigh;
+        return result;
     }
 
     public BusState getOutputState() {
@@ -80,6 +84,7 @@ public class ParallelPort {
         result.putBoolean("sendingFirst", sendingFirst);
         result.putByte("currentInput", currentInput);
         result.putBoolean("triggerHigh", triggerHigh);
+        result.putBoolean("lastTriggerHigh", lastTriggerHigh);
         return result;
     }
 
