@@ -7,9 +7,12 @@ import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.blocks.tape.SequencerBlock;
-import malte0811.controlengineering.util.BEUtil;
-import malte0811.controlengineering.util.CachedValue;
-import malte0811.controlengineering.util.ShapeUtils;
+import malte0811.controlengineering.bus.BusLine;
+import malte0811.controlengineering.bus.BusState;
+import malte0811.controlengineering.bus.IBusInterface;
+import malte0811.controlengineering.bus.MarkDirtyHandler;
+import malte0811.controlengineering.util.*;
+import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -19,20 +22,30 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class SequencerBlockEntity extends CEBlockEntity implements SelectionShapeOwner {
-    private final TapeDrive tape = new TapeDrive(this::onTapeChange, this::onTapeChange, () -> true);
+public class SequencerBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IBusInterface {
+    private static final int BASE_CONSUMPTION = 16;
+    private static final int CONSUMPTION_PER_STEP = 128;
+
     private boolean compact = true;
     //TODO is this ever a useful feature?
     private boolean autoreset = true;
+    private final TapeDrive tape = new TapeDrive(this::onTapeChange, this::onTapeChange, () -> true);
     private final ClockSlot clock = new ClockSlot();
+    private final CEEnergyStorage energy = new CEEnergyStorage(20 * CONSUMPTION_PER_STEP, 2 * CONSUMPTION_PER_STEP, 0);
     private int currentTapePosition = 0;
+    private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
 
     public SequencerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -46,12 +59,41 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
         return autoreset;
     }
 
+    public int getTapeLength() {
+        return tape.getTapeLength();
+    }
+
+    public int getCurrentTapePosition() {
+        return currentTapePosition;
+    }
+
+    public void tick() {
+        if (!clock.isPresent() || !tape.hasTape() || level == null) {
+            return;
+        }
+        if (energy.extractOrTrue(BASE_CONSUMPTION) || level.getGameTime() % 2 != 0) {
+            return;
+        }
+        final Direction clockFace = getBlockState().getValue(SequencerBlock.FACING).getCounterClockWise();
+        boolean rsIn = level.getSignal(worldPosition.relative(clockFace), clockFace.getOpposite()) > 0;
+        if (clock.getClock().tick(rsIn) && !energy.extractOrTrue(CONSUMPTION_PER_STEP)) {
+            int newPos = ++currentTapePosition;
+            if (newPos < tape.getTapeLength()) {
+                currentTapePosition = newPos;
+            } else if (autoreset) {
+                currentTapePosition = 0;
+            }
+            BEUtil.markDirtyAndSync(this);
+        }
+    }
+
     @Override
     public void load(@Nonnull CompoundTag pTag) {
         super.load(pTag);
         readSharedData(pTag);
         tape.loadNBT(pTag.get("tape"));
         clock.load(pTag.get("clock"));
+        energy.readNBT(pTag.get("energy"));
     }
 
     @Override
@@ -60,6 +102,7 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
         writeSharedData(pTag);
         pTag.put("tape", tape.toNBT());
         pTag.put("clock", clock.toNBT());
+        pTag.put("energy", energy.writeNBT());
     }
 
     @Override
@@ -138,5 +181,62 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
     private void onTapeChange() {
         this.currentTapePosition = 0;
         BEUtil.markDirtyAndSync(this);
+    }
+
+    private final LazyOptional<IEnergyStorage> energyCap = CapabilityUtils.constantOptional(energy);
+
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == CapabilityEnergy.ENERGY && (side == Direction.UP || side == null)) {
+            return energyCap.cast();
+        }
+        return super.getCapability(cap, side);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        energyCap.invalidate();
+    }
+
+    @Override
+    public void onBusUpdated(BusState totalState, BusState otherState) {}
+
+    @Override
+    public BusState getEmittedState() {
+        if (!tape.hasTape()) {
+            return BusState.EMPTY;
+        }
+        final byte toSend = tape.getTapeContent()[currentTapePosition];
+        if (compact) {
+            int[] line = new int[BusLine.LINE_SIZE];
+            for (int i = 0; i < Byte.SIZE; ++i) {
+                if (BitUtils.getBit(toSend, i)) {
+                    line[i] = BusLine.MAX_VALID_VALUE;
+                }
+            }
+            return BusState.EMPTY.withLine(0, new BusLine(line));
+        } else {
+            int color = RedstoneTapeUtils.getColorId(toSend);
+            int strength = RedstoneTapeUtils.getStrength(toSend);
+            return BusState.EMPTY.with(0, color, strength * 17);
+        }
+    }
+
+    @Override
+    public boolean canConnect(Direction fromSide) {
+        return fromSide == getBlockState().getValue(SequencerBlock.FACING).getClockWise();
+    }
+
+    @Override
+    public void addMarkDirtyCallback(Clearable<Runnable> markDirty) {
+        markBusDirty.addCallback(markDirty);
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        markBusDirty.run();
     }
 }

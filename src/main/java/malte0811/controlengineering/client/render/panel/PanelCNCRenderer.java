@@ -16,6 +16,7 @@ import malte0811.controlengineering.blockentity.panels.PanelCNCBlockEntity;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.client.render.tape.TapeDriveRender;
 import malte0811.controlengineering.client.render.target.MixedModel;
+import malte0811.controlengineering.client.render.utils.BERUtils;
 import malte0811.controlengineering.client.render.utils.ModelRenderUtils;
 import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath;
 import malte0811.controlengineering.client.render.utils.PiecewiseAffinePath.Node;
@@ -77,7 +78,7 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
             int overlay
     ) {
         transform.pushPose();
-        rotateAroundCenter(-PanelCNCBlock.getDirection(cnc).toYRot(), transform);
+        BERUtils.rotateAroundCenter(-PanelCNCBlock.getDirection(cnc).toYRot(), transform);
         transform.scale(1 / 16f, 1 / 16f, 1 / 16f);
         final double tick = cnc.getCurrentTicksInJob() + (cnc.getState() == PanelCNCBlockEntity.State.RUNNING ? partialTicks : 0);
         transform.pushPose();
@@ -93,12 +94,6 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
         renderHead(cnc, buffers, transform, light, overlay, tick);
         transform.popPose();
         transform.popPose();
-    }
-
-    private void rotateAroundCenter(double angleDegrees, PoseStack stack) {
-        stack.translate(.5, .5, .5);
-        stack.mulPose(new Quaternion(0, (float) angleDegrees, 0, true));
-        stack.translate(-.5, -.5, -.5);
     }
 
     private void renderCurrentPanelState(

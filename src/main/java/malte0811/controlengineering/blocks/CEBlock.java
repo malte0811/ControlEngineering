@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,6 +38,7 @@ import net.minecraftforge.registries.RegistryObject;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public abstract class CEBlock<PlacementData> extends Block implements EntityBlock {
     public final PlacementBehavior<PlacementData> placementBehavior;
@@ -190,5 +192,13 @@ public abstract class CEBlock<PlacementData> extends Block implements EntityBloc
 
     protected static BlockBehaviour.Properties defaultPropertiesNotSolid() {
         return defaultProperties().noOcclusion().isRedstoneConductor(($1, $2, $3) -> false).dynamicShape();
+    }
+
+    @Nullable
+    protected static <E extends BlockEntity, A extends BlockEntity>
+    BlockEntityTicker<A> createTickerHelper(
+            BlockEntityType<A> actual, RegistryObject<BlockEntityType<E>> expected, Consumer<E> ticker
+    ) {
+        return expected.get() == actual ? ($, $2, $3, bEntity) -> ticker.accept((E) bEntity) : null;
     }
 }

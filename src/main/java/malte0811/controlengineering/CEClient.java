@@ -4,6 +4,7 @@ import malte0811.controlengineering.blockentity.CEBlockEntities;
 import malte0811.controlengineering.blocks.BlockRenderLayers;
 import malte0811.controlengineering.client.render.panel.PanelCNCRenderer;
 import malte0811.controlengineering.client.render.panel.PanelRenderer;
+import malte0811.controlengineering.client.render.tape.SequencerRenderer;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.gui.ContainerScreenManager;
 import net.minecraftforge.api.distmarker.Dist;
@@ -25,5 +26,6 @@ public class CEClient {
     public static void registerBERs(EntityRenderersEvent.RegisterRenderers ev) {
         ev.registerBlockEntityRenderer(CEBlockEntities.CONTROL_PANEL.dummy().get(), PanelRenderer::new);
         ev.registerBlockEntityRenderer(CEBlockEntities.PANEL_CNC.master().get(), PanelCNCRenderer::new);
+        ev.registerBlockEntityRenderer(CEBlockEntities.SEQUENCER.get(), SequencerRenderer::new);
     }
 }

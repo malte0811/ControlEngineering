@@ -8,8 +8,12 @@ public class RedstoneTapeUtils {
         return (b >>> 4) & 0xf;
     }
 
+    public static int getColorId(byte b) {
+        return b & 0xf;
+    }
+
     public static DyeColor getColor(byte b) {
-        return DyeColor.byId(b & 0xf);
+        return DyeColor.byId(getColorId(b));
     }
 
     public static byte combine(DyeColor color, int strength) {
