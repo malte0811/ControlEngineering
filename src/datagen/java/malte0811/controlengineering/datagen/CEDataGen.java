@@ -15,5 +15,6 @@ public class CEDataGen {
         ev.getGenerator().addProvider(new LangGenerator(ev.getGenerator()));
         ev.getGenerator().addProvider(new ServerFontData(ev.getGenerator(), ev.getExistingFileHelper()));
         ev.getGenerator().addProvider(new LootGenerator(ev.getGenerator()));
+        ev.getGenerator().addProvider(new ComponentCostGenerator(ev.getGenerator()));
     }
 }

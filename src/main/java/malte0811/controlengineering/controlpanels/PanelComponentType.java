@@ -1,7 +1,6 @@
 package malte0811.controlengineering.controlpanels;
 
 import blusunrize.immersiveengineering.api.crafting.IngredientWithSize;
-import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusState;
@@ -12,12 +11,14 @@ import malte0811.controlengineering.util.serialization.serial.SerialCodecParser;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.util.Lazy;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class PanelComponentType<Config, State>
         extends TypedRegistryEntry<Pair<Config, State>, PanelComponentInstance<Config, State>> {
@@ -96,17 +97,10 @@ public abstract class PanelComponentType<Config, State>
         return translationKey;
     }
 
-    private List<IngredientWithSize> cost;
-
     public final List<IngredientWithSize> getCost() {
-        if (cost == null) {
-            cost = makeCostList();
-            Preconditions.checkNotNull(cost);
-        }
-        return cost;
+        return Objects.requireNonNullElseGet(
+                ComponentCostReloadListener.COMPONENT_COSTS.get(getRegistryName()),
+                () -> List.of(new IngredientWithSize(Ingredient.of(Items.BEDROCK)))
+        );
     }
-
-    // TODO data driven/IRecipe-based?
-    @Nonnull
-    protected abstract List<IngredientWithSize> makeCostList();
 }
