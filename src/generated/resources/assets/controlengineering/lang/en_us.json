@@ -27,7 +27,7 @@
   "cell.controlengineering.xor2.name": "2-input XOR",
   "cell.controlengineering.xor3.name": "3-input XOR",
   "controlengineering.component.button": "Button",
-  "controlengineering.component.covered_switch": "Covered Toggle Switch",
+  "controlengineering.component.covered_switch": "Covered Switch",
   "controlengineering.component.indicator": "Indicator",
   "controlengineering.component.label": "Label",
   "controlengineering.component.switch": "Toggle Switch",

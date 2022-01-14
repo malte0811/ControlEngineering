@@ -11,6 +11,7 @@ import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.util.math.TransformUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -100,7 +101,7 @@ public class ComponentSelector extends AbstractWidget {
         if (type != null) {
             transform.translate(0, 1, 0);
             String name = I18n.get(type.getTranslationKey());
-            mc.font.draw(transform, name, (colWidth - mc.font.width(name)) / 2f, 0, 0);
+            drawCenteredShrunkString(transform, mc.font, name, 0, colWidth, 0, 0);
 
             transform.translate(colWidth / 2., (actualRowHeight + mc.font.lineHeight) / 2., 0);
             transform.scale(16, 16, .01f);
@@ -155,5 +156,19 @@ public class ComponentSelector extends AbstractWidget {
     @Override
     public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {
         //TODO?
+    }
+
+    private static void drawCenteredShrunkString(
+            PoseStack transform, Font font, String text, int xMin, int xMax, int y, int color
+    ) {
+        var textWidth = font.width(text);
+        var areaWidth = xMax - xMin;
+        var scale = Math.min(1, areaWidth / (float) textWidth);
+        var areaCenter = xMin + areaWidth / 2.;
+        transform.pushPose();
+        transform.translate(areaCenter - scale * textWidth / 2., y, 0);
+        transform.scale(scale, scale, 1);
+        font.draw(transform, text, 0, 0, color);
+        transform.popPose();
     }
 }
