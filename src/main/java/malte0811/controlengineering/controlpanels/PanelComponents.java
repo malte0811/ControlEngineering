@@ -4,10 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.controlpanels.components.Button;
-import malte0811.controlengineering.controlpanels.components.Indicator;
-import malte0811.controlengineering.controlpanels.components.Label;
-import malte0811.controlengineering.controlpanels.components.ToggleSwitch;
+import malte0811.controlengineering.controlpanels.components.*;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import net.minecraft.resources.ResourceLocation;
 
@@ -20,6 +17,7 @@ public class PanelComponents {
     public static final Indicator INDICATOR = register("indicator", new Indicator());
     public static final Label LABEL = register("label", new Label());
     public static final ToggleSwitch TOGGLE_SWITCH = register("toggle_switch", new ToggleSwitch());
+    public static final CoveredToggleSwitch COVERED_SWITCH = register("covered_switch", new CoveredToggleSwitch());
 
     private static <T extends PanelComponentType<?, ?>> T register(String path, T type) {
         ResourceLocation nameRL = new ResourceLocation(ControlEngineering.MODID, path);

@@ -9,13 +9,13 @@ import malte0811.controlengineering.client.render.target.RenderUtils;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.Util;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumMap;
 import java.util.Map;
 
+import static malte0811.controlengineering.client.render.target.RenderUtils.ALL_DYNAMIC;
 import static malte0811.controlengineering.controlpanels.components.ToggleSwitch.SIZE;
 
 public class SwitchRender extends ComponentRenderer<BusSignalRef, Boolean> {
@@ -27,11 +27,6 @@ public class SwitchRender extends ComponentRenderer<BusSignalRef, Boolean> {
             if (side != Direction.DOWN) {
                 sideColors.put(side, COLOR);
             }
-        }
-    });
-    private static final Map<Direction, RenderType> ALL_DYNAMIC = Util.make(new EnumMap<>(Direction.class), types -> {
-        for (Direction side : DirectionUtils.VALUES) {
-            types.put(side, MixedModel.SOLID_DYNAMIC);
         }
     });
     private static final float ROD_DIAMETER = 0.5f;

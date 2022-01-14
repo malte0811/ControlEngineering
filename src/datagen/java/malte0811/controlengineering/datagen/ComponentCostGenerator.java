@@ -18,21 +18,19 @@ import java.io.IOException;
 public record ComponentCostGenerator(DataGenerator generator) implements DataProvider {
     @Override
     public void run(@Nonnull HashCache cache) throws IOException {
-        addCosts(cache, PanelComponents.BUTTON,
-                new IngredientWithSize(Tags.Items.DYES),
-                new IngredientWithSize(Tags.Items.DUSTS_GLOWSTONE),
-                new IngredientWithSize(Ingredient.of(Items.STONE_BUTTON))
-        );
-        addCosts(cache, PanelComponents.LABEL,
-                new IngredientWithSize(Tags.Items.DYES_BLACK),
-                //TODO tag?
-                new IngredientWithSize(Ingredient.of(Items.PAPER))
-        );
-        addCosts(cache, PanelComponents.INDICATOR,
-                new IngredientWithSize(Tags.Items.DYES),
-                new IngredientWithSize(Tags.Items.DUSTS_GLOWSTONE)
-        );
-        addCosts(cache, PanelComponents.TOGGLE_SWITCH, new IngredientWithSize(Ingredient.of(Items.LEVER)));
+        var anyDye = new IngredientWithSize(Tags.Items.DYES);
+        //TODO tag?
+        var paper = new IngredientWithSize(Ingredient.of(Items.PAPER));
+        var glowstone = new IngredientWithSize(Tags.Items.DUSTS_GLOWSTONE);
+        var stoneButton = new IngredientWithSize(Ingredient.of(Items.STONE_BUTTON));
+        var blackDye = new IngredientWithSize(Tags.Items.DYES_BLACK);
+        var lever = new IngredientWithSize(Ingredient.of(Items.LEVER));
+
+        addCosts(cache, PanelComponents.BUTTON, anyDye, glowstone, stoneButton);
+        addCosts(cache, PanelComponents.LABEL, blackDye, paper);
+        addCosts(cache, PanelComponents.INDICATOR, anyDye, glowstone);
+        addCosts(cache, PanelComponents.TOGGLE_SWITCH, lever);
+        addCosts(cache, PanelComponents.COVERED_SWITCH, lever, paper, anyDye);
     }
 
     private void addCosts(

@@ -3,18 +3,37 @@ package malte0811.controlengineering.client.render.target;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
+import malte0811.controlengineering.util.DirectionUtils;
+import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.EnumMap;
 import java.util.Map;
 
 public class RenderUtils {
+
+    public static final Map<Direction, RenderType> ALL_DYNAMIC = Util.make(new EnumMap<>(Direction.class), types -> {
+        for (Direction side : DirectionUtils.VALUES) {
+            types.put(side, MixedModel.SOLID_DYNAMIC);
+        }
+    });
+
     public static void renderColoredBox(
             MixedModel output,
             PoseStack transform, Vec3 min, Vec3 max,
             Map<Direction, Integer> sideColors, Map<Direction, Integer> lightOverrides,
             Map<Direction, RenderType> targets
+    ) {
+        renderColoredBox(output, transform, min, max, sideColors, lightOverrides, targets, false);
+    }
+
+    public static void renderColoredBox(
+            MixedModel output,
+            PoseStack transform, Vec3 min, Vec3 max,
+            Map<Direction, Integer> sideColors, Map<Direction, Integer> lightOverrides,
+            Map<Direction, RenderType> targets, boolean invert
     ) {
         output.setSpriteForStaticTargets(QuadBuilder.getWhiteTexture());
         for (Map.Entry<Direction, Integer> entry : sideColors.entrySet()) {
@@ -28,11 +47,13 @@ public class RenderUtils {
             TransformingVertexBuilder out = new TransformingVertexBuilder(
                     output.getBuffer(targets.get(side)), transform, DefaultVertexFormat.BLOCK
             );
+            Vec3[] vertices = {
+                    posA, withValueFrom(posA, positive ? orthA : orthB, posB),
+                    withValueFrom(posB, normal, posA), withValueFrom(posA, positive ? orthB : orthA, posB)
+            };
             new QuadBuilder(
-                    posA,
-                    withValueFrom(posA, positive ? orthA : orthB, posB),
-                    withValueFrom(posB, normal, posA),
-                    withValueFrom(posA, positive ? orthB : orthA, posB)
+                    vertices[invert ? 3 : 0], vertices[invert ? 2 : 1],
+                    vertices[invert ? 1 : 2], vertices[invert ? 0 : 3]
             )
                     //TODO other default?
                     .setBlockLightOverride(lightOverrides.getOrDefault(side, 0))

@@ -20,6 +20,7 @@ public class ComponentRenderers {
         register(PanelComponents.INDICATOR, new IndicatorRender());
         register(PanelComponents.LABEL, new LabelRender());
         register(PanelComponents.TOGGLE_SWITCH, new SwitchRender());
+        register(PanelComponents.COVERED_SWITCH, new CoveredSwitchRender());
     }
 
     public static <Config, State> void register(
