@@ -1,12 +1,13 @@
 package malte0811.controlengineering.controlpanels.renders;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.controlpanels.PanelComponentInstance;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import net.minecraft.client.renderer.RenderType;
-import com.mojang.blaze3d.vertex.PoseStack;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ public class ComponentRenderers {
         register(PanelComponents.BUTTON, new ButtonRender());
         register(PanelComponents.INDICATOR, new IndicatorRender());
         register(PanelComponents.LABEL, new LabelRender());
+        register(PanelComponents.TOGGLE_SWITCH, new SwitchRender());
     }
 
     public static <Config, State> void register(

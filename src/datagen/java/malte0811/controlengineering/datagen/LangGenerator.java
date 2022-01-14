@@ -93,6 +93,7 @@ public class LangGenerator extends LanguageProvider {
         add(PanelComponents.BUTTON, "Button");
         add(PanelComponents.INDICATOR, "Indicator");
         add(PanelComponents.LABEL, "Label");
+        add(PanelComponents.TOGGLE_SWITCH, "Toggle Switch");
     }
 
     private void addGuiStrings() {

@@ -32,6 +32,7 @@ public record ComponentCostGenerator(DataGenerator generator) implements DataPro
                 new IngredientWithSize(Tags.Items.DYES),
                 new IngredientWithSize(Tags.Items.DUSTS_GLOWSTONE)
         );
+        addCosts(cache, PanelComponents.TOGGLE_SWITCH, new IngredientWithSize(Ingredient.of(Items.LEVER)));
     }
 
     private void addCosts(

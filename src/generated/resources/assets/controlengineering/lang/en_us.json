@@ -29,6 +29,7 @@
   "controlengineering.component.button": "Button",
   "controlengineering.component.indicator": "Indicator",
   "controlengineering.component.label": "Label",
+  "controlengineering.component.switch": "Toggle Switch",
   "controlengineering.gui.analogStrength": "Signal strength: %d",
   "controlengineering.gui.analogVsDigital": "Net would connect an analog source to digital sinks",
   "controlengineering.gui.blue": "Blue: %d",

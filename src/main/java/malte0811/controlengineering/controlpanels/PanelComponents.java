@@ -7,8 +7,10 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.controlpanels.components.Button;
 import malte0811.controlengineering.controlpanels.components.Indicator;
 import malte0811.controlengineering.controlpanels.components.Label;
+import malte0811.controlengineering.controlpanels.components.ToggleSwitch;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import net.minecraft.resources.ResourceLocation;
+
 import javax.annotation.Nullable;
 
 public class PanelComponents {
@@ -17,6 +19,7 @@ public class PanelComponents {
     public static final Button BUTTON = register("button", new Button());
     public static final Indicator INDICATOR = register("indicator", new Indicator());
     public static final Label LABEL = register("label", new Label());
+    public static final ToggleSwitch TOGGLE_SWITCH = register("toggle_switch", new ToggleSwitch());
 
     private static <T extends PanelComponentType<?, ?>> T register(String path, T type) {
         ResourceLocation nameRL = new ResourceLocation(ControlEngineering.MODID, path);
