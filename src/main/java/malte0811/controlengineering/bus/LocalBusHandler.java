@@ -37,6 +37,16 @@ public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickab
     }
 
     @Override
+    public void setLocalNet(LocalWireNetwork net) {
+        super.setLocalNet(net);
+        stateHandler.clear();
+        for (ConnectionPoint cp : localNet.getConnectionPoints()) {
+            loadConnectionPoint(cp, localNet.getConnector(cp));
+        }
+        requestUpdate();
+    }
+
+    @Override
     public void onConnectorLoaded(ConnectionPoint p, IImmersiveConnectable iic) {
         requestUpdate();
         loadConnectionPoint(p, iic);

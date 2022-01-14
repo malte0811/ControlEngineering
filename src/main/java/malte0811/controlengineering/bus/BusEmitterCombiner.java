@@ -1,5 +1,6 @@
 package malte0811.controlengineering.bus;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -11,8 +12,10 @@ public class BusEmitterCombiner<T> {
     private final Consumer<T> updateTotalState;
 
     private final Map<T, BusState> outputByBlock = new HashMap<>();
-    private BusState totalState = BusState.EMPTY;
-    private BusState totalEmittedState = BusState.EMPTY;
+    @Nullable
+    private BusState totalState = null;
+    @Nullable
+    private BusState totalEmittedState = null;
 
     public BusEmitterCombiner(
             Function<T, BusState> getEmittedState,
@@ -36,10 +39,10 @@ public class BusEmitterCombiner<T> {
         for (T key : outputByBlock.keySet()) {
             final BusState emittedState = getEmittedState.apply(key);
             outputByBlock.put(key, emittedState);
-            totalEmittedState = totalEmittedState.merge(emittedState);
+            totalEmittedState = Objects.requireNonNull(totalEmittedState).merge(emittedState);
         }
         totalState = totalEmittedState.merge(initialState);
-        if (!oldState.equals(Objects.requireNonNull(totalState))) {
+        if (oldState == null || !oldState.equals(totalState)) {
             for (T entry : outputByBlock.keySet()) {
                 updateTotalState.accept(entry);
             }
@@ -47,11 +50,11 @@ public class BusEmitterCombiner<T> {
     }
 
     public BusState getTotalState() {
-        return totalState;
+        return Objects.requireNonNullElse(totalState, BusState.EMPTY);
     }
 
     public BusState getTotalEmittedState() {
-        return totalEmittedState;
+        return Objects.requireNonNullElse(totalEmittedState, BusState.EMPTY);
     }
 
     public BusState getStateWithout(T excluded) {
@@ -70,5 +73,6 @@ public class BusEmitterCombiner<T> {
 
     public void clear() {
         outputByBlock.clear();
+        totalState = totalEmittedState = null;
     }
 }
