@@ -31,7 +31,7 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
     private final boolean isInput;
 
     public IOSymbol(boolean isInput) {
-        super(new BusSignalRef(0, 0), BusSignalRef.CODEC);
+        super(BusSignalRef.DEFAULT, BusSignalRef.CODEC);
         this.isInput = isInput;
     }
 
