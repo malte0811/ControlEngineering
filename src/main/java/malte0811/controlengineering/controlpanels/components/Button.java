@@ -17,7 +17,7 @@ public class Button extends PanelComponentType<ColorAndSignal, Boolean> {
         super(
                 ColorAndSignal.DEFAULT, false,
                 ColorAndSignal.CODEC, Codec.BOOL,
-                new Vec2d(1, 1),
+                new Vec2d(1, 1), 0.5,
                 TRANSLATION_KEY
         );
     }
@@ -42,12 +42,7 @@ public class Button extends PanelComponentType<ColorAndSignal, Boolean> {
     }
 
     @Override
-    protected double getSelectionHeight() {
-        return 0.5;
-    }
-
-    @Override
-    public Pair<InteractionResult, Boolean> click(ColorAndSignal config, Boolean oldState) {
+    public Pair<InteractionResult, Boolean> click(ColorAndSignal config, Boolean oldState, boolean sneaking) {
         return Pair.of(InteractionResult.SUCCESS, !oldState);
     }
 }

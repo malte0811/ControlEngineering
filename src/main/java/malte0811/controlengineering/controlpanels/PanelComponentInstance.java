@@ -39,8 +39,8 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
         return type.newInstance(buffer);
     }
 
-    public InteractionResult onClick() {
-        Pair<InteractionResult, State> clickResult = getType().click(getConfig(), getState());
+    public InteractionResult onClick(boolean sneaking) {
+        Pair<InteractionResult, State> clickResult = getType().click(getConfig(), getState(), sneaking);
         currentState = Pair.of(getConfig(), clickResult.getSecond());
         return clickResult.getFirst();
     }

@@ -16,7 +16,7 @@ public class Indicator extends PanelComponentType<ColorAndSignal, Integer> {
         super(
                 ColorAndSignal.DEFAULT, 0,
                 ColorAndSignal.CODEC, Codec.INT,
-                new Vec2d(1, 1),
+                new Vec2d(1, 1), -1,
                 TRANSLATION_KEY
         );
     }
@@ -37,12 +37,7 @@ public class Indicator extends PanelComponentType<ColorAndSignal, Integer> {
     }
 
     @Override
-    protected double getSelectionHeight() {
-        return -1;
-    }
-
-    @Override
-    public Pair<InteractionResult, Integer> click(ColorAndSignal colorAndSignal, Integer oldState) {
+    public Pair<InteractionResult, Integer> click(ColorAndSignal colorAndSignal, Integer oldState, boolean sneaking) {
         return Pair.of(InteractionResult.PASS, oldState);
     }
 }

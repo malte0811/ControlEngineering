@@ -14,7 +14,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.util.Lazy;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -22,20 +21,30 @@ import java.util.Objects;
 
 public abstract class PanelComponentType<Config, State>
         extends TypedRegistryEntry<Pair<Config, State>, PanelComponentInstance<Config, State>> {
+    @Nullable
+    // Null = dynamic size
     private final Vec2d size;
     private final SerialCodecParser<Config> configParser;
     private final String translationKey;
+    private final AABB defaultSelectionShape;
+
 
     protected PanelComponentType(
             Config defaultConfig, State intitialState,
             Codec<Config> codecConfig, Codec<State> codecState,
-            Vec2d size,
+            @Nullable Vec2d size, double selectionHeight,
             String translationKey
     ) {
         super(Pair.of(defaultConfig, intitialState), Codecs.safePair(codecConfig, codecState));
         this.size = size;
         this.configParser = SerialCodecParser.getParser(codecConfig);
         this.translationKey = translationKey;
+
+        if (selectionHeight >= 0 && size != null) {
+            this.defaultSelectionShape = new AABB(0, 0, 0, size.x(), selectionHeight, size.y());
+        } else {
+            this.defaultSelectionShape = null;
+        }
     }
 
     @Override
@@ -70,27 +79,15 @@ public abstract class PanelComponentType<Config, State>
 
     public abstract State tick(Config config, State oldState);
 
-    public abstract Pair<InteractionResult, State> click(Config config, State oldState);
-
-    protected abstract double getSelectionHeight();
-
-    private final Lazy<AABB> defaultSelectionShape = Lazy.of(() -> {
-        final double height = getSelectionHeight();
-        if (height >= 0) {
-            final Vec2d size = getSize(getInitialState().getFirst());
-            return new AABB(0, 0, 0, size.x(), height, size.y());
-        } else {
-            return null;
-        }
-    });
+    public abstract Pair<InteractionResult, State> click(Config config, State oldState, boolean sneaking);
 
     @Nullable
     public AABB getSelectionShape() {
-        return defaultSelectionShape.get();
+        return defaultSelectionShape;
     }
 
     public Vec2d getSize(Config config) {
-        return size;
+        return Objects.requireNonNull(size);
     }
 
     public String getTranslationKey() {

@@ -10,9 +10,6 @@ import malte0811.controlengineering.controlpanels.components.config.ColorAndText
 import malte0811.controlengineering.util.ServerFontWidth;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.phys.AABB;
-
-import javax.annotation.Nullable;
 
 public class Label extends PanelComponentType<ColorAndText, Unit> {
     public static final String TRANSLATION_KEY = ControlEngineering.MODID + ".component.label";
@@ -23,7 +20,7 @@ public class Label extends PanelComponentType<ColorAndText, Unit> {
         super(
                 ColorAndText.DEFAULT, Unit.INSTANCE,
                 ColorAndText.CODEC, Codec.unit(Unit.INSTANCE),
-                new Vec2d(1, 1), TRANSLATION_KEY
+                null, 0, TRANSLATION_KEY
         );
     }
 
@@ -43,19 +40,8 @@ public class Label extends PanelComponentType<ColorAndText, Unit> {
     }
 
     @Override
-    public Pair<InteractionResult, Unit> click(ColorAndText s, Unit oldState) {
+    public Pair<InteractionResult, Unit> click(ColorAndText s, Unit oldState, boolean sneaking) {
         return Pair.of(InteractionResult.PASS, oldState);
-    }
-
-    @Override
-    protected double getSelectionHeight() {
-        return 0;
-    }
-
-    @Nullable
-    @Override
-    public AABB getSelectionShape() {
-        return null;
     }
 
     @Override

@@ -127,7 +127,7 @@ public class PlacedComponent extends SelectionShapes {
 
     @Override
     public InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType) {
-        return component.onClick();
+        return component.onClick(ctx.getPlayer() != null && ctx.getPlayer().isShiftKeyDown());
     }
 
     public boolean disjoint(PlacedComponent other) {

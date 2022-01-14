@@ -13,12 +13,13 @@ import net.minecraft.world.InteractionResult;
 public class ToggleSwitch extends PanelComponentType<BusSignalRef, Boolean> {
     public static final String TRANSLATION_KEY = ControlEngineering.MODID + ".component.switch";
     public static final Vec2d SIZE = new Vec2d(1, 2);
+    public static final double SELECTION_HEIGHT = 1.5;
 
     public ToggleSwitch() {
         super(
                 BusSignalRef.DEFAULT, false,
                 BusSignalRef.CODEC, Codec.BOOL,
-                SIZE, TRANSLATION_KEY
+                SIZE, SELECTION_HEIGHT, TRANSLATION_KEY
         );
     }
 
@@ -42,12 +43,7 @@ public class ToggleSwitch extends PanelComponentType<BusSignalRef, Boolean> {
     }
 
     @Override
-    public Pair<InteractionResult, Boolean> click(BusSignalRef outputSignal, Boolean oldState) {
+    public Pair<InteractionResult, Boolean> click(BusSignalRef outputSignal, Boolean oldState, boolean sneaking) {
         return Pair.of(InteractionResult.SUCCESS, !oldState);
-    }
-
-    @Override
-    protected double getSelectionHeight() {
-        return 1.5;
     }
 }
