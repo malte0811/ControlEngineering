@@ -33,16 +33,6 @@ public class ToggleSwitch extends PanelComponentType<BusSignalRef, Boolean> {
     }
 
     @Override
-    public Boolean updateTotalState(BusSignalRef outputSignal, Boolean oldState, BusState busState) {
-        return oldState;
-    }
-
-    @Override
-    public Boolean tick(BusSignalRef outputSignal, Boolean oldState) {
-        return oldState;
-    }
-
-    @Override
     public Pair<InteractionResult, Boolean> click(BusSignalRef outputSignal, Boolean oldState, boolean sneaking) {
         return Pair.of(InteractionResult.SUCCESS, !oldState);
     }

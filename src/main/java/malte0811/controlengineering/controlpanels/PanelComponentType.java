@@ -73,13 +73,21 @@ public abstract class PanelComponentType<Config, State>
         return configParser.stringify(config);
     }
 
-    public abstract BusState getEmittedState(Config config, State state);
+    public BusState getEmittedState(Config config, State state) {
+        return BusState.EMPTY;
+    }
 
-    public abstract State updateTotalState(Config config, State oldState, BusState busState);
+    public State updateTotalState(Config config, State oldState, BusState busState) {
+        return oldState;
+    }
 
-    public abstract State tick(Config config, State oldState);
+    public State tick(Config config, State oldState) {
+        return oldState;
+    }
 
-    public abstract Pair<InteractionResult, State> click(Config config, State oldState, boolean sneaking);
+    public Pair<InteractionResult, State> click(Config config, State oldState, boolean sneaking) {
+        return Pair.of(InteractionResult.PASS, oldState);
+    }
 
     @Nullable
     public AABB getSelectionShape() {

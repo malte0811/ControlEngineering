@@ -31,16 +31,6 @@ public class CoveredToggleSwitch extends PanelComponentType<ColorAndSignal, Cove
     }
 
     @Override
-    public State updateTotalState(ColorAndSignal config, State oldState, BusState busState) {
-        return oldState;
-    }
-
-    @Override
-    public State tick(ColorAndSignal config, State oldState) {
-        return oldState;
-    }
-
-    @Override
     public Pair<InteractionResult, State> click(ColorAndSignal config, State oldState, boolean sneaking) {
         if (sneaking) {
             return Pair.of(oldState == State.CLOSED ? InteractionResult.PASS : InteractionResult.SUCCESS, State.CLOSED);

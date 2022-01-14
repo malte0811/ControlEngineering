@@ -22,18 +22,8 @@ public class Indicator extends PanelComponentType<ColorAndSignal, Integer> {
     }
 
     @Override
-    public BusState getEmittedState(ColorAndSignal colorAndSignal, Integer integer) {
-        return BusState.EMPTY;
-    }
-
-    @Override
     public Integer updateTotalState(ColorAndSignal colorAndSignal, Integer oldState, BusState busState) {
         return busState.getSignal(colorAndSignal.signal());
-    }
-
-    @Override
-    public Integer tick(ColorAndSignal colorAndSignal, Integer oldState) {
-        return oldState;
     }
 
     @Override

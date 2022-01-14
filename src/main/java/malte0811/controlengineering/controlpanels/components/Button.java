@@ -32,16 +32,6 @@ public class Button extends PanelComponentType<ColorAndSignal, Boolean> {
     }
 
     @Override
-    public Boolean updateTotalState(ColorAndSignal config, Boolean oldState, BusState busState) {
-        return oldState;
-    }
-
-    @Override
-    public Boolean tick(ColorAndSignal config, Boolean oldState) {
-        return oldState;
-    }
-
-    @Override
     public Pair<InteractionResult, Boolean> click(ColorAndSignal config, Boolean oldState, boolean sneaking) {
         return Pair.of(InteractionResult.SUCCESS, !oldState);
     }
