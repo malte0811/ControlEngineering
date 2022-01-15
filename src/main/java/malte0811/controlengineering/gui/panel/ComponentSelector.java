@@ -10,6 +10,7 @@ import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.util.math.TransformUtil;
+import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -104,8 +105,13 @@ public class ComponentSelector extends AbstractWidget {
             drawCenteredShrunkString(transform, mc.font, name, 0, colWidth, 0, 0);
 
             transform.translate(colWidth / 2., (actualRowHeight + mc.font.lineHeight) / 2., 0);
-            transform.scale(16, 16, .01f);
             PanelComponentInstance<?, ?> instance = type.newInstance();
+            var componentSize = instance.getSize();
+            var areaSize = new Vec2d(colWidth, actualRowHeight - mc.font.lineHeight * 1.5);
+            var extraScale = (float) Math.min(
+                    Math.min(areaSize.x() / componentSize.x(), areaSize.y() / componentSize.y()), 16
+            );
+            transform.scale(extraScale, extraScale, .01f);
             transform.translate(-instance.getSize().x() / 2f, -instance.getSize().y() / 2f, 0);
             transform.mulPose(new Quaternion(-90, 0, 0, true));
             TransformUtil.shear(transform, .1f, .1f);
