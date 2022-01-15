@@ -4,6 +4,7 @@ import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.panels.CachedPanelShape;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
+import malte0811.controlengineering.util.BEUtil;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.Vec3;
@@ -54,8 +55,9 @@ public class PanelSelectionShapes extends SelectionShapes {
     @Override
     public InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType) {
         if (defaultType.shouldSwing() && !bEntity.getLevel().isClientSide) {
-            bEntity.updateBusState(ControlPanelBlockEntity.SyncType.ALWAYS);
+            bEntity.updateBusState();
             bEntity.setChanged();
+            BEUtil.markDirtyAndSync(bEntity);
         }
         return defaultType;
     }

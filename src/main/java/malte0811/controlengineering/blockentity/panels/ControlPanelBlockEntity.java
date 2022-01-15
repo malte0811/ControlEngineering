@@ -58,7 +58,7 @@ public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterf
             updateBus |= componentResult.updateBus();
         }
         if (updateBus) {
-            updateBusState(SyncType.NEVER);
+            updateBusState();
         }
         if (updateClient) {
             BEUtil.markDirtyAndSync(this);
@@ -70,18 +70,15 @@ public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterf
         for (int i = 0; i < components.size(); ++i) {
             stateHandler.addEmitter(i);
         }
-        updateBusState(SyncType.NEVER);
+        updateBusState();
     }
 
-    public void updateBusState(SyncType sync) {
+    public void updateBusState() {
         BusState oldState = stateHandler.getTotalEmittedState();
         stateHandler.updateState(this.inputState);
         boolean changed = !oldState.equals(stateHandler.getTotalEmittedState());
         if (changed) {
             markBusDirty.run();
-        }
-        if (sync.shouldSync(changed) && level != null) {
-            BEUtil.markDirtyAndSync(this);
         }
     }
 
@@ -140,7 +137,8 @@ public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterf
     public void onBusUpdated(BusState totalState, BusState otherState) {
         if (!totalState.equals(inputState)) {
             this.inputState = totalState;
-            this.updateBusState(SyncType.IF_CHANGED);
+            this.updateBusState();
+            BEUtil.markDirtyAndSync(this);
         }
     }
 
@@ -186,19 +184,5 @@ public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterf
     @Override
     public ControlPanelBlockEntity computeMasterBE(BlockState stateHere) {
         return PanelBlock.getBase(level, stateHere, worldPosition);
-    }
-
-    public enum SyncType {
-        NEVER,
-        IF_CHANGED,
-        ALWAYS;
-
-        public boolean shouldSync(boolean changed) {
-            return switch (this) {
-                case NEVER -> false;
-                case IF_CHANGED -> changed;
-                case ALWAYS -> true;
-            };
-        }
     }
 }
