@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import malte0811.controlengineering.controlpanels.ComponentCostReloadListener;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
+import malte0811.controlengineering.items.IEItemRefs;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.HashCache;
@@ -26,6 +27,7 @@ public record ComponentCostGenerator(DataGenerator generator) implements DataPro
         var blackDye = new IngredientWithSize(Tags.Items.DYES_BLACK);
         var lever = new IngredientWithSize(Ingredient.of(Items.LEVER));
         var clock = new IngredientWithSize(Ingredient.of(Items.CLOCK));
+        var coil = new IngredientWithSize(Ingredient.of(IEItemRefs.WIRE_COIL.get()));
 
         addCosts(cache, PanelComponents.BUTTON, anyDye, glowstone, stoneButton);
         addCosts(cache, PanelComponents.LABEL, blackDye, paper);
@@ -33,6 +35,7 @@ public record ComponentCostGenerator(DataGenerator generator) implements DataPro
         addCosts(cache, PanelComponents.TOGGLE_SWITCH, lever);
         addCosts(cache, PanelComponents.COVERED_SWITCH, lever, paper, anyDye);
         addCosts(cache, PanelComponents.TIMED_BUTTON, anyDye, glowstone, stoneButton, clock);
+        addCosts(cache, PanelComponents.PANEL_METER, paper, blackDye, coil);
     }
 
     private void addCosts(

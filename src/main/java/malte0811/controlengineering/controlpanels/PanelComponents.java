@@ -13,11 +13,15 @@ import javax.annotation.Nullable;
 public class PanelComponents {
     public static final TypedRegistry<PanelComponentType<?, ?>> REGISTRY = new TypedRegistry<>();
     private static final BiMap<String, ResourceLocation> CREATION_KEY = HashBiMap.create();
+    // Signal generators
     public static final Button BUTTON = register("button", new Button());
     public static final TimedButton TIMED_BUTTON = register("timed_button", new TimedButton());
     public static final ToggleSwitch TOGGLE_SWITCH = register("toggle_switch", new ToggleSwitch());
     public static final CoveredToggleSwitch COVERED_SWITCH = register("covered_switch", new CoveredToggleSwitch());
+    // Signal viewers
     public static final Indicator INDICATOR = register("indicator", new Indicator());
+    public static final PanelMeter PANEL_METER = register("panel_meter", new PanelMeter());
+    // Misc
     public static final Label LABEL = register("label", new Label());
 
     private static <T extends PanelComponentType<?, ?>> T register(String path, T type) {

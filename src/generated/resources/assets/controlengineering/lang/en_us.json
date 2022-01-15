@@ -30,6 +30,7 @@
   "controlengineering.component.covered_switch": "Covered Switch",
   "controlengineering.component.indicator": "Indicator",
   "controlengineering.component.label": "Label",
+  "controlengineering.component.meter": "Panel Meter",
   "controlengineering.component.switch": "Toggle Switch",
   "controlengineering.component.timed_button": "Timed Button",
   "controlengineering.gui.analogStrength": "Signal strength: %d",
