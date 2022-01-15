@@ -8,7 +8,7 @@ import malte0811.controlengineering.controlpanels.components.Label;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndText;
 import net.minecraft.client.Minecraft;
 
-public class LabelRender extends ComponentRenderer<ColorAndText, Unit> {
+public class LabelRender implements ComponentRenderer<ColorAndText, Unit> {
     @Override
     public void render(MixedModel output, ColorAndText s, Unit unit, PoseStack transform) {
         transform.pushPose();

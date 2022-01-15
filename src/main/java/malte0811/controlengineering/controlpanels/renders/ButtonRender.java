@@ -15,7 +15,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
-public class ButtonRender<S> extends ComponentRenderer<ColorAndSignal, S> {
+public class ButtonRender<S> implements ComponentRenderer<ColorAndSignal, S> {
     private static final Vec3 BOX_MIN = Vec3.ZERO;
     private static final Vec3 BOX_MAX = new Vec3(1, 0.5, 1);
     private static final Map<Direction, RenderType> TARGETS = ImmutableMap.<Direction, RenderType>builder()

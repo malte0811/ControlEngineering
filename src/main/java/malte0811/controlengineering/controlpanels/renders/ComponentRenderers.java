@@ -23,6 +23,7 @@ public class ComponentRenderers {
         register(PanelComponents.TOGGLE_SWITCH, new SwitchRender());
         register(PanelComponents.COVERED_SWITCH, new CoveredSwitchRender());
         register(PanelComponents.TIMED_BUTTON, new ButtonRender<>(TimedButton::isActive));
+        register(PanelComponents.PANEL_METER, new PanelMeterRender());
     }
 
     public static <Config, State> void register(

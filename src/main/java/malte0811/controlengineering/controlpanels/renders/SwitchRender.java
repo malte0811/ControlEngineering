@@ -18,7 +18,7 @@ import java.util.Map;
 import static malte0811.controlengineering.client.render.target.RenderUtils.ALL_DYNAMIC;
 import static malte0811.controlengineering.controlpanels.components.ToggleSwitch.SIZE;
 
-public class SwitchRender extends ComponentRenderer<BusSignalRef, Boolean> {
+public class SwitchRender implements ComponentRenderer<BusSignalRef, Boolean> {
     private static final int COLOR = 0xd0d0d0;
     private static final Quaternion ROTATION_OFF = new Quaternion(30, 0, 0, true);
     private static final Quaternion ROTATION_ON = new Quaternion(-30, 0, 0, true);

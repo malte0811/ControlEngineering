@@ -9,7 +9,7 @@ import malte0811.controlengineering.controlpanels.components.config.ColorAndSign
 import malte0811.controlengineering.util.ColorUtils;
 import net.minecraft.world.phys.Vec3;
 
-public class IndicatorRender extends ComponentRenderer<ColorAndSignal, Integer> {
+public class IndicatorRender implements ComponentRenderer<ColorAndSignal, Integer> {
     @Override
     public void render(MixedModel output, ColorAndSignal config, Integer rsValue, PoseStack transform) {
         double colorFactor = 0.5 + rsValue / (2. * BusLine.MAX_VALID_VALUE);

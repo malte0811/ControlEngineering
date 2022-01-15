@@ -15,7 +15,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class CoveredSwitchRender extends ComponentRenderer<ColorAndSignal, State> {
+public class CoveredSwitchRender implements ComponentRenderer<ColorAndSignal, State> {
     private static final Vec3 SIZE = Util.make(() -> {
         var shape = Objects.requireNonNull(PanelComponents.COVERED_SWITCH.getSelectionShape());
         return new Vec3(shape.maxX, shape.maxY, shape.maxZ);
