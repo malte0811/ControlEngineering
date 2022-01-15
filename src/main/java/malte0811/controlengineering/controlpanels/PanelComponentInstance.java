@@ -45,6 +45,15 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
         return clickResult.getFirst();
     }
 
+    public TickResult tick() {
+        final var oldState = currentState;
+        currentState = Pair.of(getConfig(), getType().tick(getConfig(), getState()));
+        return new TickResult(
+                !Objects.equals(oldState, currentState),
+                getType().canClientDistinguish(oldState.getSecond(), currentState.getSecond())
+        );
+    }
+
     public BusState getEmittedState() {
         return getType().getEmittedState(getConfig(), getState());
     }
@@ -103,4 +112,6 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
     public String toString() {
         return "type=" + getType() + ";config=" + getConfig() + ";state=" + getState();
     }
+
+    public record TickResult(boolean updateBus, boolean updateClient) {}
 }

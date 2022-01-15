@@ -102,6 +102,10 @@ public abstract class PanelComponentType<Config, State>
         return translationKey;
     }
 
+    public boolean canClientDistinguish(State stateA, State stateB) {
+        return !Objects.equals(stateA, stateB);
+    }
+
     public final List<IngredientWithSize> getCost() {
         return Objects.requireNonNullElseGet(
                 ComponentCostReloadListener.COMPONENT_COSTS.get(getRegistryName()),

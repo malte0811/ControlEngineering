@@ -5,12 +5,17 @@ import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.CEBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class PanelBlock extends CEBlock<PanelOrientation> {
     public static final BooleanProperty IS_BASE = BooleanProperty.create("base");
@@ -43,5 +48,17 @@ public class PanelBlock extends CEBlock<PanelOrientation> {
     protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(IS_BASE, PanelOrientation.PROPERTY);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            @Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockEntityType<T> actual
+    ) {
+        if (!level.isClientSide()) {
+            return CEBlockEntities.CONTROL_PANEL.makeMasterTicker(actual, ControlPanelBlockEntity::tickServer);
+        } else {
+            return null;
+        }
     }
 }

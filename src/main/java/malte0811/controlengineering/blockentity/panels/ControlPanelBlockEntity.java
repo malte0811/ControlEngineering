@@ -15,6 +15,7 @@ import malte0811.controlengineering.controlpanels.PanelData;
 import malte0811.controlengineering.controlpanels.PanelSelectionShapes;
 import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
+import malte0811.controlengineering.util.BEUtil;
 import malte0811.controlengineering.util.Clearable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -48,6 +49,22 @@ public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterf
         resetStateHandler();
     }
 
+    public void tickServer() {
+        boolean updateClient = false;
+        boolean updateBus = false;
+        for (var component : components) {
+            var componentResult = component.tick();
+            updateClient |= componentResult.updateClient();
+            updateBus |= componentResult.updateBus();
+        }
+        if (updateBus) {
+            updateBusState(SyncType.NEVER);
+        }
+        if (updateClient) {
+            BEUtil.markDirtyAndSync(this);
+        }
+    }
+
     private void resetStateHandler() {
         stateHandler.clear();
         for (int i = 0; i < components.size(); ++i) {
@@ -64,8 +81,7 @@ public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterf
             markBusDirty.run();
         }
         if (sync.shouldSync(changed) && level != null) {
-            BlockState state = getBlockState();
-            level.sendBlockUpdated(worldPosition, state, state, 0);
+            BEUtil.markDirtyAndSync(this);
         }
     }
 

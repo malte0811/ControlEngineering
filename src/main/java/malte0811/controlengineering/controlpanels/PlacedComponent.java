@@ -130,6 +130,10 @@ public class PlacedComponent extends SelectionShapes {
         return component.onClick(ctx.getPlayer() != null && ctx.getPlayer().isShiftKeyDown());
     }
 
+    public PanelComponentInstance.TickResult tick() {
+        return component.tick();
+    }
+
     public boolean disjoint(PlacedComponent other) {
         return getOutline().disjoint(other.getOutline());
     }
