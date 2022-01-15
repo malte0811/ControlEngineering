@@ -9,7 +9,7 @@ public class BusLine {
     public static final int LINE_SIZE = 16;
     public static final int MAX_VALID_VALUE = 255;
     public static final int MIN_VALID_VALUE = 0;
-    public static final int RS_SCALE_FACTOR = 16;
+    public static final int RS_SCALE_FACTOR = 17;
     public static final BusLine EMPTY = new BusLine();
 
     private final int[] values;
