@@ -6,6 +6,7 @@ import malte0811.controlengineering.controlpanels.PanelComponentInstance;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
+import malte0811.controlengineering.controlpanels.components.TimedButton;
 import net.minecraft.client.renderer.RenderType;
 
 import java.util.HashMap;
@@ -16,11 +17,12 @@ public class ComponentRenderers {
     private static final Map<PanelComponentType<?, ?>, ComponentRenderer<?, ?>> RENDERS = new HashMap<>();
 
     public static void init() {
-        register(PanelComponents.BUTTON, new ButtonRender());
+        register(PanelComponents.BUTTON, new ButtonRender<>(b -> b));
         register(PanelComponents.INDICATOR, new IndicatorRender());
         register(PanelComponents.LABEL, new LabelRender());
         register(PanelComponents.TOGGLE_SWITCH, new SwitchRender());
         register(PanelComponents.COVERED_SWITCH, new CoveredSwitchRender());
+        register(PanelComponents.TIMED_BUTTON, new ButtonRender<>(TimedButton::isActive));
     }
 
     public static <Config, State> void register(

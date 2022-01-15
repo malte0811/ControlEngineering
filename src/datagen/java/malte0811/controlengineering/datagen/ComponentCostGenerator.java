@@ -25,12 +25,14 @@ public record ComponentCostGenerator(DataGenerator generator) implements DataPro
         var stoneButton = new IngredientWithSize(Ingredient.of(Items.STONE_BUTTON));
         var blackDye = new IngredientWithSize(Tags.Items.DYES_BLACK);
         var lever = new IngredientWithSize(Ingredient.of(Items.LEVER));
+        var clock = new IngredientWithSize(Ingredient.of(Items.CLOCK));
 
         addCosts(cache, PanelComponents.BUTTON, anyDye, glowstone, stoneButton);
         addCosts(cache, PanelComponents.LABEL, blackDye, paper);
         addCosts(cache, PanelComponents.INDICATOR, anyDye, glowstone);
         addCosts(cache, PanelComponents.TOGGLE_SWITCH, lever);
         addCosts(cache, PanelComponents.COVERED_SWITCH, lever, paper, anyDye);
+        addCosts(cache, PanelComponents.TIMED_BUTTON, anyDye, glowstone, stoneButton, clock);
     }
 
     private void addCosts(

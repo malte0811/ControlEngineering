@@ -12,14 +12,11 @@ import net.minecraft.world.InteractionResult;
 
 public class Button extends PanelComponentType<ColorAndSignal, Boolean> {
     public static final String TRANSLATION_KEY = ControlEngineering.MODID + ".component.button";
+    public static final Vec2d SIZE = new Vec2d(1, 1);
+    public static final double HEIGHT = 0.5;
 
     public Button() {
-        super(
-                ColorAndSignal.DEFAULT, false,
-                ColorAndSignal.CODEC, Codec.BOOL,
-                new Vec2d(1, 1), 0.5,
-                TRANSLATION_KEY
-        );
+        super(ColorAndSignal.DEFAULT, false, ColorAndSignal.CODEC, Codec.BOOL, SIZE, HEIGHT, TRANSLATION_KEY);
     }
 
     @Override
