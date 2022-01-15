@@ -33,11 +33,7 @@ public class PanelDesignerBlock extends CEBlock<Direction> {
             createPixelRelative(1, 0, 12, 4, 13, 15),
             createPixelRelative(12, 0, 12, 15, 13, 15)
     );
-    private static final VoxelShape TABLE_BACK_SHAPE = Shapes.or(
-            TABLE_TOP,
-            createPixelRelative(1, 0, 1, 4, 13, 4),
-            createPixelRelative(12, 0, 1, 15, 13, 4)
-    );
+    private static final VoxelShape TABLE_BACK_SHAPE = Shapes.block();
     private static final VoxelShape TOP_FRONT_SHAPE = Shapes.or(
             createPixelRelative(0, 0, 0, 16, 16, 1),
             createPixelRelative(0, 8, 0, 16, 16, 12)
