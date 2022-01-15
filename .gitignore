@@ -21,6 +21,7 @@ build
 eclipse
 run
 custom.gradle
+Models
 
 # Files from Forge MDK
 forge*changelog.txt
