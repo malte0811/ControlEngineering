@@ -1,5 +1,6 @@
 package malte0811.controlengineering.blocks.shapes;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.core.BlockPos;
@@ -40,7 +41,7 @@ public abstract class SelectionShapes {
         return this;
     }
 
-    public abstract InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType);
+    public abstract InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType, Vec3 relativeHit);
 
     public void plotBox(BiConsumer<Vec3, Vec3> drawLine) {
         VoxelShape main = mainShape();
@@ -52,29 +53,31 @@ public abstract class SelectionShapes {
     }
 
     public final InteractionResult onUse(UseOnContext useCtx, ClipContext ray) {
-        List<SelectionShapes> stack = getTargeted(ray);
+        Pair<List<SelectionShapes>, Vec3> targeted = getTargeted(ray);
+        var stack = targeted.getFirst();
         InteractionResult ret = InteractionResult.PASS;
         for (int i = 0; i < stack.size(); ++i) {
-            ret = stack.get(stack.size() - i - 1).onUse(useCtx, ret);
+            ret = stack.get(stack.size() - i - 1).onUse(useCtx, ret, targeted.getSecond());
         }
         return ret;
     }
 
-    public final List<SelectionShapes> getTargeted(ClipContext ray) {
+    public final Pair<List<SelectionShapes>, Vec3> getTargeted(ClipContext ray) {
         List<SelectionShapes> result = new ArrayList<>();
-        fillTargetedStack(ray, result);
-        return result;
+        Vec3 innermostHit = fillTargetedStack(ray, result);
+        return Pair.of(result, innermostHit);
     }
 
-    private void fillTargetedStack(ClipContext ray, List<SelectionShapes> out) {
+    private Vec3 fillTargetedStack(ClipContext ray, List<SelectionShapes> out) {
         out.add(this);
         List<? extends SelectionShapes> innerShapes = innerShapes();
         if (innerShapes.isEmpty()) {
-            return;
+            return null;
         }
         ClipContext innerRay = MatrixUtils.transformRay(outerToInnerPosition(), ray.getFrom(), ray.getTo());
         SelectionShapes closest = null;
         double minDistanceSq = Double.POSITIVE_INFINITY;
+        Vec3 closestHit = null;
         for (SelectionShapes inner : innerShapes) {
             final VoxelShape innerShape = inner.mainShape();
             if (innerShape != null) {
@@ -84,13 +87,17 @@ public abstract class SelectionShapes {
                     if (distanceSq < minDistanceSq) {
                         minDistanceSq = distanceSq;
                         closest = inner;
+                        closestHit = result.getLocation();
                     }
                 }
             }
         }
         if (closest != null) {
-            closest.fillTargetedStack(innerRay, out);
+            var innerHit = closest.fillTargetedStack(innerRay, out);
+            if (innerHit != null)
+                return innerHit;
         }
+        return closestHit;
     }
 
     public boolean shouldRenderNonTop() {

@@ -3,7 +3,9 @@ package malte0811.controlengineering.blocks.shapes;
 import com.mojang.math.Matrix4f;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
@@ -46,7 +48,7 @@ public class ListShapes extends SelectionShapes {
     }
 
     @Override
-    public InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType) {
+    public InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType, Vec3 relativeHit) {
         if (defaultType == InteractionResult.PASS) {
             return onClick.apply(ctx);
         } else {

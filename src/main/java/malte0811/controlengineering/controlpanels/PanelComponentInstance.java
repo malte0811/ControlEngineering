@@ -8,6 +8,7 @@ import malte0811.controlengineering.util.typereg.TypedInstance;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -39,9 +40,11 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
         return type.newInstance(buffer);
     }
 
-    public InteractionResult onClick(boolean sneaking) {
-        Pair<InteractionResult, State> clickResult = getType().click(getConfig(), getState(), sneaking);
-        currentState = Pair.of(getConfig(), clickResult.getSecond());
+    public InteractionResult onClick(boolean sneaking, Vec3 relativeHit, boolean isClient) {
+        Pair<InteractionResult, State> clickResult = getType().click(getConfig(), getState(), sneaking, relativeHit);
+        if (!isClient) {
+            currentState = Pair.of(getConfig(), clickResult.getSecond());
+        }
         return clickResult.getFirst();
     }
 

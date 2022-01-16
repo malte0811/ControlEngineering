@@ -137,7 +137,8 @@ public class ClientEvents {
         }
         if (world.getBlockEntity(highlighted) instanceof SelectionShapeOwner shapeOwner) {
             List<? extends SelectionShapes> selectedStack = shapeOwner.getShape()
-                    .getTargeted(RaytraceUtils.create(player, mc.getFrameTime(), Vec3.atLowerCornerOf(highlighted)));
+                    .getTargeted(RaytraceUtils.create(player, mc.getFrameTime(), Vec3.atLowerCornerOf(highlighted)))
+                    .getFirst();
             if (!selectedStack.isEmpty()) {
                 return selectedStack;
             }

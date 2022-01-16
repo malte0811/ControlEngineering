@@ -9,6 +9,7 @@ import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.phys.Vec3;
 
 public class Button extends PanelComponentType<ColorAndSignal, Boolean> {
     public static final String TRANSLATION_KEY = ControlEngineering.MODID + ".component.button";
@@ -29,7 +30,9 @@ public class Button extends PanelComponentType<ColorAndSignal, Boolean> {
     }
 
     @Override
-    public Pair<InteractionResult, Boolean> click(ColorAndSignal config, Boolean oldState, boolean sneaking) {
+    public Pair<InteractionResult, Boolean> click(
+            ColorAndSignal config, Boolean oldState, boolean sneaking, Vec3 relativeHit
+    ) {
         return Pair.of(InteractionResult.SUCCESS, !oldState);
     }
 }

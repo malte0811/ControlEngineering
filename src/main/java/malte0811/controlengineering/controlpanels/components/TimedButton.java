@@ -8,6 +8,7 @@ import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.phys.Vec3;
 
 public class TimedButton extends PanelComponentType<ColorAndSignal, Integer> {
     public static final String TRANSLATION_KEY = ControlEngineering.MODID + ".component.timed_button";
@@ -33,7 +34,9 @@ public class TimedButton extends PanelComponentType<ColorAndSignal, Integer> {
     }
 
     @Override
-    public Pair<InteractionResult, Integer> click(ColorAndSignal config, Integer remainingOn, boolean sneaking) {
+    public Pair<InteractionResult, Integer> click(
+            ColorAndSignal config, Integer remainingOn, boolean sneaking, Vec3 relativeHit
+    ) {
         if (isActive(remainingOn)) {
             return Pair.of(InteractionResult.PASS, remainingOn);
         } else {

@@ -14,6 +14,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -85,7 +86,7 @@ public abstract class PanelComponentType<Config, State>
         return oldState;
     }
 
-    public Pair<InteractionResult, State> click(Config config, State oldState, boolean sneaking) {
+    public Pair<InteractionResult, State> click(Config config, State oldState, boolean sneaking, Vec3 relativeHit) {
         return Pair.of(InteractionResult.PASS, oldState);
     }
 

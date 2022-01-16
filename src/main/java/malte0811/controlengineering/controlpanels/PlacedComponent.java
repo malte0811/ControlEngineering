@@ -13,6 +13,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.util.Lazy;
@@ -126,8 +127,12 @@ public class PlacedComponent extends SelectionShapes {
     }
 
     @Override
-    public InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType) {
-        return component.onClick(ctx.getPlayer() != null && ctx.getPlayer().isShiftKeyDown());
+    public InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType, Vec3 relativeHit) {
+        return component.onClick(
+                ctx.getPlayer() != null && ctx.getPlayer().isShiftKeyDown(),
+                relativeHit.scale(16).subtract(pos.x(), 0, pos.y()),
+                ctx.getLevel().isClientSide()
+        );
     }
 
     public PanelComponentInstance.TickResult tick() {
