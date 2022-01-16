@@ -9,9 +9,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickable {
     public static final ResourceLocation NAME = new ResourceLocation(ControlEngineering.MODID, "bus");
     private boolean updateNextTick = true;
+    private final List<ConnectionPoint> loading = new ArrayList<>();
     private final BusEmitterCombiner<Pair<ConnectionPoint, IBusConnector>> stateHandler = new BusEmitterCombiner<>(
             pair -> pair.getSecond().getEmittedState(pair.getFirst()),
             pair -> pair.getSecond().onBusUpdated(pair.getFirst())
@@ -19,10 +23,7 @@ public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickab
 
     public LocalBusHandler(LocalWireNetwork local, GlobalWireNetwork global) {
         super(local, global);
-        for (ConnectionPoint cp : local.getConnectionPoints()) {
-            IImmersiveConnectable iic = local.getConnector(cp);
-            loadConnectionPoint(cp, iic);
-        }
+        loading.addAll(local.getConnectionPoints());
     }
 
     @Override
@@ -40,19 +41,18 @@ public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickab
     public void setLocalNet(LocalWireNetwork net) {
         super.setLocalNet(net);
         stateHandler.clear();
-        for (ConnectionPoint cp : localNet.getConnectionPoints()) {
-            loadConnectionPoint(cp, localNet.getConnector(cp));
-        }
+        loading.addAll(localNet.getConnectionPoints());
         requestUpdate();
     }
 
     @Override
     public void onConnectorLoaded(ConnectionPoint p, IImmersiveConnectable iic) {
+        loading.add(p);
         requestUpdate();
-        loadConnectionPoint(p, iic);
     }
 
-    private void loadConnectionPoint(ConnectionPoint cp, IImmersiveConnectable iic) {
+    private void loadConnectionPoint(ConnectionPoint cp) {
+        var iic = localNet.getConnector(cp);
         if (iic instanceof IBusConnector busIIC && busIIC.isBusPoint(cp)) {
             stateHandler.addEmitter(Pair.of(cp, busIIC));
         }
@@ -95,6 +95,11 @@ public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickab
 
     @Override
     public void update(Level w) {
+        if (!loading.isEmpty()) {
+            for (var point : loading) {
+                loadConnectionPoint(point);
+            }
+        }
         if (updateNextTick) {
             stateHandler.updateState(BusState.EMPTY);
             updateNextTick = false;
