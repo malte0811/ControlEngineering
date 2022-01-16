@@ -19,13 +19,14 @@ import static malte0811.controlengineering.client.render.target.RenderUtils.ALL_
 import static malte0811.controlengineering.controlpanels.components.ToggleSwitch.SIZE;
 
 public class SwitchRender implements ComponentRenderer<BusSignalRef, Boolean> {
-    private static final int COLOR = 0xd0d0d0;
+    private static final int BASE_COLOR = 0xd0d0d0;
+    private static final int ROD_COLOR = 0xa0a0a0;
     private static final Quaternion ROTATION_OFF = new Quaternion(30, 0, 0, true);
     private static final Quaternion ROTATION_ON = new Quaternion(-30, 0, 0, true);
     private static final Map<Direction, Integer> SIDE_COLORS = Util.make(new EnumMap<>(Direction.class), sideColors -> {
         for (Direction side : DirectionUtils.VALUES) {
             if (side != Direction.DOWN) {
-                sideColors.put(side, COLOR);
+                sideColors.put(side, ROD_COLOR);
             }
         }
     });
@@ -40,7 +41,7 @@ public class SwitchRender implements ComponentRenderer<BusSignalRef, Boolean> {
                 new Vec3(SIZE.x(), epsilon, SIZE.y()),
                 new Vec3(SIZE.x(), epsilon, 0),
                 new Vec3(0, epsilon, 0)
-        ).setRGB(COLOR).writeTo(new TransformingVertexBuilder(output, MixedModel.SOLID_STATIC, transform));
+        ).setRGB(BASE_COLOR).writeTo(new TransformingVertexBuilder(output, MixedModel.SOLID_STATIC, transform));
         transform.pushPose();
         transform.translate((SIZE.x() - ROD_DIAMETER) / 2, 0, (SIZE.y() - ROD_DIAMETER) / 2);
         transform.mulPose(active ? ROTATION_ON : ROTATION_OFF);
