@@ -97,6 +97,7 @@ public class LangGenerator extends LanguageProvider {
         add(PanelComponents.COVERED_SWITCH, "Covered Switch");
         add(PanelComponents.TIMED_BUTTON, "Timed Button");
         add(PanelComponents.PANEL_METER, "Panel Meter");
+        add(PanelComponents.VARIAC, "Variac");
     }
 
     private void addGuiStrings() {

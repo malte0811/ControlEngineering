@@ -20,6 +20,12 @@ public class RenderUtils {
         }
     });
 
+    public static final Map<Direction, RenderType> ALL_STATIC = Util.make(new EnumMap<>(Direction.class), types -> {
+        for (Direction side : DirectionUtils.VALUES) {
+            types.put(side, MixedModel.SOLID_STATIC);
+        }
+    });
+
     public static void renderColoredBox(
             MixedModel output,
             PoseStack transform, Vec3 min, Vec3 max,

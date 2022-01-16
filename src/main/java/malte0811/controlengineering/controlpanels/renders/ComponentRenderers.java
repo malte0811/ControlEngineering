@@ -24,6 +24,7 @@ public class ComponentRenderers {
         register(PanelComponents.COVERED_SWITCH, new CoveredSwitchRender());
         register(PanelComponents.TIMED_BUTTON, new ButtonRender<>(TimedButton::isActive));
         register(PanelComponents.PANEL_METER, new PanelMeterRender());
+        register(PanelComponents.VARIAC, new VariacRender());
     }
 
     public static <Config, State> void register(

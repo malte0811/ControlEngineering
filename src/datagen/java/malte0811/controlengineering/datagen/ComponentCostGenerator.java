@@ -1,5 +1,6 @@
 package malte0811.controlengineering.datagen;
 
+import blusunrize.immersiveengineering.api.IETags;
 import blusunrize.immersiveengineering.api.crafting.IngredientWithSize;
 import com.google.gson.JsonArray;
 import malte0811.controlengineering.controlpanels.ComponentCostReloadListener;
@@ -28,6 +29,7 @@ public record ComponentCostGenerator(DataGenerator generator) implements DataPro
         var lever = new IngredientWithSize(Ingredient.of(Items.LEVER));
         var clock = new IngredientWithSize(Ingredient.of(Items.CLOCK));
         var coil = new IngredientWithSize(Ingredient.of(IEItemRefs.WIRE_COIL.get()));
+        var graphite = new IngredientWithSize(IETags.hopGraphiteIngot);
 
         addCosts(cache, PanelComponents.BUTTON, anyDye, glowstone, stoneButton);
         addCosts(cache, PanelComponents.LABEL, blackDye, paper);
@@ -36,6 +38,7 @@ public record ComponentCostGenerator(DataGenerator generator) implements DataPro
         addCosts(cache, PanelComponents.COVERED_SWITCH, lever, paper, anyDye);
         addCosts(cache, PanelComponents.TIMED_BUTTON, anyDye, glowstone, stoneButton, clock);
         addCosts(cache, PanelComponents.PANEL_METER, paper, blackDye, coil);
+        addCosts(cache, PanelComponents.VARIAC, blackDye, coil, graphite);
     }
 
     private void addCosts(

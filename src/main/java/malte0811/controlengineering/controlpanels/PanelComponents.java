@@ -18,6 +18,7 @@ public class PanelComponents {
     public static final TimedButton TIMED_BUTTON = register("timed_button", new TimedButton());
     public static final ToggleSwitch TOGGLE_SWITCH = register("toggle_switch", new ToggleSwitch());
     public static final CoveredToggleSwitch COVERED_SWITCH = register("covered_switch", new CoveredToggleSwitch());
+    public static final Variac VARIAC = register("variac", new Variac());
     // Signal viewers
     public static final Indicator INDICATOR = register("indicator", new Indicator());
     public static final PanelMeter PANEL_METER = register("panel_meter", new PanelMeter());
