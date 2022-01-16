@@ -74,7 +74,7 @@ public class BusInterfaceBlockEntity extends CEIICBlockEntity implements IBusCon
                 );
                 busInterface.addMarkDirtyCallback(newClearer.getFirst());
                 clearer = Pair.of(new WeakReference<>(busInterface), newClearer.getSecond());
-                newClearer.getSecond().run();
+                newClearer.getFirst().getValue().run();
             }
             return busInterface;
         }
