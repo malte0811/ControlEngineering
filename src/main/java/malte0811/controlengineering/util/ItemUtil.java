@@ -44,7 +44,8 @@ public class ItemUtil {
                 ItemStack inSlot = handler.getStackInSlot(slot);
                 if (!inSlot.isEmpty()) {
                     int sizeRemaining = inSlot.getCount();
-                    for (Iterator<MutablePair<Ingredient, Integer>> iterator = missing.iterator(); iterator.hasNext(); ) {
+                    Iterator<MutablePair<Ingredient, Integer>> iterator = missing.iterator();
+                    while (iterator.hasNext()) {
                         MutablePair<Ingredient, Integer> entry = iterator.next();
                         if (entry.getLeft().test(inSlot)) {
                             int consume = Math.min(sizeRemaining, entry.getRight());
@@ -58,10 +59,11 @@ public class ItemUtil {
                             }
                         }
                     }
-                    if (!simulate) {
-                        inSlot.setCount(sizeRemaining);
-                    }
-                    if (missing.isEmpty()) {
+                    var numToExtract = inSlot.getCount() - sizeRemaining;
+                    var extracted = handler.extractItem(slot, numToExtract, simulate);
+                    if (extracted.getCount() != numToExtract) {
+                        return false;
+                    } else if (missing.isEmpty()) {
                         return true;
                     }
                 }
