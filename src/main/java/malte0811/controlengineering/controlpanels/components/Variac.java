@@ -3,7 +3,6 @@ package malte0811.controlengineering.controlpanels.components;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
@@ -14,13 +13,12 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.Vec3;
 
 public class Variac extends PanelComponentType<BusSignalRef, Integer> {
-    public static final String TRANSLATION_KEY = ControlEngineering.MODID + ".component.variac";
     public static final Vec2d SIZE = new Vec2d(4, 4);
     public static final float ANGLE_MAX = -Mth.PI + 0.1f * Mth.PI;
     public static final float ANGLE_MIN = Mth.PI - 0.1f * Mth.PI;
 
     public Variac() {
-        super(BusSignalRef.DEFAULT, 0, BusSignalRef.CODEC, Codec.INT, SIZE, 2, TRANSLATION_KEY);
+        super(BusSignalRef.DEFAULT, 0, BusSignalRef.CODEC, Codec.INT, SIZE, 2);
     }
 
     @Override

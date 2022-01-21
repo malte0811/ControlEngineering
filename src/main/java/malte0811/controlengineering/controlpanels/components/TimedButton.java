@@ -2,7 +2,6 @@ package malte0811.controlengineering.controlpanels.components;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
@@ -11,12 +10,11 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.Vec3;
 
 public class TimedButton extends PanelComponentType<ColorAndSignal, Integer> {
-    public static final String TRANSLATION_KEY = ControlEngineering.MODID + ".component.timed_button";
     //TODO config?
     private static final int DELAY = 20;
 
     public TimedButton() {
-        super(ColorAndSignal.DEFAULT, 0, ColorAndSignal.CODEC, Codec.INT, Button.SIZE, Button.HEIGHT, TRANSLATION_KEY);
+        super(ColorAndSignal.DEFAULT, 0, ColorAndSignal.CODEC, Codec.INT, Button.SIZE, Button.HEIGHT);
     }
 
     @Override

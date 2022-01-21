@@ -1,21 +1,17 @@
 package malte0811.controlengineering.controlpanels.components;
 
 import com.mojang.serialization.Codec;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.util.math.Vec2d;
 
 public class Indicator extends PanelComponentType<ColorAndSignal, Integer> {
-    public static final String TRANSLATION_KEY = ControlEngineering.MODID + ".component.indicator";
-
     public Indicator() {
         super(
                 ColorAndSignal.DEFAULT, 0,
                 ColorAndSignal.CODEC, Codec.INT,
-                new Vec2d(1, 1), -1,
-                TRANSLATION_KEY
+                new Vec2d(1, 1), -1
         );
     }
 

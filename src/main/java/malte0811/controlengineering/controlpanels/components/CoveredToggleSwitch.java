@@ -2,7 +2,6 @@ package malte0811.controlengineering.controlpanels.components;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
@@ -12,13 +11,11 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.Vec3;
 
 public class CoveredToggleSwitch extends PanelComponentType<ColorAndSignal, CoveredToggleSwitch.State> {
-    public static final String TRANSLATION_KEY = ControlEngineering.MODID + ".component.covered_switch";
-
     public CoveredToggleSwitch() {
         super(
                 new ColorAndSignal(0xff0000, BusSignalRef.DEFAULT), State.CLOSED,
                 ColorAndSignal.CODEC, State.CODEC,
-                ToggleSwitch.SIZE, ToggleSwitch.SELECTION_HEIGHT, TRANSLATION_KEY
+                ToggleSwitch.SIZE, ToggleSwitch.SELECTION_HEIGHT
         );
     }
 

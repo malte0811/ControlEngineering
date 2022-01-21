@@ -2,14 +2,12 @@ package malte0811.controlengineering.controlpanels.components;
 
 import com.mojang.datafixers.util.Unit;
 import com.mojang.serialization.Codec;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndText;
 import malte0811.controlengineering.util.ServerFontWidth;
 import malte0811.controlengineering.util.math.Vec2d;
 
 public class Label extends PanelComponentType<ColorAndText, Unit> {
-    public static final String TRANSLATION_KEY = ControlEngineering.MODID + ".component.label";
     public static final int FONT_HEIGHT = 9;
     public static final float SCALE = 1f / FONT_HEIGHT;
 
@@ -17,7 +15,7 @@ public class Label extends PanelComponentType<ColorAndText, Unit> {
         super(
                 ColorAndText.DEFAULT, Unit.INSTANCE,
                 ColorAndText.CODEC, Codec.unit(Unit.INSTANCE),
-                null, 0, TRANSLATION_KEY
+                null, 0
         );
     }
 

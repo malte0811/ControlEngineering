@@ -26,20 +26,18 @@ public abstract class PanelComponentType<Config, State>
     // Null = dynamic size
     private final Vec2d size;
     private final SerialCodecParser<Config> configParser;
-    private final String translationKey;
+    private String translationKey;
     private final AABB defaultSelectionShape;
 
 
     protected PanelComponentType(
             Config defaultConfig, State intitialState,
             Codec<Config> codecConfig, Codec<State> codecState,
-            @Nullable Vec2d size, double selectionHeight,
-            String translationKey
+            @Nullable Vec2d size, double selectionHeight
     ) {
         super(Pair.of(defaultConfig, intitialState), Codecs.safePair(codecConfig, codecState));
         this.size = size;
         this.configParser = SerialCodecParser.getParser(codecConfig);
-        this.translationKey = translationKey;
 
         if (selectionHeight >= 0 && size != null) {
             this.defaultSelectionShape = new AABB(0, 0, 0, size.x(), selectionHeight, size.y());
@@ -100,6 +98,10 @@ public abstract class PanelComponentType<Config, State>
     }
 
     public String getTranslationKey() {
+        if (translationKey == null) {
+            var name = getRegistryName();
+            translationKey = name.getNamespace() + ".component." + name.getPath();
+        }
         return translationKey;
     }
 
