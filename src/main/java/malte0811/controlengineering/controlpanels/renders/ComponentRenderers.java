@@ -25,6 +25,8 @@ public class ComponentRenderers {
         register(PanelComponents.TIMED_BUTTON, new ButtonRender<>(TimedButton::isActive));
         register(PanelComponents.PANEL_METER, new PanelMeterRender());
         register(PanelComponents.VARIAC, new VariacRender());
+        register(PanelComponents.SLIDER_HOR, new SliderRender(true));
+        register(PanelComponents.SLIDER_VERT, new SliderRender(false));
     }
 
     public static <Config, State> void register(

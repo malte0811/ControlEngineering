@@ -98,6 +98,8 @@ public class LangGenerator extends LanguageProvider {
         add(PanelComponents.TIMED_BUTTON, "Timed Button");
         add(PanelComponents.PANEL_METER, "Panel Meter");
         add(PanelComponents.VARIAC, "Variac");
+        add(PanelComponents.SLIDER_VERT, "Slider");
+        add(PanelComponents.SLIDER_HOR, "Slider");
     }
 
     private void addGuiStrings() {

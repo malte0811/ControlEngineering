@@ -16,6 +16,7 @@ import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.List;
 
 public record ComponentCostGenerator(DataGenerator generator) implements DataProvider {
     @Override
@@ -39,6 +40,8 @@ public record ComponentCostGenerator(DataGenerator generator) implements DataPro
         addCosts(cache, PanelComponents.TIMED_BUTTON, anyDye, glowstone, stoneButton, clock);
         addCosts(cache, PanelComponents.PANEL_METER, paper, blackDye, coil);
         addCosts(cache, PanelComponents.VARIAC, blackDye, coil, graphite);
+        for (var slider : List.of(PanelComponents.SLIDER_HOR, PanelComponents.SLIDER_VERT))
+            addCosts(cache, slider, coil, glowstone, anyDye);
     }
 
     private void addCosts(
