@@ -36,24 +36,12 @@ public class PanelMeterRender implements ComponentRenderer<BusSignalRef, Integer
 
     @Override
     public void render(MixedModel output, BusSignalRef line, Integer strength, PoseStack transform) {
-        output.setSpriteForStaticTargets(QuadBuilder.getWhiteTexture());
-        renderBackground(output, transform);
+        ComponentRenderer.renderBase(output, transform, SIZE, -1);
         transform.pushPose();
         transform.translate(AXIS_X, 2e-3, SIZE.y() - AXIS_Y);
         renderMarkers(output, transform);
         renderNeedle(output, transform, strength);
         transform.popPose();
-    }
-
-    private void renderBackground(MixedModel output, PoseStack transform) {
-        var transformedStatic = new TransformingVertexBuilder(output, MixedModel.SOLID_STATIC, transform);
-        final var epsilon = 1e-3;
-        new QuadBuilder(
-                new Vec3(0, epsilon, SIZE.y()),
-                new Vec3(SIZE.x(), epsilon, SIZE.y()),
-                new Vec3(SIZE.x(), epsilon, 0),
-                new Vec3(0, epsilon, 0)
-        ).setRGB(-1).writeTo(transformedStatic);
     }
 
     private void renderMarkers(MixedModel output, PoseStack transform) {

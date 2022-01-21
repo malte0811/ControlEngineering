@@ -11,20 +11,26 @@ import net.minecraft.world.phys.Vec3;
 
 public class IndicatorRender implements ComponentRenderer<ColorAndSignal, Integer> {
     @Override
-    public void render(MixedModel output, ColorAndSignal config, Integer rsValue, PoseStack transform) {
-        double colorFactor = 0.5 + rsValue / (2. * BusLine.MAX_VALID_VALUE);
-        int ownBrightness = (rsValue * 15) / BusLine.MAX_VALID_VALUE;
-        final double zOffset = 1e-3;
+    public void render(MixedModel output, ColorAndSignal config, Integer strength, PoseStack transform) {
         output.setSpriteForStaticTargets(QuadBuilder.getWhiteTexture());
         TransformingVertexBuilder builder = new TransformingVertexBuilder(output, MixedModel.SOLID_DYNAMIC, transform);
         new QuadBuilder(
-                new Vec3(0, zOffset, 0),
-                new Vec3(0, zOffset, 1),
-                new Vec3(1, zOffset, 1),
-                new Vec3(1, zOffset, 0)
+                new Vec3(0, EPSILON, 0),
+                new Vec3(0, EPSILON, 1),
+                new Vec3(1, EPSILON, 1),
+                new Vec3(1, EPSILON, 0)
         ).setNormal(new Vec3(0, 1, 0))
-                .setRGB(ColorUtils.fractionalColor(config.color(), colorFactor))
-                .setBlockLightOverride(ownBrightness)
+                .setRGB(colorForStrength(config.color(), strength))
+                .setBlockLightOverride(lightForStrength(strength))
                 .writeTo(builder);
+    }
+
+    public static int colorForStrength(int baseColor, int strength) {
+        double colorFactor = 0.5 + strength / (2. * BusLine.MAX_VALID_VALUE);
+        return ColorUtils.fractionalColor(baseColor, colorFactor);
+    }
+
+    public static int lightForStrength(int strength) {
+        return (strength * 15) / BusLine.MAX_VALID_VALUE;
     }
 }

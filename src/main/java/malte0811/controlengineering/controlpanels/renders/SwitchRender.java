@@ -6,7 +6,6 @@ import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.target.RenderUtils;
-import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;
@@ -34,14 +33,8 @@ public class SwitchRender implements ComponentRenderer<BusSignalRef, Boolean> {
 
     @Override
     public void render(MixedModel output, BusSignalRef state, Boolean active, PoseStack transform) {
-        final var epsilon = 1e-3;
         output.setSpriteForStaticTargets(QuadBuilder.getWhiteTexture());
-        new QuadBuilder(
-                new Vec3(0, epsilon, SIZE.y()),
-                new Vec3(SIZE.x(), epsilon, SIZE.y()),
-                new Vec3(SIZE.x(), epsilon, 0),
-                new Vec3(0, epsilon, 0)
-        ).setRGB(BASE_COLOR).writeTo(new TransformingVertexBuilder(output, MixedModel.SOLID_STATIC, transform));
+        ComponentRenderer.renderBase(output, transform, SIZE, BASE_COLOR);
         transform.pushPose();
         transform.translate((SIZE.x() - ROD_DIAMETER) / 2, 0, (SIZE.y() - ROD_DIAMETER) / 2);
         transform.mulPose(active ? ROTATION_ON : ROTATION_OFF);

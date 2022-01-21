@@ -54,12 +54,11 @@ public class VariacRender implements ComponentRenderer<BusSignalRef, Integer> {
         RenderUtils.renderColoredBox(
                 output, transform, KNOB_MIN, KNOB_MAX, KNOB_COLORS, Map.of(), RenderUtils.ALL_DYNAMIC
         );
-        final var epsilon = 1e-3;
         new QuadBuilder(
-                new Vec3(0, MAX_Y + epsilon, -SIZE.y() / 2),
-                new Vec3(0, MAX_Y + epsilon, -SIZE.y() / 2),
-                new Vec3(-0.1, MAX_Y + epsilon, -SIZE.y() / 2 + 0.2),
-                new Vec3(0.1, MAX_Y + epsilon, -SIZE.y() / 2 + 0.2)
+                new Vec3(0, MAX_Y + EPSILON, -SIZE.y() / 2),
+                new Vec3(0, MAX_Y + EPSILON, -SIZE.y() / 2),
+                new Vec3(-0.1, MAX_Y + EPSILON, -SIZE.y() / 2 + 0.2),
+                new Vec3(0.1, MAX_Y + EPSILON, -SIZE.y() / 2 + 0.2)
         ).setRGB(-1).writeTo(new TransformingVertexBuilder(output, MixedModel.SOLID_DYNAMIC, transform));
         transform.mulPose(ONE_EIGHTH);
         RenderUtils.renderColoredBox(
