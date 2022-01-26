@@ -1,8 +1,9 @@
 package malte0811.controlengineering.client.render.utils;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import javax.annotation.Nonnull;
 import net.minecraft.world.phys.Vec3;
+
+import javax.annotation.Nonnull;
 
 public abstract class DelegatingVertexBuilder<T extends DelegatingVertexBuilder<T>> implements VertexConsumer {
     protected final VertexConsumer delegate;

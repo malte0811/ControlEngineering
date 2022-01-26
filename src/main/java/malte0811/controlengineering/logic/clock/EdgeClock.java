@@ -1,10 +1,10 @@
 package malte0811.controlengineering.logic.clock;
 
-import com.mojang.serialization.Codec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 
 public class EdgeClock extends ClockGenerator<Boolean> {
     protected EdgeClock() {
-        super(false, Codec.BOOL);
+        super(false, MyCodecs.BOOL);
     }
 
     @Override

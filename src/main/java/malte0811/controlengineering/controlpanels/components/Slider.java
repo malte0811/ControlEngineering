@@ -1,12 +1,12 @@
 package malte0811.controlengineering.controlpanels.components;
 
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.util.math.Vec2d;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.Vec3;
@@ -22,7 +22,7 @@ public class Slider extends PanelComponentType<ColorAndSignal, Integer> {
     private final boolean horizontal;
 
     public Slider(boolean horizontal) {
-        super(ColorAndSignal.DEFAULT, 0, ColorAndSignal.CODEC, Codec.INT, getSize(horizontal), KNOB_HEIGHT);
+        super(ColorAndSignal.DEFAULT, 0, ColorAndSignal.CODEC, MyCodecs.INTEGER, getSize(horizontal), KNOB_HEIGHT);
         this.horizontal = horizontal;
     }
 

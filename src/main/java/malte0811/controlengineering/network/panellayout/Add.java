@@ -3,6 +3,7 @@ package malte0811.controlengineering.network.panellayout;
 import com.google.common.base.Preconditions;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import net.minecraft.network.FriendlyByteBuf;
+
 import javax.annotation.Nullable;
 import java.util.List;
 

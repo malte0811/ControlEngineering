@@ -1,6 +1,7 @@
 package malte0811.controlengineering.network.logic;
 
 import malte0811.controlengineering.logic.schematic.Schematic;
+import malte0811.controlengineering.util.serialization.serial.PacketBufferStorage;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.function.Consumer;
@@ -13,12 +14,12 @@ public class FullSync extends LogicSubPacket {
     }
 
     public FullSync(FriendlyByteBuf in) {
-        schematic = in.readWithCodec(Schematic.CODEC);
+        schematic = Schematic.CODEC.fromSerial(new PacketBufferStorage(in)).get();
     }
 
     @Override
     public void write(FriendlyByteBuf out) {
-        out.writeWithCodec(Schematic.CODEC, schematic);
+        Schematic.CODEC.toSerial(new PacketBufferStorage(out), schematic);
     }
 
     @Override

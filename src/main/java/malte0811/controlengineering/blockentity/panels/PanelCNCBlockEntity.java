@@ -2,7 +2,6 @@ package malte0811.controlengineering.blockentity.panels;
 
 import blusunrize.immersiveengineering.api.utils.CapabilityReference;
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
 import malte0811.controlengineering.blockentity.MultiblockBEType;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.base.IExtraDropBE;
@@ -24,7 +23,6 @@ import malte0811.controlengineering.items.PanelTopItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.math.MatrixUtils;
-import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -56,6 +54,7 @@ import java.util.function.Consumer;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
+//TODO faces wrong way when placed!
 public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IExtraDropBE, IBusInterface {
     private static final int ENERGY_CONSUMPTION = 40;
 
@@ -238,8 +237,10 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
         currentTicksInJob = compound.getInt("currentTick");
         state = State.VALUES[compound.getInt("state")];
         currentPlacedComponents.clear();
-        Codecs.readOptional(Codec.list(PlacedComponent.CODEC), compound.get("components"))
-                .ifPresent(currentPlacedComponents::addAll);
+        var components = PlacedComponent.LIST_CODEC.fromNBT(compound.get("components"));
+        if (components != null) {
+            currentPlacedComponents.addAll(components);
+        }
     }
 
     @Override
@@ -247,7 +248,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
         in.put("tape", tape.toNBT());
         in.putInt("currentTick", currentTicksInJob);
         in.putInt("state", state.ordinal());
-        in.put("components", Codecs.encode(Codec.list(PlacedComponent.CODEC), currentPlacedComponents));
+        in.put("components", PlacedComponent.LIST_CODEC.toNBT(currentPlacedComponents));
     }
 
     @Override

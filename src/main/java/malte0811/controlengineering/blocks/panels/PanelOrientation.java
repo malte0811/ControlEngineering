@@ -1,12 +1,12 @@
 package malte0811.controlengineering.blocks.panels;
 
-import java.util.Locale;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 
 import javax.annotation.Nonnull;
+import java.util.Locale;
 
 public enum PanelOrientation implements StringRepresentable {
     //Placed on the ceiling

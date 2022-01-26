@@ -4,7 +4,6 @@ import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.logic.clock.ClockGenerator;
 import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.util.ItemUtil;
-import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionResult;
@@ -57,12 +56,11 @@ public class ClockSlot {
     }
 
     public void load(Tag data) {
-        this.clock = Codecs.readOptional(ClockGenerator.ClockInstance.CODEC, data)
-                .orElseGet(ClockTypes.NEVER::newInstance);
+        this.clock = ClockGenerator.ClockInstance.CODEC.fromNBT(data, ClockTypes.NEVER::newInstance);
     }
 
     public Tag toNBT() {
-        return Codecs.encode(ClockGenerator.ClockInstance.CODEC, clock);
+        return ClockGenerator.ClockInstance.CODEC.toNBT(clock);
     }
 
     public Tag toClientNBT() {

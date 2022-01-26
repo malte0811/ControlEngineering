@@ -2,17 +2,18 @@ package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.serialization.Codec;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.gui.widgets.IntSelector;
 import malte0811.controlengineering.util.RedstoneTapeUtils;
 import malte0811.controlengineering.util.TextUtil;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
@@ -34,7 +35,7 @@ public class ConstantSymbol extends SchematicSymbol<Double> {
     ));
 
     public ConstantSymbol() {
-        super(0., Codec.DOUBLE);
+        super(0., MyCodecs.DOUBLE);
     }
 
     @Override

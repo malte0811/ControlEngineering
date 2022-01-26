@@ -2,13 +2,14 @@ package malte0811.controlengineering.blocks.shapes;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
-import java.util.Map;
-import java.util.function.BiFunction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import java.util.Map;
+import java.util.function.BiFunction;
 
 public class HorizontalWithExtraShape<T> implements BiFunction<T, Direction, VoxelShape>,
         FromBlockFunction<VoxelShape> {

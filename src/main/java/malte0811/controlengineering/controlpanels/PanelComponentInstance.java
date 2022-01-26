@@ -1,9 +1,10 @@
 package malte0811.controlengineering.controlpanels;
 
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.util.math.Vec2d;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.serial.PacketBufferStorage;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 public final class PanelComponentInstance<Config, State> extends TypedInstance<Pair<Config, State>, PanelComponentType<Config, State>> {
-    public static final Codec<PanelComponentInstance<?, ?>> CODEC = TypedInstance.makeCodec(PanelComponents.REGISTRY);
+    public static final MyCodec<PanelComponentInstance<?, ?>> CODEC = TypedInstance.makeCodec(PanelComponents.REGISTRY);
 
     public PanelComponentInstance(PanelComponentType<Config, State> type, Pair<Config, State> state) {
         super(type, state);
@@ -67,7 +68,7 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
 
     public void writeToWithoutState(FriendlyByteBuf buffer) {
         buffer.writeResourceLocation(getType().getRegistryName());
-        getType().getConfigParser().writeToBuffer(getConfig(), buffer);
+        getType().getConfigCodec().toSerial(new PacketBufferStorage(buffer), getConfig());
     }
 
     public State getState() {

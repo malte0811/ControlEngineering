@@ -5,6 +5,7 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+
 import java.util.*;
 
 import static malte0811.controlengineering.logic.schematic.Schematic.BOUNDARY;

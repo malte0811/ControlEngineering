@@ -3,15 +3,18 @@ package malte0811.controlengineering.logic.schematic;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
+import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
+
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,12 +24,11 @@ import static malte0811.controlengineering.logic.schematic.WireSegment.WireAxis.
 public class SchematicNet {
     public static final int WIRE_COLOR = 0xff_f0_aa_2a;
     public static final int SELECTED_WIRE_COLOR = 0xff_f0_fa_2a;
-    private static final Codec<List<WireSegment>> WIRE_LIST_CODEC = Codec.list(WireSegment.CODEC);
-    public static final Codec<SchematicNet> CODEC = RecordCodecBuilder.create(
-            inst -> inst.group(
-                    WIRE_LIST_CODEC.fieldOf("horizontal").forGetter(n -> n.horizontalSegments),
-                    WIRE_LIST_CODEC.fieldOf("vertical").forGetter(n -> n.verticalSegments)
-            ).apply(inst, SchematicNet::new)
+    private static final MyCodec<List<WireSegment>> WIRE_LIST_CODEC = MyCodecs.list(WireSegment.CODEC);
+    public static final MyCodec<SchematicNet> CODEC = new RecordCodec2<>(
+            new CodecField<>("horizontal", n -> n.horizontalSegments, WIRE_LIST_CODEC),
+            new CodecField<>("vertical", n -> n.verticalSegments, WIRE_LIST_CODEC),
+            SchematicNet::new
     );
 
     private final List<WireSegment> horizontalSegments;

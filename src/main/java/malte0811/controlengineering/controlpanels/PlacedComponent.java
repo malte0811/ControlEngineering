@@ -2,12 +2,13 @@ package malte0811.controlengineering.controlpanels;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.math.Matrix4f;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.util.math.RectangleD;
 import malte0811.controlengineering.util.math.Vec2d;
-import malte0811.controlengineering.util.serialization.Codecs;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
+import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionResult;
@@ -25,12 +26,12 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 public class PlacedComponent extends SelectionShapes {
-    public static final Codec<PlacedComponent> CODEC = RecordCodecBuilder.create(
-            inst -> inst.group(
-                    PanelComponentInstance.CODEC.fieldOf("component").forGetter(pc -> pc.component),
-                    Vec2d.CODEC.fieldOf("position").forGetter(pc -> pc.pos)
-            ).apply(inst, PlacedComponent::new)
+    public static final MyCodec<PlacedComponent> CODEC = new RecordCodec2<>(
+            new CodecField<>("component", pc -> pc.component, PanelComponentInstance.CODEC),
+            new CodecField<>("position", pc -> pc.pos, Vec2d.CODEC),
+            PlacedComponent::new
     );
+    public static final MyCodec<List<PlacedComponent>> LIST_CODEC = MyCodecs.list(CODEC);
 
     @Nonnull
     private final PanelComponentInstance<?, ?> component;
@@ -165,11 +166,11 @@ public class PlacedComponent extends SelectionShapes {
     }
 
     public static List<PlacedComponent> readListFromNBT(Tag list) {
-        return Codecs.read(Codec.list(CODEC), list).result().orElseGet(ImmutableList::of);
+        return LIST_CODEC.fromNBT(list, List::of);
     }
 
     public static Tag writeListToNBT(List<PlacedComponent> components) {
-        return Codecs.encode(Codec.list(CODEC), components);
+        return LIST_CODEC.toNBT(components);
     }
 
     public static int getIndexAt(List<PlacedComponent> components, double x, double y) {

@@ -1,8 +1,8 @@
 package malte0811.controlengineering.logic.cells;
 
 import com.google.common.base.Preconditions;
-import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.resources.ResourceLocation;
@@ -27,7 +27,7 @@ public abstract class LeafcellType<State> extends TypedRegistryEntry<State, Leaf
             Map<String, Pin> inputPins,
             Map<String, Pin> outputPins,
             State initialState,
-            Codec<State> stateCodec,
+            MyCodec<State> stateCodec,
             CellCost cost
     ) {
         super(initialState, stateCodec);

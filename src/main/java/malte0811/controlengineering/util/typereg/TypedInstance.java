@@ -1,8 +1,8 @@
 package malte0811.controlengineering.util.typereg;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import net.minecraft.resources.ResourceLocation;
+import malte0811.controlengineering.util.FastDataResult;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 
 // Not "logically" abstract, but the using the class itself causes general issues with the type system
 public abstract class TypedInstance<State, Type extends TypedRegistryEntry<State, ?>> {
@@ -23,19 +23,19 @@ public abstract class TypedInstance<State, Type extends TypedRegistryEntry<State
     }
 
     protected static <T extends TypedRegistryEntry<?, ? extends I>, I extends TypedInstance<?, ? extends T>>
-    Codec<I> makeCodec(TypedRegistry<T> registry) {
-        Codec<T> typeCodec = ResourceLocation.CODEC.flatXmap(
+    MyCodec<I> makeCodec(TypedRegistry<T> registry) {
+        MyCodec<T> typeCodec = MyCodecs.RESOURCE_LOCATION.flatXmap(
                 rl -> {
                     T value = registry.get(rl);
-                    return value != null ? DataResult.success(value) : DataResult.error("Unknown key: " + rl);
+                    return value != null ? FastDataResult.success(value) : FastDataResult.error("Unknown key: " + rl);
                 },
-                t -> DataResult.success(t.getRegistryName())
+                T::getRegistryName
         );
-        return typeCodec.dispatch(i -> i.getType(), (TypedRegistryEntry<?, ? extends I> t) -> instanceCodec(t));
+        return typeCodec.dispatch(I::getType, (TypedRegistryEntry<?, ? extends I> t) -> instanceCodec(t));
     }
 
     private static <S, I extends TypedInstance<?, ?>>
-    Codec<I> instanceCodec(TypedRegistryEntry<S, ? extends I> type) {
+    MyCodec<I> instanceCodec(TypedRegistryEntry<S, ? extends I> type) {
         return type.getStateCodec().xmap(state -> type.newInstance(state), i -> (S) i.getCurrentState());
     }
 }

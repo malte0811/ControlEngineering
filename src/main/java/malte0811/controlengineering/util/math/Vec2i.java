@@ -1,19 +1,19 @@
 package malte0811.controlengineering.util.math;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import javax.annotation.Nonnull;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
+import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
 import net.minecraft.network.FriendlyByteBuf;
+
+import javax.annotation.Nonnull;
 import java.util.Comparator;
-import java.util.Objects;
-import java.util.StringJoiner;
 
 public record Vec2i(int x, int y) implements Comparable<Vec2i> {
-    public static final Codec<Vec2i> CODEC = RecordCodecBuilder.create(
-            inst -> inst.group(
-                    Codec.INT.fieldOf("x").forGetter(v -> v.x),
-                    Codec.INT.fieldOf("y").forGetter(v -> v.y)
-            ).apply(inst, Vec2i::new)
+    public static final MyCodec<Vec2i> CODEC = new RecordCodec2<>(
+            new CodecField<>("x", Vec2i::x, MyCodecs.INTEGER),
+            new CodecField<>("y", Vec2i::y, MyCodecs.INTEGER),
+            Vec2i::new
     );
 
     public Vec2i(FriendlyByteBuf buffer) {

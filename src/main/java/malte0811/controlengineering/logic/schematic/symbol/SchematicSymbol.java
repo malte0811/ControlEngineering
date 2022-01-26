@@ -2,8 +2,8 @@ package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.serialization.Codec;
 import malte0811.controlengineering.logic.schematic.SchematicNet;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public abstract class SchematicSymbol<State> extends TypedRegistryEntry<State, SymbolInstance<State>> {
-    protected SchematicSymbol(State initialState, Codec<State> stateCodec) {
+    protected SchematicSymbol(State initialState, MyCodec<State> stateCodec) {
         super(initialState, stateCodec);
     }
 

@@ -2,12 +2,12 @@ package malte0811.controlengineering.controlpanels.components;
 
 
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.util.math.Vec2d;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.Vec3;
@@ -18,7 +18,7 @@ public class Variac extends PanelComponentType<BusSignalRef, Integer> {
     public static final float ANGLE_MIN = Mth.PI - 0.1f * Mth.PI;
 
     public Variac() {
-        super(BusSignalRef.DEFAULT, 0, BusSignalRef.CODEC, Codec.INT, SIZE, 2);
+        super(BusSignalRef.DEFAULT, 0, BusSignalRef.CODEC, MyCodecs.INTEGER, SIZE, 2);
     }
 
     @Override

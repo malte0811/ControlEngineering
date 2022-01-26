@@ -1,7 +1,6 @@
 package malte0811.controlengineering.logic.circuit;
 
 import com.google.common.base.Preconditions;
-import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
@@ -9,7 +8,8 @@ import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import malte0811.controlengineering.logic.cells.LeafcellInstance;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
-import malte0811.controlengineering.util.serialization.Codecs;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -25,7 +25,7 @@ public class Circuit {
     private static final String CURRENT_VALUE_KEY = "current";
     private static final String IS_INPUT_KEY = "isInput";
     private static final String PINS_KEY = "pins";
-    private static final Codec<List<LeafcellInstance<?>>> CELLS_CODEC = Codec.list(LeafcellInstance.CODEC);
+    private static final MyCodec<List<LeafcellInstance<?>>> CELLS_CODEC = MyCodecs.list(LeafcellInstance.CODEC);
 
     private final List<LeafcellInstance<?>> cellsInTopoOrder;
     private final Object2DoubleMap<NetReference> allNetValues;
@@ -35,7 +35,7 @@ public class Circuit {
 
     public static Circuit fromNBT(CompoundTag nbt) {
         ListTag stages = nbt.getList(STAGES_KEY, Tag.TAG_LIST);
-        List<LeafcellInstance<?>> cellsInTopoOrder = Codecs.readOrNull(CELLS_CODEC, stages);
+        List<LeafcellInstance<?>> cellsInTopoOrder = CELLS_CODEC.fromNBT(stages);
         Map<PinReference, NetReference> pinToNet = new HashMap<>();
         CompoundTag netsNBT = nbt.getCompound(NETS_KEY);
         Object2DoubleMap<NetReference> allNetValues = new Object2DoubleOpenHashMap<>();
@@ -49,7 +49,7 @@ public class Circuit {
                 inputValues.put(netRef, value);
             }
             for (Tag pinNBT : netNBT.getList(PINS_KEY, Tag.TAG_COMPOUND)) {
-                PinReference pin = Codecs.readOrNull(PinReference.CODEC, pinNBT);
+                PinReference pin = PinReference.CODEC.fromNBT(pinNBT);
                 if (pin != null && isValidPin(pin, cellsInTopoOrder) && !pinToNet.containsKey(pin)) {
                     pinToNet.put(pin, netRef);
                 }
@@ -109,7 +109,7 @@ public class Circuit {
     }
 
     public CompoundTag toNBT() {
-        Tag stages = Codecs.encode(CELLS_CODEC, cellsInTopoOrder);
+        Tag stages = CELLS_CODEC.toNBT(cellsInTopoOrder);
         Map<NetReference, List<PinReference>> pinsByNet = new HashMap<>();
         for (Map.Entry<PinReference, NetReference> entry : pinToNet.entrySet()) {
             pinsByNet.computeIfAbsent(entry.getValue(), $ -> new ArrayList<>()).add(entry.getKey());
@@ -121,7 +121,7 @@ public class Circuit {
             netNBT.putDouble(CURRENT_VALUE_KEY, allNetValues.getDouble(net));
             ListTag netPins = new ListTag();
             for (PinReference pin : entry.getValue()) {
-                netPins.add(Codecs.encode(PinReference.CODEC, pin));
+                netPins.add(PinReference.CODEC.toNBT(pin));
             }
             netNBT.put(PINS_KEY, netPins);
             netNBT.putBoolean(IS_INPUT_KEY, inputValues.containsKey(net));

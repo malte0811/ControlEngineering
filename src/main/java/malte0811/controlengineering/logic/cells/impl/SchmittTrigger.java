@@ -1,10 +1,10 @@
 package malte0811.controlengineering.logic.cells.impl;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
 import malte0811.controlengineering.logic.cells.*;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 
 public class SchmittTrigger extends LeafcellType<Boolean> {
     public static final String LOW_PIN = "low";
@@ -19,7 +19,7 @@ public class SchmittTrigger extends LeafcellType<Boolean> {
                 ),
                 ImmutableMap.of(DEFAULT_OUT_NAME, new Pin(SignalType.DIGITAL, PinDirection.OUTPUT)),
                 false,
-                Codec.BOOL,
+                MyCodecs.BOOL,
                 new CellCost(3, 4)
         );
     }

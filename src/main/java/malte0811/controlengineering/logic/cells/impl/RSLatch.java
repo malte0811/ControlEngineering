@@ -1,10 +1,10 @@
 package malte0811.controlengineering.logic.cells.impl;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import malte0811.controlengineering.logic.cells.*;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 
 import java.util.Random;
 
@@ -26,7 +26,7 @@ public class RSLatch extends LeafcellType<Boolean> {
                         NOT_Q, new Pin(SignalType.DIGITAL, PinDirection.DELAYED_OUTPUT)
                 ),
                 false,
-                Codec.BOOL,
+                MyCodecs.BOOL,
                 new CellCost(5, 4.5)
         );
     }

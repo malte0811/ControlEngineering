@@ -21,7 +21,6 @@ import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.ItemUtil;
 import malte0811.controlengineering.util.math.MatrixUtils;
-import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -157,14 +156,14 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
     @Override
     public void saveAdditional(@Nonnull CompoundTag compound) {
         super.saveAdditional(compound);
-        compound.put("schematic", Codecs.encode(Schematic.CODEC, schematic));
+        compound.put("schematic", Schematic.CODEC.toNBT(schematic));
         writeSyncedData(compound);
     }
 
     @Override
     public void load(@Nonnull CompoundTag nbt) {
         super.load(nbt);
-        schematic = Codecs.readOrNull(Schematic.CODEC, nbt.get("schematic"));
+        schematic = Schematic.CODEC.fromNBT(nbt.get("schematic"));
         readSyncedData(nbt);
         if (schematic == null) {
             schematic = new Schematic();

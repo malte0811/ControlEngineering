@@ -1,11 +1,11 @@
 package malte0811.controlengineering.logic.clock;
 
-import com.mojang.serialization.Codec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import net.minecraft.util.Unit;
 
 public class FreeClock extends ClockGenerator<Unit> {
     protected FreeClock() {
-        super(Unit.INSTANCE, Codec.unit(Unit.INSTANCE));
+        super(Unit.INSTANCE, MyCodecs.unit(Unit.INSTANCE));
     }
 
     @Override

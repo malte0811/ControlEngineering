@@ -20,7 +20,6 @@ import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import malte0811.controlengineering.util.math.MatrixUtils;
-import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -95,7 +94,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         super.load(nbt);
         clock.load(nbt.get("clock"));
         if (nbt.contains("circuit")) {
-            setCircuit(Codecs.readOrNull(Schematic.CODEC, nbt.get("circuit")));
+            setCircuit(Schematic.CODEC.fromNBT(nbt.get("circuit")));
         } else {
             setCircuit(null);
         }
@@ -107,7 +106,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         super.saveAdditional(compound);
         compound.put("clock", clock.toNBT());
         if (circuit != null) {
-            compound.put("circuit", Codecs.encode(Schematic.CODEC, circuit.getFirst()));
+            compound.put("circuit", Schematic.CODEC.toNBT(circuit.getFirst()));
         }
         compound.put("energy", energy.writeNBT());
     }

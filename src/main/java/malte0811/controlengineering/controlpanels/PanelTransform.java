@@ -1,11 +1,12 @@
 package malte0811.controlengineering.controlpanels;
 
 import com.mojang.math.Matrix4f;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.util.math.MatrixUtils;
-import malte0811.controlengineering.util.serialization.Codecs;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
+import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 
@@ -13,11 +14,10 @@ import java.util.Objects;
 
 //All transforms are for the "top" block of the control panel
 public class PanelTransform {
-    private static final Codec<BETransformData> CODEC = RecordCodecBuilder.create(
-            inst -> inst.group(
-                    Codec.FLOAT.fieldOf("height").forGetter(p -> p.centerHeight),
-                    Codec.FLOAT.fieldOf("angle").forGetter(p -> p.degrees)
-            ).apply(inst, BETransformData::new)
+    private static final MyCodec<BETransformData> CODEC = new RecordCodec2<>(
+            new CodecField<>("height", p -> p.centerHeight, MyCodecs.FLOAT),
+            new CodecField<>("angle", p -> p.degrees, MyCodecs.FLOAT),
+            BETransformData::new
     );
 
     private final BETransformData bEntityData;
@@ -65,7 +65,7 @@ public class PanelTransform {
     }
 
     public void addTo(CompoundTag out) {
-        Codecs.add(CODEC, bEntityData, out, "transform");
+        out.put("transform", CODEC.toNBT(bEntityData));
     }
 
     public double getFrontHeight() {
@@ -79,9 +79,7 @@ public class PanelTransform {
     }
 
     public static PanelTransform from(CompoundTag nbt, PanelOrientation orientation) {
-        BETransformData beData = Codecs.read(CODEC, nbt, "transform")
-                .result()
-                .orElseGet(BETransformData::new);
+        BETransformData beData = CODEC.fromNBT(nbt.get("transform"), BETransformData::new);
         return new PanelTransform(beData, orientation);
     }
 

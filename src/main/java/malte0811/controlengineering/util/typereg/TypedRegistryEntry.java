@@ -1,20 +1,20 @@
 package malte0811.controlengineering.util.typereg;
 
 import com.google.common.base.Preconditions;
-import com.mojang.serialization.Codec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
 import net.minecraft.resources.ResourceLocation;
 
 public abstract class TypedRegistryEntry<StateType, InstanceType extends TypedInstance<StateType, ?>> {
     private final StateType initialState;
-    private final Codec<StateType> stateCodec;
+    private final MyCodec<StateType> stateCodec;
     private ResourceLocation registryName;
 
-    protected TypedRegistryEntry(StateType initialState, Codec<StateType> stateCodec) {
+    protected TypedRegistryEntry(StateType initialState, MyCodec<StateType> stateCodec) {
         this.initialState = initialState;
         this.stateCodec = stateCodec;
     }
 
-    public final Codec<StateType> getStateCodec() {
+    public final MyCodec<StateType> getStateCodec() {
         return stateCodec;
     }
 

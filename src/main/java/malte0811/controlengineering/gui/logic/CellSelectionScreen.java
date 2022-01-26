@@ -1,5 +1,6 @@
 package malte0811.controlengineering.gui.logic;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbols;
@@ -7,8 +8,8 @@ import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+
 import javax.annotation.Nonnull;
-import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;

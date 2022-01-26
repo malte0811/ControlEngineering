@@ -1,8 +1,9 @@
 package malte0811.controlengineering.util;
 
+import net.minecraft.core.Direction;
+
 import java.util.Arrays;
 import java.util.Comparator;
-import net.minecraft.core.Direction;
 
 public class DirectionUtils {
     public static final Direction[] VALUES = Direction.values();

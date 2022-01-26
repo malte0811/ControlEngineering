@@ -5,10 +5,7 @@ import blusunrize.immersiveengineering.api.wires.WireApi;
 import blusunrize.immersiveengineering.api.wires.WireType;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.items.CEItems;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 

@@ -3,23 +3,21 @@ package malte0811.controlengineering.logic.schematic;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.util.GuiUtil;
 import malte0811.controlengineering.util.math.Vec2i;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
+import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec3;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.StringJoiner;
 
-public record WireSegment(Vec2i start, int length,
-                          malte0811.controlengineering.logic.schematic.WireSegment.WireAxis axis) {
-    public static final Codec<WireSegment> CODEC = RecordCodecBuilder.create(
-            inst -> inst.group(
-                    Vec2i.CODEC.fieldOf("start").forGetter(WireSegment::start),
-                    Codec.INT.fieldOf("length").forGetter(WireSegment::length),
-                    WireAxis.CODEC.fieldOf("axis").forGetter(WireSegment::axis)
-            ).apply(inst, WireSegment::new)
+public record WireSegment(Vec2i start, int length, WireAxis axis) {
+    public static final MyCodec<WireSegment> CODEC = new RecordCodec3<>(
+            new CodecField<>("start", WireSegment::start, Vec2i.CODEC),
+            new CodecField<>("length", WireSegment::length, MyCodecs.INTEGER),
+            new CodecField<>("axis", WireSegment::axis, WireAxis.CODEC),
+            WireSegment::new
     );
     public static final float WIRE_SPACE = 1 / 8f;
 
@@ -102,7 +100,7 @@ public record WireSegment(Vec2i start, int length,
     public enum WireAxis {
         X, Y;
 
-        public static final Codec<WireAxis> CODEC = Codec.BOOL.xmap(b -> b ? X : Y, a -> a == X);
+        public static final MyCodec<WireAxis> CODEC = MyCodecs.BOOL.xmap(b -> b ? X : Y, a -> a == X);
 
         public Vec2i addToCoord(Vec2i fixed, int inAxisCoord) {
             if (this == X) {

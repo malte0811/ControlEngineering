@@ -5,6 +5,7 @@ import malte0811.controlengineering.gui.widget.ColorSelector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.TextComponent;
+
 import javax.annotation.Nullable;
 
 public class ColorAndTextWidget extends DataProviderWidget<ColorAndText> {

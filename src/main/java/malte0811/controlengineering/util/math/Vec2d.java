@@ -1,17 +1,17 @@
 package malte0811.controlengineering.util.math;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Objects;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
+import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 
 public record Vec2d(double x, double y) {
-    public static final Codec<Vec2d> CODEC = RecordCodecBuilder.create(
-            inst -> inst.group(
-                    Codec.DOUBLE.fieldOf("x").forGetter(v -> v.x),
-                    Codec.DOUBLE.fieldOf("y").forGetter(v -> v.y)
-            ).apply(inst, Vec2d::new)
+    public static final MyCodec<Vec2d> CODEC = new RecordCodec2<>(
+            new CodecField<>("x", Vec2d::x, MyCodecs.DOUBLE),
+            new CodecField<>("y", Vec2d::y, MyCodecs.DOUBLE),
+            Vec2d::new
     );
 
     public Vec2d(FriendlyByteBuf in) {

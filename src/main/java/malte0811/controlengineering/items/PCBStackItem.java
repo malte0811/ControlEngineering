@@ -5,10 +5,10 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
-import malte0811.controlengineering.util.serialization.Codecs;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
 import javax.annotation.Nullable;
 import java.util.Optional;
 
@@ -28,7 +28,7 @@ public class PCBStackItem extends Item {
         if (tag == null) {
             return null;
         }
-        Schematic schematic = Codecs.readOrNull(Schematic.CODEC, tag.get(SCHEMATIC_KEY));
+        Schematic schematic = Schematic.CODEC.fromNBT(tag.get(SCHEMATIC_KEY));
         if (schematic == null) {
             return null;
         }
@@ -42,7 +42,7 @@ public class PCBStackItem extends Item {
     public static ItemStack forSchematic(Schematic schematic) {
         if (SchematicCircuitConverter.toCircuit(schematic).isPresent()) {
             ItemStack result = CEItems.PCB_STACK.get().getDefaultInstance();
-            result.getOrCreateTag().put(SCHEMATIC_KEY, Codecs.encode(Schematic.CODEC, schematic));
+            result.getOrCreateTag().put(SCHEMATIC_KEY, Schematic.CODEC.toNBT(schematic));
             return result;
         } else {
             return ItemStack.EMPTY;

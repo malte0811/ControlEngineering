@@ -3,8 +3,6 @@ package malte0811.controlengineering.logic.schematic;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -15,7 +13,12 @@ import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
+import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
 import net.minecraft.util.Mth;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,11 +31,10 @@ public class Schematic {
     public static final int GLOBAL_MAX = 512;
     public static final RectangleI BOUNDARY = new RectangleI(GLOBAL_MIN, GLOBAL_MIN, GLOBAL_MAX, GLOBAL_MAX);
 
-    public static final Codec<Schematic> CODEC = RecordCodecBuilder.create(
-            inst -> inst.group(
-                    Codec.list(PlacedSymbol.CODEC).fieldOf("symbols").forGetter(s -> s.symbols),
-                    Codec.list(SchematicNet.CODEC).fieldOf("nets").forGetter(s -> s.nets)
-            ).apply(inst, Schematic::new)
+    public static final MyCodec<Schematic> CODEC = new RecordCodec2<>(
+            new CodecField<>("symbols", Schematic::getSymbols, MyCodecs.list(PlacedSymbol.CODEC)),
+            new CodecField<>("nets", Schematic::getNets, MyCodecs.list(SchematicNet.CODEC)),
+            Schematic::new
     );
 
     private final List<PlacedSymbol> symbols;

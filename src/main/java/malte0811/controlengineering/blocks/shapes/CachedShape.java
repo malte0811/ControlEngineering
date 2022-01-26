@@ -2,11 +2,12 @@ package malte0811.controlengineering.blocks.shapes;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import java.util.function.Function;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import java.util.function.Function;
 
 public abstract class CachedShape<Key> implements FromBlockFunction<VoxelShape>, Function<Key, VoxelShape> {
     private final Cache<Key, VoxelShape> shapeCache = CacheBuilder.newBuilder()

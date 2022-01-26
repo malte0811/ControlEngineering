@@ -30,4 +30,16 @@ public interface SerialStorage {
     void writeBoolean(boolean value);
 
     FastDataResult<Boolean> readBoolean();
+
+    FastDataResult<Byte> readByte();
+
+    void writeByte(byte value);
+
+    FastDataResult<Float> readFloat();
+
+    void writeFloat(float value);
+
+    FastDataResult<Double> readDouble();
+
+    void writeDouble(double value);
 }

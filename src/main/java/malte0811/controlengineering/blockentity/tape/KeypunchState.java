@@ -1,7 +1,5 @@
 package malte0811.controlengineering.blockentity.tape;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.bytes.ByteList;
 import it.unimi.dsi.fastutil.bytes.ByteLists;
@@ -9,7 +7,10 @@ import malte0811.controlengineering.items.EmptyTapeItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.ItemUtil;
-import malte0811.controlengineering.util.serialization.Codecs;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
+import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec3;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -26,7 +27,7 @@ public class KeypunchState {
     }
 
     public KeypunchState(Runnable markDirty, Tag nbt) {
-        this(markDirty, Codecs.readOptional(Data.CODEC, nbt).orElseGet(Data::new));
+        this(markDirty, Data.CODEC.fromNBT(nbt, Data::new));
     }
 
     private KeypunchState(Runnable markDirty, Data data) {
@@ -106,16 +107,15 @@ public class KeypunchState {
     }
 
     public Tag toNBT() {
-        return Codecs.encode(Data.CODEC, data);
+        return Data.CODEC.toNBT(data);
     }
 
     private static class Data {
-        private static final Codec<Data> CODEC = RecordCodecBuilder.create(
-                inst -> inst.group(
-                        Codecs.BYTE_LIST_CODEC.fieldOf("data").forGetter(d -> d.data),
-                        Codec.INT.fieldOf("available").forGetter(d -> d.available),
-                        Codec.INT.fieldOf("numErased").forGetter(d -> d.numErased)
-                ).apply(inst, Data::new)
+        private static final MyCodec<Data> CODEC = new RecordCodec3<>(
+                new CodecField<>("data", d -> d.data, MyCodecs.BYTE_LIST),
+                new CodecField<>("available", d -> d.available, MyCodecs.INTEGER),
+                new CodecField<>("numErased", d -> d.numErased, MyCodecs.INTEGER),
+                Data::new
         );
         private final ByteList data;
         private int available;

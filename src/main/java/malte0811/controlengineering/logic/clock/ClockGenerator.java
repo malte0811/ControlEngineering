@@ -1,11 +1,11 @@
 package malte0811.controlengineering.logic.clock;
 
-import com.mojang.serialization.Codec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 
 public abstract class ClockGenerator<State> extends TypedRegistryEntry<State, ClockGenerator.ClockInstance<State>> {
-    protected ClockGenerator(State initialState, Codec<State> stateCodec) {
+    protected ClockGenerator(State initialState, MyCodec<State> stateCodec) {
         super(initialState, stateCodec);
     }
 
@@ -23,7 +23,7 @@ public abstract class ClockGenerator<State> extends TypedRegistryEntry<State, Cl
     }
 
     public static class ClockInstance<State> extends TypedInstance<State, ClockGenerator<State>> {
-        public static final Codec<ClockInstance<?>> CODEC = TypedInstance.makeCodec(ClockTypes.REGISTRY);
+        public static final MyCodec<ClockInstance<?>> CODEC = TypedInstance.makeCodec(ClockTypes.REGISTRY);
 
         public ClockInstance(ClockGenerator<State> stateClockGenerator, State currentState) {
             super(stateClockGenerator, currentState);

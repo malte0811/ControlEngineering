@@ -1,10 +1,11 @@
 package malte0811.controlengineering.network;
 
+import net.minecraft.network.FriendlyByteBuf;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import net.minecraft.network.FriendlyByteBuf;
 
 public class PacketUtils {
     public static <T> List<T> readList(FriendlyByteBuf buffer, Function<FriendlyByteBuf, T> readElement) {

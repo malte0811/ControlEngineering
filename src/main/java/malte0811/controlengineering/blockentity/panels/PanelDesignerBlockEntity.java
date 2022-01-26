@@ -1,7 +1,6 @@
 package malte0811.controlengineering.blockentity.panels;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
@@ -19,7 +18,8 @@ import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.math.MatrixUtils;
-import malte0811.controlengineering.util.serialization.Codecs;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -42,7 +42,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PanelDesignerBlockEntity extends CEBlockEntity implements SelectionShapeOwner {
-    private static final Codec<List<PlacedComponent>> COMPONENTS_CODEC = Codec.list(PlacedComponent.CODEC);
+    private static final MyCodec<List<PlacedComponent>> COMPONENTS_CODEC = MyCodecs.list(PlacedComponent.CODEC);
 
     private final CachedValue<BlockState, SelectionShapes> shapes = new CachedValue<>(
             this::getBlockState,
@@ -124,14 +124,14 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
     public void load(@Nonnull CompoundTag nbt) {
         super.load(nbt);
         components.clear();
-        components.addAll(Codecs.readOptional(COMPONENTS_CODEC, nbt.get("components")).orElse(ImmutableList.of()));
+        components.addAll(COMPONENTS_CODEC.fromNBT(nbt.get("components"), List::of));
         this.state = new KeypunchState(this::setChanged, nbt.get("state"));
     }
 
     @Override
     public void saveAdditional(@Nonnull CompoundTag compound) {
         super.saveAdditional(compound);
-        compound.put("components", Codecs.encode(COMPONENTS_CODEC, components));
+        compound.put("components", COMPONENTS_CODEC.toNBT(components));
         compound.put("state", state.toNBT());
     }
 

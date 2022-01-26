@@ -1,12 +1,14 @@
 package malte0811.controlengineering.bus;
 
-import com.mojang.serialization.Codec;
-import malte0811.controlengineering.util.serialization.ListBasedCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
+import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
 
 public record BusSignalRef(int line, int color) {
-    public static final Codec<BusSignalRef> CODEC = ListBasedCodec.create(
-            "line", Codec.INT, BusSignalRef::line,
-            "color", Codec.INT, BusSignalRef::color,
+    public static final MyCodec<BusSignalRef> CODEC = new RecordCodec2<>(
+            new CodecField<>("line", BusSignalRef::line, MyCodecs.INTEGER),
+            new CodecField<>("color", BusSignalRef::color, MyCodecs.INTEGER),
             BusSignalRef::new
     );
     public static final BusSignalRef DEFAULT = new BusSignalRef(0, 0);

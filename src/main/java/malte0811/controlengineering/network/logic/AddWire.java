@@ -5,6 +5,7 @@ import malte0811.controlengineering.logic.schematic.WireSegment;
 import malte0811.controlengineering.logic.schematic.WireSegment.WireAxis;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.network.FriendlyByteBuf;
+
 import java.util.function.Consumer;
 
 public class AddWire extends LogicSubPacket {

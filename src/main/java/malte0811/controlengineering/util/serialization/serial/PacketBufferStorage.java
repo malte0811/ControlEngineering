@@ -39,4 +39,34 @@ public class PacketBufferStorage implements SerialStorage {
     public FastDataResult<Boolean> readBoolean() {
         return FastDataResult.success(buffer.readBoolean());
     }
+
+    @Override
+    public FastDataResult<Byte> readByte() {
+        return FastDataResult.success(buffer.readByte());
+    }
+
+    @Override
+    public void writeByte(byte value) {
+        buffer.writeByte(value);
+    }
+
+    @Override
+    public FastDataResult<Float> readFloat() {
+        return FastDataResult.success(buffer.readFloat());
+    }
+
+    @Override
+    public void writeFloat(float value) {
+        buffer.writeFloat(value);
+    }
+
+    @Override
+    public FastDataResult<Double> readDouble() {
+        return FastDataResult.success(buffer.readDouble());
+    }
+
+    @Override
+    public void writeDouble(double value) {
+        buffer.writeDouble(value);
+    }
 }

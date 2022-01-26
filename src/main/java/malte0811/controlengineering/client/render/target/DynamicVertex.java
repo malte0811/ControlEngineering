@@ -1,6 +1,7 @@
 package malte0811.controlengineering.client.render.target;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+
 import java.util.List;
 
 public record DynamicVertex(List<Step> steps) {

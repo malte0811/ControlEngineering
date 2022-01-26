@@ -1,12 +1,13 @@
 package malte0811.controlengineering.controlpanels.components;
 
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -47,6 +48,6 @@ public class CoveredToggleSwitch extends PanelComponentType<ColorAndSignal, Cove
     public enum State {
         CLOSED, OPEN, ACTIVE;
         private static final State[] STATES = values();
-        public static final Codec<State> CODEC = Codec.INT.xmap(i -> STATES[i], State::ordinal);
+        public static final MyCodec<State> CODEC = MyCodecs.INTEGER.xmap(i -> STATES[i], State::ordinal);
     }
 }

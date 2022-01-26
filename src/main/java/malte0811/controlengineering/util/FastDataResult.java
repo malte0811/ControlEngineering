@@ -2,10 +2,8 @@ package malte0811.controlengineering.util;
 
 import blusunrize.immersiveengineering.api.utils.FastEither;
 import com.google.common.base.Preconditions;
-import com.mojang.serialization.DataResult;
 import org.jetbrains.annotations.Contract;
 
-import java.util.Optional;
 import java.util.function.Function;
 
 public class FastDataResult<T> {
@@ -40,16 +38,12 @@ public class FastDataResult<T> {
         return valueOrError.leftNonnull();
     }
 
-    public <T2> FastDataResult<T2> flatMapDFU(Function<T, DataResult<T2>> map) {
+    public <T2> FastDataResult<T2> flatMap(Function<T, FastDataResult<T2>> to) {
         if (isError()) {
             return propagateError();
+        } else {
+            return to.apply(get());
         }
-        DataResult<T2> result = map.apply(get());
-        Optional<DataResult.PartialResult<T2>> maybeError = result.error();
-        if (maybeError.isPresent()) {
-            return error(maybeError.get().message());
-        }
-        return success(result.result().get());
     }
 
     public <T2> FastDataResult<T2> map(Function<T, T2> map) {

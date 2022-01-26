@@ -1,11 +1,11 @@
 package malte0811.controlengineering.controlpanels.components;
 
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -14,7 +14,7 @@ public class TimedButton extends PanelComponentType<ColorAndSignal, Integer> {
     private static final int DELAY = 20;
 
     public TimedButton() {
-        super(ColorAndSignal.DEFAULT, 0, ColorAndSignal.CODEC, Codec.INT, Button.SIZE, Button.HEIGHT);
+        super(ColorAndSignal.DEFAULT, 0, ColorAndSignal.CODEC, MyCodecs.INTEGER, Button.SIZE, Button.HEIGHT);
     }
 
     @Override

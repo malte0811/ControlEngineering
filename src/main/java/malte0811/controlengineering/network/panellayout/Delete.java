@@ -3,6 +3,7 @@ package malte0811.controlengineering.network.panellayout;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.network.FriendlyByteBuf;
+
 import java.util.List;
 
 public class Delete extends PanelSubPacket {

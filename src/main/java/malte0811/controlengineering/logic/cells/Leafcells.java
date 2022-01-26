@@ -1,12 +1,9 @@
 package malte0811.controlengineering.logic.cells;
 
+import blusunrize.immersiveengineering.api.tool.LogicCircuitHandler.LogicCircuitOperator;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.cells.impl.*;
 import net.minecraft.resources.ResourceLocation;
-
-import static blusunrize.immersiveengineering.api.tool.LogicCircuitHandler.LogicCircuitOperator;
-
-import blusunrize.immersiveengineering.api.tool.LogicCircuitHandler.LogicCircuitOperator;
 
 public class Leafcells {
     public static final AssociativeFunctionCell AND2 = new AssociativeFunctionCell(2, LogicCircuitOperator.AND, true);

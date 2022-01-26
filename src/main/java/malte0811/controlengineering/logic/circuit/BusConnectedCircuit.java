@@ -1,29 +1,30 @@
 package malte0811.controlengineering.logic.circuit;
 
 import com.google.common.base.Preconditions;
-import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.logic.cells.LeafcellType;
-import malte0811.controlengineering.util.serialization.Codecs;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.ToDoubleFunction;
 
 public class BusConnectedCircuit {
 
-    private static final Codec<Map<NetReference, List<BusSignalRef>>> OUTPUT_CODEC = Codecs.codecForMap(
-            NetReference.CODEC, Codec.list(BusSignalRef.CODEC)
+    private static final MyCodec<Map<NetReference, List<BusSignalRef>>> OUTPUT_CODEC = MyCodecs.codecForMap(
+            NetReference.CODEC, MyCodecs.list(BusSignalRef.CODEC)
     );
-    private static final Codec<Map<BusSignalRef, List<NetReference>>> INPUT_CODEC = Codecs.codecForMap(
-            BusSignalRef.CODEC, Codec.list(NetReference.CODEC)
+    private static final MyCodec<Map<BusSignalRef, List<NetReference>>> INPUT_CODEC = MyCodecs.codecForMap(
+            BusSignalRef.CODEC, MyCodecs.list(NetReference.CODEC)
     );
-    private static final Codec<Map<NetReference, Double>> CONSTANCE_CODEC = Codecs.codecForMap(
-            NetReference.CODEC, Codec.DOUBLE
+    private static final MyCodec<Map<NetReference, Double>> CONSTANCE_CODEC = MyCodecs.codecForMap(
+            NetReference.CODEC, MyCodecs.DOUBLE
     );
     private final Circuit circuit;
     private final Map<NetReference, List<BusSignalRef>> outputConnections;
@@ -52,9 +53,9 @@ public class BusConnectedCircuit {
     public BusConnectedCircuit(CompoundTag nbt) {
         this(
                 Circuit.fromNBT(nbt.getCompound("circuit")),
-                Codecs.readOrThrow(OUTPUT_CODEC, nbt.get("outputs")),
-                Codecs.readOrThrow(INPUT_CODEC, nbt.get("inputs")),
-                Codecs.readOrThrow(CONSTANCE_CODEC, nbt.get("constants"))
+                OUTPUT_CODEC.fromNBT(nbt.get("outputs")),
+                INPUT_CODEC.fromNBT(nbt.get("inputs")),
+                CONSTANCE_CODEC.fromNBT(nbt.get("constants"))
         );
     }
 
@@ -95,9 +96,9 @@ public class BusConnectedCircuit {
     public CompoundTag toNBT() {
         CompoundTag result = new CompoundTag();
         result.put("circuit", circuit.toNBT());
-        result.put("inputs", Codecs.encode(INPUT_CODEC, inputConnections));
-        result.put("outputs", Codecs.encode(OUTPUT_CODEC, outputConnections));
-        result.put("constants", Codecs.encode(CONSTANCE_CODEC, constantInputs));
+        result.put("inputs", INPUT_CODEC.toNBT(inputConnections));
+        result.put("outputs", OUTPUT_CODEC.toNBT(outputConnections));
+        result.put("constants", CONSTANCE_CODEC.toNBT(constantInputs));
         return result;
     }
 

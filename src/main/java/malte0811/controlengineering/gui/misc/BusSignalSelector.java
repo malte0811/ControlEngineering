@@ -7,6 +7,7 @@ import malte0811.controlengineering.gui.widget.BasicSlider;
 import malte0811.controlengineering.gui.widget.ColorPicker16;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.DyeColor;
+
 import javax.annotation.Nullable;
 
 public class BusSignalSelector extends DataProviderWidget<BusSignalRef> {

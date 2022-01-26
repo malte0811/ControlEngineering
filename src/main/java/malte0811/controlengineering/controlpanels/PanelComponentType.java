@@ -2,12 +2,14 @@ package malte0811.controlengineering.controlpanels;
 
 import blusunrize.immersiveengineering.api.crafting.IngredientWithSize;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.util.FastDataResult;
 import malte0811.controlengineering.util.math.Vec2d;
-import malte0811.controlengineering.util.serialization.Codecs;
-import malte0811.controlengineering.util.serialization.serial.SerialCodecParser;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.serialization.serial.PacketBufferStorage;
+import malte0811.controlengineering.util.serialization.serial.SerialStorage;
+import malte0811.controlengineering.util.serialization.serial.StringListStorage;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionResult;
@@ -25,19 +27,18 @@ public abstract class PanelComponentType<Config, State>
     @Nullable
     // Null = dynamic size
     private final Vec2d size;
-    private final SerialCodecParser<Config> configParser;
+    private final MyCodec<Config> configCodec;
     private String translationKey;
     private final AABB defaultSelectionShape;
 
-
     protected PanelComponentType(
             Config defaultConfig, State intitialState,
-            Codec<Config> codecConfig, Codec<State> codecState,
+            MyCodec<Config> codecConfig, MyCodec<State> codecState,
             @Nullable Vec2d size, double selectionHeight
     ) {
-        super(Pair.of(defaultConfig, intitialState), Codecs.safePair(codecConfig, codecState));
+        super(Pair.of(defaultConfig, intitialState), MyCodecs.pair(codecConfig, codecState));
         this.size = size;
-        this.configParser = SerialCodecParser.getParser(codecConfig);
+        this.configCodec = codecConfig;
 
         if (selectionHeight >= 0 && size != null) {
             this.defaultSelectionShape = new AABB(0, 0, 0, size.x(), selectionHeight, size.y());
@@ -57,19 +58,21 @@ public abstract class PanelComponentType<Config, State>
 
     @Nullable
     public PanelComponentInstance<Config, State> newInstance(FriendlyByteBuf from) {
-        return configParser.parse(from).map(this::newInstanceFromCfg).orElse(null);
+        return newInstance(new PacketBufferStorage(from)).orElse(null);
     }
 
     public FastDataResult<PanelComponentInstance<Config, State>> newInstance(List<String> data) {
-        return configParser.parse(data).map(this::newInstanceFromCfg);
+        return newInstance(new StringListStorage(data));
     }
 
-    public SerialCodecParser<Config> getConfigParser() {
-        return configParser;
+    private FastDataResult<PanelComponentInstance<Config, State>> newInstance(SerialStorage data) {
+        return configCodec.fromSerial(data).map(this::newInstanceFromCfg);
     }
 
     public List<String> toCNCStrings(Config config) {
-        return configParser.stringify(config);
+        StringListStorage storage = new StringListStorage();
+        configCodec.toSerial(storage, config);
+        return storage.getData();
     }
 
     public BusState getEmittedState(Config config, State state) {
@@ -114,5 +117,9 @@ public abstract class PanelComponentType<Config, State>
                 ComponentCostReloadListener.COMPONENT_COSTS.get(getRegistryName()),
                 () -> List.of(new IngredientWithSize(Ingredient.of(Items.BEDROCK)))
         );
+    }
+
+    public final MyCodec<Config> getConfigCodec() {
+        return configCodec;
     }
 }

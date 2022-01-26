@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import net.minecraft.network.FriendlyByteBuf;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;

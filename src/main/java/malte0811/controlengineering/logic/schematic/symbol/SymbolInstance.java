@@ -1,7 +1,7 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.serialization.Codec;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -9,7 +9,7 @@ import net.minecraft.network.chat.MutableComponent;
 import java.util.List;
 
 public class SymbolInstance<State> extends TypedInstance<State, SchematicSymbol<State>> {
-    public static final Codec<SymbolInstance<?>> CODEC = makeCodec(SchematicSymbols.REGISTRY);
+    public static final MyCodec<SymbolInstance<?>> CODEC = makeCodec(SchematicSymbols.REGISTRY);
 
     public SymbolInstance(SchematicSymbol<State> stateSchematicSymbol, State currentState) {
         super(stateSchematicSymbol, currentState);

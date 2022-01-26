@@ -1,29 +1,21 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
+import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
 
 import java.util.StringJoiner;
 
-public class PlacedSymbol {
-    public static final Codec<PlacedSymbol> CODEC = RecordCodecBuilder.create(
-            inst -> inst.group(
-                    Vec2i.CODEC.fieldOf("pos").forGetter(PlacedSymbol::getPosition),
-                    SymbolInstance.CODEC.fieldOf("symbol").forGetter(PlacedSymbol::getSymbol)
-            ).apply(inst, PlacedSymbol::new)
+public record PlacedSymbol(Vec2i pos, SymbolInstance<?> symbol) {
+    public static final MyCodec<PlacedSymbol> CODEC = new RecordCodec2<>(
+            new CodecField<>("pos", PlacedSymbol::pos, Vec2i.CODEC),
+            new CodecField<>("symbol", PlacedSymbol::symbol, SymbolInstance.CODEC),
+            PlacedSymbol::new
     );
-
-    private final Vec2i pos;
-    private final SymbolInstance<?> symbol;
-
-    public PlacedSymbol(Vec2i pos, SymbolInstance<?> symbol) {
-        this.pos = pos;
-        this.symbol = symbol;
-    }
 
     public void render(PoseStack transform) {
         symbol.render(transform, pos.x(), pos.y());
