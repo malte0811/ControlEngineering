@@ -1,7 +1,8 @@
 package malte0811.controlengineering.datagen;
 
 import blusunrize.immersiveengineering.api.Lib;
-import blusunrize.immersiveengineering.data.blockstates.ConnectorBlockBuilder;
+import blusunrize.immersiveengineering.data.models.NongeneratedModels;
+import blusunrize.immersiveengineering.data.models.NongeneratedModels.NongeneratedModel;
 import blusunrize.immersiveengineering.data.models.SpecialModelBuilder;
 import blusunrize.immersiveengineering.data.models.SplitModelBuilder;
 import com.google.common.collect.ImmutableMap;
@@ -27,10 +28,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.client.model.generators.BlockModelBuilder;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ConfiguredModel;
-import net.minecraftforge.client.model.generators.ModelFile;
+import net.minecraftforge.client.model.generators.*;
 import net.minecraftforge.client.model.generators.VariantBlockStateBuilder.PartialBlockstate;
 import net.minecraftforge.client.model.generators.loaders.CompositeModelBuilder;
 import net.minecraftforge.client.model.generators.loaders.OBJLoaderBuilder;
@@ -39,24 +37,27 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class BlockstateGenerator extends BlockStateProvider {
     private static final ConfiguredModel EMPTY_MODEL = new ConfiguredModel(
             new ModelFile.UncheckedModelFile(new ResourceLocation(Lib.MODID, "block/ie_empty"))
     );
+    private final NongeneratedModels nongeneratedModels;
 
     public BlockstateGenerator(DataGenerator gen, ExistingFileHelper exFileHelper) {
         super(gen, ControlEngineering.MODID, exFileHelper);
+        nongeneratedModels = new NongeneratedModels(gen, exFileHelper);
     }
 
     @Override
     protected void registerStatesAndModels() {
-        registerConnector(obj("bus_relay.obj"), CEBlocks.BUS_RELAY, 90, BusRelayBlock.FACING);
-        registerConnector(obj("line_access.obj"), CEBlocks.LINE_ACCESS, 0, LineAccessBlock.FACING);
-        registerConnector(obj("bus_interface.obj"), CEBlocks.BUS_INTERFACE, 90, BusInterfaceBlock.FACING);
+        createRotatedBlock(CEBlocks.BUS_RELAY, obj("bus_relay.obj"), BusRelayBlock.FACING, 90);
+        createRotatedBlock(CEBlocks.LINE_ACCESS, obj("line_access.obj"), LineAccessBlock.FACING, 0);
+        createRotatedBlock(CEBlocks.BUS_INTERFACE, obj("bus_interface.obj"), BusInterfaceBlock.FACING, 90);
 
         panelModel();
-        column2(obj("panel_cnc.obj"), CEBlocks.PANEL_CNC, PanelCNCBlock.FACING);
+        column2(obj("panel_cnc.obj", nongeneratedModels), CEBlocks.PANEL_CNC, PanelCNCBlock.FACING);
         keypunchModel();
         sequencerModel();
         logicCabinetModel();
@@ -148,9 +149,13 @@ public class BlockstateGenerator extends BlockStateProvider {
                 .parent(staticModel);
     }
 
-    private void column2(ModelFile mainModel, RegistryObject<? extends Block> block, Property<Direction> facing) {
+    private void column2(
+            NongeneratedModel mainModel,
+            RegistryObject<? extends Block> block,
+            Property<Direction> facing
+    ) {
         itemModels().getBuilder(ItemModels.name(block)).parent(mainModel);
-        var splitModel = models().getBuilder(mainModel.getLocation().getPath() + "_split")
+        var splitModel = models().getBuilder(mainModel.getLocation().getPath())
                 .customLoader(SplitModelBuilder::begin)
                 .innerModel(mainModel)
                 .parts(List.of(Vec3i.ZERO, new Vec3i(0, 1, 0)))
@@ -178,12 +183,20 @@ public class BlockstateGenerator extends BlockStateProvider {
     }
 
     private BlockModelBuilder obj(String objFile) {
-        return obj(objFile, mcLoc("block"));
+        return obj(objFile, models());
+    }
+
+    private <T extends ModelBuilder<T>> T obj(String objFile, ModelProvider<T> modelProvider) {
+        return obj(objFile, mcLoc("block"), modelProvider);
     }
 
     private BlockModelBuilder obj(String objFile, ResourceLocation parent) {
-        return models()
-                .withExistingParent(objFile.replace('.', '_'), parent)
+        return obj(objFile, parent, models());
+    }
+
+    private <T extends ModelBuilder<T>>
+    T obj(String objFile, ResourceLocation parent, ModelProvider<T> modelProvider) {
+        return modelProvider.withExistingParent(objFile.replace('.', '_'), parent)
                 .customLoader(OBJLoaderBuilder::begin)
                 .modelLocation(addModelsPrefix(modLoc(objFile)))
                 .flipV(true)
@@ -191,17 +204,36 @@ public class BlockstateGenerator extends BlockStateProvider {
                 .end();
     }
 
-    private void registerConnector(
-            ModelFile mainModel,
-            RegistryObject<? extends Block> block,
-            int xForHorizontal,
-            Property<Direction> facing
+    protected void createRotatedBlock(
+            Supplier<? extends Block> block, ModelFile model, Property<Direction> facing, int offsetRotX
     ) {
-        ConnectorBlockBuilder.builder(getVariantBuilder(block.get()))
-                .rotationData(facing, xForHorizontal)
-                .fixedModel(mainModel)
-                .build();
-        itemModels().getBuilder(ItemModels.name(block)).parent(mainModel);
+        VariantBlockStateBuilder stateBuilder = getVariantBuilder(block.get());
+        for (Direction d : facing.getPossibleValues()) {
+            int x;
+            int y;
+            switch (d) {
+                case UP -> {
+                    x = 90;
+                    y = 0;
+                }
+                case DOWN -> {
+                    x = -90;
+                    y = 0;
+                }
+                default -> {
+                    y = getAngle(d);
+                    x = 0;
+                }
+            }
+            stateBuilder.partialState()
+                    .with(facing, d)
+                    .setModels(new ConfiguredModel(model, x + offsetRotX, y, false));
+        }
+        itemModels().getBuilder(ItemModels.name(block)).parent(model);
+    }
+
+    protected int getAngle(Direction dir) {
+        return (int) dir.toYRot();
     }
 
     private void horizontalRotated(RegistryObject<? extends Block> b, Property<Direction> facing, ModelFile model) {

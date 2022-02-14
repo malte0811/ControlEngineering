@@ -72,7 +72,7 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
         if (BlockPos.ZERO.equals(offset) && bEntity instanceof ControlPanelBlockEntity panel) {
             CompoundTag nbt = item.getTag();
             if (nbt == null || nbt.isEmpty()) {
-                nbt = panel.save(new CompoundTag());
+                nbt = panel.saveWithoutMetadata();
             }
             panel.readComponentsAndTransform(nbt);
             panel.setChanged();

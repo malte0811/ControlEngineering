@@ -2,22 +2,18 @@
   "variants": {
     "facing=north": {
       "model": "controlengineering:block/line_access_obj",
-      "y": 180,
-      "uvlock": true
+      "y": 180
     },
     "facing=south": {
-      "model": "controlengineering:block/line_access_obj",
-      "uvlock": true
+      "model": "controlengineering:block/line_access_obj"
     },
     "facing=west": {
       "model": "controlengineering:block/line_access_obj",
-      "y": 90,
-      "uvlock": true
+      "y": 90
     },
     "facing=east": {
       "model": "controlengineering:block/line_access_obj",
-      "y": 270,
-      "uvlock": true
+      "y": 270
     }
   }
 }

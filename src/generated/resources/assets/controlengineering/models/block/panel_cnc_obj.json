@@ -1,7 +1,23 @@
 {
-  "parent": "minecraft:block/block",
-  "loader": "forge:obj",
-  "model": "controlengineering:models/panel_cnc.obj",
-  "detectCullableFaces": false,
-  "flip-v": true
+  "loader": "immersiveengineering:basic_split",
+  "dynamic": false,
+  "inner_model": {
+    "parent": "minecraft:block/block",
+    "loader": "forge:obj",
+    "model": "controlengineering:models/panel_cnc.obj",
+    "detectCullableFaces": false,
+    "flip-v": true
+  },
+  "split_parts": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      0
+    ]
+  ]
 }

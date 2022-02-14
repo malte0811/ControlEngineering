@@ -1,18 +1,18 @@
 {
   "variants": {
     "facing=north": {
-      "model": "controlengineering:block/panel_cnc_obj_split",
+      "model": "controlengineering:block/panel_cnc_obj",
       "y": 180
     },
     "facing=south": {
-      "model": "controlengineering:block/panel_cnc_obj_split"
+      "model": "controlengineering:block/panel_cnc_obj"
     },
     "facing=west": {
-      "model": "controlengineering:block/panel_cnc_obj_split",
+      "model": "controlengineering:block/panel_cnc_obj",
       "y": 90
     },
     "facing=east": {
-      "model": "controlengineering:block/panel_cnc_obj_split",
+      "model": "controlengineering:block/panel_cnc_obj",
       "y": 270
     }
   }
