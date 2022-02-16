@@ -178,7 +178,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
     }
 
     private InteractionResult handleCreationClick(UseOnContext ctx) {
-        if (ctx.getPlayer() == null || ctx.getItemInHand().getItem() != IEItemRefs.CIRCUIT_BOARD.get()) {
+        if (ctx.getPlayer() == null || ctx.getItemInHand().getItem() != IEItemRefs.CIRCUIT_BOARD.asItem()) {
             return InteractionResult.PASS;
         }
         Optional<BusConnectedCircuit> circuit = SchematicCircuitConverter.toCircuit(schematic);

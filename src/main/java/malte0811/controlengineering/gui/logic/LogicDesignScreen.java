@@ -29,8 +29,8 @@ import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.*;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -194,7 +194,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     }
 
     private void renderIngredient(
-            PoseStack transform, @Nullable ItemStack available, int required, Supplier<Item> defaultItem
+            PoseStack transform, @Nullable ItemStack available, int required, ItemLike defaultItem
     ) {
         MutableComponent info;
         if (available != null) {
@@ -210,7 +210,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         final int width = font.width(info);
         font.draw(transform, info, -width, (16 - font.lineHeight) / 2f, -1);
         if (available == null || available.isEmpty()) {
-            available = defaultItem.get().getDefaultInstance();
+            available = defaultItem.asItem().getDefaultInstance();
         }
         ManualUtils.renderItemStack(transform, available, 0, 0, false);
     }
