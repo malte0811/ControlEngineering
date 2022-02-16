@@ -10,7 +10,9 @@ public class IEItemRefs {
     public static final RegistryObject<Item> CIRCUIT_BOARD = of("circuit_board");
     public static final RegistryObject<Item> TUBE = of("electron_tube");
     public static final RegistryObject<Item> WIRE = of("wire_copper");
-    public static final RegistryObject<Item> WIRE_COIL = of("wirecoil_copper");
+    public static final RegistryObject<Item> COPPER_WIRE_COIL = of("wirecoil_copper");
+    public static final RegistryObject<Item> REDSTONE_WIRE_COIL = of("wirecoil_redstone");
+    public static final RegistryObject<Item> REDSTONE_CONNECTOR = of("connector_redstone");
 
     // Classload early
     public static void init() {}

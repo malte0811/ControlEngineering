@@ -1,0 +1,5 @@
+Control Engineering
+Everything under control here
+During the dissolution of the Industrial Wires company, the <link;controlengineering:control_panels;control panel> division was acquired together with unrealized designs for <link;controlengineering:logic_cabinet;computational hardware> and used to form Control Engineering, a company specializing in redstone control equipment.<np>
+<&wire>By bundling 4 redstone wires and improving the shielding, it is possible to obtain a wire carrying 64 signals with a strength between 0 and 255 each. As with other wires, relays are used as an intermediate connection point. Various machines can interact with bus wires directly, for this a bus interface is placed on the bus port of the machine.
+<&line_access>None of this would be useful without a way to interact with "traditional" redstone signals. For this a §lline access§r is used: It extracts the signals of a line, i.e. of one of the original 4 redstone wires, into a classical redstone wire connector. The line to be accessed can be changed using a screwdriver.

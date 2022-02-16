@@ -29,7 +29,7 @@ public record ComponentCostGenerator(DataGenerator generator) implements DataPro
         var blackDye = new IngredientWithSize(Tags.Items.DYES_BLACK);
         var lever = new IngredientWithSize(Ingredient.of(Items.LEVER));
         var clock = new IngredientWithSize(Ingredient.of(Items.CLOCK));
-        var coil = new IngredientWithSize(Ingredient.of(IEItemRefs.WIRE_COIL.get()));
+        var coil = new IngredientWithSize(Ingredient.of(IEItemRefs.COPPER_WIRE_COIL.get()));
         var graphite = new IngredientWithSize(IETags.hopGraphiteIngot);
 
         addCosts(cache, PanelComponents.BUTTON, anyDye, glowstone, stoneButton);

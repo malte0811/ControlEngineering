@@ -1,0 +1,28 @@
+{
+  "wire": {
+    "type": "crafting",
+    "recipes": [
+      [
+        {
+          "recipe": "controlengineering:bus_relay"
+        },
+        {
+          "recipe": "controlengineering:bus_wire_coil"
+        },
+        {
+          "recipe": "controlengineering:bus_interface"
+        }
+      ]
+    ]
+  },
+  "line_access": {
+    "type": "crafting",
+    "recipes": [
+      [
+        {
+          "recipe": "controlengineering:line_access"
+        }
+      ]
+    ]
+  }
+}

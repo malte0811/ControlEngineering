@@ -62,6 +62,7 @@ public class LangGenerator extends LanguageProvider {
         addCells();
         addPanelComponents();
         addGuiStrings();
+        addManualSections();
     }
 
     private void addCells() {
@@ -146,6 +147,12 @@ public class LangGenerator extends LanguageProvider {
         add(KeypunchBlockEntity.REMOTE_KEY, "Remote transmission");
     }
 
+    private void addManualSections() {
+        addManualSection("main", "Control Engineering");
+        addManualSection("logic", "Logic Cabinets");
+        addManualSection("panels", "Control Panels");
+    }
+
     private void add(LeafcellType<?> type, String name) {
         add(CellSymbol.getTranslationKey(type), name);
     }
@@ -156,5 +163,9 @@ public class LangGenerator extends LanguageProvider {
 
     private void addClock(ClockGenerator<?> type, String name) {
         addItem(CEItems.CLOCK_GENERATORS.get(type.getRegistryName()), name);
+    }
+
+    private void addManualSection(String id, String name) {
+        add("manual." + ControlEngineering.MODID + '.' + id, name);
     }
 }

@@ -76,5 +76,8 @@
   "item.controlengineering.panel_top": "Panel Top",
   "item.controlengineering.pcb_stack": "Logic Circuit Boards",
   "item.controlengineering.punched_tape": "Punched Tape",
-  "itemGroup.controlengineering": "Control Engineering"
+  "itemGroup.controlengineering": "Control Engineering",
+  "manual.controlengineering.logic": "Logic Cabinets",
+  "manual.controlengineering.main": "Control Engineering",
+  "manual.controlengineering.panels": "Control Panels"
 }

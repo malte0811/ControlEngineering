@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "prp",
+    "bbb"
+  ],
+  "key": {
+    "p": {
+      "tag": "forge:plates/aluminum"
+    },
+    "b": {
+      "item": "minecraft:terracotta"
+    },
+    "r": {
+      "tag": "forge:dusts/redstone"
+    }
+  },
+  "result": {
+    "item": "controlengineering:bus_relay",
+    "count": 4
+  }
+}

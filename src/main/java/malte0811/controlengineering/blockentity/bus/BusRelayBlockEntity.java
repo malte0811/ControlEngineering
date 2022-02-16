@@ -13,8 +13,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-public class BusRelayBlock extends CEIICBlockEntity implements IBusConnector {
-    public BusRelayBlock(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+public class BusRelayBlockEntity extends CEIICBlockEntity implements IBusConnector {
+    public BusRelayBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 

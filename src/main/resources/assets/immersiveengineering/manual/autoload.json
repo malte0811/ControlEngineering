@@ -1,0 +1,18 @@
+{
+  "controlengineering:main": {
+    "category_weight": 100,
+    "entry_list": [
+      "controlengineering:intro"
+    ],
+    "controlengineering:panels": {
+      "entry_list": [
+        "controlengineering:control_panels"
+      ]
+    },
+    "controlengineering:logic": {
+      "entry_list": [
+        "controlengineering:logic_cabinet"
+      ]
+    }
+  }
+}
