@@ -2,11 +2,14 @@
   "controlengineering:main": {
     "category_weight": 100,
     "entry_list": [
-      "controlengineering:intro"
+      "controlengineering:intro",
+      "controlengineering:tape",
+      "controlengineering:keypunch"
     ],
     "controlengineering:panels": {
       "entry_list": [
-        "controlengineering:control_panels"
+        "controlengineering:control_panels",
+        "controlengineering:panel_designer"
       ]
     },
     "controlengineering:logic": {

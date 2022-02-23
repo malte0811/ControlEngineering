@@ -1,0 +1,5 @@
+Punched tape
+The modern replacement for wood
+Books are very hard for machines to process, but punched tape provides a machine-readable alternative. Information is encoded in rows of holes on a long paper tape. Punched tapes can be created from <&empty>empty tapes using either a <link;controlengineering:keypunch;keypunch> or, when creating control panels, a <link;controlengineering:panel_designer;panel designer>.
+<&glueing> The contents of a tape can be viewed by using the item. If a tape contains an error, view the tape contents while holding a pair of shears in your other hand and click to cut the tape. Note that to preseve enough blank tape on the ends it is only possible to cut in the middle of a character, which will be lost.
+The parts can then be glued together with other tapes to produce a corrected tape.

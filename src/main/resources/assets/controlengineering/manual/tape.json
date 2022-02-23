@@ -1,0 +1,22 @@
+{
+  "empty": {
+    "type": "crafting",
+    "recipes": [
+      [
+        {
+          "recipe": "controlengineering:empty_tape"
+        }
+      ]
+    ]
+  },
+  "glueing": {
+    "type": "crafting",
+    "recipes": [
+      [
+        {
+          "recipe": "controlengineering:glue_tape"
+        }
+      ]
+    ]
+  }
+}

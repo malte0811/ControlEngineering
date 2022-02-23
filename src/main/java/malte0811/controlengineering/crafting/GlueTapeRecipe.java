@@ -2,6 +2,7 @@ package malte0811.controlengineering.crafting;
 
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PunchedTapeItem;
+import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -9,11 +10,13 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.crafting.IShapedRecipe;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 
-public record GlueTapeRecipe(ResourceLocation id, Ingredient glue) implements CraftingRecipe {
+public record GlueTapeRecipe(ResourceLocation id,
+                             Ingredient glue) implements CraftingRecipe, IShapedRecipe<CraftingContainer> {
 
     @Override
     public boolean matches(@Nonnull CraftingContainer inv, @Nonnull Level worldIn) {
@@ -69,6 +72,16 @@ public record GlueTapeRecipe(ResourceLocation id, Ingredient glue) implements Cr
         return id;
     }
 
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        return NonNullList.of(
+                Ingredient.EMPTY,
+                Ingredient.of(CEItems.PUNCHED_TAPE.get()),
+                glue,
+                Ingredient.of(CEItems.PUNCHED_TAPE.get())
+        );
+    }
+
     @Nonnull
     @Override
     public RecipeSerializer<?> getSerializer() {
@@ -77,5 +90,15 @@ public record GlueTapeRecipe(ResourceLocation id, Ingredient glue) implements Cr
 
     public Ingredient getGlue() {
         return glue;
+    }
+
+    @Override
+    public int getRecipeWidth() {
+        return 3;
+    }
+
+    @Override
+    public int getRecipeHeight() {
+        return 1;
     }
 }

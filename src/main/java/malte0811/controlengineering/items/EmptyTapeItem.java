@@ -27,9 +27,9 @@ public class EmptyTapeItem extends Item {
     @Override
     public void fillItemCategory(@Nonnull CreativeModeTab group, @Nonnull NonNullList<ItemStack> items) {
         if (allowdedIn(group)) {
-            items.add(setLength(new ItemStack(this), 16));
-            items.add(setLength(new ItemStack(this), 256));
-            items.add(setLength(new ItemStack(this), 8192));
+            items.add(withLength(16));
+            items.add(withLength(256));
+            items.add(withLength(8192));
         }
     }
 

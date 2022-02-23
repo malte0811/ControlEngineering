@@ -8,6 +8,7 @@ import malte0811.controlengineering.crafting.CERecipeSerializers;
 import malte0811.controlengineering.datagen.recipes.GlueTapeBuilder;
 import malte0811.controlengineering.datagen.recipes.NoAdvancementShapedBuilder;
 import malte0811.controlengineering.items.CEItems;
+import malte0811.controlengineering.items.EmptyTapeItem;
 import malte0811.controlengineering.items.IEItemRefs;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -62,6 +63,13 @@ public class Recipes extends RecipeProvider {
                 .define('c', Items.COMPARATOR)
                 .define('b', CEBlocks.BUS_RELAY.get())
                 .define('B', CEItems.BUS_WIRE_COIL.get())
+                .save(consumer);
+        NoAdvancementShapedBuilder.shaped(EmptyTapeItem.withLength(256))
+                .pattern("ppp")
+                .pattern("pdp")
+                .pattern("ppp")
+                .define('p', Items.PAPER)
+                .define('d', Tags.Items.DYES_PINK)
                 .save(consumer);
     }
 }
