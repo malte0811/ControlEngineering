@@ -2,18 +2,16 @@ package malte0811.controlengineering.datagen;
 
 import blusunrize.immersiveengineering.api.EnumMetals;
 import blusunrize.immersiveengineering.api.IETags;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
-import malte0811.controlengineering.datagen.recipes.GlueTapeBuilder;
 import malte0811.controlengineering.datagen.recipes.NoAdvancementShapedBuilder;
+import malte0811.controlengineering.datagen.recipes.SingleIngredRecipeBuilder;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.EmptyTapeItem;
 import malte0811.controlengineering.items.IEItemRefs;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.SpecialRecipeBuilder;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
@@ -29,10 +27,12 @@ public class Recipes extends RecipeProvider {
 
     @Override
     protected void buildCraftingRecipes(@Nonnull Consumer<FinishedRecipe> consumer) {
-        SpecialRecipeBuilder.special(CERecipeSerializers.PANEL_RECIPE.get())
-                .save(consumer, ControlEngineering.MODID + ":panel");
-        GlueTapeBuilder.customRecipe(Ingredient.of(Tags.Items.SLIMEBALLS))
-                .build(consumer, "glue_tape");
+        SingleIngredRecipeBuilder.special(CERecipeSerializers.PANEL_RECIPE)
+                .input(Ingredient.of(IETags.getTagsFor(EnumMetals.STEEL).plate))
+                .save(consumer, "panel");
+        SingleIngredRecipeBuilder.special(CERecipeSerializers.GLUE_TAPE)
+                .input(Ingredient.of(Tags.Items.SLIMEBALLS))
+                .save(consumer, "glue_tape");
         NoAdvancementShapedBuilder.shaped(CEItems.BUS_WIRE_COIL.get())
                 .pattern("pcp")
                 .pattern("cpc")

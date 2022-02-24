@@ -88,10 +88,6 @@ public record GlueTapeRecipe(ResourceLocation id,
         return CERecipeSerializers.GLUE_TAPE.get();
     }
 
-    public Ingredient getGlue() {
-        return glue;
-    }
-
     @Override
     public int getRecipeWidth() {
         return 3;

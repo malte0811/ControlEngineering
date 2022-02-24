@@ -12,6 +12,7 @@ import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignScreen;
 import malte0811.controlengineering.gui.widget.ColorSelector;
 import malte0811.controlengineering.items.CEItems;
+import malte0811.controlengineering.items.ControlPanelItem;
 import malte0811.controlengineering.items.EmptyTapeItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.logic.cells.LeafcellType;
@@ -145,6 +146,9 @@ public class LangGenerator extends LanguageProvider {
 
         add(KeypunchBlockEntity.LOOPBACK_KEY, "Loopback");
         add(KeypunchBlockEntity.REMOTE_KEY, "Remote transmission");
+
+        add(ControlPanelItem.getKey(ControlPanelItem.BACK_HEIGHT_OPTION), "Back height");
+        add(ControlPanelItem.getKey(ControlPanelItem.FRONT_HEIGHT_OPTION), "Front height");
     }
 
     private void addManualSections() {

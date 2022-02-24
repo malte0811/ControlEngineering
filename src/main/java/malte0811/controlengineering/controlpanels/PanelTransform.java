@@ -34,7 +34,7 @@ public class PanelTransform {
     public PanelTransform(BETransformData bEntityData, PanelOrientation blockData) {
         this.bEntityData = bEntityData;
         final float radians = (float) Math.toRadians(bEntityData.degrees);
-        final float borderHeight = (float) getFrontHeight();
+        final float borderHeight = getFrontHeight();
 
         panelBottomToWorld = TransformCaches.makePanelBottomToWorld(blockData);
         panelTopToWorld = panelBottomToWorld.copy();
@@ -46,6 +46,12 @@ public class PanelTransform {
 
     public PanelTransform() {
         this(0.25F, (float) Math.toDegrees(Math.atan(0.5)), PanelOrientation.DOWN_NORTH);
+    }
+
+    public static PanelTransform withHeights(float frontHeight, float backHeight, PanelOrientation orientation) {
+        var centerHeight = (frontHeight + backHeight) / 2;
+        var angle = Math.atan(backHeight - frontHeight);
+        return new PanelTransform(centerHeight, (float) Math.toDegrees(angle), orientation);
     }
 
     public Matrix4f getPanelBottomToWorld() {
@@ -68,14 +74,14 @@ public class PanelTransform {
         out.put("transform", CODEC.toNBT(bEntityData));
     }
 
-    public double getFrontHeight() {
+    public float getFrontHeight() {
         final double radians = Math.toRadians(bEntityData.degrees);
-        return bEntityData.centerHeight - (Math.tan(radians) / 2);
+        return (float) (bEntityData.centerHeight - (Math.tan(radians) / 2));
     }
 
-    public double getBackHeight() {
+    public float getBackHeight() {
         final double radians = Math.toRadians(bEntityData.degrees);
-        return bEntityData.centerHeight + (Math.tan(radians) / 2);
+        return (float) (bEntityData.centerHeight + (Math.tan(radians) / 2));
     }
 
     public static PanelTransform from(CompoundTag nbt, PanelOrientation orientation) {
@@ -131,7 +137,7 @@ public class PanelTransform {
         return Objects.hash(bEntityData, panelTopToWorld, panelBottomToWorld, worldToPanelTop);
     }
 
-    private static record BETransformData(float centerHeight, float degrees) {
+    private record BETransformData(float centerHeight, float degrees) {
         private BETransformData() {
             this(0.25F, (float) -Math.toDegrees(Math.atan(0.5)));
         }

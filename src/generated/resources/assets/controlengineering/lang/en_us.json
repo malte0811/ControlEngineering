@@ -57,6 +57,8 @@
   "controlengineering.gui.needMoreWires": "%d wires are required",
   "controlengineering.gui.no_loopback": "Remote transmission",
   "controlengineering.gui.outputPin": "Output pin",
+  "controlengineering.gui.panel_back_height": "Back height",
+  "controlengineering.gui.panel_front_height": "Front height",
   "controlengineering.gui.pin": "Pin: %d",
   "controlengineering.gui.red": "Red: %d",
   "controlengineering.gui.reqVsAvTape": "%d characters required / %d available",

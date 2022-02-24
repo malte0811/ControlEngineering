@@ -1,3 +1,6 @@
 {
-  "type": "controlengineering:panel"
+  "type": "controlengineering:panel",
+  "cover": {
+    "tag": "forge:plates/steel"
+  }
 }

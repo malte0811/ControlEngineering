@@ -1,7 +1,5 @@
 package malte0811.controlengineering.crafting;
 
-import blusunrize.immersiveengineering.api.EnumMetals;
-import blusunrize.immersiveengineering.api.IETags;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.controlpanels.PanelTransform;
@@ -12,13 +10,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
-//TODO the final recipe should be something different
-public record PanelRecipe(ResourceLocation id) implements CraftingRecipe {
+public record PanelRecipe(ResourceLocation id, Ingredient cover) implements CraftingRecipe {
 
     @Override
     public boolean matches(@Nonnull CraftingContainer inv, @Nonnull Level worldIn) {
@@ -29,7 +27,7 @@ public record PanelRecipe(ResourceLocation id) implements CraftingRecipe {
                     if (stack.getItem() != CEItems.PANEL_TOP.get() || PanelTopItem.isEmptyPanelTop(stack)) {
                         return false;
                     }
-                } else if (!IETags.getTagsFor(EnumMetals.STEEL).plate.contains(stack.getItem())) {
+                } else if (!cover.test(stack)) {
                     return false;
                 }
             }
@@ -48,7 +46,6 @@ public record PanelRecipe(ResourceLocation id) implements CraftingRecipe {
         } else {
             resultNBT = resultNBT.copy();
         }
-        //TODO
         new PanelTransform(
                 0.25F, (float) -Math.toDegrees(Math.atan(0.5)), PanelOrientation.DOWN_NORTH
         ).addTo(resultNBT);
