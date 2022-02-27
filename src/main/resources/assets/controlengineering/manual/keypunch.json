@@ -1,2 +1,12 @@
 {
+  "recipe": {
+    "type": "crafting",
+    "recipes": [
+      [
+        {
+          "recipe": "controlengineering:keypunch"
+        }
+      ]
+    ]
+  }
 }

@@ -2,6 +2,7 @@ package malte0811.controlengineering;
 
 import malte0811.controlengineering.blockentity.CEBlockEntities;
 import malte0811.controlengineering.blocks.BlockRenderLayers;
+import malte0811.controlengineering.client.CEManual;
 import malte0811.controlengineering.client.render.panel.PanelCNCRenderer;
 import malte0811.controlengineering.client.render.panel.PanelRenderer;
 import malte0811.controlengineering.client.render.tape.SequencerRenderer;
@@ -20,6 +21,7 @@ public class CEClient {
         ComponentRenderers.init();
         ContainerScreenManager.registerScreens();
         BlockRenderLayers.init();
+        CEManual.addDynamicEntries();
     }
 
     @SubscribeEvent

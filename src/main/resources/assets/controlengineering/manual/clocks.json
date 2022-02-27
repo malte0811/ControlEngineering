@@ -1,0 +1,32 @@
+{
+  "free": {
+    "type": "crafting",
+    "recipes": [
+      [
+        {
+          "recipe": "controlengineering:clock_free"
+        }
+      ]
+    ]
+  },
+  "state": {
+    "type": "crafting",
+    "recipes": [
+      [
+        {
+          "recipe": "controlengineering:clock_state"
+        }
+      ]
+    ]
+  },
+  "edge": {
+    "type": "crafting",
+    "recipes": [
+      [
+        {
+          "recipe": "controlengineering:clock_edge"
+        }
+      ]
+    ]
+  }
+}

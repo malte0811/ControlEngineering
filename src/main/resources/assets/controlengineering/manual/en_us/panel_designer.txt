@@ -1,3 +1,6 @@
 Panel Designer
 
-Lorem ipsum...
+<&recipe>The panel designer is an advanced machine that provides a visual way of creating panel designs. The layout table is at the front. Here you can lay out your panel using the components shown on the left. You can edit the properties of each component by right-clicking on it.
+To create a tape describing the design, first add enough empty tape to the automatic keypunch in the back of the designer. The GUI shows both the amount of tape available and that required for the current design. To create the finished tape for your design use the green button on the left side of the machine.
+
+Note: Currently the panel designer does not consume power, this is subject to change.

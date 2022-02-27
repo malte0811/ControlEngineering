@@ -4,17 +4,22 @@
     "entry_list": [
       "controlengineering:intro",
       "controlengineering:tape",
-      "controlengineering:keypunch"
+      "controlengineering:keypunch",
+      "controlengineering:clocks",
+      "controlengineering:sequencer"
     ],
     "controlengineering:panels": {
       "entry_list": [
         "controlengineering:control_panels",
-        "controlengineering:panel_designer"
+        "controlengineering:panel_designer",
+        "controlengineering:panel_components",
+        "controlengineering:panel_cnc"
       ]
     },
     "controlengineering:logic": {
       "entry_list": [
-        "controlengineering:logic_cabinet"
+        "controlengineering:logic_cabinet",
+        "controlengineering:leafcells"
       ]
     }
   }

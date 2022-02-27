@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ppp",
+    "pwp"
+  ],
+  "key": {
+    "p": {
+      "tag": "forge:plates/steel"
+    },
+    "w": {
+      "tag": "forge:wires/copper"
+    }
+  },
+  "result": {
+    "item": "controlengineering:panel_top"
+  }
+}

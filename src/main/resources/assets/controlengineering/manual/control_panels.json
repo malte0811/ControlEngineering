@@ -1,2 +1,15 @@
 {
+  "panel_top": {
+    "type": "crafting",
+    "recipes": [
+      [
+        {
+          "recipe": "controlengineering:panel_top"
+        },
+        {
+          "recipe": "controlengineering:panel"
+        }
+      ]
+    ]
+  }
 }

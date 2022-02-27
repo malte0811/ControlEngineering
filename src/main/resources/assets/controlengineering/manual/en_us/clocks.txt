@@ -1,0 +1,6 @@
+Clock generators
+Right on schedule
+Some machines operate in steps which can be triggered externally. For this purpose these machines have a slot on the side where a clock generator module can be installed. Modules that use a redstone signal read the signal going into that block face.
+<&free> The free running clock is the most basic clock available: It simply triggers 10 equally spaced steps each second.
+<&state> The state triggered clock triggers steps in a 100ms interval while an external redstone signal is applied.
+<&edge> The edge triggered clock generator produces a single step each time the external redstone signal switches from zero to a positive value.

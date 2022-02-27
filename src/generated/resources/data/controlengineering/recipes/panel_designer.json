@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "pge",
+    "kww"
+  ],
+  "key": {
+    "k": {
+      "item": "controlengineering:keypunch"
+    },
+    "w": {
+      "tag": "forge:treated_wood"
+    },
+    "g": {
+      "tag": "forge:dusts/glowstone"
+    },
+    "e": {
+      "item": "minecraft:ender_eye"
+    },
+    "p": {
+      "item": "minecraft:piston"
+    }
+  },
+  "result": {
+    "item": "controlengineering:panel_designer"
+  }
+}

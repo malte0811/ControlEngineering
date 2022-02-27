@@ -1,9 +1,11 @@
 package malte0811.controlengineering.logic.clock;
 
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Unit;
+import net.minecraft.world.item.Item;
 
 import java.util.Map;
 
@@ -21,6 +23,10 @@ public class ClockTypes {
 
     public static Map<ResourceLocation, ClockGenerator<?>> getGenerators() {
         return REGISTRY.getEntries();
+    }
+
+    public static Item getItem(ClockGenerator<?> clock) {
+        return CEItems.CLOCK_GENERATORS.get(clock.getRegistryName()).get();
     }
 
     static {

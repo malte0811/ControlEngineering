@@ -1,0 +1,4 @@
+Panel tape format
+
+Lorem ipsum...
+(TODO: add generic format as first page, as well as comment to usually prefer the designer)

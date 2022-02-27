@@ -5,6 +5,7 @@ import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PanelTopItem;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -13,11 +14,12 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.crafting.IShapedRecipe;
 
 import javax.annotation.Nonnull;
 
-public record PanelRecipe(ResourceLocation id, Ingredient cover) implements CraftingRecipe {
-
+public record PanelRecipe(ResourceLocation id,
+                          Ingredient cover) implements CraftingRecipe, IShapedRecipe<CraftingContainer> {
     @Override
     public boolean matches(@Nonnull CraftingContainer inv, @Nonnull Level worldIn) {
         for (int x = 0; x < 3; ++x) {
@@ -74,5 +76,26 @@ public record PanelRecipe(ResourceLocation id, Ingredient cover) implements Craf
     @Override
     public RecipeSerializer<?> getSerializer() {
         return CERecipeSerializers.PANEL_RECIPE.get();
+    }
+
+    @Override
+    public int getRecipeWidth() {
+        return 3;
+    }
+
+    @Override
+    public int getRecipeHeight() {
+        return 3;
+    }
+
+    @Nonnull
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        return NonNullList.of(
+                Ingredient.EMPTY,
+                cover, cover, cover,
+                cover, Ingredient.of(CEItems.PANEL_TOP.get()), cover,
+                cover, cover, cover
+        );
     }
 }
