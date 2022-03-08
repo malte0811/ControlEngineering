@@ -2,7 +2,7 @@ package malte0811.controlengineering.blockentity.logic;
 
 import malte0811.controlengineering.util.ItemUtil;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -13,11 +13,11 @@ import java.util.Objects;
 public class CircuitIngredientDrawer {
     private static final int CAPACITY = 64;
 
-    private final Tag<Item> filter;
+    private final TagKey<Item> filter;
     private final String emptyKey;
     private ItemStack stored = ItemStack.EMPTY;
 
-    public CircuitIngredientDrawer(Tag<Item> filter, String emptyKey) {
+    public CircuitIngredientDrawer(TagKey<Item> filter, String emptyKey) {
         this.filter = filter;
         this.emptyKey = emptyKey;
     }

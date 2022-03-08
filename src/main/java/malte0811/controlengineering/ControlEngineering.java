@@ -3,7 +3,6 @@ package malte0811.controlengineering;
 import blusunrize.immersiveengineering.api.wires.localhandlers.LocalNetworkHandler;
 import malte0811.controlengineering.blockentity.CEBlockEntities;
 import malte0811.controlengineering.blocks.CEBlocks;
-import malte0811.controlengineering.blocks.loot.CELootFunctions;
 import malte0811.controlengineering.bus.BusWireType;
 import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
@@ -58,7 +57,6 @@ public class ControlEngineering {
         CEItems.REGISTER.register(modBus);
         CEContainers.REGISTER.register(modBus);
         CERecipeSerializers.REGISTER.register(modBus);
-        CELootFunctions.register();
         modBus.addListener(this::setup);
         Leafcells.init();
         IEItemRefs.init();

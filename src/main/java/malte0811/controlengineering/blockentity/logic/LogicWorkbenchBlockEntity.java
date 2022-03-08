@@ -27,7 +27,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -58,10 +58,10 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
     public static final String TOO_FEW_WIRES = ControlEngineering.MODID + ".gui.needMoreWires";
     public static final String TOO_FEW_TUBES = ControlEngineering.MODID + ".gui.needMoreTubes";
 
-    private static final Tag<Item> TUBES = IETags.circuitLogic;
+    private static final TagKey<Item> TUBES = IETags.circuitLogic;
     //TODO solder?
     //TODO add utility tag
-    private static final Tag<Item> WIRE = IETags.copperWire;
+    private static final TagKey<Item> WIRE = IETags.copperWire;
 
     private Schematic schematic = new Schematic();
     private final CircuitIngredientDrawer tubeStorage = new CircuitIngredientDrawer(TUBES, TUBES_EMPTY_KEY);

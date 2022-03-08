@@ -68,6 +68,6 @@ public class CutTapePacket extends SimplePacket {
             return false;
         }
         ItemStack shears = player.getItemInHand(otherHand(tapeHand));
-        return Tags.Items.SHEARS.contains(shears.getItem());
+        return shears.is(Tags.Items.SHEARS);
     }
 }

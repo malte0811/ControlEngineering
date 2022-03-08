@@ -13,7 +13,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.HashCache;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.SimpleReloadableResourceManager;
+import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nonnull;
@@ -23,16 +23,14 @@ import java.lang.reflect.Field;
 
 public class ServerFontData implements DataProvider {
     private final DataGenerator dataGen;
-    private final ExistingFileHelper existingFiles;
-    private final SimpleReloadableResourceManager clientResources;
+    private final MultiPackResourceManager clientResources;
 
     public ServerFontData(DataGenerator dataGen, ExistingFileHelper existingFiles) {
         this.dataGen = dataGen;
-        this.existingFiles = existingFiles;
         try {
             Field serverData = ExistingFileHelper.class.getDeclaredField("clientResources");
             serverData.setAccessible(true);
-            clientResources = (SimpleReloadableResourceManager) serverData.get(existingFiles);
+            clientResources = (MultiPackResourceManager) serverData.get(existingFiles);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
