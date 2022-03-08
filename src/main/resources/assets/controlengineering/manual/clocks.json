@@ -3,9 +3,7 @@
     "type": "crafting",
     "recipes": [
       [
-        {
-          "recipe": "controlengineering:clock_free"
-        }
+          "controlengineering:clock_free"
       ]
     ]
   },
@@ -13,9 +11,7 @@
     "type": "crafting",
     "recipes": [
       [
-        {
-          "recipe": "controlengineering:clock_state"
-        }
+        "controlengineering:clock_state"
       ]
     ]
   },
@@ -23,9 +19,7 @@
     "type": "crafting",
     "recipes": [
       [
-        {
-          "recipe": "controlengineering:clock_edge"
-        }
+        "controlengineering:clock_edge"
       ]
     ]
   }

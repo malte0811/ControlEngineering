@@ -18,7 +18,7 @@ public class CEManual {
         var ceCategory = ieManual.getRoot().getOrCreateSubnode(new ResourceLocation(MODID, "main"), 100);
         var panelCategory = ceCategory.getOrCreateSubnode(new ResourceLocation(MODID, "panels"));
         ManualEntry.ManualEntryBuilder builder = new ManualEntry.ManualEntryBuilder(ManualHelper.getManual());
-        builder.readFromFile(new ResourceLocation(MODID, "panel_format"));
+        builder.readFromFile(new ResourceLocation(MODID, "panels/panel_format"));
         // TODO add text describing components and their format
         ieManual.addEntry(panelCategory, builder.create(), 1000);
     }

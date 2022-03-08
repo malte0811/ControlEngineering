@@ -10,16 +10,16 @@
     ],
     "controlengineering:panels": {
       "entry_list": [
-        "controlengineering:control_panels",
-        "controlengineering:panel_designer",
-        "controlengineering:panel_components",
-        "controlengineering:panel_cnc"
+        "controlengineering:panels/control_panels",
+        "controlengineering:panels/panel_designer",
+        "controlengineering:panels/panel_components",
+        "controlengineering:panels/panel_cnc"
       ]
     },
     "controlengineering:logic": {
       "entry_list": [
-        "controlengineering:logic_cabinet",
-        "controlengineering:leafcells"
+        "controlengineering:logic/logic_cabinet",
+        "controlengineering:logic/leafcells"
       ]
     }
   }

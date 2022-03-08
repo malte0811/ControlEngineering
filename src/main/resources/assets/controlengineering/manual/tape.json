@@ -3,9 +3,7 @@
     "type": "crafting",
     "recipes": [
       [
-        {
-          "recipe": "controlengineering:empty_tape"
-        }
+        "controlengineering:empty_tape"
       ]
     ]
   },
@@ -13,9 +11,7 @@
     "type": "crafting",
     "recipes": [
       [
-        {
-          "recipe": "controlengineering:glue_tape"
-        }
+        "controlengineering:glue_tape"
       ]
     ]
   }

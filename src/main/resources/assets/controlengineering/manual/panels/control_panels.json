@@ -1,0 +1,11 @@
+{
+  "panel_top": {
+    "type": "crafting",
+    "recipes": [
+      [
+        "controlengineering:panel_top",
+        "controlengineering:panel"
+      ]
+    ]
+  }
+}

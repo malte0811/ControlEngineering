@@ -3,9 +3,7 @@
     "type": "crafting",
     "recipes": [
       [
-        {
-          "recipe": "controlengineering:panel_designer"
-        }
+          "controlengineering:panel_designer"
       ]
     ]
   }

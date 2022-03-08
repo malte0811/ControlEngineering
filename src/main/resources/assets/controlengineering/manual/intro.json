@@ -3,15 +3,9 @@
     "type": "crafting",
     "recipes": [
       [
-        {
-          "recipe": "controlengineering:bus_relay"
-        },
-        {
-          "recipe": "controlengineering:bus_wire_coil"
-        },
-        {
-          "recipe": "controlengineering:bus_interface"
-        }
+        "controlengineering:bus_relay",
+        "controlengineering:bus_wire_coil",
+        "controlengineering:bus_interface"
       ]
     ]
   },
@@ -19,9 +13,7 @@
     "type": "crafting",
     "recipes": [
       [
-        {
-          "recipe": "controlengineering:line_access"
-        }
+        "controlengineering:line_access"
       ]
     ]
   }

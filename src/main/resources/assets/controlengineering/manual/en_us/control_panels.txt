@@ -1,4 +1,0 @@
-Control Panels
-The industrial standard
-Complex systems often require many control signals, as well as many state signals that may need to be monitored. Control panels provide a way to handle this in a single block. Each panel can contain multiple <link;controlengineering:panel_components;components>, which interact with the signals on a bus wire.
-To create a control panel, first create a punched tape describing the design using either a keypunch (following the <link;controlengineering:panel_format;correct format>) or a <link;controlengineering:panel_designer;panel designer>. A <link;controlengineering:panel_cnc;panel CNC> is then used to place the components on a <&panel_top>blank panel top. Finally, combine the panel top with all components with the steel plates that form the chassis to obtain the finished control panel. The height and angle of the panel can be adjusted in the <link;workbench;engineer's workbench>.
