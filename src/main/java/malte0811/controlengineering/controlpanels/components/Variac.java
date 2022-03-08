@@ -28,10 +28,16 @@ public class Variac extends PanelComponentType<BusSignalRef, Integer> {
         var xRelativeCenter = relativeHit.x - SIZE.x() / 2;
         var yRelativeCenter = relativeHit.z - SIZE.y() / 2;
         var angle = Math.atan2(-xRelativeCenter, -yRelativeCenter);
-        return Pair.of(
-                InteractionResult.SUCCESS,
-                Mth.clamp(getStrengthForRotation(angle), BusLine.MIN_VALID_VALUE, BusLine.MAX_VALID_VALUE)
-        );
+        var target = Mth.clamp(getStrengthForRotation(angle), BusLine.MIN_VALID_VALUE, BusLine.MAX_VALID_VALUE);
+        if (target == oldState) {
+            return Pair.of(InteractionResult.PASS, oldState);
+        } else if (!sneaking) {
+            return Pair.of(InteractionResult.SUCCESS, target);
+        } else if (target < oldState) {
+            return Pair.of(InteractionResult.SUCCESS, oldState - 1);
+        } else { // target > oldState
+            return Pair.of(InteractionResult.SUCCESS, oldState + 1);
+        }
     }
 
     @Override
