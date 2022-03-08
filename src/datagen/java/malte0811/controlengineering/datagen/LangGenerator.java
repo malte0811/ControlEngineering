@@ -4,6 +4,7 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.blocks.CEBlocks;
+import malte0811.controlengineering.client.manual.PanelComponentElement;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.gui.logic.LogicDesignScreen;
@@ -149,6 +150,7 @@ public class LangGenerator extends LanguageProvider {
 
         add(ControlPanelItem.getKey(ControlPanelItem.BACK_HEIGHT_OPTION), "Back height");
         add(ControlPanelItem.getKey(ControlPanelItem.FRONT_HEIGHT_OPTION), "Front height");
+        add(PanelComponentElement.INGREDIENTS_KEY, "Ingredients");
     }
 
     private void addManualSections() {

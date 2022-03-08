@@ -1,3 +1,11 @@
 Panel components
 
-Lorem ipsum...
+<&button>A button controls a single signal on a bus. When pressed it glows and emits a full-strength signal until pressed again. The color can be configured.<np>
+<&timed_button>The timed button is a variation of the standard button that stops emitting a signal after 1 second.<np>
+<&switch>Like a button, a switch controls a digital bus signal. Only the signal it outputs to can be configured.<np>
+<&covered_switch>A covered toggle switch can be used for particularly dangerous operations. Before it can be activated the cover has to be opened; sneaking while clicking will always close the cover and turn off the signal. The color of the cover can be configured.<np>
+<&variac>A variac provides a way to control an analog signal. The rough position can be set by simply clicking on it, after tha fine adjustments can be made by sneaking while clicking.
+<&slider>A slider is another way to control analog signals. The color of the sliding knob can be configured. A vertical version is also available.
+<&indicator>An indicator shows the state of a bus signal. The brightness varies with signal strength, but it is still most useful for digital signals. The color can be configured.<np>
+<&panel_meter>A panel meter provides a convenient way of monitoring an analog signal. Its only configuration is the signal it shows.<np>
+<&label>A label does not interact with any signals, it is only used to document the purpose of other components. In addition to the text the color can also be configured.

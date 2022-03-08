@@ -1,11 +1,9 @@
 package malte0811.controlengineering.gui.panel;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Quaternion;
 import malte0811.controlengineering.client.render.target.MixedModel;
-import malte0811.controlengineering.controlpanels.PanelComponentInstance;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
@@ -55,16 +53,20 @@ public class ComponentSelector extends AbstractWidget {
         this.actualRowHeight = displayHeight / numRows;
         this.colWidth = width / numCols;
         this.numPages = Mth.ceil(available.size() / (double) (numRows * numCols));
-        this.buttons = ImmutableList.of(
-                new Button(
-                        x, y + displayHeight, width / 3, BUTTON_HEIGHT,
-                        new TextComponent("<-"), $ -> page = Math.max(0, page - 1)
-                ),
-                new Button(
-                        x + 2 * width / 3, y + displayHeight, width / 3, BUTTON_HEIGHT,
-                        new TextComponent("->"), $ -> page = Math.min(numPages - 1, page + 1)
-                )
-        );
+        if (this.numPages > 1) {
+            this.buttons = List.of(
+                    new Button(
+                            x, y + displayHeight, width / 3, BUTTON_HEIGHT,
+                            new TextComponent("<-"), $ -> page = Math.max(0, page - 1)
+                    ),
+                    new Button(
+                            x + 2 * width / 3, y + displayHeight, width / 3, BUTTON_HEIGHT,
+                            new TextComponent("->"), $ -> page = Math.min(numPages - 1, page + 1)
+                    )
+            );
+        } else {
+            this.buttons = List.of();
+        }
     }
 
     @Override
@@ -72,10 +74,12 @@ public class ComponentSelector extends AbstractWidget {
         for (AbstractWidget w : buttons) {
             w.render(matrixStack, mouseX, mouseY, partialTicks);
         }
-        drawCenteredString(
-                matrixStack, mc.font, (page + 1) + " / " + numPages,
-                x + width / 2, y + height - (BUTTON_HEIGHT + mc.font.lineHeight) / 2, -1
-        );
+        if (numPages > 1) {
+            drawCenteredString(
+                    matrixStack, mc.font, (page + 1) + " / " + numPages,
+                    x + width / 2, y + height - (BUTTON_HEIGHT + mc.font.lineHeight) / 2, -1
+            );
+        }
         final int selectedRow = (mouseY - y) / actualRowHeight;
         final int selectedCol = (mouseX - x) / colWidth;
         for (int col = 0; col < numCols; ++col) {
@@ -89,8 +93,8 @@ public class ComponentSelector extends AbstractWidget {
         }
     }
 
-    private <C, S> void renderAvailableType(
-            @Nonnull PoseStack transform, @Nullable PanelComponentType<C, S> type, int x, int y, boolean highlight
+    private void renderAvailableType(
+            @Nonnull PoseStack transform, @Nullable PanelComponentType<?, ?> type, int x, int y, boolean highlight
     ) {
         transform.pushPose();
         transform.translate(x, y, 0);
@@ -104,26 +108,35 @@ public class ComponentSelector extends AbstractWidget {
             String name = I18n.get(type.getTranslationKey());
             drawCenteredShrunkString(transform, mc.font, name, 0, colWidth, 0, 0);
 
-            transform.translate(colWidth / 2., (actualRowHeight + mc.font.lineHeight) / 2., 0);
-            PanelComponentInstance<?, ?> instance = type.newInstance();
-            var componentSize = instance.getSize();
-            var areaSize = new Vec2d(colWidth, actualRowHeight - mc.font.lineHeight * 1.5);
-            var extraScale = (float) Math.min(
-                    Math.min(areaSize.x() / componentSize.x(), areaSize.y() / componentSize.y()), 16
-            );
-            transform.scale(extraScale, extraScale, .01f);
-            transform.translate(-instance.getSize().x() / 2f, -instance.getSize().y() / 2f, 0);
-            transform.mulPose(new Quaternion(-90, 0, 0, true));
-            TransformUtil.shear(transform, .1f, .1f);
-            transform.scale(1, -1, 1);
-            //TODO cache?
-            MixedModel model = new MixedModel();
-            ComponentRenderers.render(model, instance, transform);
-            MultiBufferSource.BufferSource impl = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-            model.renderTo(impl, new PoseStack(), LightTexture.pack(15, 15), OverlayTexture.NO_OVERLAY);
-            impl.endBatch();
+            transform.translate(0, mc.font.lineHeight, 0);
+            renderComponentInGui(transform, type, colWidth, actualRowHeight - mc.font.lineHeight * 1.5);
         }
 
+        transform.popPose();
+    }
+
+    public static void renderComponentInGui(
+            @Nonnull PoseStack transform, @Nonnull PanelComponentType<?, ?> type, double width, double height
+    ) {
+        transform.pushPose();
+        var component = type.newInstance();
+        var componentSize = component.getSize();
+        var areaSize = new Vec2d(width, height);
+        var extraScale = (float) Math.min(
+                Math.min(areaSize.x() / componentSize.x(), areaSize.y() / componentSize.y()), 16
+        );
+        transform.translate(width / 2, height / 2, 0);
+        transform.scale(extraScale, extraScale, .01f);
+        transform.translate(-component.getSize().x() / 2f, -component.getSize().y() / 2f, 0);
+        transform.mulPose(new Quaternion(-90, 0, 0, true));
+        TransformUtil.shear(transform, .1f, .1f);
+        transform.scale(1, -1, 1);
+        //TODO cache?
+        var model = new MixedModel();
+        ComponentRenderers.render(model, component, transform);
+        var buffers = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        model.renderTo(buffers, new PoseStack(), LightTexture.pack(15, 15), OverlayTexture.NO_OVERLAY);
+        buffers.endBatch();
         transform.popPose();
     }
 

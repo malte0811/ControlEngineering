@@ -1,1 +1,38 @@
-{}
+{
+  "button": {
+    "type": "controlengineering:panel_component",
+    "component": "controlengineering:button"
+  },
+  "timed_button": {
+    "type": "controlengineering:panel_component",
+    "component": "controlengineering:timed_button"
+  },
+  "switch": {
+    "type": "controlengineering:panel_component",
+    "component": "controlengineering:toggle_switch"
+  },
+  "covered_switch": {
+    "type": "controlengineering:panel_component",
+    "component": "controlengineering:covered_switch"
+  },
+  "variac": {
+    "type": "controlengineering:panel_component",
+    "component": "controlengineering:variac"
+  },
+  "slider": {
+    "type": "controlengineering:panel_component",
+    "component": "controlengineering:slider_hor"
+  },
+  "indicator": {
+    "type": "controlengineering:panel_component",
+    "component": "controlengineering:indicator"
+  },
+  "panel_meter": {
+    "type": "controlengineering:panel_component",
+    "component": "controlengineering:panel_meter"
+  },
+  "label": {
+    "type": "controlengineering:panel_component",
+    "component": "controlengineering:label"
+  }
+}

@@ -8,4 +8,8 @@ public class ScreenUtils {
         tas.atlas().bind();
         RenderSystem.setShaderTexture(0, tas.atlas().getId());
     }
+
+    public static boolean isInRect(int xMin, int yMin, int width, int height, int x, int y) {
+        return xMin <= x && x < xMin + width && yMin <= y && y < yMin + height;
+    }
 }
