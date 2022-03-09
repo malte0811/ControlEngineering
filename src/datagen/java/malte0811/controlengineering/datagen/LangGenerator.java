@@ -4,6 +4,7 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.blocks.CEBlocks;
+import malte0811.controlengineering.client.manual.CEManual;
 import malte0811.controlengineering.client.manual.PanelComponentElement;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
@@ -24,6 +25,7 @@ import malte0811.controlengineering.logic.schematic.SchematicChecker;
 import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.ConstantSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.IOSymbol;
+import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
 
@@ -64,7 +66,7 @@ public class LangGenerator extends LanguageProvider {
         addCells();
         addPanelComponents();
         addGuiStrings();
-        addManualSections();
+        addManualStrings();
     }
 
     private void addCells() {
@@ -153,10 +155,17 @@ public class LangGenerator extends LanguageProvider {
         add(PanelComponentElement.INGREDIENTS_KEY, "Ingredients");
     }
 
-    private void addManualSections() {
+    private void addManualStrings() {
         addManualSection("main", "Control Engineering");
         addManualSection("logic", "Logic Cabinets");
         addManualSection("panels", "Control Panels");
+
+        add(CEManual.EXAMPLE_KEY, "Example");
+        add(CEManual.OPTIONS_KEY, "Options");
+        add(CEManual.NAME_KEY, "Name");
+        add(CEManual.CODEC_NAMES.get(MyCodecs.HEX_INTEGER), "color");
+        add(CEManual.CODEC_NAMES.get(MyCodecs.STRING), "text");
+        add(CEManual.CODEC_NAMES.get(MyCodecs.INTEGER), "integer");
     }
 
     private void add(LeafcellType<?> type, String name) {

@@ -1,4 +1,5 @@
 Panel tape format
 
-Lorem ipsum...
-(TODO: add generic format as first page, as well as comment to usually prefer the designer)
+While the <link;controlengineering:panels/panel_designer;panel designer> is usually more convenient when creating a new design, it can still be useful to know the exact tape format when it comes to tweaking an existing design.
+A design consists of component definitions separated by semicolons (;). Each component definition is of the form "name x y options". "name" is the name of the component and "options" configures the component, as described on the next pages. x and y are the coordinates of the lower left corner of the component, given in pixels from the bottom left of the panel.
+Color options are given as a hexadecimal integer, for example ff0000 corresponds to red. String options that contain spaces can be surrounded by quotation marks ("). If a string contains a literal quotation mark, it can be escaped using a backslash (\").

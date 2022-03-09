@@ -16,6 +16,10 @@ public abstract class RecordCodecBase<T> implements MyCodec<T> {
         this.fields = Arrays.asList(fields);
     }
 
+    public List<CodecField<T, ?>> getFields() {
+        return fields;
+    }
+
     @Override
     public final Tag toNBT(T in) {
         var result = new CompoundTag();

@@ -17,16 +17,21 @@ public class CNCInstructionGenerator {
             if (result.length() > 0) {
                 result.append(CNCInstructionParser.COMPONENT_SEPARATOR);
             }
-            result.append(PanelComponents.getCreationKey(comp.getComponent().getType()))
-                    .append(' ')
-                    .append(FORMAT.format(comp.getPosMin().x()))
-                    .append(' ')
-                    .append(FORMAT.format(comp.getPosMin().y()));
-            for (String field : comp.getComponent().toCNCStrings()) {
-                result.append(' ').append(escape(field));
-            }
+            toInstructions(result, comp);
         }
         return result.toString();
+    }
+
+    public static StringBuilder toInstructions(StringBuilder out, PlacedComponent component) {
+        out.append(PanelComponents.getCreationKey(component.getComponent().getType()))
+                .append(' ')
+                .append(FORMAT.format(component.getPosMin().x()))
+                .append(' ')
+                .append(FORMAT.format(component.getPosMin().y()));
+        for (String field : component.getComponent().toCNCStrings()) {
+            out.append(' ').append(escape(field));
+        }
+        return out;
     }
 
     private static String escape(String raw) {

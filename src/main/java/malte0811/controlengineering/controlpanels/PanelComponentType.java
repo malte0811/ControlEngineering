@@ -7,6 +7,7 @@ import malte0811.controlengineering.util.FastDataResult;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
 import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodecBase;
 import malte0811.controlengineering.util.serialization.serial.PacketBufferStorage;
 import malte0811.controlengineering.util.serialization.serial.SerialStorage;
 import malte0811.controlengineering.util.serialization.serial.StringListStorage;
@@ -27,13 +28,13 @@ public abstract class PanelComponentType<Config, State>
     @Nullable
     // Null = dynamic size
     private final Vec2d size;
-    private final MyCodec<Config> configCodec;
+    private final RecordCodecBase<Config> configCodec;
     private String translationKey;
     private final AABB defaultSelectionShape;
 
     protected PanelComponentType(
             Config defaultConfig, State intitialState,
-            MyCodec<Config> codecConfig, MyCodec<State> codecState,
+            RecordCodecBase<Config> codecConfig, MyCodec<State> codecState,
             @Nullable Vec2d size, double selectionHeight
     ) {
         super(Pair.of(defaultConfig, intitialState), MyCodecs.pair(codecConfig, codecState));
@@ -119,7 +120,7 @@ public abstract class PanelComponentType<Config, State>
         );
     }
 
-    public final MyCodec<Config> getConfigCodec() {
+    public final RecordCodecBase<Config> getConfigCodec() {
         return configCodec;
     }
 }
