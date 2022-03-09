@@ -13,6 +13,7 @@ public class IEItemRefs {
     public static final ItemLike COPPER_WIRE_COIL = of("wirecoil_copper");
     public static final ItemLike REDSTONE_WIRE_COIL = of("wirecoil_redstone");
     public static final ItemLike REDSTONE_CONNECTOR = of("connector_redstone");
+    public static final ItemLike DRILL_HEAD_IRON = of("drillhead_iron");
 
     // Classload early
     public static void init() {}

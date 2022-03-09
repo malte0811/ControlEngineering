@@ -1,2 +1,8 @@
 {
+  "recipe": {
+    "type": "crafting",
+    "recipes": [
+      "controlengineering:panel_cnc"
+    ]
+  }
 }

@@ -111,6 +111,15 @@ public class Recipes extends RecipeProvider {
                 .define('e', Items.ENDER_EYE)
                 .define('p', Blocks.PISTON)
                 .save(consumer);
+        NoAdvancementShapedBuilder.shaped(CEBlocks.PANEL_CNC)
+                .pattern("sds")
+                .pattern("wSw")
+                .pattern("www")
+                .define('s', IETags.steelRod)
+                .define('d', IEItemRefs.DRILL_HEAD_IRON)
+                .define('S', CEBlocks.SEQUENCER.get())
+                .define('w', IETags.getItemTag(IETags.treatedWood))
+                .save(consumer);
     }
 
     private void clockRecipes(Consumer<FinishedRecipe> consumer) {

@@ -1,3 +1,4 @@
 Control panel CNC
 
-<&recipe>
+<&recipe>The panel CNC is used to produce a panel top from a tape describing a design. For this the tape is inserted into the tape reader in the lower part of the machine, and an empty panel top is placed in the middle of the machine. Additionally, power has to be provided on the top. The parts required for the components have to be provided in an inventory (for example a chest or a crate) next to the lower part of the machine.
+If some part of this process fails, for example due to an error in the tape or missing component parts, an error message will be transmitted from the bus port in the back of the machine. The typical way to view this message is a <link;controlengineering:keypunch;keypunch> in remote transmission mode.

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "sds",
+    "wSw",
+    "www"
+  ],
+  "key": {
+    "s": {
+      "tag": "forge:rods/steel"
+    },
+    "d": {
+      "item": "immersiveengineering:drillhead_iron"
+    },
+    "S": {
+      "item": "controlengineering:sequencer"
+    },
+    "w": {
+      "tag": "forge:treated_wood"
+    }
+  },
+  "result": {
+    "item": "controlengineering:panel_cnc"
+  }
+}
