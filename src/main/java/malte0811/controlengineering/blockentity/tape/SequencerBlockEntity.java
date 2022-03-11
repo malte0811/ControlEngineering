@@ -1,5 +1,6 @@
 package malte0811.controlengineering.blockentity.tape;
 
+import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.logic.ClockSlot;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
@@ -17,6 +18,7 @@ import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -37,9 +39,12 @@ import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 public class SequencerBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IBusInterface {
     private static final int BASE_CONSUMPTION = 16;
     private static final int CONSUMPTION_PER_STEP = 128;
+    public static final String COMPACT_KEY = ControlEngineering.MODID + ".gui.sequencer.compact";
+    public static final String ANALOG_KEY = ControlEngineering.MODID + ".gui.sequencer.analog";
+    public static final String AUTORESET_KEY = ControlEngineering.MODID + ".gui.sequencer.autoreset";
+    public static final String MANUAL_RESET_KEY = ControlEngineering.MODID + ".gui.sequencer.manualreset";
 
     private boolean compact = true;
-    //TODO is this ever a useful feature?
     private boolean autoreset = true;
     private final TapeDrive tape = new TapeDrive(this::onTapeChange, this::onTapeChange, () -> true);
     private final ClockSlot clock = new ClockSlot();
@@ -156,14 +161,14 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
                 BEUtil.markDirtyAndSync(this);
             }
             return InteractionResult.SUCCESS;
-        }));
+        }).setTextGetter(() -> new TranslatableComponent(autoreset ? AUTORESET_KEY : MANUAL_RESET_KEY)));
         shapes.add(new SingleShape(createPixelRelative(10, 3, 0, 12, 6, 1), $ -> {
             if (level != null && !level.isClientSide()) {
                 compact = !compact;
                 BEUtil.markDirtyAndSync(this);
             }
             return InteractionResult.SUCCESS;
-        }));
+        }).setTextGetter(() -> new TranslatableComponent(compact ? COMPACT_KEY : ANALOG_KEY)));
         shapes.add(new SingleShape(
                 ShapeUtils.createPixelRelative(0, 6, 6, 5, 10, 10),
                 ctx -> clock.click(ctx, () -> BEUtil.markDirtyAndSync(this))

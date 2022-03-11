@@ -1,1 +1,8 @@
-{}
+{
+  "recipe": {
+    "type": "crafting",
+    "recipes": [
+      "controlengineering:sequencer"
+    ]
+  }
+}

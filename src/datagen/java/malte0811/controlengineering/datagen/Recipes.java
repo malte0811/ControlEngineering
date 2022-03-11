@@ -90,6 +90,15 @@ public class Recipes extends RecipeProvider {
                 .define('p', Items.PAPER)
                 .define('d', Tags.Items.DYES_PINK)
                 .save(consumer);
+        NoAdvancementShapedBuilder.shaped(CEBlocks.SEQUENCER.get())
+                .pattern("www")
+                .pattern("cbr")
+                .pattern("www")
+                .define('c', CEBlocks.BUS_RELAY.get())
+                .define('b', IEItemRefs.CIRCUIT_BOARD)
+                .define('r', Items.REDSTONE)
+                .define('w', IETags.getItemTag(IETags.treatedWood))
+                .save(consumer);
     }
 
     private void panelRecipes(Consumer<FinishedRecipe> consumer) {

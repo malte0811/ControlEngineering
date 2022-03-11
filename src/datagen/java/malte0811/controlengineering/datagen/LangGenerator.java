@@ -3,6 +3,7 @@ package malte0811.controlengineering.datagen;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
+import malte0811.controlengineering.blockentity.tape.SequencerBlockEntity;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.client.manual.CEManual;
 import malte0811.controlengineering.client.manual.PanelComponentElement;
@@ -153,6 +154,11 @@ public class LangGenerator extends LanguageProvider {
         add(ControlPanelItem.getKey(ControlPanelItem.BACK_HEIGHT_OPTION), "Back height");
         add(ControlPanelItem.getKey(ControlPanelItem.FRONT_HEIGHT_OPTION), "Front height");
         add(PanelComponentElement.INGREDIENTS_KEY, "Ingredients");
+
+        add(SequencerBlockEntity.AUTORESET_KEY, "Resets automatically");
+        add(SequencerBlockEntity.MANUAL_RESET_KEY, "Requires manual reset");
+        add(SequencerBlockEntity.ANALOG_KEY, "Analog mode");
+        add(SequencerBlockEntity.COMPACT_KEY, "Compact mode");
     }
 
     private void addManualStrings() {
