@@ -1,4 +1,4 @@
-package malte0811.controlengineering.gui.widgets;
+package malte0811.controlengineering.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;

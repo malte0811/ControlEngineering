@@ -4,6 +4,7 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.bus.BusInterfaceBlock;
 import malte0811.controlengineering.blocks.bus.BusRelayBlock;
 import malte0811.controlengineering.blocks.bus.LineAccessBlock;
+import malte0811.controlengineering.blocks.bus.RSRemapperBlock;
 import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
@@ -30,6 +31,10 @@ public class CEBlocks {
 
     public static final RegistryObject<LineAccessBlock> LINE_ACCESS = REGISTER.register(
             "line_access", LineAccessBlock::new
+    );
+
+    public static final RegistryObject<RSRemapperBlock> RS_REMAPPER = REGISTER.register(
+            "rs_remapper", RSRemapperBlock::new
     );
 
     public static final RegistryObject<PanelBlock> CONTROL_PANEL = REGISTER.register("control_panel", PanelBlock::new);

@@ -1,4 +1,4 @@
-package malte0811.controlengineering.gui.widgets;
+package malte0811.controlengineering.gui.widget;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.chars.Char2CharMap;

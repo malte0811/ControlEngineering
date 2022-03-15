@@ -1,11 +1,13 @@
 package malte0811.controlengineering.gui;
 
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.blockentity.bus.RSRemapperBlockEntity;
 import malte0811.controlengineering.blockentity.panels.PanelDesignerBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.gui.logic.LogicDesignMenu;
 import malte0811.controlengineering.gui.logic.LogicDesignMenu.LogicDesignMenuType;
 import malte0811.controlengineering.gui.panel.PanelDesignMenu;
+import malte0811.controlengineering.gui.remapper.RSRemapperMenu;
 import malte0811.controlengineering.gui.tape.KeypunchMenu;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -38,6 +40,10 @@ public class CEContainers {
 
     public static final ArgMenuType<PanelDesignMenu, PanelDesignerBlockEntity> PANEL_DESIGN = new ArgMenuType<>(
             REGISTER.register("panel_layout", createNoInv(PanelDesignMenu::new)), PanelDesignMenu::new
+    );
+
+    public static final ArgMenuType<RSRemapperMenu, RSRemapperBlockEntity> RS_REMAPPER = new ArgMenuType<>(
+            REGISTER.register("rs_remapper", createNoInv(RSRemapperMenu::new)), RSRemapperMenu::new
     );
 
     private static <T extends AbstractContainerMenu>

@@ -15,6 +15,7 @@ import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.keypunch.KeypunchPacket;
 import malte0811.controlengineering.network.logic.LogicPacket;
 import malte0811.controlengineering.network.panellayout.PanelPacket;
+import malte0811.controlengineering.network.remapper.RSRemapperPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -73,6 +74,7 @@ public class ControlEngineering {
         registerPacket(id++, KeypunchPacket.class, KeypunchPacket::new);
         registerPacket(id++, LogicPacket.class, LogicPacket::new);
         registerPacket(id++, PanelPacket.class, PanelPacket::new);
+        registerPacket(id++, RSRemapperPacket.class, RSRemapperPacket::new);
         registerPacket(id++, CutTapePacket.class, CutTapePacket::new, NetworkDirection.PLAY_TO_SERVER);
     }
 

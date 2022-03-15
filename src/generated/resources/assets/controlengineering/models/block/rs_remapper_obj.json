@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/block",
+  "loader": "forge:obj",
+  "model": "controlengineering:models/rs_remapper.obj",
+  "detectCullableFaces": false,
+  "flip-v": true
+}

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 
 public class SubTexture {
@@ -66,6 +67,8 @@ public class SubTexture {
     }
 
     public void blit(PoseStack transform, int x, int y) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, getMainTexture());
         Screen.blit(
                 transform, x, y, getWidth(), getHeight(), getMinU(), getMinV(), getWidth(), getHeight(),

@@ -11,7 +11,8 @@ public class BlockRenderLayers {
         setLayers(CEBlocks.KEYPUNCH, RenderType.cutout());
         setLayers(CEBlocks.PANEL_DESIGNER, RenderType.cutout());
         setLayers(CEBlocks.LOGIC_CABINET, RenderType.solid(), RenderType.translucent());
-        setLayers(CEBlocks.LINE_ACCESS, RenderType.solid(), RenderType.cutout());
+        setLayers(CEBlocks.LINE_ACCESS, RenderType.cutout());
+        setLayers(CEBlocks.RS_REMAPPER, RenderType.cutout());
     }
 
     private static void setLayers(RegistryObject<? extends Block> b, RenderType... types) {

@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusLine;
-import malte0811.controlengineering.gui.widgets.IntSelector;
+import malte0811.controlengineering.gui.widget.IntSelector;
 import malte0811.controlengineering.util.RedstoneTapeUtils;
 import malte0811.controlengineering.util.TextUtil;
 import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;

@@ -1,5 +1,6 @@
 package malte0811.controlengineering.datagen;
 
+import com.google.common.collect.Sets;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
@@ -28,9 +29,22 @@ import malte0811.controlengineering.logic.schematic.symbol.ConstantSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.IOSymbol;
 import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.LanguageProvider;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
+
+import javax.annotation.Nonnull;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class LangGenerator extends LanguageProvider {
+    private final Set<ResourceLocation> localizedItems = new HashSet<>();
+
     public LangGenerator(DataGenerator gen) {
         super(gen, ControlEngineering.MODID, "en_us");
     }
@@ -45,6 +59,7 @@ public class LangGenerator extends LanguageProvider {
         addBlock(CEBlocks.KEYPUNCH, "Keyboard Perforator");
         addBlock(CEBlocks.SEQUENCER, "Signal Sequencer");
         addBlock(CEBlocks.PANEL_DESIGNER, "Panel Designer");
+        addBlock(CEBlocks.RS_REMAPPER, "Redstone Wire Remapper");
 
         addItem(CEItems.EMPTY_TAPE, "Empty Tape");
         addItem(CEItems.PUNCHED_TAPE, "Punched Tape");
@@ -68,6 +83,8 @@ public class LangGenerator extends LanguageProvider {
         addPanelComponents();
         addGuiStrings();
         addManualStrings();
+
+        assertAllLocalized(localizedItems, CEItems.REGISTER);
     }
 
     private void addCells() {
@@ -188,5 +205,30 @@ public class LangGenerator extends LanguageProvider {
 
     private void addManualSection(String id, String name) {
         add("manual." + ControlEngineering.MODID + '.' + id, name);
+    }
+
+    @Override
+    public void addBlock(@Nonnull Supplier<? extends Block> key, @Nonnull String name) {
+        super.addBlock(key, name);
+        localizedItems.add(key.get().getRegistryName());
+    }
+
+    @Override
+    public void addItem(@Nonnull Supplier<? extends Item> key, @Nonnull String name) {
+        super.addItem(key, name);
+        localizedItems.add(key.get().getRegistryName());
+    }
+
+    private void assertAllLocalized(Set<ResourceLocation> localized, DeferredRegister<?> register) {
+        var allRLs = register.getEntries().stream()
+                .map(RegistryObject::getId)
+                .collect(Collectors.toSet());
+        var unregistered = Sets.difference(allRLs, localized);
+        if (!unregistered.isEmpty()) {
+            var error = unregistered.stream()
+                    .map(ResourceLocation::toString)
+                    .collect(Collectors.joining(", "));
+            throw new RuntimeException("Unregistered: " + error);
+        }
     }
 }

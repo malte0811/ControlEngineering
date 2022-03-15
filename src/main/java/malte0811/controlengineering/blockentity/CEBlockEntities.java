@@ -5,6 +5,7 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.bus.BusInterfaceBlockEntity;
 import malte0811.controlengineering.blockentity.bus.BusRelayBlockEntity;
 import malte0811.controlengineering.blockentity.bus.LineAccessBlockEntity;
+import malte0811.controlengineering.blockentity.bus.RSRemapperBlockEntity;
 import malte0811.controlengineering.blockentity.logic.LogicCabinetBlockEntity;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
@@ -46,6 +47,10 @@ public class CEBlockEntities {
 
     public static RegistryObject<BlockEntityType<LineAccessBlockEntity>> LINE_ACCESS = REGISTER.register(
             "line_access", createBEType(LineAccessBlockEntity::new, CEBlocks.LINE_ACCESS)
+    );
+
+    public static RegistryObject<BlockEntityType<RSRemapperBlockEntity>> RS_REMAPPER = REGISTER.register(
+            "rs_remapper", createBEType(RSRemapperBlockEntity::new, CEBlocks.RS_REMAPPER)
     );
 
     public static MultiblockBEType<ControlPanelBlockEntity, ControlPanelBlockEntity> CONTROL_PANEL = makeMBType(

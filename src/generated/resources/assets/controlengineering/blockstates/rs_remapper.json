@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "controlengineering:block/rs_remapper_obj",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "controlengineering:block/rs_remapper_obj"
+    },
+    "facing=west": {
+      "model": "controlengineering:block/rs_remapper_obj",
+      "y": 90
+    },
+    "facing=east": {
+      "model": "controlengineering:block/rs_remapper_obj",
+      "y": 270
+    }
+  }
+}

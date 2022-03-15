@@ -1,11 +1,9 @@
-package malte0811.controlengineering.gui.widgets;
+package malte0811.controlengineering.gui.widget;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
-import malte0811.controlengineering.gui.widget.BasicSlider;
-import malte0811.controlengineering.gui.widget.ColorPicker16;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;

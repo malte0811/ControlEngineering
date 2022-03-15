@@ -4,6 +4,8 @@ import malte0811.controlengineering.gui.logic.LogicDesignMenu;
 import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignMenu;
 import malte0811.controlengineering.gui.panel.PanelDesignScreen;
+import malte0811.controlengineering.gui.remapper.RSRemapperMenu;
+import malte0811.controlengineering.gui.remapper.RSRemapperScreen;
 import malte0811.controlengineering.gui.tape.KeypunchMenu;
 import malte0811.controlengineering.gui.tape.KeypunchScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -29,6 +31,9 @@ public class ContainerScreenManager {
         );
         MenuScreens.<PanelDesignMenu, PanelDesignScreen>register(
                 CEContainers.PANEL_DESIGN.get(), (container, inv, title) -> new PanelDesignScreen(container, title)
+        );
+        MenuScreens.<RSRemapperMenu, RSRemapperScreen>register(
+                CEContainers.RS_REMAPPER.get(), (container, inv, title) -> new RSRemapperScreen(container)
         );
     }
 

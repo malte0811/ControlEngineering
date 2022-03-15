@@ -70,7 +70,12 @@ public class BusInterfaceBlockEntity extends CEIICBlockEntity implements IBusCon
         if (neighbor instanceof IBusInterface busInterface && busInterface.canConnect(facing.getOpposite())) {
             if (clearer == null || clearer.getFirst().get() != busInterface) {
                 Pair<Clearable<Runnable>, Runnable> newClearer = Clearable.create(
-                        () -> getBusHandler(new ConnectionPoint(worldPosition, 0)).requestUpdate()
+                        () -> {
+                            var handler = getBusHandler(new ConnectionPoint(worldPosition, 0));
+                            if (handler != null) {
+                                handler.requestUpdate();
+                            }
+                        }
                 );
                 busInterface.addMarkDirtyCallback(newClearer.getFirst());
                 clearer = Pair.of(new WeakReference<>(busInterface), newClearer.getSecond());

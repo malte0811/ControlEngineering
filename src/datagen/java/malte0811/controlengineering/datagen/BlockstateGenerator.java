@@ -54,6 +54,7 @@ public class BlockstateGenerator extends BlockStateProvider {
     protected void registerStatesAndModels() {
         createRotatedBlock(CEBlocks.BUS_RELAY, obj("bus_relay.obj"), BusRelayBlock.FACING, 90);
         createRotatedBlock(CEBlocks.LINE_ACCESS, obj("line_access.obj"), LineAccessBlock.FACING, 0);
+        createRotatedBlock(CEBlocks.RS_REMAPPER, obj("rs_remapper.obj"), LineAccessBlock.FACING, 0);
         createRotatedBlock(CEBlocks.BUS_INTERFACE, obj("bus_interface.obj"), BusInterfaceBlock.FACING, 90);
 
         panelModel();
