@@ -82,6 +82,11 @@ public class RSRemapperScreen extends Screen implements MenuAccess<RSRemapperMen
     }
 
     @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (fixedEndOfConnecting != null && button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
             fixedEndOfConnecting = null;
