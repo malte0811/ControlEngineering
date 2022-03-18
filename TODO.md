@@ -1,9 +1,13 @@
-- Manual :(
 - More panel components
+    - Key switch:
+        - How to do keying? Should not be synced to client…
+        - Maybe lock+key as thing that can be inserted into a panel, and removal only with key inserted and turned?
+          Similar to door locks
+    - Seven Segments?
+    - Scope????? Probably not, but some form of scope/LA would be nice at some point
 - More cells
-- Sequencer (see Design.md)
-- Recipes
 - Loot tables
-- Panel height/angle options
 - Energy requirements for panel layout/creation
+    - or just change the texture and be done with it
 - Tape-to-book machine (Tape printer or similar)
+- Double-check the lower/upper left corner stuff in the panel format entry
