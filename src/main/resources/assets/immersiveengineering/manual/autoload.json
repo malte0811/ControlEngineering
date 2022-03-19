@@ -5,9 +5,9 @@
       "controlengineering:intro",
       "controlengineering:tape",
       "controlengineering:keypunch",
-      "controlengineering:clocks",
       "controlengineering:sequencer",
-      "controlengineering:rs_remapper"
+      "controlengineering:rs_remapper",
+      "controlengineering:clocks"
     ],
     "controlengineering:panels": {
       "entry_list": [
