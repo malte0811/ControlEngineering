@@ -1,19 +1,22 @@
 {
   "variants": {
-    "facing=north": {
+    "facing=north,upper=false": {
       "model": "controlengineering:block/panel_cnc_obj",
       "y": 180
     },
-    "facing=south": {
+    "facing=south,upper=false": {
       "model": "controlengineering:block/panel_cnc_obj"
     },
-    "facing=west": {
+    "facing=west,upper=false": {
       "model": "controlengineering:block/panel_cnc_obj",
       "y": 90
     },
-    "facing=east": {
+    "facing=east,upper=false": {
       "model": "controlengineering:block/panel_cnc_obj",
       "y": 270
+    },
+    "upper=true": {
+      "model": "immersiveengineering:block/ie_empty"
     }
   }
 }

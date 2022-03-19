@@ -78,7 +78,7 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
             int overlay
     ) {
         transform.pushPose();
-        BERUtils.rotateAroundCenter(-PanelCNCBlock.getDirection(cnc).toYRot(), transform);
+        BERUtils.rotateAroundCenter(-PanelCNCBlock.getDirection(cnc).toYRot() + 180, transform);
         transform.scale(1 / 16f, 1 / 16f, 1 / 16f);
         final double tick = cnc.getCurrentTicksInJob() + (cnc.getState() == PanelCNCBlockEntity.State.RUNNING ? partialTicks : 0);
         transform.pushPose();

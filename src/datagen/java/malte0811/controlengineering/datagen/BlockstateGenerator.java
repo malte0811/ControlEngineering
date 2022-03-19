@@ -2,9 +2,7 @@ package malte0811.controlengineering.datagen;
 
 import blusunrize.immersiveengineering.api.Lib;
 import blusunrize.immersiveengineering.data.models.NongeneratedModels;
-import blusunrize.immersiveengineering.data.models.NongeneratedModels.NongeneratedModel;
 import blusunrize.immersiveengineering.data.models.SpecialModelBuilder;
-import blusunrize.immersiveengineering.data.models.SplitModelBuilder;
 import com.google.common.collect.ImmutableMap;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlocks;
@@ -23,7 +21,6 @@ import malte0811.controlengineering.datagen.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.datagen.modelbuilder.LogicCabinetBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -35,7 +32,6 @@ import net.minecraftforge.client.model.generators.loaders.OBJLoaderBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -58,7 +54,7 @@ public class BlockstateGenerator extends BlockStateProvider {
         createRotatedBlock(CEBlocks.BUS_INTERFACE, obj("bus_interface.obj"), BusInterfaceBlock.FACING, 90);
 
         panelModel();
-        column2(obj("panel_cnc.obj", nongeneratedModels), CEBlocks.PANEL_CNC, PanelCNCBlock.FACING);
+        panelCNCModel();
         keypunchModel();
         sequencerModel();
         logicCabinetModel();
@@ -150,18 +146,11 @@ public class BlockstateGenerator extends BlockStateProvider {
                 .parent(staticModel);
     }
 
-    private void column2(
-            NongeneratedModel mainModel,
-            RegistryObject<? extends Block> block,
-            Property<Direction> facing
-    ) {
-        itemModels().getBuilder(ItemModels.name(block)).parent(mainModel);
-        var splitModel = models().getBuilder(mainModel.getLocation().getPath())
-                .customLoader(SplitModelBuilder::begin)
-                .innerModel(mainModel)
-                .parts(List.of(Vec3i.ZERO, new Vec3i(0, 1, 0)))
-                .end();
-        horizontalRotated(block, facing, splitModel);
+    private void panelCNCModel() {
+        BlockModelBuilder model = obj("panel_cnc.obj", modLoc("transform/block_half_size"));
+        horizontalRotated(CEBlocks.PANEL_CNC, PanelCNCBlock.FACING, model, Map.of(PanelCNCBlock.UPPER, false));
+        emptyModel(CEBlocks.PANEL_CNC, Map.of(PanelCNCBlock.UPPER, true));
+        itemModels().getBuilder(ItemModels.name(CEBlocks.PANEL_CNC)).parent(model);
     }
 
     private <T extends Comparable<T>> void rotatedWithOffset(

@@ -97,7 +97,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
                     MatrixUtils.inverseFacing(facing),
                     ImmutableList.of(
                             new SingleShape(createPixelRelative(1, 14, 1, 15, 16, 15), this::panelClick),
-                            new SingleShape(createPixelRelative(2, 4, 0, 14, 12, 2), tape::click)
+                            new SingleShape(createPixelRelative(2, 4, 14, 14, 12, 16), tape::click)
                     ),
                     ctx -> InteractionResult.PASS
             )
@@ -299,7 +299,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
 
     @Override
     public boolean canConnect(Direction fromSide) {
-        return fromSide == getBlockState().getValue(PanelCNCBlock.FACING).getOpposite();
+        return fromSide == getBlockState().getValue(PanelCNCBlock.FACING);
     }
 
     @Override
