@@ -6,7 +6,8 @@
       "controlengineering:tape",
       "controlengineering:keypunch",
       "controlengineering:clocks",
-      "controlengineering:sequencer"
+      "controlengineering:sequencer",
+      "controlengineering:rs_remapper"
     ],
     "controlengineering:panels": {
       "entry_list": [

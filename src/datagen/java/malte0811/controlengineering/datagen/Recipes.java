@@ -67,6 +67,15 @@ public class Recipes extends RecipeProvider {
                 .define('b', CEBlocks.BUS_RELAY.get())
                 .define('B', CEItems.BUS_WIRE_COIL.get())
                 .save(consumer);
+        NoAdvancementShapedBuilder.shaped(CEBlocks.RS_REMAPPER)
+                .pattern("r r")
+                .pattern("ccc")
+                .pattern("RbR")
+                .define('r', IEItemRefs.REDSTONE_CONNECTOR)
+                .define('R', IEItemRefs.REDSTONE_WIRE_COIL)
+                .define('b', Items.COMPARATOR)
+                .define('c', IETags.copperWire)
+                .save(consumer);
     }
 
     private void tapeRecipes(Consumer<FinishedRecipe> consumer) {

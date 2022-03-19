@@ -1,0 +1,4 @@
+Redstone Wire Remapper
+
+<&recipe>Some machines output or accept signals on fixed colors of a bus- or redstone wire. In other cases it is necessary to connect only some signals of a network of redstone wires to signals in another network. The redstone wire remapper offers a compact solution to these problems. It has two redstone wire connector, which will be referred to as "gray" and "colored". These names refer to the stripes in the middle of the block, but will also be shown when hovering over the connectors with a screwdriver.
+Using the screwdriver will bring up a GUI that allows the mapping to be configured. Left-click to attach or detach a wire, right-click to remove the current wire completely. The signals of the colored connector are on the left, those of the gray connector on the right.

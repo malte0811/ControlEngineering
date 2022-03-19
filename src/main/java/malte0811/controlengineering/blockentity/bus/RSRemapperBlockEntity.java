@@ -1,19 +1,24 @@
 package malte0811.controlengineering.blockentity.bus;
 
+import blusunrize.immersiveengineering.api.TargetingInfo;
 import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
 import blusunrize.immersiveengineering.api.wires.LocalWireNetwork;
 import blusunrize.immersiveengineering.api.wires.WireType;
 import blusunrize.immersiveengineering.api.wires.redstone.IRedstoneConnector;
 import blusunrize.immersiveengineering.api.wires.redstone.RedstoneNetworkHandler;
 import com.google.common.collect.ImmutableList;
+import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.LocalBusHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,6 +30,8 @@ import java.util.Objects;
 public class RSRemapperBlockEntity extends DualConnectorBlockEntity implements IRedstoneConnector {
     private static final int COLOR_ID = MIN_ID;
     public static final int NOT_MAPPED = BusLine.LINE_SIZE + 1;
+    public static final String COLORED_KEY = ControlEngineering.MODID + ".gui.remapper.colored";
+    public static final String GRAY_KEY = ControlEngineering.MODID + ".gui.remapper.gray";
 
     private int[] colorToGray = makeInitialMapping();
     private int[] grayToColor = makeInverseMapping(colorToGray);
@@ -180,5 +187,14 @@ public class RSRemapperBlockEntity extends DualConnectorBlockEntity implements I
             }
         }
         return result;
+    }
+
+    public void addOverlay(List<Component> lines, BlockHitResult hitResult) {
+        var hitLoc = hitResult.getLocation().subtract(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
+        var target = getTargetedPoint(
+                new TargetingInfo(hitResult.getDirection(), (float) hitLoc.x, (float) hitLoc.y, (float) hitLoc.z),
+                Vec3i.ZERO
+        );
+        lines.add(new TranslatableComponent(target.index() == COLOR_ID ? COLORED_KEY : GRAY_KEY));
     }
 }

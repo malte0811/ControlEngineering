@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public abstract class DualConnectorBlockEntity extends CEIICBlockEntity {
@@ -43,7 +43,7 @@ public abstract class DualConnectorBlockEntity extends CEIICBlockEntity {
         );
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public final ConnectionPoint getTargetedPoint(TargetingInfo info, Vec3i offset) {
         Direction facing = getBlockState().getValue(LineAccessBlock.FACING);

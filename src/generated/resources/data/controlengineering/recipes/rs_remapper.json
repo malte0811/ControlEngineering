@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "r r",
+    "ccc",
+    "RbR"
+  ],
+  "key": {
+    "r": {
+      "item": "immersiveengineering:connector_redstone"
+    },
+    "R": {
+      "item": "immersiveengineering:wirecoil_redstone"
+    },
+    "b": {
+      "item": "minecraft:comparator"
+    },
+    "c": {
+      "tag": "forge:wires/copper"
+    }
+  },
+  "result": {
+    "item": "controlengineering:rs_remapper"
+  }
+}

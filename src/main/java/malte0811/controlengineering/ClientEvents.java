@@ -7,6 +7,7 @@ import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Transformation;
 import malte0811.controlengineering.blockentity.bus.LineAccessBlockEntity;
+import malte0811.controlengineering.blockentity.bus.RSRemapperBlockEntity;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.gui.misc.BusSignalSelector;
@@ -74,14 +75,18 @@ public class ClientEvents {
             return;
         }
         final ItemStack held = mc.player.getItemInHand(InteractionHand.MAIN_HAND);
-        if (!(mc.hitResult instanceof BlockHitResult mop)) {
+        if (!(mc.hitResult instanceof BlockHitResult hitResult)) {
             return;
         }
         List<Component> lines = new ArrayList<>();
-        final BlockPos pos = mop.getBlockPos();
-        if (mc.player.level.getBlockEntity(pos) instanceof LineAccessBlockEntity access
-                && held.is(IETags.screwdrivers)) {
-            lines.add(new TranslatableComponent(BusSignalSelector.BUS_LINE_INDEX_KEY, access.selectedLine));
+        final BlockPos pos = hitResult.getBlockPos();
+        var targetBE = mc.player.level.getBlockEntity(pos);
+        if (held.is(IETags.screwdrivers)) {
+            if (targetBE instanceof LineAccessBlockEntity access) {
+                lines.add(new TranslatableComponent(BusSignalSelector.BUS_LINE_INDEX_KEY, access.selectedLine));
+            } else if (targetBE instanceof RSRemapperBlockEntity remapper) {
+                remapper.addOverlay(lines, hitResult);
+            }
         }
         List<? extends SelectionShapes> shapeStack = getSelectedStack();
         if (shapeStack != null) {

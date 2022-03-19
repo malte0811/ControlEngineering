@@ -63,6 +63,8 @@
   "controlengineering.gui.panel_front_height": "Front height",
   "controlengineering.gui.pin": "Pin: %d",
   "controlengineering.gui.red": "Red: %d",
+  "controlengineering.gui.remapper.colored": "Colored",
+  "controlengineering.gui.remapper.gray": "Gray",
   "controlengineering.gui.reqVsAvTape": "%d characters required / %d available",
   "controlengineering.gui.sequencer.analog": "Analog mode",
   "controlengineering.gui.sequencer.autoreset": "Resets automatically",

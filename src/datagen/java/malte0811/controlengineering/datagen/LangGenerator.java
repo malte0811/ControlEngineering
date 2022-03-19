@@ -2,6 +2,7 @@ package malte0811.controlengineering.datagen;
 
 import com.google.common.collect.Sets;
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.blockentity.bus.RSRemapperBlockEntity;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.blockentity.tape.SequencerBlockEntity;
@@ -176,6 +177,9 @@ public class LangGenerator extends LanguageProvider {
         add(SequencerBlockEntity.MANUAL_RESET_KEY, "Requires manual reset");
         add(SequencerBlockEntity.ANALOG_KEY, "Analog mode");
         add(SequencerBlockEntity.COMPACT_KEY, "Compact mode");
+
+        add(RSRemapperBlockEntity.COLORED_KEY, "Colored");
+        add(RSRemapperBlockEntity.GRAY_KEY, "Gray");
     }
 
     private void addManualStrings() {
