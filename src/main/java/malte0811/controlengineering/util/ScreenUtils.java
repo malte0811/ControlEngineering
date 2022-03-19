@@ -7,8 +7,10 @@ import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-public class GuiUtil {
+public class ScreenUtils {
     public static void fill(PoseStack transform, double minX, double minY, double maxX, double maxY, int color) {
         Matrix4f matrix = transform.last().pose();
         float alpha = (float) (color >> 24 & 255) / 255.0F;
@@ -19,6 +21,7 @@ public class GuiUtil {
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         bufferbuilder.vertex(matrix, (float) minX, (float) maxY, 0.0F).color(red, green, blue, alpha).endVertex();
         bufferbuilder.vertex(matrix, (float) maxX, (float) maxY, 0.0F).color(red, green, blue, alpha).endVertex();
@@ -37,5 +40,14 @@ public class GuiUtil {
                 helper.xpos() * window.getGuiScaledWidth() / (double) window.getScreenWidth(),
                 helper.ypos() * window.getGuiScaledHeight() / (double) window.getScreenHeight()
         );
+    }
+
+    public static void bindForShader(TextureAtlasSprite tas) {
+        tas.atlas().bind();
+        RenderSystem.setShaderTexture(0, tas.atlas().getId());
+    }
+
+    public static boolean isInRect(int xMin, int yMin, int width, int height, int x, int y) {
+        return xMin <= x && x < xMin + width && yMin <= y && y < yMin + height;
     }
 }

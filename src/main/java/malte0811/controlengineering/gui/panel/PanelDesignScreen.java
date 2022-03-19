@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.gui.StackedScreen;
-import malte0811.controlengineering.util.GuiUtil;
+import malte0811.controlengineering.util.ScreenUtils;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
@@ -59,7 +59,7 @@ public class PanelDesignScreen extends StackedScreen implements MenuAccess<Panel
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        final Vec2d mouse = GuiUtil.getMousePosition();
+        final Vec2d mouse = ScreenUtils.getMousePosition();
         for (var button : children()) {
             if (button.isMouseOver(mouse.x(), mouse.y())) {
                 if (button.keyPressed(keyCode, scanCode, modifiers)) {

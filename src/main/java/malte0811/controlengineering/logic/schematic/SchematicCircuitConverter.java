@@ -58,7 +58,7 @@ public class SchematicCircuitConverter {
     ) {
         Set<ConnectedPin> pinsWithoutNet = new HashSet<>();
         for (PlacedSymbol symbol : symbols) {
-            for (SymbolPin pin : symbol.getSymbol().getPins()) {
+            for (SymbolPin pin : symbol.symbol().getPins()) {
                 pinsWithoutNet.add(new ConnectedPin(symbol, pin));
             }
         }
@@ -134,7 +134,7 @@ public class SchematicCircuitConverter {
         for (Map.Entry<NetReference, List<ConnectedPin>> entry : nets.entrySet()) {
             Optional<ConnectedPin> source = getSource(entry.getValue());
             if (source.isPresent()) {
-                SymbolInstance<?> symbol = source.get().symbol().getSymbol();
+                SymbolInstance<?> symbol = source.get().symbol().symbol();
                 if (symbol.getType() == sourceType) {
                     result.put(entry.getKey(), (T) symbol.getCurrentState());
                 }
@@ -158,7 +158,7 @@ public class SchematicCircuitConverter {
         Map<NetReference, List<BusSignalRef>> result = new HashMap<>();
         for (Map.Entry<NetReference, List<ConnectedPin>> entry : nets.entrySet()) {
             for (ConnectedPin sink : getSinks(entry.getValue())) {
-                SymbolInstance<?> symbol = sink.symbol().getSymbol();
+                SymbolInstance<?> symbol = sink.symbol().symbol();
                 SchematicSymbol<?> type = symbol.getType();
                 if (type instanceof IOSymbol) {
                     result.computeIfAbsent(entry.getKey(), $ -> new ArrayList<>())
@@ -200,10 +200,10 @@ public class SchematicCircuitConverter {
             return Optional.empty();
         }
         List<PlacedSymbol> cells = order.get().stream()
-                .filter(s -> s.getSymbol().getType() instanceof CellSymbol)
+                .filter(s -> s.symbol().getType() instanceof CellSymbol)
                 .collect(Collectors.toList());
         for (PlacedSymbol cell : cells) {
-            SymbolInstance<?> instance = cell.getSymbol();
+            SymbolInstance<?> instance = cell.symbol();
             CellSymbol symbol = (CellSymbol) instance.getType();
             CircuitBuilder.CellBuilder cellBuilder = builder.addCell(symbol.getCellType().newInstance());
             for (SymbolPin pin : instance.getPins()) {

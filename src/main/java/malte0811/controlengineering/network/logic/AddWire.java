@@ -29,7 +29,7 @@ public class AddWire extends LogicSubPacket {
     }
 
     @Override
-    protected void process(Schematic applyTo, Consumer<Schematic> replace) {
+    public void process(Schematic applyTo, Consumer<Schematic> replace) {
         if (applyTo.getChecker().canAdd(added)) {
             applyTo.addWire(added);
         }

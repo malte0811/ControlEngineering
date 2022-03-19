@@ -45,7 +45,7 @@ public abstract class LogicSubPacket {
 
     protected abstract void write(FriendlyByteBuf out);
 
-    protected abstract void process(Schematic applyTo, Consumer<Schematic> replace);
+    public abstract void process(Schematic applyTo, Consumer<Schematic> replace);
 
     public boolean allowSendingToServer() {
         return true;

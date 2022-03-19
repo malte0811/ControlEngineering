@@ -10,10 +10,9 @@ import malte0811.controlengineering.controlpanels.PanelComponentInstance;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
-import malte0811.controlengineering.gui.ScreenUtils;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.network.panellayout.*;
-import malte0811.controlengineering.util.GuiUtil;
+import malte0811.controlengineering.util.ScreenUtils;
 import malte0811.controlengineering.util.math.TransformUtil;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
@@ -103,7 +102,7 @@ public class PanelLayout extends AbstractWidget {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_DELETE) {
-            return delete(GuiUtil.getMousePosition());
+            return delete(ScreenUtils.getMousePosition());
         }
         return false;
     }

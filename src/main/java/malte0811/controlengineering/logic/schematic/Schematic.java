@@ -151,7 +151,7 @@ public class Schematic {
     private int getTotalCost(ToDoubleFunction<CellCost> individualCost) {
         double sum = 0.0;
         for (PlacedSymbol placedSymbol : getSymbols()) {
-            SchematicSymbol<?> s = placedSymbol.getSymbol().getType();
+            SchematicSymbol<?> s = placedSymbol.symbol().getType();
             if (s instanceof CellSymbol cellSymbol) {
                 CellCost cost = cellSymbol.getCellType().getCost();
                 sum += individualCost.applyAsDouble(cost);

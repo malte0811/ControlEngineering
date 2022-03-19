@@ -24,12 +24,12 @@ public class AddSymbol extends LogicSubPacket {
 
     @Override
     public void write(FriendlyByteBuf out) {
-        symbol.getPosition().write(out);
-        SymbolInstance.CODEC.toSerial(new PacketBufferStorage(out), symbol.getSymbol());
+        symbol.position().write(out);
+        SymbolInstance.CODEC.toSerial(new PacketBufferStorage(out), symbol.symbol());
     }
 
     @Override
-    protected void process(Schematic applyTo, Consumer<Schematic> replace) {
+    public void process(Schematic applyTo, Consumer<Schematic> replace) {
         if (applyTo.getChecker().canAdd(symbol)) {
             applyTo.addSymbol(symbol);
         }

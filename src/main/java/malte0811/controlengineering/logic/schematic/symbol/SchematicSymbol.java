@@ -30,7 +30,11 @@ public abstract class SchematicSymbol<State> extends TypedRegistryEntry<State, S
 
     public abstract List<SymbolPin> getPins(@Nullable State state);
 
-    public abstract void createInstanceWithUI(Consumer<? super SymbolInstance<State>> onDone);
+    public abstract void createInstanceWithUI(Consumer<? super SymbolInstance<State>> onDone, State initialState);
+
+    public void createInstanceWithUI(Consumer<? super SymbolInstance<State>> onDone) {
+        createInstanceWithUI(onDone, getInitialState());
+    }
 
     public abstract Component getName();
 

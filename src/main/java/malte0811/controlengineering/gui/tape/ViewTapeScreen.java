@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.network.CutTapePacket;
-import malte0811.controlengineering.util.GuiUtil;
+import malte0811.controlengineering.util.ScreenUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -73,7 +73,7 @@ public class ViewTapeScreen extends Screen {
             if (visualCutOffset >= 0) {
                 final double xMin = FIRST_CHAR_X + (visualCutOffset) * TapeRender.CHAR_DISTANCE - 1.5;
                 final int color = 0x80_ff0000;
-                GuiUtil.fill(
+                ScreenUtils.fill(
                         matrixStack,
                         xMin, TAPE_MIN_Y, xMin + TapeRender.CHAR_DISTANCE, TAPE_MIN_Y + TapeRender.TAPE_WIDTH,
                         color

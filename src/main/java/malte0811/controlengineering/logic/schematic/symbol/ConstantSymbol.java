@@ -76,10 +76,11 @@ public class ConstantSymbol extends SchematicSymbol<Double> {
     }
 
     @Override
-    public void createInstanceWithUI(Consumer<? super SymbolInstance<Double>> onDone) {
+    public void createInstanceWithUI(Consumer<? super SymbolInstance<Double>> onDone, Double initialState) {
         Minecraft.getInstance().setScreen(new IntSelector(
                 i -> onDone.accept(new SymbolInstance<>(this, i / (double) BusLine.MAX_VALID_VALUE)),
-                INPUT_KEY
+                INPUT_KEY,
+                BusLine.MIN_VALID_VALUE, BusLine.MAX_VALID_VALUE, (int) (initialState * BusLine.MAX_VALID_VALUE)
         ));
     }
 

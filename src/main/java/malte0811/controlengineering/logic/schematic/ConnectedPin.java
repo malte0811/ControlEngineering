@@ -14,11 +14,11 @@ public record ConnectedPin(PlacedSymbol symbol, SymbolPin pin) {
     }
 
     public Vec2i getPosition() {
-        return symbol.getPosition().add(pin.position());
+        return symbol.position().add(pin.position());
     }
 
     public void render(PoseStack stack, int wireColor) {
-        pin.render(stack, symbol.getPosition().x(), symbol.getPosition().y(), wireColor);
+        pin.render(stack, symbol.position().x(), symbol.position().y(), wireColor);
     }
 
     public RectangleI getShape() {

@@ -17,7 +17,7 @@ import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
 import malte0811.controlengineering.network.logic.*;
-import malte0811.controlengineering.util.GuiUtil;
+import malte0811.controlengineering.util.ScreenUtils;
 import malte0811.controlengineering.util.TextUtil;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
@@ -154,7 +154,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         } else {
             PlacedSymbol hovered = schematic.getSymbolAt(schematicMouse);
             if (hovered != null) {
-                Component toShow = hovered.getSymbol().getName();
+                Component toShow = hovered.symbol().getName();
                 List<FormattedCharSequence> tooltip = new ArrayList<>();
                 tooltip.add(toShow.getVisualOrderText());
                 for (SymbolPin pin : getHoveredPins(hovered, schematicMouse)) {
@@ -164,7 +164,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                                     .getVisualOrderText()
                     );
                 }
-                List<MutableComponent> extra = hovered.getSymbol().getExtraDesc();
+                List<MutableComponent> extra = hovered.symbol().getExtraDesc();
                 for (MutableComponent extraLine : extra) {
                     TextUtil.addTooltipLineReordering(tooltip, extraLine);
                 }
@@ -217,7 +217,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
 
     private List<SymbolPin> getHoveredPins(PlacedSymbol hovered, Vec2d schematicMouse) {
         List<SymbolPin> result = new ArrayList<>();
-        for (SymbolPin pin : hovered.getSymbol().getPins()) {
+        for (SymbolPin pin : hovered.symbol().getPins()) {
             if (new ConnectedPin(hovered, pin).getShape().containsClosed(schematicMouse)) {
                 result.add(pin);
             }
@@ -235,25 +235,25 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     private void drawBoundary(PoseStack transform) {
         final int color = 0xff_ff_dd_dd;
         final float offset = 2 / currentScale;
-        GuiUtil.fill(
+        ScreenUtils.fill(
                 transform,
                 Schematic.GLOBAL_MIN - offset, Schematic.GLOBAL_MIN - offset,
                 Schematic.GLOBAL_MAX + offset, Schematic.GLOBAL_MIN,
                 color
         );
-        GuiUtil.fill(
+        ScreenUtils.fill(
                 transform,
                 Schematic.GLOBAL_MIN - offset, Schematic.GLOBAL_MIN - offset,
                 Schematic.GLOBAL_MIN, Schematic.GLOBAL_MAX + offset,
                 color
         );
-        GuiUtil.fill(
+        ScreenUtils.fill(
                 transform,
                 Schematic.GLOBAL_MAX, Schematic.GLOBAL_MIN - offset,
                 Schematic.GLOBAL_MAX + offset, Schematic.GLOBAL_MAX + offset,
                 color
         );
-        GuiUtil.fill(
+        ScreenUtils.fill(
                 transform,
                 Schematic.GLOBAL_MIN - offset, Schematic.GLOBAL_MAX,
                 Schematic.GLOBAL_MAX + offset, Schematic.GLOBAL_MAX + offset,
@@ -290,8 +290,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         PlacedSymbol placed = getPlacingSymbol(mousePos);
         if (placed != null) {
             if (schematic.getChecker().canAdd(placed)) {
-                schematic.addSymbol(placed);
-                sendToServer(new AddSymbol(placed));
+                runAndSendToServer(new AddSymbol(placed));
                 if (resetAfterPlacingSymbol) {
                     placingSymbol = null;
                 }
@@ -300,8 +299,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
             WireSegment placedWire = getPlacingSegment(mousePos);
             if (placedWire != null) {
                 if (schematic.getChecker().canAdd(placedWire)) {
-                    schematic.addWire(placedWire);
-                    sendToServer(new AddWire(placedWire));
+                    runAndSendToServer(new AddWire(placedWire));
                     if (placedWire.end().equals(currentWireStart)) {
                         currentWireStart = placedWire.start();
                     } else {
@@ -309,19 +307,31 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                     }
                 }
             } else {
-                final PlacedSymbol hovered = schematic.getSymbolAt(mousePos);
-                if (hovered != null &&
-                        getHoveredPins(hovered, mousePos).isEmpty() &&
-                        schematic.removeOneContaining(mousePos)) {
-                    sendToServer(new Delete(mousePos));
-                    placingSymbol = hovered.getSymbol();
-                    resetAfterPlacingSymbol = true;
-                } else {
-                    currentWireStart = mousePos.floor();
+                var clicked = schematic.getSymbolAt(mousePos);
+                if (clicked != null) {
+                    handleSymbolClick(clicked, clicked.symbol(), mousePos, button);
                 }
             }
         }
         return true;
+    }
+
+    private <State>
+    void handleSymbolClick(PlacedSymbol clicked, SymbolInstance<State> instance, Vec2d mousePos, int button) {
+        if (!getHoveredPins(clicked, mousePos).isEmpty()) {
+            currentWireStart = mousePos.floor();
+            return;
+        }
+        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            runAndSendToServer(new Delete(mousePos));
+            placingSymbol = clicked.symbol();
+            resetAfterPlacingSymbol = true;
+        } else {
+            instance.getType().createInstanceWithUI(newInst -> {
+                runAndSendToServer(new Delete(mousePos));
+                runAndSendToServer(new AddSymbol(new PlacedSymbol(clicked.position(), newInst)));
+            }, instance.getCurrentState());
+        }
     }
 
     @Override
@@ -364,7 +374,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                     return true;
                 }
             } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
-                final Vec2d mousePos = getMousePosition(GuiUtil.getMousePosition());
+                final Vec2d mousePos = getMousePosition(ScreenUtils.getMousePosition());
                 if (schematic.removeOneContaining(mousePos)) {
                     sendToServer(new Delete(mousePos));
                     return true;
@@ -456,6 +466,11 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
 
     public Schematic getSchematic() {
         return schematic;
+    }
+
+    private void runAndSendToServer(LogicSubPacket data) {
+        data.process(schematic, this::setSchematic);
+        sendToServer(data);
     }
 
     private void sendToServer(LogicSubPacket data) {

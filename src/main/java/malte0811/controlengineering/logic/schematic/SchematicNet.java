@@ -97,7 +97,7 @@ public class SchematicNet {
     public Set<ConnectedPin> computeConnectedPins(List<PlacedSymbol> symbols) {
         Set<ConnectedPin> connected = new HashSet<>();
         for (PlacedSymbol s : symbols) {
-            for (SymbolPin output : s.getSymbol().getPins()) {
+            for (SymbolPin output : s.symbol().getPins()) {
                 if (containsPin(s, output)) {
                     connected.add(new ConnectedPin(s, output));
                 }
@@ -128,7 +128,7 @@ public class SchematicNet {
     }
 
     private boolean containsPin(PlacedSymbol symbol, SymbolPin pin) {
-        final Vec2i actualPinPos = pin.position().add(symbol.getPosition());
+        final Vec2i actualPinPos = pin.position().add(symbol.position());
         return contains(actualPinPos);
     }
 

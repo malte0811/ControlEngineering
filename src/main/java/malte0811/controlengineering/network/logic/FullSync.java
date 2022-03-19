@@ -23,7 +23,7 @@ public class FullSync extends LogicSubPacket {
     }
 
     @Override
-    protected void process(
+    public void process(
             Schematic applyTo, Consumer<Schematic> replace
     ) {
         replace.accept(schematic);

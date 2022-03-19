@@ -8,29 +8,19 @@ import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
 import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
 import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
 
-import java.util.StringJoiner;
-
-public record PlacedSymbol(Vec2i pos, SymbolInstance<?> symbol) {
+public record PlacedSymbol(Vec2i position, SymbolInstance<?> symbol) {
     public static final MyCodec<PlacedSymbol> CODEC = new RecordCodec2<>(
-            new CodecField<>("pos", PlacedSymbol::pos, Vec2i.CODEC),
+            new CodecField<>("pos", PlacedSymbol::position, Vec2i.CODEC),
             new CodecField<>("symbol", PlacedSymbol::symbol, SymbolInstance.CODEC),
             PlacedSymbol::new
     );
 
     public void render(PoseStack transform) {
-        symbol.render(transform, pos.x(), pos.y());
-    }
-
-    public SymbolInstance<?> getSymbol() {
-        return symbol;
-    }
-
-    public Vec2i getPosition() {
-        return pos;
+        symbol.render(transform, position.x(), position.y());
     }
 
     public RectangleI getShape() {
-        return new RectangleI(getPosition(), getMaxPoint());
+        return new RectangleI(position(), getMaxPoint());
     }
 
     public boolean canCoexist(PlacedSymbol other) {
@@ -42,14 +32,6 @@ public record PlacedSymbol(Vec2i pos, SymbolInstance<?> symbol) {
     }
 
     public Vec2i getMaxPoint() {
-        return pos.add(new Vec2i(getSymbol().getXSize(), getSymbol().getYSize()));
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", PlacedSymbol.class.getSimpleName() + "[", "]")
-                .add("pos=" + pos)
-                .add("symbol=" + symbol)
-                .toString();
+        return position.add(new Vec2i(symbol().getXSize(), symbol().getYSize()));
     }
 }

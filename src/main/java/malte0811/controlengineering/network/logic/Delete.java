@@ -23,7 +23,7 @@ public class Delete extends LogicSubPacket {
     }
 
     @Override
-    protected void process(Schematic applyTo, Consumer<Schematic> replace) {
+    public void process(Schematic applyTo, Consumer<Schematic> replace) {
         applyTo.removeOneContaining(pos);
     }
 }

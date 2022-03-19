@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.WireSegment;
-import malte0811.controlengineering.util.GuiUtil;
+import malte0811.controlengineering.util.ScreenUtils;
 import malte0811.controlengineering.util.math.Vec2i;
 
 public record SymbolPin(Vec2i position, SignalType type, PinDirection direction, String pinName)  {
@@ -44,9 +44,9 @@ public record SymbolPin(Vec2i position, SignalType type, PinDirection direction,
         final float wireXMax = pinPos.x() + x + (isOutput() ? 1 - WireSegment.WIRE_SPACE : (1 + wirePixels));
         final float yMin = y + pinPos.y() + WireSegment.WIRE_SPACE;
         final float yMax = y + pinPos.y() + 1 - WireSegment.WIRE_SPACE;
-        GuiUtil.fill(stack, wireXMin, yMin, wireXMax, yMax, wireColor);
+        ScreenUtils.fill(stack, wireXMin, yMin, wireXMax, yMax, wireColor);
         final int color = isOutput() ? 0xffff0000 : 0xff00ff00;
-        GuiUtil.fill(
+        ScreenUtils.fill(
                 stack,
                 x + pinPos.x() + WireSegment.WIRE_SPACE, yMin,
                 x + pinPos.x() + 1 - WireSegment.WIRE_SPACE, yMax,

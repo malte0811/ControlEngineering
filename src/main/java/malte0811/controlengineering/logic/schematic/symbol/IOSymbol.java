@@ -74,9 +74,12 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
     }
 
     @Override
-    public void createInstanceWithUI(Consumer<? super SymbolInstance<BusSignalRef>> onDone) {
+    public void createInstanceWithUI(
+            Consumer<? super SymbolInstance<BusSignalRef>> onDone,
+            BusSignalRef initialState
+    ) {
         Minecraft.getInstance().setScreen(new DataProviderScreen<>(
-                TextComponent.EMPTY, BusSignalSelector::new, null,
+                TextComponent.EMPTY, BusSignalSelector::new, initialState,
                 ref -> {
                     SymbolInstance<BusSignalRef> instance = new SymbolInstance<>(this, ref);
                     onDone.accept(instance);

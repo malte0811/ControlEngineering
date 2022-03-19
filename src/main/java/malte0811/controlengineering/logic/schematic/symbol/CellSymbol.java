@@ -55,7 +55,10 @@ public class CellSymbol extends SchematicSymbol<Unit> {
     }
 
     @Override
-    public void createInstanceWithUI(Consumer<? super SymbolInstance<Unit>> onDone) {
+    public void createInstanceWithUI(
+            Consumer<? super SymbolInstance<Unit>> onDone,
+            Unit initialState
+    ) {
         // No config required/possible
         onDone.accept(newInstance());
     }

@@ -3,7 +3,7 @@ package malte0811.controlengineering.logic.schematic;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
-import malte0811.controlengineering.util.GuiUtil;
+import malte0811.controlengineering.util.ScreenUtils;
 import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
 import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
@@ -89,7 +89,7 @@ public record WireSegment(Vec2i start, int length, WireAxis axis) {
     }
 
     public void renderWithoutBlobs(PoseStack stack, int color) {
-        GuiUtil.fill(
+        ScreenUtils.fill(
                 stack,
                 start().x() + WIRE_SPACE, start().y() + WIRE_SPACE,
                 end().x() + 1 - WIRE_SPACE, end().y() + 1 - WIRE_SPACE,
