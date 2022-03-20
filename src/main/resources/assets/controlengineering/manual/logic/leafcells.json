@@ -1,1 +1,66 @@
-{}
+{
+  "rs_latch": {
+    "type": "controlengineering:leafcell",
+    "cell": "controlengineering:rs_latch"
+  },
+  "d_latch": {
+    "type": "controlengineering:leafcell",
+    "cell": "controlengineering:d_latch"
+  },
+  "delay_line": {
+    "type": "controlengineering:leafcell",
+    "cell": "controlengineering:delay_line"
+  },
+  "digitizer": {
+    "type": "controlengineering:leafcell",
+    "cell": "controlengineering:digitizer"
+  },
+  "comparator": {
+    "type": "controlengineering:leafcell",
+    "cell": "controlengineering:comparator"
+  },
+  "schmitt_trigger": {
+    "type": "controlengineering:leafcell",
+    "cell": "controlengineering:schmitt_trigger"
+  },
+  "and2": {
+    "type": "controlengineering:leafcell_truth",
+    "cell": "controlengineering:and2"
+  },
+  "and3": {
+    "type": "controlengineering:leafcell_truth",
+    "cell": "controlengineering:and3"
+  },
+  "or2": {
+    "type": "controlengineering:leafcell_truth",
+    "cell": "controlengineering:or2"
+  },
+  "or3": {
+    "type": "controlengineering:leafcell_truth",
+    "cell": "controlengineering:or3"
+  },
+  "nand2": {
+    "type": "controlengineering:leafcell_truth",
+    "cell": "controlengineering:nand2"
+  },
+  "nand3": {
+    "type": "controlengineering:leafcell_truth",
+    "cell": "controlengineering:nand3"
+  },
+  "nor2": {
+    "type": "controlengineering:leafcell_truth",
+    "cell": "controlengineering:nor2"
+  },
+  "nor3": {
+    "type": "controlengineering:leafcell_truth",
+    "cell": "controlengineering:nor3"
+  },
+  "xor2": {
+    "type": "controlengineering:leafcell_truth",
+    "cell": "controlengineering:xor2"
+  },
+  "xor3": {
+    "type": "controlengineering:leafcell_truth",
+    "cell": "controlengineering:xor3"
+  }
+}

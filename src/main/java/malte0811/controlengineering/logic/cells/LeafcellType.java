@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Map;
 
 public abstract class LeafcellType<State> extends TypedRegistryEntry<State, LeafcellInstance<State>> {
-    static final TypedRegistry<LeafcellType<?>> REGISTRY = new TypedRegistry<>();
+    public static final TypedRegistry<LeafcellType<?>> REGISTRY = new TypedRegistry<>();
 
     public static <T extends LeafcellType<?>> T register(ResourceLocation name, T type) {
         return REGISTRY.register(name, type);

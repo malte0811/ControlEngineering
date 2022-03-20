@@ -9,7 +9,6 @@ import malte0811.controlengineering.crafting.CERecipeSerializers;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.IEItemRefs;
-import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.network.CutTapePacket;
 import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.keypunch.KeypunchPacket;
@@ -59,7 +58,6 @@ public class ControlEngineering {
         CEContainers.REGISTER.register(modBus);
         CERecipeSerializers.REGISTER.register(modBus);
         modBus.addListener(this::setup);
-        Leafcells.init();
         IEItemRefs.init();
     }
 

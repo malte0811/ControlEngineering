@@ -1,3 +1,19 @@
 Leafcells
-The IE 60mm technology node
-Lorem ipsum...
+IEs 62,500,000 nm technology node
+The most common types of leafcell are simple logic gates. Except for the NOT gate these come in 2- and 3-input versions. Their behavior should not be surprising, for completeness the truth tables can be found at the <link;this;end of this entry;and2>.<np>
+<&rs_latch>The RS-latch is a digital storage element. Once the SET input receives a high signal, the output Q will stay active until the RESET input receives a high signal. When both SET and RESET are high the output is unspecified.
+<&d_latch>The D-latch is a very simple digital storage element. Its output signal is always the value of the previous input signal.
+<&delay_line>The delay line has the same effect as a D-latch, but on analog instead of digital signals.
+<&digitizer>The Digitizer is the simplest way of converting an analog signal to a digital one. The output is high if the input signal exceeds 127 and low otherwise.
+<&comparator>A comparator can be thought of as a more general version of the digitizer. Its output is high if the input on the positive input pin as at least as strong as the signal on the negative input pin.
+<&schmitt_trigger>A Schmitt-Trigger is a special way of converting analog signals to digital ones. In addition to the signal to be digitized it accepts a lower and upper threshold. When the output signal is high, the input signal has to sink below the lower threshold for the output to become low; when the output is low the input has to rise over the upper threshold for the output to toggle. This can be useful to avoid rapid toggling when the input is near a threshold.
+<&and2>
+<&and3>
+<&or2>
+<&or3>
+<&nand2>
+<&nand3>
+<&nor2>
+<&nor3>
+<&xor2>
+<&xor3>

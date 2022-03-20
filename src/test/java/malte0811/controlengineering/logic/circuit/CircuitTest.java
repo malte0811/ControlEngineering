@@ -18,7 +18,6 @@ public class CircuitTest {
 
     @BeforeClass
     public static void setup() {
-        Leafcells.init();
         // Load classes now to prevent weird test runtimes
         new CompoundTag();
         CircuitBuilder.builder()
