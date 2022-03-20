@@ -12,6 +12,7 @@ import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.gui.panel.ComponentSelector;
 import malte0811.controlengineering.util.ScreenUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
@@ -105,7 +106,7 @@ public class PanelComponentElement extends SpecialManualElement {
 
     @Override
     public void recalculateCraftingRecipes() {
-        this.ingredients = type.getCost().stream()
+        this.ingredients = type.getCost(Minecraft.getInstance().level).stream()
                 .map(IngredientWithSize::getMatchingStackList)
                 .toList();
     }

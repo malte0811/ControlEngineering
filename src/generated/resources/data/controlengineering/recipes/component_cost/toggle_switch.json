@@ -1,0 +1,8 @@
+{
+  "type": "controlengineering:component_cost",
+  "costs": [
+    {
+      "item": "minecraft:lever"
+    }
+  ]
+}

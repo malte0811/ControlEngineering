@@ -163,7 +163,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
             if (nextComponent < job.getTotalComponents()) {
                 if (!level.isClientSide && currentTicksInJob >= job.tickPlacingComponent().getInt(nextComponent)) {
                     PlacedComponent componentToPlace = job.components().get(nextComponent);
-                    var componentCost = componentToPlace.getComponent().getType().getCost();
+                    var componentCost = componentToPlace.getComponent().getType().getCost(level);
                     if (!ItemUtil.tryConsumeItemsFrom(componentCost, neighborInventories)) {
                         dataOutput.queueStringWithParity("Unable to consume items for component number " + nextComponent);
                         setState(State.FAILED);

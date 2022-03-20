@@ -3,6 +3,7 @@ package malte0811.controlengineering.controlpanels;
 import blusunrize.immersiveengineering.api.crafting.IngredientWithSize;
 import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.bus.BusState;
+import malte0811.controlengineering.crafting.noncrafting.ComponentCostRecipe;
 import malte0811.controlengineering.util.FastDataResult;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
@@ -13,9 +14,11 @@ import malte0811.controlengineering.util.serialization.serial.SerialStorage;
 import malte0811.controlengineering.util.serialization.serial.StringListStorage;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -113,14 +116,21 @@ public abstract class PanelComponentType<Config, State>
         return !Objects.equals(stateA, stateB);
     }
 
-    public final List<IngredientWithSize> getCost() {
-        return Objects.requireNonNullElseGet(
-                ComponentCostReloadListener.COMPONENT_COSTS.get(getRegistryName()),
-                () -> List.of(new IngredientWithSize(Ingredient.of(Items.BEDROCK)))
-        );
+    public final List<IngredientWithSize> getCost(Level level) {
+        if (level != null) {
+            var recipe = level.getRecipeManager().byKey(getCostLocation()).orElse(null);
+            if (recipe instanceof ComponentCostRecipe componentCost) {
+                return componentCost.getCost();
+            }
+        }
+        return List.of(new IngredientWithSize(Ingredient.of(Items.BEDROCK)));
     }
 
     public final RecordCodecBase<Config> getConfigCodec() {
         return configCodec;
+    }
+
+    public ResourceLocation getCostLocation() {
+        return new ResourceLocation(getRegistryName().getNamespace(), "component_cost/" + getRegistryName().getPath());
     }
 }

@@ -21,7 +21,6 @@ public class Label extends PanelComponentType<ColorAndText, Unit> {
 
     @Override
     public Vec2d getSize(ColorAndText s) {
-        // TODO handle client-side on dedicated servers?
         return new Vec2d(SCALE * ServerFontWidth.getWidth(s.text()), 1);
     }
 }

@@ -1,0 +1,14 @@
+{
+  "type": "controlengineering:component_cost",
+  "costs": [
+    {
+      "item": "immersiveengineering:wirecoil_copper"
+    },
+    {
+      "tag": "forge:dusts/glowstone"
+    },
+    {
+      "tag": "forge:dyes"
+    }
+  ]
+}

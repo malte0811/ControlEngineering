@@ -44,6 +44,7 @@ public class ServerFontWidth {
     }
 
     public static float getWidth(String s) {
+        // TODO handle client-side on dedicated servers?
         return (float) s.chars()
                 .mapToDouble(i -> getWidths().get(i))
                 .sum();
