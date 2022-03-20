@@ -11,6 +11,8 @@ import malte0811.controlengineering.blockentity.bus.RSRemapperBlockEntity;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.gui.misc.BusSignalSelector;
+import malte0811.controlengineering.items.IEItemRefs;
+import malte0811.controlengineering.items.PCBStackItem;
 import malte0811.controlengineering.util.RaytraceUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -27,6 +29,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.DrawSelectionEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -105,6 +108,13 @@ public class ClientEvents {
                     mc.getWindow().getGuiScaledHeight() / 2f + 8 + i * (mc.font.lineHeight + 2),
                     -1
             );
+        }
+    }
+
+    @SubscribeEvent
+    public static void onTooltipEvent(ItemTooltipEvent ev) {
+        if (ev.getItemStack().is(IEItemRefs.LOGIC_CIRCUIT.asItem())) {
+            ev.getToolTip().add(PCBStackItem.useIn(IEItemRefs.LOGIC_UNIT));
         }
     }
 

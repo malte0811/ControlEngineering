@@ -33,6 +33,7 @@ public class Recipes extends RecipeProvider {
         tapeRecipes(consumer);
         panelRecipes(consumer);
         clockRecipes(consumer);
+        logicRecipes(consumer);
     }
 
     private void busRecipes(Consumer<FinishedRecipe> consumer) {
@@ -43,7 +44,7 @@ public class Recipes extends RecipeProvider {
                 .define('p', IETags.getTagsFor(EnumMetals.ALUMINUM).plate)
                 .define('c', IEItemRefs.REDSTONE_WIRE_COIL)
                 .save(consumer);
-        NoAdvancementShapedBuilder.shaped(CEBlocks.BUS_RELAY.get(), 4)
+        NoAdvancementShapedBuilder.shaped(CEBlocks.BUS_RELAY, 4)
                 .pattern("prp")
                 .pattern("bbb")
                 .define('p', IETags.getTagsFor(EnumMetals.ALUMINUM).plate)
@@ -56,7 +57,7 @@ public class Recipes extends RecipeProvider {
                 .define('p', IETags.getTagsFor(EnumMetals.ALUMINUM).plate)
                 .define('b', Blocks.TERRACOTTA)
                 .define('r', Tags.Items.DUSTS_REDSTONE)
-                .define('c', CEItems.BUS_WIRE_COIL.get())
+                .define('c', CEItems.BUS_WIRE_COIL)
                 .save(consumer);
         NoAdvancementShapedBuilder.shaped(CEBlocks.LINE_ACCESS)
                 .pattern("r b")
@@ -64,8 +65,8 @@ public class Recipes extends RecipeProvider {
                 .define('r', IEItemRefs.REDSTONE_CONNECTOR)
                 .define('R', IEItemRefs.REDSTONE_WIRE_COIL)
                 .define('c', Items.COMPARATOR)
-                .define('b', CEBlocks.BUS_RELAY.get())
-                .define('B', CEItems.BUS_WIRE_COIL.get())
+                .define('b', CEBlocks.BUS_RELAY)
+                .define('B', CEItems.BUS_WIRE_COIL)
                 .save(consumer);
         NoAdvancementShapedBuilder.shaped(CEBlocks.RS_REMAPPER)
                 .pattern("r r")
@@ -83,7 +84,7 @@ public class Recipes extends RecipeProvider {
                 .pattern("BCb")
                 .pattern("pcp")
                 .pattern("ppp")
-                .define('c', CEBlocks.BUS_RELAY.get())
+                .define('c', CEBlocks.BUS_RELAY)
                 .define('b', Items.STONE_BUTTON)
                 .define('p', IETags.getTagsFor(EnumMetals.STEEL).plate)
                 .define('C', Items.CHAIN)
@@ -99,11 +100,11 @@ public class Recipes extends RecipeProvider {
                 .define('p', Items.PAPER)
                 .define('d', Tags.Items.DYES_PINK)
                 .save(consumer);
-        NoAdvancementShapedBuilder.shaped(CEBlocks.SEQUENCER.get())
+        NoAdvancementShapedBuilder.shaped(CEBlocks.SEQUENCER)
                 .pattern("www")
                 .pattern("cbr")
                 .pattern("www")
-                .define('c', CEBlocks.BUS_RELAY.get())
+                .define('c', CEBlocks.BUS_RELAY)
                 .define('b', IEItemRefs.CIRCUIT_BOARD)
                 .define('r', Items.REDSTONE)
                 .define('w', IETags.getItemTag(IETags.treatedWood))
@@ -123,7 +124,7 @@ public class Recipes extends RecipeProvider {
         NoAdvancementShapedBuilder.shaped(CEBlocks.PANEL_DESIGNER)
                 .pattern("pge")
                 .pattern("kww")
-                .define('k', CEBlocks.KEYPUNCH.get())
+                .define('k', CEBlocks.KEYPUNCH)
                 .define('w', IETags.getItemTag(IETags.treatedWood))
                 .define('g', Tags.Items.DUSTS_GLOWSTONE)
                 .define('e', Items.ENDER_EYE)
@@ -135,7 +136,7 @@ public class Recipes extends RecipeProvider {
                 .pattern("www")
                 .define('s', IETags.steelRod)
                 .define('d', IEItemRefs.DRILL_HEAD_IRON)
-                .define('S', CEBlocks.SEQUENCER.get())
+                .define('S', CEBlocks.SEQUENCER)
                 .define('w', IETags.getItemTag(IETags.treatedWood))
                 .save(consumer);
     }
@@ -161,6 +162,28 @@ public class Recipes extends RecipeProvider {
                 .define('r', Items.REPEATER)
                 .define('P', Items.PISTON)
                 .define('d', Tags.Items.DUSTS_REDSTONE)
+                .save(consumer);
+    }
+
+    private void logicRecipes(Consumer<FinishedRecipe> consumer) {
+        NoAdvancementShapedBuilder.shaped(CEBlocks.LOGIC_CABINET)
+                .pattern("aaa")
+                .pattern("bLr")
+                .pattern("aaa")
+                .define('a', IETags.getItemTag(IETags.getTagsFor(EnumMetals.ALUMINUM).sheetmetal))
+                .define('b', CEBlocks.BUS_RELAY)
+                .define('L', IEItemRefs.LOGIC_UNIT)
+                .define('r', IEItemRefs.RADIATOR)
+                .save(consumer);
+        NoAdvancementShapedBuilder.shaped(CEBlocks.LOGIC_WORKBENCH)
+                .pattern("bsf")
+                .pattern("c e")
+                .define('s', IETags.getItemTag(IETags.treatedWoodSlab))
+                .define('f', Items.FLINT_AND_STEEL)
+                .define('c', IEItemRefs.CRATE)
+                // TODO how well does that work?
+                .define('b', IEItemRefs.BLUEPRINT)
+                .define('e', IEItemRefs.LIGHT_ENGINEERING)
                 .save(consumer);
     }
 }

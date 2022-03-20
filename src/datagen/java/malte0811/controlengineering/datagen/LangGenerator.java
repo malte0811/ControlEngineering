@@ -16,10 +16,7 @@ import malte0811.controlengineering.gui.misc.BusSignalSelector;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignScreen;
 import malte0811.controlengineering.gui.widget.ColorSelector;
-import malte0811.controlengineering.items.CEItems;
-import malte0811.controlengineering.items.ControlPanelItem;
-import malte0811.controlengineering.items.EmptyTapeItem;
-import malte0811.controlengineering.items.PunchedTapeItem;
+import malte0811.controlengineering.items.*;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.clock.ClockGenerator;
@@ -180,6 +177,8 @@ public class LangGenerator extends LanguageProvider {
 
         add(RSRemapperBlockEntity.COLORED_KEY, "Colored");
         add(RSRemapperBlockEntity.GRAY_KEY, "Gray");
+
+        add(PCBStackItem.FOR_USE_IN_KEY, "For use in a %s");
     }
 
     private void addManualStrings() {

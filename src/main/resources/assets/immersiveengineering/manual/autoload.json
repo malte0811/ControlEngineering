@@ -20,6 +20,7 @@
     "controlengineering:logic": {
       "entry_list": [
         "controlengineering:logic/logic_cabinet",
+        "controlengineering:logic/logic_workbench",
         "controlengineering:logic/leafcells"
       ]
     }

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "bsf",
+    "c e"
+  ],
+  "key": {
+    "s": {
+      "tag": "forge:treated_wood_slab"
+    },
+    "f": {
+      "item": "minecraft:flint_and_steel"
+    },
+    "c": {
+      "item": "immersiveengineering:crate"
+    },
+    "b": {
+      "item": "immersiveengineering:blueprint"
+    },
+    "e": {
+      "item": "immersiveengineering:light_engineering"
+    }
+  },
+  "result": {
+    "item": "controlengineering:logic_workbench"
+  }
+}

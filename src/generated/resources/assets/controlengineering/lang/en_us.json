@@ -74,6 +74,7 @@
   "controlengineering.gui.symbolIntersection": "Symbol would intersect with other symbols",
   "controlengineering.gui.symbolOutsideBoundary": "Symbol would be outside of schematic boundary",
   "controlengineering.gui.tubesEmpty": "Vacuum tube storage: Empty",
+  "controlengineering.gui.useIn": "For use in a %s",
   "controlengineering.gui.wireOutsideBoundary": "Wire segment would be outside of schematic boundary",
   "controlengineering.gui.wiresEmpty": "Wire storage: Empty",
   "controlengineering.manual.component.color": "color",

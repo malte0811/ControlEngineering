@@ -6,6 +6,8 @@ import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.registries.RegistryObject;
@@ -23,20 +25,47 @@ public class NoAdvancementShapedBuilder extends ShapedRecipeBuilder {
         this.nbt = nbt;
     }
 
-    public static ShapedRecipeBuilder shaped(ItemStack result) {
+    public static NoAdvancementShapedBuilder shaped(ItemStack result) {
         return new NoAdvancementShapedBuilder(result.getItem(), result.getCount(), result.getTag());
     }
 
-    public static ShapedRecipeBuilder shaped(ItemLike result) {
+    public static NoAdvancementShapedBuilder shaped(ItemLike result) {
         return shaped(result, 1);
     }
 
-    public static ShapedRecipeBuilder shaped(RegistryObject<? extends ItemLike> regObject) {
+    public static NoAdvancementShapedBuilder shaped(RegistryObject<? extends ItemLike> regObject) {
         return shaped(regObject.get());
     }
 
-    public static ShapedRecipeBuilder shaped(ItemLike result, int pCount) {
+    public static NoAdvancementShapedBuilder shaped(ItemLike result, int pCount) {
         return new NoAdvancementShapedBuilder(result, pCount, null);
+    }
+
+    public static NoAdvancementShapedBuilder shaped(RegistryObject<? extends ItemLike> regObject, int count) {
+        return shaped(regObject.get(), count);
+    }
+
+    public NoAdvancementShapedBuilder define(char symbol, RegistryObject<? extends ItemLike> item) {
+        define(symbol, item.get());
+        return this;
+    }
+
+    @Nonnull
+    public NoAdvancementShapedBuilder define(@Nonnull Character symbol, @Nonnull TagKey<Item> tag) {
+        super.define(symbol, tag);
+        return this;
+    }
+
+    @Nonnull
+    public NoAdvancementShapedBuilder pattern(@Nonnull String pattern) {
+        super.pattern(pattern);
+        return this;
+    }
+
+    @Nonnull
+    public NoAdvancementShapedBuilder define(@Nonnull Character symbol, @Nonnull ItemLike item) {
+        super.define(symbol, item);
+        return this;
     }
 
     @Nonnull

@@ -1,0 +1,8 @@
+Logic workbench
+
+<&recipe>The logic workbench is used to design circuits for use in the <link;controlengineering:logic/logic_cabinet;logic cabinet>. A circuit consists of components and wires.
+Components are either <link;controlengineering:logic/leafcells;leaf cells> which implement logical functions, IO pins which interact with the external bus connection or constants. Each component has input and output pins.
+Wires are used to connect the components. Each input pin must be connected to an output pin, no two output pins may be connected together, and the circuit must not contain logical cycles, i.e. if the input of component A is connected to the output of component B, the input of A must not be connected to the output of B. There is one exception to this: Some leafcells (e.g. memory elements) have delayed output pins, which are not considered in cycles.<np>
+In the user interface components can be added using the button labeled "C" in the top left. Placed IO pins and constants can be modified using right-click. Wires are placed by left-clicking on a pin. The Del key is used to remove components or wire segments. The total cost of the circuit is shown in the bottom right.
+The interface will automatically prevent multiple outputs from being shorted together as well as the creation of cycles. To show unconnected/floating input pins, use the button labeled "E".
+To finish the circuit, add the required amounts of vacuum tubes and copper wires to the drawers in the back of the workbench and use a sufficient amount of <link;components;circuit backplanes;pcb> on the soldering torch on the right of the workbench.
