@@ -2,7 +2,6 @@ package malte0811.controlengineering.logic.schematic;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -111,15 +110,6 @@ public class Schematic {
             }
         }
         return indices;
-    }
-
-    public void render(PoseStack stack, Vec2d mouse) {
-        for (PlacedSymbol s : symbols) {
-            s.render(stack);
-        }
-        for (SchematicNet net : nets) {
-            net.render(stack, mouse, symbols);
-        }
     }
 
     @Nullable

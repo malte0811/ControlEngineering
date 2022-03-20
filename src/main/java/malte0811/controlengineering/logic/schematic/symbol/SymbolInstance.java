@@ -1,6 +1,5 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 import net.minecraft.network.chat.Component;
@@ -13,10 +12,6 @@ public class SymbolInstance<State> extends TypedInstance<State, SchematicSymbol<
 
     public SymbolInstance(SchematicSymbol<State> stateSchematicSymbol, State currentState) {
         super(stateSchematicSymbol, currentState);
-    }
-
-    public void render(PoseStack transform, int x, int y) {
-        getType().render(transform, x, y, getCurrentState());
     }
 
     public int getXSize() {

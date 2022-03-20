@@ -8,6 +8,7 @@ import malte0811.controlengineering.client.render.panel.PanelRenderer;
 import malte0811.controlengineering.client.render.tape.SequencerRenderer;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.gui.ContainerScreenManager;
+import malte0811.controlengineering.logic.schematic.client.ClientSymbols;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -22,6 +23,7 @@ public class CEClient {
         ContainerScreenManager.registerScreens();
         BlockRenderLayers.init();
         CEManual.initManual();
+        ClientSymbols.init();
     }
 
     @SubscribeEvent

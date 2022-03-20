@@ -1,11 +1,10 @@
 package malte0811.controlengineering.items;
 
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.gui.tape.ViewTapeScreen;
+import malte0811.controlengineering.client.ClientHooks;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.ItemNBTUtil;
 import malte0811.controlengineering.util.TextUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -66,8 +65,7 @@ public class PunchedTapeItem extends Item {
     ) {
         ItemStack stack = playerIn.getItemInHand(handIn);
         if (worldIn.isClientSide) {
-            //TODO name tapes?
-            Minecraft.getInstance().setScreen(new ViewTapeScreen("Tape", getBytes(stack), handIn));
+            ClientHooks.openTape(getBytes(stack), handIn);
         }
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
     }

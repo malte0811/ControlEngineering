@@ -4,6 +4,7 @@ import blusunrize.lib.manual.SpecialManualElement;
 import blusunrize.lib.manual.gui.ManualScreen;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
+import malte0811.controlengineering.logic.schematic.client.ClientSymbols;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbols;
 import net.minecraft.client.gui.components.Button;
@@ -44,7 +45,7 @@ public class LeafcellElement<State> extends SpecialManualElement {
         var offsetX = (manual.pageWidth - type.getXSize() * SCALE) / 2.;
         transform.translate(x + offsetX, y, 0);
         transform.scale(SCALE, SCALE, SCALE);
-        type.render(transform, 0, 0, type.getInitialState());
+        ClientSymbols.render(type, transform, 0, 0, type.getInitialState());
         // TODO render costs?
         transform.popPose();
     }

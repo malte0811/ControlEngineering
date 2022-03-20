@@ -2,6 +2,7 @@ package malte0811.controlengineering.gui.logic;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.gui.StackedScreen;
+import malte0811.controlengineering.logic.schematic.client.ClientSymbols;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbols;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
@@ -63,7 +64,7 @@ public class CellSelectionScreen extends StackedScreen {
                 SchematicSymbol<?> symbol = symbols.get(index);
                 final int xBase = col * xGrid + (xGrid - symbol.getXSize()) / 2;
                 final int yBase = row * yGrid + 1;
-                symbol.render(matrixStack, xBase, yBase + getTotalFontHeight(), null);
+                ClientSymbols.render(symbol, matrixStack, xBase, yBase + getTotalFontHeight(), null);
                 //TODO less push/pop's?
                 matrixStack.pushPose();
                 matrixStack.translate(xBase, yBase, 0);
@@ -118,7 +119,7 @@ public class CellSelectionScreen extends StackedScreen {
         }
         final int selected = getSelectedIndex(mouseX, mouseY);
         if (selected >= 0) {
-            symbols.get(selected).createInstanceWithUI(i -> this.selected = i);
+            ClientSymbols.createInstanceWithUI(symbols.get(selected), i -> this.selected = i);
             return true;
         } else {
             return false;

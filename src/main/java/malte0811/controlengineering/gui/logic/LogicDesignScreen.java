@@ -13,6 +13,7 @@ import malte0811.controlengineering.logic.schematic.ConnectedPin;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import malte0811.controlengineering.logic.schematic.WireSegment;
+import malte0811.controlengineering.logic.schematic.client.ClientSymbols;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
@@ -121,13 +122,13 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         drawErrors(matrixStack);
         drawBoundary(matrixStack);
         Vec2d mousePos = getMousePosition(mouseX, mouseY);
-        schematic.render(matrixStack, mousePos);
+        ClientSymbols.render(schematic, matrixStack, mousePos);
 
         Optional<Component> currentError = Optional.empty();
         PlacedSymbol placed = getPlacingSymbol(mousePos);
         if (placed != null) {
             currentError = schematic.getChecker().getErrorForAdding(placed);
-            placed.render(matrixStack);
+            ClientSymbols.render(placed, matrixStack);
         } else {
             WireSegment placedWire = getPlacingSegment(mousePos);
             if (placedWire != null) {
@@ -327,7 +328,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
             placingSymbol = clicked.symbol();
             resetAfterPlacingSymbol = true;
         } else {
-            instance.getType().createInstanceWithUI(newInst -> {
+            ClientSymbols.createInstanceWithUI(instance.getType(), newInst -> {
                 runAndSendToServer(new Delete(mousePos));
                 runAndSendToServer(new AddSymbol(new PlacedSymbol(clicked.position(), newInst)));
             }, instance.getCurrentState());

@@ -1,9 +1,7 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Unit;
-import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import net.minecraft.network.chat.Component;
@@ -11,20 +9,19 @@ import net.minecraft.network.chat.TranslatableComponent;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Consumer;
-
-import static malte0811.controlengineering.logic.schematic.symbol.SchematicSymbols.SYMBOLS_SHEET;
 
 public class CellSymbol extends SchematicSymbol<Unit> {
     private final LeafcellType<?> type;
-    private final SubTexture texture;
+    private final int width;
+    private final int height;
     private final List<SymbolPin> pins;
 
-    public CellSymbol(LeafcellType<?> type, int uMin, int vMin, int uSize, int vSize, List<SymbolPin> pins) {
+    public CellSymbol(LeafcellType<?> type, int width, int height, List<SymbolPin> pins) {
         super(Unit.INSTANCE, MyCodecs.unit(Unit.INSTANCE));
         this.type = type;
+        this.width = width;
+        this.height = height;
         this.pins = pins;
-        this.texture = new SubTexture(SYMBOLS_SHEET, uMin, vMin, uMin + uSize, vMin + vSize, 64);
         for (SymbolPin pin : pins) {
             if (pin.isOutput()) {
                 Preconditions.checkState(type.getOutputPins().containsKey(pin.pinName()));
@@ -35,32 +32,18 @@ public class CellSymbol extends SchematicSymbol<Unit> {
     }
 
     @Override
-    public void renderCustom(PoseStack transform, int x, int y, @Nullable Unit state) {
-        texture.blit(transform, x, y);
-    }
-
-    @Override
     public int getXSize() {
-        return texture.getWidth();
+        return width;
     }
 
     @Override
     public int getYSize() {
-        return texture.getHeight();
+        return height;
     }
 
     @Override
     public List<SymbolPin> getPins(@Nullable Unit unit) {
         return pins;
-    }
-
-    @Override
-    public void createInstanceWithUI(
-            Consumer<? super SymbolInstance<Unit>> onDone,
-            Unit initialState
-    ) {
-        // No config required/possible
-        onDone.accept(newInstance());
     }
 
     public static String getTranslationKey(LeafcellType<?> type) {

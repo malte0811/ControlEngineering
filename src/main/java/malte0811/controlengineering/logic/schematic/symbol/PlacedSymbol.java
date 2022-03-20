@@ -1,6 +1,5 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
@@ -14,10 +13,6 @@ public record PlacedSymbol(Vec2i position, SymbolInstance<?> symbol) {
             new CodecField<>("symbol", PlacedSymbol::symbol, SymbolInstance.CODEC),
             PlacedSymbol::new
     );
-
-    public void render(PoseStack transform) {
-        symbol.render(transform, position.x(), position.y());
-    }
 
     public RectangleI getShape() {
         return new RectangleI(position(), getMaxPoint());
