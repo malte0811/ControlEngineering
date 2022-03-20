@@ -180,7 +180,8 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
         for (int i = 0; i < job.getTotalComponents(); ++i) {
             final PlacedComponent nextComponent = job.components().get(i);
             final Vec2d min = nextComponent.getPosMin();
-            final Vec2d max = nextComponent.getPosMax().subtract(new Vec2d(HEAD_SIZE, HEAD_SIZE));
+            final Vec2d max = nextComponent.getPosMax(Minecraft.getInstance().level)
+                    .subtract(new Vec2d(HEAD_SIZE, HEAD_SIZE));
             final int nextComponentTime = job.tickPlacingComponent().getInt(i);
             final double arrivalAtComponent = Mth.lerp(arrival, lastComponentTime, nextComponentTime);
             nodes.add(new Node<>(new Vec3(min.x(), HEAD_TRAVERSAL_HEIGHT, min.y()), arrivalAtComponent));

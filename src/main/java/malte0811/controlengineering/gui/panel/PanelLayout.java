@@ -129,14 +129,10 @@ public class PanelLayout extends AbstractWidget {
         }
     }
 
-    private int getHoveredIndex(Vec2d mouse) {
-        return getHoveredIndex(mouse.x(), mouse.y());
-    }
-
     private int getHoveredIndex(double mouseX, double mouseY) {
         final double panelX = getPanelPos(mouseX, x);
         final double panelY = getPanelPos(mouseY, y);
-        return PlacedComponent.getIndexAt(components, panelX, panelY);
+        return PlacedComponent.getIndexAt(Minecraft.getInstance().level, components, panelX, panelY);
     }
 
     private double getPanelPos(double mouse, int base) {
@@ -152,7 +148,7 @@ public class PanelLayout extends AbstractWidget {
     }
 
     private boolean processAndSend(PanelSubPacket packet) {
-        if (packet.process(components)) {
+        if (packet.process(Minecraft.getInstance().level, components)) {
             ControlEngineering.NETWORK.sendToServer(new PanelPacket(packet));
             return true;
         } else {

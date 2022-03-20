@@ -3,6 +3,7 @@ package malte0811.controlengineering.network.panellayout;
 import com.google.common.base.Preconditions;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -25,8 +26,8 @@ public class Replace extends PanelSubPacket {
     }
 
     @Override
-    public boolean process(List<PlacedComponent> allComponents) {
-        if (newComponent == null || !newComponent.isWithinPanel()) {
+    public boolean process(Level level, List<PlacedComponent> allComponents) {
+        if (newComponent == null || !newComponent.isWithinPanel(level)) {
             return false;
         }
         int toReplace = -1;
@@ -34,7 +35,7 @@ public class Replace extends PanelSubPacket {
             PlacedComponent existing = allComponents.get(i);
             if (existing.getPosMin().equals(newComponent.getPosMin())) {
                 toReplace = i;
-            } else if (!existing.disjoint(newComponent)) {
+            } else if (!existing.disjoint(level, newComponent)) {
                 return false;
             }
         }

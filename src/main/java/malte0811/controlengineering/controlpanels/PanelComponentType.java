@@ -100,7 +100,7 @@ public abstract class PanelComponentType<Config, State>
         return defaultSelectionShape;
     }
 
-    public Vec2d getSize(Config config) {
+    public Vec2d getSize(Config config, Level level) {
         return Objects.requireNonNull(size);
     }
 

@@ -12,6 +12,7 @@ import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.util.FastDataResult;
 import malte0811.controlengineering.util.math.Vec2d;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class CNCInstructionParser {
     public static final char COMPONENT_SEPARATOR = ';';
     public static final char QUOTATION_MARK = '"';
 
-    public static ParserResult parse(String input) {
+    public static ParserResult parse(Level level, String input) {
         int pos = 0;
         String error = null;
         List<PlacedComponent> components = new ArrayList<>();
@@ -44,14 +45,14 @@ public class CNCInstructionParser {
                 error = "Too few tokens in component starting at " + componentStart;
                 break;
             }
-            FastDataResult<PlacedComponent> nextRes = parseComponent(tokens.get());
+            FastDataResult<PlacedComponent> nextRes = parseComponent(level, tokens.get());
             if (nextRes.isError()) {
                 error = "Component starting at " + componentStart + ": " + nextRes.getErrorMessage();
                 break;
             }
             PlacedComponent next = nextRes.get();
             for (PlacedComponent existing : components) {
-                if (!existing.disjoint(next)) {
+                if (!existing.disjoint(level, next)) {
                     error = "Component starting at " + componentStart + " intersects previous component";
                 }
             }
@@ -68,7 +69,7 @@ public class CNCInstructionParser {
         }
     }
 
-    private static FastDataResult<PlacedComponent> parseComponent(List<String> tokens) {
+    private static FastDataResult<PlacedComponent> parseComponent(Level level, List<String> tokens) {
         String typeName = tokens.get(0);
         PanelComponentType<?, ?> type = PanelComponents.getType(typeName);
         if (type == null) {
@@ -89,7 +90,7 @@ public class CNCInstructionParser {
             return component.propagateError();
         }
         PlacedComponent placed = new PlacedComponent(component.get(), new Vec2d(x, y));
-        if (!placed.isWithinPanel()) {
+        if (!placed.isWithinPanel(level)) {
             return FastDataResult.error("Not within panel bounds");
         }
         return FastDataResult.success(placed);

@@ -3,6 +3,7 @@ package malte0811.controlengineering.network.panellayout;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -23,8 +24,8 @@ public class Delete extends PanelSubPacket {
     }
 
     @Override
-    public boolean process(List<PlacedComponent> allComponents) {
-        final int index = PlacedComponent.getIndexAt(allComponents, pos.x(), pos.y());
+    public boolean process(Level level, List<PlacedComponent> allComponents) {
+        final int index = PlacedComponent.getIndexAt(level, allComponents, pos.x(), pos.y());
         if (index >= 0) {
             allComponents.remove(index);
             return true;

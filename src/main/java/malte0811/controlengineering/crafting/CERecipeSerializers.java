@@ -2,6 +2,7 @@ package malte0811.controlengineering.crafting;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.crafting.noncrafting.ComponentCostRecipe;
+import malte0811.controlengineering.crafting.noncrafting.ServerFontRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -20,5 +21,8 @@ public class CERecipeSerializers {
     );
     public static final RegistryObject<ComponentCostRecipe.Serializer> COMPONENT_COST = REGISTER.register(
             "component_cost", ComponentCostRecipe.Serializer::new
+    );
+    public static final RegistryObject<ServerFontRecipe.Serializer> FONT_WIDTH = REGISTER.register(
+            "server_font_width", ServerFontRecipe.Serializer::new
     );
 }

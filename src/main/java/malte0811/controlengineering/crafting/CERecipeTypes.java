@@ -2,6 +2,7 @@ package malte0811.controlengineering.crafting;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.crafting.noncrafting.ComponentCostRecipe;
+import malte0811.controlengineering.crafting.noncrafting.ServerFontRecipe;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
@@ -15,11 +16,13 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 @Mod.EventBusSubscriber(modid = ControlEngineering.MODID, bus = Bus.MOD)
 public class CERecipeTypes {
     public static RecipeType<ComponentCostRecipe> COMPONENT_COST;
+    public static RecipeType<ServerFontRecipe> SERVER_FONT;
 
     @SubscribeEvent
     // Just need *some* registry event, since all registries are apparently unfrozen during those
     public static void register(RegistryEvent.Register<Block> ev) {
         COMPONENT_COST = register("component_cost");
+        SERVER_FONT = register("server_font_width");
     }
 
     private static <T extends Recipe<?>> RecipeType<T> register(String path) {

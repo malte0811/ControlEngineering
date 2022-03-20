@@ -6,7 +6,7 @@ import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndText;
-import malte0811.controlengineering.util.ServerFontWidth;
+import malte0811.controlengineering.crafting.noncrafting.ServerFontRecipe;
 import malte0811.controlengineering.util.math.Vec2d;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -17,7 +17,7 @@ import java.util.List;
 public class CNCInstructionGeneratorTest {
     @BeforeClass
     public static void preload() {
-        ServerFontWidth.constantWidthForTesting(1);
+        ServerFontRecipe.IN_UNIT_TEST = true;
     }
 
     @Test
@@ -48,7 +48,7 @@ public class CNCInstructionGeneratorTest {
                 "button 1 1 ff0000 0 2;button 3 1 ff00 0 3;indicator 2 1.5 ffff00 0 4;label 1 5 ff00 \"a test\\\\?\\\"''\"",
                 generated
         );
-        CNCInstructionParser.ParserResult parsed = CNCInstructionParser.parse(generated);
+        CNCInstructionParser.ParserResult parsed = CNCInstructionParser.parse(null, generated);
         Assert.assertFalse(parsed.isError());
         Assert.assertEquals(comps, parsed.components());
     }

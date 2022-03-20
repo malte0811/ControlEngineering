@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,7 @@ public abstract class PanelSubPacket {
 
     protected abstract void write(FriendlyByteBuf out);
 
-    public abstract boolean process(List<PlacedComponent> allComponents);
+    public abstract boolean process(Level level, List<PlacedComponent> allComponents);
 
     public boolean allowSendingToServer() {
         return true;

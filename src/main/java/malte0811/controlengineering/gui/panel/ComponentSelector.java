@@ -119,15 +119,16 @@ public class ComponentSelector extends AbstractWidget {
             @Nonnull PoseStack transform, @Nonnull PanelComponentType<?, ?> type, double width, double height
     ) {
         transform.pushPose();
+        var level = Minecraft.getInstance().level;
         var component = type.newInstance();
-        var componentSize = component.getSize();
+        var componentSize = component.getSize(level);
         var areaSize = new Vec2d(width, height);
         var extraScale = (float) Math.min(
                 Math.min(areaSize.x() / componentSize.x(), areaSize.y() / componentSize.y()), 16
         );
         transform.translate(width / 2, height / 2, 0);
         transform.scale(extraScale, extraScale, .01f);
-        transform.translate(-component.getSize().x() / 2f, -component.getSize().y() / 2f, 0);
+        transform.translate(-component.getSize(level).x() / 2f, -component.getSize(level).y() / 2f, 0);
         transform.mulPose(new Quaternion(-90, 0, 0, true));
         TransformUtil.shear(transform, .1f, .1f);
         transform.scale(1, -1, 1);

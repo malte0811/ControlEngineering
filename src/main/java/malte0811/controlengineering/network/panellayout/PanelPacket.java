@@ -1,10 +1,12 @@
 package malte0811.controlengineering.network.panellayout;
 
 import com.google.common.base.Preconditions;
+import malte0811.controlengineering.client.ClientHooks;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignMenu;
 import malte0811.controlengineering.gui.panel.PanelDesignScreen;
 import malte0811.controlengineering.network.SimplePacket;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.network.NetworkDirection;
@@ -32,19 +34,12 @@ public class PanelPacket extends SimplePacket {
             Preconditions.checkState(packet.allowSendingToServer());
             AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
             if (activeContainer instanceof PanelDesignMenu panelContainer) {
-                packet.process(panelContainer.getComponents());
+                packet.process(ctx.getSender().level, panelContainer.getComponents());
                 panelContainer.sendToListeningPlayersExcept(ctx.getSender(), packet);
                 panelContainer.markDirty();
             }
         } else {
-            processOnClient();
-        }
-    }
-
-    private void processOnClient() {
-        PanelDesignScreen currentScreen = StackedScreen.findInstanceOf(PanelDesignScreen.class);
-        if (currentScreen != null) {
-            packet.process(currentScreen.getComponents());
+            ClientHooks.processPanelPacketOnClient(packet);
         }
     }
 }

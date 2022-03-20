@@ -13,6 +13,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -78,12 +79,12 @@ public class PlacedComponent extends SelectionShapes {
     }
 
     @Nonnull
-    public Vec2d getPosMax() {
-        return pos.add(component.getSize());
+    public Vec2d getPosMax(Level level) {
+        return pos.add(component.getSize(level));
     }
 
-    public RectangleD getOutline() {
-        return new RectangleD(getPosMin(), getPosMax());
+    public RectangleD getOutline(Level level) {
+        return new RectangleD(getPosMin(), getPosMax(level));
     }
 
     @Nullable
@@ -140,12 +141,12 @@ public class PlacedComponent extends SelectionShapes {
         return component.tick();
     }
 
-    public boolean disjoint(PlacedComponent other) {
-        return getOutline().disjoint(other.getOutline());
+    public boolean disjoint(Level level, PlacedComponent other) {
+        return getOutline(level).disjoint(other.getOutline(level));
     }
 
-    public boolean isWithinPanel() {
-        return new RectangleD(0, 0, 16, 16).contains(getOutline());
+    public boolean isWithinPanel(Level level) {
+        return new RectangleD(0, 0, 16, 16).contains(getOutline(level));
     }
 
     @Override
@@ -173,10 +174,10 @@ public class PlacedComponent extends SelectionShapes {
         return LIST_CODEC.toNBT(components);
     }
 
-    public static int getIndexAt(List<PlacedComponent> components, double x, double y) {
+    public static int getIndexAt(Level level, List<PlacedComponent> components, double x, double y) {
         for (int i = 0; i < components.size(); i++) {
             PlacedComponent p = components.get(i);
-            if (p.getOutline().containsClosed(x, y)) {
+            if (p.getOutline(level).containsClosed(x, y)) {
                 return i;
             }
         }

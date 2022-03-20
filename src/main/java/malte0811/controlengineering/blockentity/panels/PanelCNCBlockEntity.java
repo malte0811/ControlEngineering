@@ -54,7 +54,6 @@ import java.util.function.Consumer;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-//TODO faces wrong way when placed!
 public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IExtraDropBE, IBusInterface {
     private static final int ENERGY_CONSUMPTION = 40;
 
@@ -66,7 +65,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
             tape::getNullableTapeContent,
             tape -> {
                 if (tape != null) {
-                    return CNCJob.createFor(CNCInstructionParser.parse(BitUtils.toString(tape)));
+                    return CNCJob.createFor(CNCInstructionParser.parse(level, BitUtils.toString(tape)));
                 } else {
                     return null;
                 }

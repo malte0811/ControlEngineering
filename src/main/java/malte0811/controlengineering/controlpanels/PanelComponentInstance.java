@@ -9,6 +9,7 @@ import malte0811.controlengineering.util.typereg.TypedInstance;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -108,8 +109,8 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
         currentState = Pair.of(newConfig, getState());
     }
 
-    public Vec2d getSize() {
-        return getType().getSize(getConfig());
+    public Vec2d getSize(Level level) {
+        return getType().getSize(getConfig(), level);
     }
 
     @Override

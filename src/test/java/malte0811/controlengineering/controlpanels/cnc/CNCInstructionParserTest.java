@@ -7,7 +7,7 @@ import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndText;
-import malte0811.controlengineering.util.ServerFontWidth;
+import malte0811.controlengineering.crafting.noncrafting.ServerFontRecipe;
 import malte0811.controlengineering.util.math.Vec2d;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -40,14 +40,14 @@ public class CNCInstructionParserTest {
     @BeforeClass
     public static void preload() {
         //Load all classes before the actual tests since some have slow static init
-        CNCInstructionParser.parse(button(1, 2) + ";" + indicator(2, 3));
-        ServerFontWidth.constantWidthForTesting(1);
+        ServerFontRecipe.IN_UNIT_TEST = true;
+        CNCInstructionParser.parse(null, button(1, 2) + ";" + indicator(2, 3));
     }
 
     @Test
     public void testBasicPanel() {
         CNCInstructionParser.ParserResult result = CNCInstructionParser.parse(
-                button(1, 2) + ";" + indicator(2, 3)
+                null, button(1, 2) + ";" + indicator(2, 3)
         );
         assertSuccess(
                 result,
@@ -58,38 +58,38 @@ public class CNCInstructionParserTest {
 
     @Test
     public void testInvalidComponent() {
-        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse("this is not a component");
+        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse(null, "this is not a component");
         assertFailure(result);
     }
 
     @Test
     public void testMissingArgs() {
-        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse("button 1 2 ff");
+        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse(null, "button 1 2 ff");
         assertFailure(result);
     }
 
     @Test
     public void testNoPos() {
-        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse("button 1 ");
+        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse(null, "button 1 ");
         assertFailure(result);
     }
 
     @Test
     public void testPosNumberFormatXCP() {
-        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse("button 1 foo");
+        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse(null, "button 1 foo");
         assertFailure(result);
     }
 
     @Test
     public void testDeserializerNumberFormatXCP() {
-        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse("button 1 2 foo");
+        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse(null, "button 1 2 foo");
         assertFailure(result);
     }
 
     @Test
     public void testOutOfPanel() {
         CNCInstructionParser.ParserResult result = CNCInstructionParser.parse(
-                button(16.5, 1)
+                null, button(16.5, 1)
         );
         assertFailure(result);
     }
@@ -97,14 +97,14 @@ public class CNCInstructionParserTest {
     @Test
     public void testDisjoint() {
         CNCInstructionParser.ParserResult result = CNCInstructionParser.parse(
-                button(3, 1) + ";" + indicator(3, 1)
+                null, button(3, 1) + ";" + indicator(3, 1)
         );
         assertFailure(result, new PlacedComponent(BUTTON, new Vec2d(3, 1)));
     }
 
     @Test
     public void testQuotedString() {
-        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse("label 1 1 ff \"This is a test\"");
+        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse(null, "label 1 1 ff \"This is a test\"");
         assertSuccess(
                 result,
                 new PlacedComponent(
@@ -116,7 +116,7 @@ public class CNCInstructionParserTest {
 
     @Test
     public void testUnquotedString() {
-        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse("label 1 1 0 test");
+        CNCInstructionParser.ParserResult result = CNCInstructionParser.parse(null, "label 1 1 0 test");
         assertSuccess(
                 result,
                 new PlacedComponent(
