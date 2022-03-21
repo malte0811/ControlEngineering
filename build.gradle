@@ -17,9 +17,9 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
-version = project.mod_version
-group = project.maven_group
-archivesBaseName = project.archives_base_name
+version = "0.0.0"
+group = "malte0811.controlengineering"
+archivesBaseName = "ControlEngineering"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = 17
 
@@ -50,10 +50,30 @@ def setupSourceSet(SourceSet sourceSet, String name) {
     }
 }
 
+def version_replacements = [
+        'mc_version': minecraft_version,
+        'ie_version': ie_version,
+        'ce_version': project.version,
+]
+
 processResources {
     filesMatching("META-INF/mods.toml") {
-        expand 'version': project.version
+        expand version_replacements
     }
+}
+
+// When using "Run using IntelliJ" (the only option with well-working hotswapping) the used "resources" directory is
+// different from the one used by gradle/the processResources task
+task copyModsTomlForIntelliJ(type: Copy) {
+    from processResources.destinationDir
+    into "$projectDir/out/production/resources"
+    include "META-INF/mods.toml"
+}
+
+copyModsTomlForIntelliJ.dependsOn processResources
+afterEvaluate {
+    // prepareRuns doesn't exist before afterEvaluate
+    prepareRuns.dependsOn copyModsTomlForIntelliJ
 }
 
 minecraft {

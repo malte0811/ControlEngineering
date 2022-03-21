@@ -1,25 +1,23 @@
 modLoader="javafml" #mandatory
 loaderVersion="[32,)"
-# TODO decide whether I want MIT or something else
 license="MIT"
 [[mods]]
 modId = "controlengineering"
-# TODO
-version = "0.0"
+version = "${ce_version}"
 displayName = "Control Engineering"
 authors = "malte0811"
 description = '''
-An addon for Immersive Engineering providing control panels and "logic boxes"
+An addon for Immersive Engineering providing control panels and logic cabinets among other related devices
 '''
 [[dependencies.controlengineering]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.17.1,)"
+versionRange = "[${mc_version},)"
 ordering = "AFTER"
 side = "BOTH"
 [[dependencies.controlengineering]]
 modId = "immersiveengineering"
 mandatory = true
-versionRange = "[1.17.1-5.0.2,)"
+versionRange = "[${ie_version},)"
 ordering = "AFTER"
 side = "BOTH"
