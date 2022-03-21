@@ -17,7 +17,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
-version = "0.0.0"
+version = "0.0.dev1"
 group = "malte0811.controlengineering"
 archivesBaseName = "ControlEngineering"
 
@@ -57,6 +57,7 @@ def version_replacements = [
 ]
 
 processResources {
+    inputs.properties(version_replacements)
     filesMatching("META-INF/mods.toml") {
         expand version_replacements
     }
