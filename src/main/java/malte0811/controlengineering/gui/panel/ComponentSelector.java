@@ -174,9 +174,7 @@ public class ComponentSelector extends AbstractWidget {
     }
 
     @Override
-    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {
-        //TODO?
-    }
+    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {}
 
     private static void drawCenteredShrunkString(
             PoseStack transform, Font font, String text, int xMin, int xMax, int y, int color

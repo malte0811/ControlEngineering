@@ -96,7 +96,5 @@ public abstract class NestedWidget extends AbstractWidget implements ContainerEv
     }
 
     @Override
-    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {
-        //TODO?
-    }
+    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {}
 }

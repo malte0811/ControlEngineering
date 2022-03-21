@@ -181,7 +181,6 @@ public class Recipes extends RecipeProvider {
                 .define('s', IETags.getItemTag(IETags.treatedWoodSlab))
                 .define('f', Items.FLINT_AND_STEEL)
                 .define('c', IEItemRefs.CRATE)
-                // TODO how well does that work?
                 .define('b', IEItemRefs.BLUEPRINT)
                 .define('e', IEItemRefs.LIGHT_ENGINEERING)
                 .save(consumer);

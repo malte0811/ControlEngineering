@@ -62,7 +62,6 @@ public class LangGenerator extends LanguageProvider {
         addItem(CEItems.EMPTY_TAPE, "Empty Tape");
         addItem(CEItems.PUNCHED_TAPE, "Punched Tape");
         addItem(CEItems.PANEL_TOP, "Panel Top");
-        //TODO?
         addItem(CEItems.PCB_STACK, "Logic Circuit Boards");
         addItem(CEItems.BUS_WIRE_COIL, "Bus Wire Coil");
 

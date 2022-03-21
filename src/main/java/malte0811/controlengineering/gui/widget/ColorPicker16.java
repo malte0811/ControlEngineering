@@ -84,7 +84,5 @@ public class ColorPicker16 extends AbstractWidget {
     }
 
     @Override
-    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {
-        //TODO?
-    }
+    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {}
 }

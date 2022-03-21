@@ -6,6 +6,20 @@
       "bonus_rolls": 0.0,
       "entries": [
         {
+          "type": "controlengineering:extra_be_drop"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
+    },
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
           "type": "minecraft:item",
           "name": "controlengineering:logic_workbench"
         }

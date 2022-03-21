@@ -157,7 +157,5 @@ public class PanelLayout extends AbstractWidget {
     }
 
     @Override
-    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {
-        // TODO?
-    }
+    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {}
 }

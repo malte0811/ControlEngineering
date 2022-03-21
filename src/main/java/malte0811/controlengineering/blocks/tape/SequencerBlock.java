@@ -27,7 +27,6 @@ public class SequencerBlock extends CEBlock<Direction> {
         super(
                 defaultPropertiesNotSolid(),
                 BlockPropertyPlacement.horizontal(FACING),
-                //TODO?
                 FromBlockFunction.constant(Shapes.block()),
                 CEBlockEntities.SEQUENCER
         );

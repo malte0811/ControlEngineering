@@ -25,13 +25,11 @@ public class BlockLootGenerator implements Consumer<BiConsumer<ResourceLocation,
 
     @Override
     public void accept(BiConsumer<ResourceLocation, LootTable.Builder> out) {
-        //TODO
-        // logic workbench => parts in drawers
-        // panel designer => ???????
         registerSelfDropping(CEBlocks.LOGIC_CABINET, bEntityDrops());
         registerSelfDropping(CEBlocks.PANEL_CNC, bEntityDrops());
         registerSelfDropping(CEBlocks.KEYPUNCH, bEntityDrops());
         register(CEBlocks.CONTROL_PANEL, createPoolBuilder().add(PanelDropEntry.builder()));
+        registerSelfDropping(CEBlocks.LOGIC_WORKBENCH, bEntityDrops());
         registerAllRemainingAsDefault();
         tables.forEach(out);
     }

@@ -4,6 +4,7 @@ import blusunrize.immersiveengineering.api.IETags;
 import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
+import malte0811.controlengineering.blockentity.base.IExtraDropBE;
 import malte0811.controlengineering.blockentity.base.IHasMaster;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
@@ -47,10 +48,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class LogicWorkbenchBlockEntity extends CEBlockEntity implements SelectionShapeOwner, ISchematicBE, MenuProvider,
-        IHasMaster<LogicWorkbenchBlockEntity> {
+        IHasMaster<LogicWorkbenchBlockEntity>, IExtraDropBE {
     public static final String TUBES_EMPTY_KEY = ControlEngineering.MODID + ".gui.tubesEmpty";
     public static final String WIRES_EMPTY_KEY = ControlEngineering.MODID + ".gui.wiresEmpty";
     public static final String MORE_BOARDS_THAN_MAX = ControlEngineering.MODID + ".gui.moreThanMaxBoards";
@@ -271,6 +273,12 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
     @Override
     public AbstractContainerMenu createMenu(int pContainerId, @Nonnull Inventory pInventory, @Nonnull Player pPlayer) {
         return CEContainers.LOGIC_DESIGN_EDIT.makeNew(pContainerId, this);
+    }
+
+    @Override
+    public void getExtraDrops(Consumer<ItemStack> dropper) {
+        dropper.accept(tubeStorage.getStored());
+        dropper.accept(wireStorage.getStored());
     }
 
     public static class AvailableIngredients {

@@ -30,7 +30,6 @@ public abstract class DualConnectorBlockEntity extends CEIICBlockEntity {
 
     @Override
     public final Vec3 getConnectionOffset(ConnectionPoint here, ConnectionPoint other, WireType type) {
-        // TODO fix, or maybe put in a helper?
         final double offset;
         if (here.index() == MAX_ID) {
             offset = .25;

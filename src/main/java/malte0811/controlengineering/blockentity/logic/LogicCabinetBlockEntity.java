@@ -73,8 +73,8 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     }
 
     public void tick() {
-        //TODO less? config?
-        if (circuit == null || energy.extractOrTrue(128) || level.getGameTime() % 2 != 0) {
+        //TODO config?
+        if (circuit == null || energy.extractOrTrue(64) || level.getGameTime() % 2 != 0) {
             return;
         }
         final Direction facing = getFacing(getBlockState());
