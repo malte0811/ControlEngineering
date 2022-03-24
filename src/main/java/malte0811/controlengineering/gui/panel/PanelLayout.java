@@ -29,8 +29,10 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public class PanelLayout extends AbstractWidget {
+    private static final double PANEL_GRID = 0.5;
+
     private final List<PlacedComponent> components;
-    private PanelComponentInstance<?, ?> placing;
+    private PlacingComponent placing;
 
     public PanelLayout(int x, int y, int size, List<PlacedComponent> components) {
         super(x, y, size, size, TextComponent.EMPTY);
@@ -38,7 +40,7 @@ public class PanelLayout extends AbstractWidget {
     }
 
     public void setPlacingComponent(PanelComponentType<?, ?> placing) {
-        this.placing = placing.newInstance();
+        this.placing = new PlacingComponent(placing.newInstance(), Vec2d.ZERO);
     }
 
     @Override
@@ -55,11 +57,10 @@ public class PanelLayout extends AbstractWidget {
         transform.scale(1, -1, 1);
         MixedModel model = ComponentRenderers.renderAll(components, transform);
         if (placing != null) {
-            final double placingX = getGriddedPanelPos(mouseX, x);
-            final double placingY = getGriddedPanelPos(mouseY, y);
+            final var placingPos = placing.getPlacingPos(this, mouseX, mouseY);
             transform.pushPose();
-            transform.translate(placingX, 0, placingY);
-            ComponentRenderers.render(model, placing, transform);
+            transform.translate(placingPos.x(), 0, placingPos.y());
+            ComponentRenderers.render(model, placing.component(), transform);
             transform.popPose();
         }
         MultiBufferSource.BufferSource impl = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
@@ -70,31 +71,33 @@ public class PanelLayout extends AbstractWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        final double mouseXPanel = getPanelPos(mouseX, x);
+        final double mouseYPanel = getPanelPos(mouseY, y);
+        int hovered = PlacedComponent.getIndexAt(Minecraft.getInstance().level, components, mouseXPanel, mouseYPanel);
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             if (placing == null) {
-                final int hovered = getHoveredIndex(mouseX, mouseY);
                 if (hovered >= 0) {
-                    placing = components.get(hovered).getComponent();
+                    var pickedComponent = components.get(hovered);
+                    var offset = pickedComponent.getPosMin().subtract(
+                            mouseXPanel - PANEL_GRID / 2, mouseYPanel - PANEL_GRID / 2
+                    );
+                    placing = new PlacingComponent(pickedComponent.getComponent(), offset);
                     delete(mouseX, mouseY);
                     return true;
                 }
                 return false;
             } else {
-                final double placingX = getGriddedPanelPos(mouseX, x);
-                final double placingY = getGriddedPanelPos(mouseY, y);
-                PlacedComponent newComponent = new PlacedComponent(placing, new Vec2d(placingX, placingY));
+                final var placingPos = placing.getPlacingPos(this, (int) mouseX, (int) mouseY);
+                PlacedComponent newComponent = new PlacedComponent(placing.component(), placingPos);
                 if (processAndSend(new Add(newComponent))) {
                     placing = null;
                     return true;
                 }
             }
-        } else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-            final int hovered = getHoveredIndex(mouseX, mouseY);
-            if (hovered >= 0) {
-                final PlacedComponent hoveredComp = components.get(hovered);
-                configure(hoveredComp.getPosMin(), hoveredComp.getComponent());
-                return true;
-            }
+        } else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && hovered >= 0) {
+            final PlacedComponent hoveredComp = components.get(hovered);
+            configure(hoveredComp.getPosMin(), hoveredComp.getComponent());
+            return true;
         }
         return false;
     }
@@ -117,22 +120,15 @@ public class PanelLayout extends AbstractWidget {
 
     private <T> void configure(Vec2d pos, PanelComponentInstance<T, ?> instance) {
         DataProviderScreen<T> screen = DataProviderScreen.makeFor(
-                TextComponent.EMPTY, instance.getConfig(), config -> {
-                    processAndSend(new Replace(new PlacedComponent(
-                            instance.getType().newInstanceFromCfg(config),
-                            pos
-                    )));
-                }
+                TextComponent.EMPTY, instance.getConfig(),
+                config -> processAndSend(new Replace(new PlacedComponent(
+                        instance.getType().newInstanceFromCfg(config),
+                        pos
+                )))
         );
         if (screen != null) {
             Minecraft.getInstance().setScreen(screen);
         }
-    }
-
-    private int getHoveredIndex(double mouseX, double mouseY) {
-        final double panelX = getPanelPos(mouseX, x);
-        final double panelY = getPanelPos(mouseY, y);
-        return PlacedComponent.getIndexAt(Minecraft.getInstance().level, components, panelX, panelY);
     }
 
     private double getPanelPos(double mouse, int base) {
@@ -140,7 +136,7 @@ public class PanelLayout extends AbstractWidget {
     }
 
     private double getGriddedPanelPos(double mouse, int base) {
-        return ((int) (getPanelPos(mouse, base) * 2)) / 2.;
+        return Math.floor(getPanelPos(mouse, base) / PANEL_GRID) * PANEL_GRID;
     }
 
     private double getPixelSize() {
@@ -158,4 +154,14 @@ public class PanelLayout extends AbstractWidget {
 
     @Override
     public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {}
+
+    private record PlacingComponent(PanelComponentInstance<?, ?> component, Vec2d offsetFromMouse) {
+        public Vec2d getPlacingPos(PanelLayout relative, double mouseX, double mouseY) {
+            var pixel = relative.getPixelSize();
+            return new Vec2d(
+                    relative.getGriddedPanelPos(mouseX + offsetFromMouse.x() * pixel, relative.x),
+                    relative.getGriddedPanelPos(mouseY + offsetFromMouse.y() * pixel, relative.y)
+            );
+        }
+    }
 }

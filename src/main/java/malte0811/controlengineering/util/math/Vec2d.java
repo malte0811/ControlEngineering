@@ -13,6 +13,7 @@ public record Vec2d(double x, double y) {
             new CodecField<>("y", Vec2d::y, MyCodecs.DOUBLE),
             Vec2d::new
     );
+    public static final Vec2d ZERO = new Vec2d(0, 0);
 
     public Vec2d(FriendlyByteBuf in) {
         this(in.readDouble(), in.readDouble());
@@ -32,11 +33,19 @@ public record Vec2d(double x, double y) {
     }
 
     public Vec2d subtract(Vec2d rhs) {
-        return new Vec2d(x - rhs.x, y - rhs.y);
+        return subtract(rhs.x(), rhs.y());
     }
 
-    public Vec2d add(Vec2d size) {
-        return new Vec2d(x + size.x, y + size.y);
+    public Vec2d subtract(double x, double y) {
+        return new Vec2d(this.x - x, this.y - y);
+    }
+
+    public Vec2d add(Vec2d rhs) {
+        return add(rhs.x(), rhs.y());
+    }
+
+    public Vec2d add(double x, double y) {
+        return new Vec2d(this.x + x, this.y + y);
     }
 
     public Vec2d add(Vec2i size) {

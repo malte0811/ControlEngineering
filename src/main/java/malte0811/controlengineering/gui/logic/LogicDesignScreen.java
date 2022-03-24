@@ -60,7 +60,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     @Nullable
     private Vec2i currentWireStart = null;
     @Nullable
-    private SymbolInstance<?> placingSymbol = null;
+    private PlacingSymbol placingSymbol = null;
     private boolean resetAfterPlacingSymbol = false;
     private List<ConnectedPin> errors = ImmutableList.of();
     private boolean errorsShown = false;
@@ -83,7 +83,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
             addRenderableWidget(new Button(
                     TOTAL_BORDER, TOTAL_BORDER, 20, 20, new TextComponent("C"),
                     btn -> minecraft.setScreen(new CellSelectionScreen(s -> {
-                        placingSymbol = s;
+                        placingSymbol = new PlacingSymbol(s, Vec2d.ZERO);
                         resetAfterPlacingSymbol = false;
                     })),
                     makeTooltip(() -> COMPONENTS_KEY)
@@ -325,7 +325,9 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         }
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             runAndSendToServer(new Delete(mousePos));
-            placingSymbol = clicked.symbol();
+            placingSymbol = new PlacingSymbol(
+                    clicked.symbol(), clicked.position().subtract(mousePos).add(0.5, 0.5)
+            );
             resetAfterPlacingSymbol = true;
         } else {
             ClientSymbols.createInstanceWithUI(instance.getType(), newInst -> {
@@ -425,7 +427,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     @Nullable
     private PlacedSymbol getPlacingSymbol(Vec2d pos) {
         if (placingSymbol != null) {
-            return new PlacedSymbol(pos.floor(), placingSymbol);
+            return new PlacedSymbol(pos.add(placingSymbol.offsetToMouse()).floor(), placingSymbol.symbol());
         } else {
             return null;
         }
@@ -511,4 +513,6 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     private static float getScaleForShownSize(float size, float shownSize) {
         return (size - 2 * TOTAL_BORDER - 5) / shownSize;
     }
+
+    private record PlacingSymbol(SymbolInstance<?> symbol, Vec2d offsetToMouse) {}
 }

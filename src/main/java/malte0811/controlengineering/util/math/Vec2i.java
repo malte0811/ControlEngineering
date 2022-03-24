@@ -36,4 +36,8 @@ public record Vec2i(int x, int y) implements Comparable<Vec2i> {
     public int compareTo(@Nonnull Vec2i o) {
         return COMPARATOR.compare(this, o);
     }
+
+    public Vec2d subtract(Vec2d rhs) {
+        return new Vec2d(x() - rhs.x(), y() - rhs.y());
+    }
 }
