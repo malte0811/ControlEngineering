@@ -31,11 +31,12 @@ public class LogicPacket extends SimplePacket {
         if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             Preconditions.checkState(packet.allowSendingToServer());
             AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
-            if (activeContainer instanceof LogicDesignMenu && !((LogicDesignMenu) activeContainer).readOnly) {
-                packet.process(((LogicDesignMenu) activeContainer).getSchematic(), $ -> {
+            if (activeContainer instanceof LogicDesignMenu logicMenu && !logicMenu.readOnly) {
+                packet.process(logicMenu.getSchematic(), $ -> {
                     throw new RuntimeException();
                 });
-                ((LogicDesignMenu) activeContainer).sendToListeningPlayersExcept(ctx.getSender(), packet);
+                logicMenu.sendToListeningPlayersExcept(ctx.getSender(), packet);
+                logicMenu.markDirty();
             }
         } else {
             processOnClient();
