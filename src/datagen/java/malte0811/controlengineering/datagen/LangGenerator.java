@@ -135,8 +135,7 @@ public class LangGenerator extends LanguageProvider {
         add(ConstantSymbol.INPUT_KEY, "Signal strength: %d");
 
         add(LogicDesignScreen.COMPONENTS_KEY, "Components");
-        add(LogicDesignScreen.ENABLE_DRC_KEY, "Enable error checking");
-        add(LogicDesignScreen.DISABLE_DRC_KEY, "Disable error checking");
+        add(LogicDesignScreen.DRC_INFO_KEY, "Highlight floating input pins");
         add(LogicDesignScreen.PIN_KEY, "Pin: %d");
 
         add(SchematicChecker.ANALOG_DIGITAL_MIX, "Net would connect an analog source to digital sinks");

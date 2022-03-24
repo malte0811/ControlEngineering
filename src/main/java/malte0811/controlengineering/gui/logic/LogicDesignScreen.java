@@ -8,6 +8,7 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.logic.LogicCabinetBlockEntity;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity.AvailableIngredients;
 import malte0811.controlengineering.gui.StackedScreen;
+import malte0811.controlengineering.gui.widget.SmallCheckbox;
 import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.logic.schematic.ConnectedPin;
 import malte0811.controlengineering.logic.schematic.Schematic;
@@ -39,15 +40,13 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import static net.minecraft.util.Mth.ceil;
 import static net.minecraft.util.Mth.floor;
 
 public class LogicDesignScreen extends StackedScreen implements MenuAccess<LogicDesignMenu> {
     public static final String COMPONENTS_KEY = ControlEngineering.MODID + ".gui.components";
-    public static final String ENABLE_DRC_KEY = ControlEngineering.MODID + ".gui.drcOn";
-    public static final String DISABLE_DRC_KEY = ControlEngineering.MODID + ".gui.drcOff";
+    public static final String DRC_INFO_KEY = ControlEngineering.MODID + ".gui.drcOn";
     public static final String PIN_KEY = ControlEngineering.MODID + ".gui.pin";
 
     private static final int TRANSLUCENT_BORDER_SIZE = 20;
@@ -86,15 +85,15 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                         placingSymbol = new PlacingSymbol(s, Vec2d.ZERO);
                         resetAfterPlacingSymbol = false;
                     })),
-                    makeTooltip(() -> COMPONENTS_KEY)
+                    makeTooltip(COMPONENTS_KEY)
             ));
-            addRenderableWidget(new Button(
-                    TOTAL_BORDER, TOTAL_BORDER + 20, 20, 20, new TextComponent("E"),
-                    btn -> {
-                        errorsShown = !errorsShown;
+            addRenderableWidget(new SmallCheckbox(
+                    TOTAL_BORDER, TOTAL_BORDER + 20, 20, 20, new TextComponent("DRC"), errorsShown,
+                    newState -> {
+                        errorsShown = newState;
                         updateErrors();
                     },
-                    makeTooltip(() -> errorsShown ? DISABLE_DRC_KEY : ENABLE_DRC_KEY)
+                    makeTooltip(DRC_INFO_KEY)
             ));
         }
         minScale = Math.max(
@@ -103,8 +102,8 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         );
     }
 
-    private Button.OnTooltip makeTooltip(Supplier<String> key) {
-        return ($, transform, x, y) -> this.renderTooltip(transform, new TranslatableComponent(key.get()), x, y);
+    private Button.OnTooltip makeTooltip(String key) {
+        return ($, transform, x, y) -> this.renderTooltip(transform, new TranslatableComponent(key), x, y);
     }
 
     @Override
