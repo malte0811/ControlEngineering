@@ -73,7 +73,7 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
     }
 
     public void tick() {
-        if (!clock.isPresent() || !tape.hasTape() || level == null) {
+        if (!clock.isPresent() || !tape.hasTape() || currentTapePosition >= tape.getTapeLength() || level == null) {
             return;
         }
         if (energy.extractOrTrue(BASE_CONSUMPTION) || level.getGameTime() % 2 != 0) {
@@ -210,7 +210,7 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
 
     @Override
     public BusState getEmittedState() {
-        if (!tape.hasTape()) {
+        if (!tape.hasTape() || currentTapePosition >= tape.getTapeContent().length) {
             return BusState.EMPTY;
         }
         final byte toSend = tape.getTapeContent()[currentTapePosition];
