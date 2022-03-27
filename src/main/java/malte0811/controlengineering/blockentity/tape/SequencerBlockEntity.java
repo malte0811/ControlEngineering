@@ -80,7 +80,7 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
             return;
         }
         final Direction clockFace = getBlockState().getValue(SequencerBlock.FACING).getCounterClockWise();
-        boolean rsIn = level.getSignal(worldPosition.relative(clockFace), clockFace.getOpposite()) > 0;
+        boolean rsIn = level.getSignal(worldPosition.relative(clockFace), clockFace) > 0;
         if (clock.getClock().tick(rsIn) && !energy.extractOrTrue(CONSUMPTION_PER_STEP)) {
             int newPos = ++currentTapePosition;
             if (newPos < tape.getTapeLength()) {
