@@ -31,8 +31,8 @@ public class ColorAndTextWidget extends DataProviderWidget<ColorAndText> {
     @Nullable
     public ColorAndText getData() {
         final Integer color = this.color.getData();
-        final String text = this.text.getValue();
-        if (color != null) {
+        final String text = this.text.getValue().trim();
+        if (color != null && !text.isEmpty()) {
             return new ColorAndText(color, text);
         } else {
             return null;
