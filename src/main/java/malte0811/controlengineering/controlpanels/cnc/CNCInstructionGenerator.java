@@ -4,13 +4,12 @@ import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class CNCInstructionGenerator {
-    private static final NumberFormat FORMAT = new DecimalFormat("#.##");
-
     public static String toInstructions(List<PlacedComponent> components) {
         StringBuilder result = new StringBuilder();
         for (PlacedComponent comp : components) {
@@ -23,11 +22,13 @@ public class CNCInstructionGenerator {
     }
 
     public static StringBuilder toInstructions(StringBuilder out, PlacedComponent component) {
+        var decimalSymbols = new DecimalFormatSymbols(Locale.ROOT);
+        var format = new DecimalFormat("#.##", decimalSymbols);
         out.append(PanelComponents.getCreationKey(component.getComponent().getType()))
                 .append(' ')
-                .append(FORMAT.format(component.getPosMin().x()))
+                .append(format.format(component.getPosMin().x()))
                 .append(' ')
-                .append(FORMAT.format(component.getPosMin().y()));
+                .append(format.format(component.getPosMin().y()));
         for (String field : component.getComponent().toCNCStrings()) {
             out.append(' ').append(escape(field));
         }

@@ -11,10 +11,24 @@ import malte0811.controlengineering.util.math.Vec2d;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.util.List;
+import java.util.Locale;
 
+@RunWith(Parameterized.class)
 public class CNCInstructionGeneratorTest {
+
+    @Parameterized.Parameters
+    public static Iterable<Locale> getTestLocales() {
+        return List.of(Locale.US, Locale.GERMAN);
+    }
+
+    public CNCInstructionGeneratorTest(Locale l) {
+        Locale.setDefault(l);
+    }
+
     @BeforeClass
     public static void preload() {
         ServerFontRecipe.IN_UNIT_TEST = true;
