@@ -17,9 +17,13 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
-version = "0.0.dev1"
+version = project.ce_version+makeVersionSuffix()
 group = "malte0811.controlengineering"
 archivesBaseName = "ControlEngineering"
+
+String makeVersionSuffix() {
+    return System.getenv("GITHUB_ACTIONS") != null ?  "-SNAPSHOT" : ""
+}
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = 17
 
@@ -144,7 +148,7 @@ repositories {
         name = 'DVS1 Maven FS'
         url = 'https://dvs1.progwml6.com/files/maven'
     }
-	maven {
+    maven {
         name = "BlameJared"
         url = "https://maven.blamejared.com/"
     }
@@ -156,7 +160,7 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-	runtimeOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}")
+    runtimeOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}")
     compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}:api")
     datagenImplementation fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}:datagen")
     testImplementation('junit:junit:4.13')
