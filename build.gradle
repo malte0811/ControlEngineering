@@ -22,7 +22,7 @@ group = "malte0811.controlengineering"
 archivesBaseName = "ControlEngineering"
 
 String makeVersionSuffix() {
-    return System.getenv("GITHUB_ACTIONS") != null ?  "-SNAPSHOT" : ""
+    return System.getenv("GITHUB_ACTIONS") != null ? "-GH-" + System.getenv("GITHUB_RUN_NUMBER") : ""
 }
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = 17
