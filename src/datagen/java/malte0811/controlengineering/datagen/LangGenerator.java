@@ -8,6 +8,7 @@ import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.blockentity.tape.SequencerBlockEntity;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.client.manual.CEManual;
+import malte0811.controlengineering.client.manual.LeafcellElement;
 import malte0811.controlengineering.client.manual.PanelComponentElement;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
@@ -168,7 +169,6 @@ public class LangGenerator extends LanguageProvider {
 
         add(ControlPanelItem.getKey(ControlPanelItem.BACK_HEIGHT_OPTION), "Back height");
         add(ControlPanelItem.getKey(ControlPanelItem.FRONT_HEIGHT_OPTION), "Front height");
-        add(PanelComponentElement.INGREDIENTS_KEY, "Ingredients");
 
         add(SequencerBlockEntity.AUTORESET_KEY, "Resets automatically");
         add(SequencerBlockEntity.MANUAL_RESET_KEY, "Requires manual reset");
@@ -192,6 +192,9 @@ public class LangGenerator extends LanguageProvider {
         add(CEManual.CODEC_NAMES.get(MyCodecs.HEX_INTEGER), "color");
         add(CEManual.CODEC_NAMES.get(MyCodecs.STRING), "text");
         add(CEManual.CODEC_NAMES.get(MyCodecs.INTEGER), "integer");
+
+        add(PanelComponentElement.INGREDIENTS_KEY, "Ingredients");
+        add(LeafcellElement.COST_KEY, "Cost");
     }
 
     private void add(LeafcellType<?> type, String name) {

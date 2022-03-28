@@ -30,7 +30,7 @@ public class LeafcellWithStatesElement extends SpecialManualElement {
     private LeafcellWithStatesElement(ManualInstance manual, ResourceLocation cellName) {
         this.manual = manual;
         this.symbol = SchematicSymbols.REGISTRY.get(cellName);
-        this.display = new LeafcellElement<>(symbol);
+        this.display = new LeafcellElement<>(symbol, manual);
 
         var cell = Objects.requireNonNull(LeafcellType.REGISTRY.get(cellName));
         List<List<Component>> table = new ArrayList<>();

@@ -36,7 +36,9 @@ public class CEManual {
     public static void initManual() {
         var ieManual = ManualHelper.getManual();
         ieManual.registerSpecialElement(new ResourceLocation(MODID, "panel_component"), PanelComponentElement::new);
-        ieManual.registerSpecialElement(new ResourceLocation(MODID, "leafcell"), LeafcellElement::from);
+        ieManual.registerSpecialElement(
+                new ResourceLocation(MODID, "leafcell"), json -> LeafcellElement.from(json, ieManual)
+        );
         ieManual.registerSpecialElement(
                 new ResourceLocation(MODID, "leafcell_truth"), json -> LeafcellWithStatesElement.from(ieManual, json)
         );
