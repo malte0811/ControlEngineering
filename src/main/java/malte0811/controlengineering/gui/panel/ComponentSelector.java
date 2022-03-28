@@ -7,18 +7,17 @@ import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
+import malte0811.controlengineering.gui.widget.NestedWidget;
+import malte0811.controlengineering.gui.widget.PageSelector;
 import malte0811.controlengineering.util.math.TransformUtil;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 
 import javax.annotation.Nonnull;
@@ -27,9 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ComponentSelector extends AbstractWidget {
+public class ComponentSelector extends NestedWidget {
     private static final int ROW_MIN_HEIGHT = 40;
-    private static final int BUTTON_HEIGHT = 20;
 
     private final Minecraft mc;
     private final List<PanelComponentType<?, ?>> available;
@@ -37,49 +35,26 @@ public class ComponentSelector extends AbstractWidget {
     private final int numRows;
     private final int actualRowHeight;
     private final int colWidth;
-    private final int numPages;
-    private final List<AbstractWidget> buttons;
     private final Consumer<PanelComponentType<?, ?>> select;
-
-    private int page = 0;
+    private final PageSelector pageSelector;
 
     public ComponentSelector(int x, int y, int width, int height, Consumer<PanelComponentType<?, ?>> select) {
-        super(x, y, width, height, TextComponent.EMPTY);
+        super(x, y, width, height);
         this.mc = Minecraft.getInstance();
         this.select = select;
         this.available = new ArrayList<>(PanelComponents.REGISTRY.getValues());
-        final int displayHeight = height - BUTTON_HEIGHT;
+        final int displayHeight = height - PageSelector.HEIGHT;
         this.numRows = Math.max(displayHeight / ROW_MIN_HEIGHT, 1);
         this.actualRowHeight = displayHeight / numRows;
         this.colWidth = width / numCols;
-        this.numPages = Mth.ceil(available.size() / (double) (numRows * numCols));
-        if (this.numPages > 1) {
-            this.buttons = List.of(
-                    new Button(
-                            x, y + displayHeight, width / 3, BUTTON_HEIGHT,
-                            new TextComponent("<-"), $ -> page = Math.max(0, page - 1)
-                    ),
-                    new Button(
-                            x + 2 * width / 3, y + displayHeight, width / 3, BUTTON_HEIGHT,
-                            new TextComponent("->"), $ -> page = Math.min(numPages - 1, page + 1)
-                    )
-            );
-        } else {
-            this.buttons = List.of();
-        }
+        addWidget(this.pageSelector = new PageSelector(
+                x, y + displayHeight, width, Mth.ceil(available.size() / (double) (numRows * numCols)), 0
+        ));
     }
 
     @Override
     public void renderButton(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        for (AbstractWidget w : buttons) {
-            w.render(matrixStack, mouseX, mouseY, partialTicks);
-        }
-        if (numPages > 1) {
-            drawCenteredString(
-                    matrixStack, mc.font, (page + 1) + " / " + numPages,
-                    x + width / 2, y + height - (BUTTON_HEIGHT + mc.font.lineHeight) / 2, -1
-            );
-        }
+        super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
         final int selectedRow = (mouseY - y) / actualRowHeight;
         final int selectedCol = (mouseX - x) / colWidth;
         for (int col = 0; col < numCols; ++col) {
@@ -146,10 +121,8 @@ public class ComponentSelector extends AbstractWidget {
         if (mouseX < x || mouseY < y || mouseX > x + width || mouseY > y + height) {
             return false;
         }
-        for (AbstractWidget w : buttons) {
-            if (w.mouseClicked(mouseX, mouseY, button)) {
-                return true;
-            }
+        if (super.mouseClicked(mouseX, mouseY, button)) {
+            return true;
         }
         final int row = (int) ((mouseY - y) / actualRowHeight);
         final int col = (int) ((mouseX - x) / colWidth);
@@ -165,7 +138,7 @@ public class ComponentSelector extends AbstractWidget {
 
     @Nullable
     private PanelComponentType<?, ?> getTypeIn(int row, int col) {
-        final int index = page * numRows * numCols + row * numCols + col;
+        final int index = pageSelector.getCurrentPage() * numRows * numCols + row * numCols + col;
         if (index < 0 || index >= available.size()) {
             return null;
         } else {

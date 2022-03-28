@@ -2,6 +2,7 @@ package malte0811.controlengineering.gui.logic;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.gui.StackedScreen;
+import malte0811.controlengineering.gui.widget.PageSelector;
 import malte0811.controlengineering.logic.schematic.client.ClientSymbols;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbols;
@@ -9,6 +10,7 @@ import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
@@ -28,6 +30,8 @@ public class CellSelectionScreen extends StackedScreen {
     private int xGrid;
     private int yGrid;
     private int numCols;
+    private int numRowsPerPage;
+    private PageSelector pageSelector;
     // Necessary to prevent closing two screens at once, which isn't possible
     private SymbolInstance<?> selected;
 
@@ -47,10 +51,16 @@ public class CellSelectionScreen extends StackedScreen {
                 .max()
                 .orElse(5) + 2;
         yGrid = symbols.stream()
-                .mapToInt(s -> s.getDefaultXSize(level()))
+                .mapToInt(s -> s.getDefaultYSize(level()))
                 .max()
                 .orElse(5) + 2 + getTotalFontHeight();
         numCols = (width - 2 * BORDER_SIZE_X) / (xGrid * LogicDesignScreen.BASE_SCALE);
+        numRowsPerPage = (height - 2 * BORDER_SIZE_Y - PageSelector.HEIGHT) / (yGrid * LogicDesignScreen.BASE_SCALE);
+        addRenderableWidget(this.pageSelector = new PageSelector(
+                BORDER_SIZE_X, height - BORDER_SIZE_Y - PageSelector.HEIGHT, width - 2 * BORDER_SIZE_X,
+                Mth.positiveCeilDiv(symbols.size(), numCols * numRowsPerPage),
+                this.pageSelector != null ? this.pageSelector.getCurrentPage() : 0
+        ));
     }
 
     @Override
@@ -60,14 +70,13 @@ public class CellSelectionScreen extends StackedScreen {
         matrixStack.pushPose();
         matrixStack.translate(BORDER_SIZE_X, BORDER_SIZE_Y, 0);
         matrixStack.scale(LogicDesignScreen.BASE_SCALE, LogicDesignScreen.BASE_SCALE, 1);
-        int index = 0;
-        for (int row = 0; index < symbols.size(); ++row) {
+        int index = getFirstIndexOnPage();
+        for (int row = 0; index < symbols.size() && row < numRowsPerPage; ++row) {
             for (int col = 0; index < symbols.size() && col < numCols; ++col) {
                 SchematicSymbol<?> symbol = symbols.get(index);
                 final int xBase = col * xGrid + (xGrid - symbol.getDefaultXSize(level())) / 2;
                 final int yBase = row * yGrid + 1;
-                ClientSymbols.render(symbol, matrixStack, xBase, yBase + getTotalFontHeight(), null);
-                //TODO less push/pop's?
+                ClientSymbols.render(symbol.newInstance(), matrixStack, xBase, yBase + getTotalFontHeight());
                 matrixStack.pushPose();
                 matrixStack.translate(xBase, yBase, 0);
                 matrixStack.scale(1 / TEXT_SCALE, 1 / TEXT_SCALE, 1);
@@ -92,13 +101,13 @@ public class CellSelectionScreen extends StackedScreen {
                 BORDER_SIZE_X - borderRenderSize,
                 BORDER_SIZE_Y - borderRenderSize,
                 this.width - BORDER_SIZE_X + borderRenderSize,
-                this.height - BORDER_SIZE_Y + borderRenderSize,
+                this.height - BORDER_SIZE_Y - PageSelector.HEIGHT,
                 BACKGROUND_COLOR
         );
         matrixStack.pushPose();
         matrixStack.translate(BORDER_SIZE_X, BORDER_SIZE_Y, 0);
         matrixStack.scale(LogicDesignScreen.BASE_SCALE, LogicDesignScreen.BASE_SCALE, 1);
-        final int selected = getSelectedIndex(mouseX, mouseY);
+        final int selected = getSelectedIndex(mouseX, mouseY) - getFirstIndexOnPage();
         if (selected >= 0) {
             final int row = selected / numCols;
             final int col = selected % numCols;
@@ -140,15 +149,19 @@ public class CellSelectionScreen extends StackedScreen {
     private int getSelectedIndex(double mouseX, double mouseY) {
         final int col = (int) ((mouseX - BORDER_SIZE_X) / (xGrid * LogicDesignScreen.BASE_SCALE));
         final int row = (int) ((mouseY - BORDER_SIZE_Y) / (yGrid * LogicDesignScreen.BASE_SCALE));
-        if (col < 0 || row < 0 || col >= numCols) {
+        if (col < 0 || row < 0 || col >= numCols || row >= numRowsPerPage) {
             return -1;
         }
-        final int index = row * numCols + col;
+        final int index = row * numCols + col + getFirstIndexOnPage();
         if (index < symbols.size()) {
             return index;
         } else {
             return -1;
         }
+    }
+
+    private int getFirstIndexOnPage() {
+        return this.pageSelector.getCurrentPage() * numRowsPerPage * numCols;
     }
 
     private int getTotalFontHeight() {
