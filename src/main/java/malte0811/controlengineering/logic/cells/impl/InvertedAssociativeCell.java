@@ -8,13 +8,13 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 
 public class InvertedAssociativeCell extends AssociativeFunctionCell {
     public InvertedAssociativeCell(
-            int numInputs, LogicCircuitOperator nonInvertedFunc, boolean baseState
+            AssociativeFunctionCell nonInverted, LogicCircuitOperator operatorForCost, boolean baseState
     ) {
         this(
-                numInputs,
-                (a, b) -> nonInvertedFunc.apply(new boolean[]{a, b}),
+                nonInverted.getInputPins().size(),
+                (a, b) -> nonInverted.getBaseFunction().apply(a, b),
                 baseState,
-                CellCost.matchingIECosts(nonInvertedFunc, numInputs, -0.5)
+                CellCost.matchingIECosts(operatorForCost, nonInverted.getInputPins().size())
         );
     }
 

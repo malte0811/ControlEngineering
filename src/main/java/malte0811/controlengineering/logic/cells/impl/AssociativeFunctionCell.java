@@ -11,8 +11,8 @@ import malte0811.controlengineering.logic.cells.SignalType;
 import net.minecraft.world.phys.shapes.BooleanOp;
 
 public class AssociativeFunctionCell extends StatelessCell {
-    private final DoubleBiFunction func;
-    private final double baseState;
+    private final BooleanOp func;
+    private final boolean baseState;
 
     public AssociativeFunctionCell(int numInputs, LogicCircuitHandler.LogicCircuitOperator func, boolean baseState) {
         this(
@@ -24,10 +24,6 @@ public class AssociativeFunctionCell extends StatelessCell {
     }
 
     public AssociativeFunctionCell(int numInputs, BooleanOp func, boolean baseState, CellCost cost) {
-        this(numInputs, (a, b) -> debool(func.apply(bool(a), bool(b))), debool(baseState), cost);
-    }
-
-    public AssociativeFunctionCell(int numInputs, DoubleBiFunction func, double baseState, CellCost cost) {
         super(
                 Pin.numbered(numInputs, "in", SignalType.DIGITAL, PinDirection.INPUT),
                 ImmutableMap.of(DEFAULT_OUT_NAME, new Pin(SignalType.DIGITAL, PinDirection.OUTPUT)),
@@ -39,14 +35,14 @@ public class AssociativeFunctionCell extends StatelessCell {
 
     @Override
     public Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals) {
-        double result = baseState;
+        boolean result = baseState;
         for (double d : inputSignals.values()) {
-            result = func.apply(result, d);
+            result = func.apply(result, bool(d));
         }
-        return Object2DoubleMaps.singleton(DEFAULT_OUT_NAME, result);
+        return Object2DoubleMaps.singleton(DEFAULT_OUT_NAME, debool(result));
     }
 
-    public interface DoubleBiFunction {
-        double apply(double a, double b);
+    public BooleanOp getBaseFunction() {
+        return func;
     }
 }

@@ -32,19 +32,19 @@ public class Leafcells {
     );
     public static final AssociativeFunctionCell NAND2 = register(
             "nand2",
-            new InvertedAssociativeCell(2, LogicCircuitOperator.AND, true)
+            new InvertedAssociativeCell(AND2, LogicCircuitOperator.NAND, true)
     );
     public static final AssociativeFunctionCell NAND3 = register(
             "nand3",
-            new InvertedAssociativeCell(3, LogicCircuitOperator.AND, true)
+            new InvertedAssociativeCell(AND3, LogicCircuitOperator.NAND, true)
     );
     public static final AssociativeFunctionCell NOR2 = register(
             "nor2",
-            new InvertedAssociativeCell(2, LogicCircuitOperator.OR, false)
+            new InvertedAssociativeCell(OR2, LogicCircuitOperator.NOR, false)
     );
     public static final AssociativeFunctionCell NOR3 = register(
             "nor3",
-            new InvertedAssociativeCell(3, LogicCircuitOperator.OR, false)
+            new InvertedAssociativeCell(OR3, LogicCircuitOperator.NOR, false)
     );
     public static final NotCell NOT = register("not", new NotCell());
     public static final RSLatch RS_LATCH = register("rs_latch", new RSLatch());
