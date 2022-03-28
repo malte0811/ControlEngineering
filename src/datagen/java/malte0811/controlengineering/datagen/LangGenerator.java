@@ -25,6 +25,7 @@ import malte0811.controlengineering.logic.schematic.SchematicChecker;
 import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.ConstantSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.IOSymbol;
+import malte0811.controlengineering.logic.schematic.symbol.TextSymbol;
 import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
@@ -107,6 +108,11 @@ public class LangGenerator extends LanguageProvider {
 
         add(Leafcells.DIGITIZER, "Signal Digitizer");
         add(Leafcells.COMPARATOR, "Comparator");
+
+        add(IOSymbol.INPUT_KEY, "Input pin");
+        add(IOSymbol.OUTPUT_KEY, "Output pin");
+        add(ConstantSymbol.NAME, "Constant");
+        add(TextSymbol.NAME_KEY, "Text");
     }
 
     private void addPanelComponents() {
@@ -127,11 +133,7 @@ public class LangGenerator extends LanguageProvider {
         add(BusSignalSelector.BUS_LINE_INDEX_KEY, "Bus line %d");
         add(DataProviderScreen.DONE_KEY, "Done");
 
-        add(IOSymbol.INPUT_KEY, "Input pin");
-        add(IOSymbol.OUTPUT_KEY, "Output pin");
         add(IOSymbol.SIGNAL_KEY, "%d signal on line %d");
-
-        add(ConstantSymbol.NAME, "Constant");
         add(ConstantSymbol.INPUT_KEY, "Signal strength: %d");
 
         add(LogicDesignScreen.COMPONENTS_KEY, "Components");

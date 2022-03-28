@@ -1,9 +1,8 @@
 package malte0811.controlengineering.network.logic;
 
 import com.google.common.base.Preconditions;
-import malte0811.controlengineering.gui.StackedScreen;
+import malte0811.controlengineering.client.ClientHooks;
 import malte0811.controlengineering.gui.logic.LogicDesignMenu;
-import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.network.SimplePacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -34,20 +33,12 @@ public class LogicPacket extends SimplePacket {
             if (activeContainer instanceof LogicDesignMenu logicMenu && !logicMenu.readOnly) {
                 packet.process(logicMenu.getSchematic(), $ -> {
                     throw new RuntimeException();
-                });
+                }, ctx.getSender().level);
                 logicMenu.sendToListeningPlayersExcept(ctx.getSender(), packet);
                 logicMenu.markDirty();
             }
         } else {
-            processOnClient();
-        }
-    }
-
-    private void processOnClient() {
-        LogicDesignScreen currentScreen = StackedScreen.findInstanceOf(LogicDesignScreen.class);
-        if (currentScreen != null) {
-            packet.process(currentScreen.getSchematic(), currentScreen::setSchematic);
-            currentScreen.updateErrors();
+            ClientHooks.processLogicPacketOnClient(packet);
         }
     }
 }

@@ -43,6 +43,7 @@ public class SchematicSymbols {
     public static final CellSymbol D_LATCH;
     public static final CellSymbol DIGITIZER;
     public static final CellSymbol COMPARATOR;
+    public static final TextSymbol TEXT = new TextSymbol();
 
     static {
         List<SymbolPin> twoInputPins = ImmutableList.of(digitalIn(0, 1, "in1"), digitalIn(0, 5, "in2"));
@@ -107,6 +108,7 @@ public class SchematicSymbols {
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin"), INPUT_PIN);
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "output_pin"), OUTPUT_PIN);
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "constant"), CONSTANT);
+        REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "text"), TEXT);
     }
 
     private static CellSymbol delayCell(LeafcellType<?> cell, int uSize, SignalType type) {

@@ -6,7 +6,9 @@ import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -32,13 +34,21 @@ public class CellSymbol extends SchematicSymbol<Unit> {
     }
 
     @Override
-    public int getXSize() {
+    public int getXSize(Unit state, @Nonnull Level level) {
         return width;
     }
 
     @Override
-    public int getYSize() {
+    public int getYSize(Unit state, @Nonnull Level level) {
         return height;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
     }
 
     @Override

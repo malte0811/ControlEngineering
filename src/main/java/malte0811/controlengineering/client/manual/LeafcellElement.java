@@ -10,6 +10,7 @@ import malte0811.controlengineering.logic.schematic.client.ClientSymbols;
 import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbols;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.resources.ResourceLocation;
@@ -37,7 +38,7 @@ public class LeafcellElement<State> extends SpecialManualElement {
 
     @Override
     public int getPixelsTaken() {
-        return type.getYSize() * SCALE + 4;
+        return type.getDefaultYSize(Minecraft.getInstance().level) * SCALE + 4;
     }
 
     @Override
@@ -48,7 +49,7 @@ public class LeafcellElement<State> extends SpecialManualElement {
     public void render(PoseStack transform, ManualScreen gui, int x, int y, int mouseX, int mouseY) {
         var manual = gui.getManual();
         transform.pushPose();
-        var offsetX = (manual.pageWidth * (2 / 3.) - type.getXSize() * SCALE) / 2.;
+        var offsetX = (manual.pageWidth * (2 / 3.) - type.getDefaultXSize(Minecraft.getInstance().level) * SCALE) / 2.;
         transform.translate(x + offsetX, y, 0);
         transform.scale(SCALE, SCALE, SCALE);
         ClientSymbols.render(type, transform, 0, 0, type.getInitialState());

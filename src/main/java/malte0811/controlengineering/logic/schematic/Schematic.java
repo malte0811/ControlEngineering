@@ -17,6 +17,7 @@ import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
 import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -38,13 +39,11 @@ public class Schematic {
 
     private final List<PlacedSymbol> symbols;
     private final List<SchematicNet> nets;
-    private final SchematicChecker checker;
 
     private Schematic(List<PlacedSymbol> symbols, List<SchematicNet> nets) {
         this.symbols = new ArrayList<>(symbols);
         this.nets = new ArrayList<>(nets);
         this.resetConnectedPins();
-        this.checker = new SchematicChecker(this);
     }
 
     public Schematic() {
@@ -79,7 +78,7 @@ public class Schematic {
         resetConnectedPins();
     }
 
-    public boolean removeOneContaining(Vec2d mouse) {
+    public boolean removeOneContaining(Vec2d mouse, Level level) {
         for (Iterator<SchematicNet> iterator = nets.iterator(); iterator.hasNext(); ) {
             SchematicNet net = iterator.next();
             if (net.removeOneContaining(mouse.floor())) {
@@ -90,7 +89,7 @@ public class Schematic {
             }
         }
         for (Iterator<PlacedSymbol> iterator = symbols.iterator(); iterator.hasNext(); ) {
-            if (iterator.next().containsPoint(mouse)) {
+            if (iterator.next().containsPoint(mouse, level)) {
                 iterator.remove();
                 resetConnectedPins();
                 return true;
@@ -113,9 +112,9 @@ public class Schematic {
     }
 
     @Nullable
-    public PlacedSymbol getSymbolAt(Vec2d pos) {
+    public PlacedSymbol getSymbolAt(Vec2d pos, Level level) {
         for (PlacedSymbol symbol : symbols) {
-            if (symbol.containsPoint(pos)) {
+            if (symbol.containsPoint(pos, level)) {
                 return symbol;
             }
         }
@@ -134,8 +133,8 @@ public class Schematic {
         return Collections.unmodifiableList(nets);
     }
 
-    public SchematicChecker getChecker() {
-        return checker;
+    public SchematicChecker makeChecker(Level level) {
+        return new SchematicChecker(this, level);
     }
 
     private int getTotalCost(ToDoubleFunction<CellCost> individualCost) {

@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ public abstract class LogicSubPacket {
 
     protected abstract void write(FriendlyByteBuf out);
 
-    public abstract void process(Schematic applyTo, Consumer<Schematic> replace);
+    public abstract boolean process(Schematic applyTo, Consumer<Schematic> replace, Level level);
 
     public boolean allowSendingToServer() {
         return true;

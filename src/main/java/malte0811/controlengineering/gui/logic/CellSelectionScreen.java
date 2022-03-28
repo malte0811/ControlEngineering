@@ -9,10 +9,12 @@ import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class CellSelectionScreen extends StackedScreen {
@@ -40,12 +42,12 @@ public class CellSelectionScreen extends StackedScreen {
         super.init();
         xGrid = symbols.stream()
                 .mapToInt(symbol -> (int) Math.max(
-                        symbol.getXSize(), font.width(symbol.getName()) / TEXT_SCALE
+                        symbol.getDefaultXSize(level()), font.width(symbol.getName()) / TEXT_SCALE
                 ))
                 .max()
                 .orElse(5) + 2;
         yGrid = symbols.stream()
-                .mapToInt(SchematicSymbol::getYSize)
+                .mapToInt(s -> s.getDefaultXSize(level()))
                 .max()
                 .orElse(5) + 2 + getTotalFontHeight();
         numCols = (width - 2 * BORDER_SIZE_X) / (xGrid * LogicDesignScreen.BASE_SCALE);
@@ -62,7 +64,7 @@ public class CellSelectionScreen extends StackedScreen {
         for (int row = 0; index < symbols.size(); ++row) {
             for (int col = 0; index < symbols.size() && col < numCols; ++col) {
                 SchematicSymbol<?> symbol = symbols.get(index);
-                final int xBase = col * xGrid + (xGrid - symbol.getXSize()) / 2;
+                final int xBase = col * xGrid + (xGrid - symbol.getDefaultXSize(level())) / 2;
                 final int yBase = row * yGrid + 1;
                 ClientSymbols.render(symbol, matrixStack, xBase, yBase + getTotalFontHeight(), null);
                 //TODO less push/pop's?
@@ -70,7 +72,7 @@ public class CellSelectionScreen extends StackedScreen {
                 matrixStack.translate(xBase, yBase, 0);
                 matrixStack.scale(1 / TEXT_SCALE, 1 / TEXT_SCALE, 1);
                 Component desc = symbol.getName();
-                final int offset = (int) ((symbol.getXSize() * TEXT_SCALE - font.width(desc)) / 2);
+                final int offset = (int) ((symbol.getDefaultXSize(level()) * TEXT_SCALE - font.width(desc)) / 2);
                 font.draw(matrixStack, desc, offset, 0, 0xff000000);
                 matrixStack.popPose();
                 ++index;
@@ -151,5 +153,9 @@ public class CellSelectionScreen extends StackedScreen {
 
     private int getTotalFontHeight() {
         return (int) (Minecraft.getInstance().font.lineHeight / TEXT_SCALE + 1);
+    }
+
+    private static Level level() {
+        return Objects.requireNonNull(Minecraft.getInstance().level);
     }
 }

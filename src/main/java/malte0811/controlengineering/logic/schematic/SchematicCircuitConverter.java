@@ -159,8 +159,7 @@ public class SchematicCircuitConverter {
         for (Map.Entry<NetReference, List<ConnectedPin>> entry : nets.entrySet()) {
             for (ConnectedPin sink : getSinks(entry.getValue())) {
                 SymbolInstance<?> symbol = sink.symbol().symbol();
-                SchematicSymbol<?> type = symbol.getType();
-                if (type instanceof IOSymbol) {
+                if (symbol.getType() instanceof IOSymbol) {
                     result.computeIfAbsent(entry.getKey(), $ -> new ArrayList<>())
                             .add((BusSignalRef) symbol.getCurrentState());
                 }

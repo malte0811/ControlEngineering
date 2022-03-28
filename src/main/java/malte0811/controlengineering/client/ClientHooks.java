@@ -1,8 +1,10 @@
 package malte0811.controlengineering.client;
 
 import malte0811.controlengineering.gui.StackedScreen;
+import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignScreen;
 import malte0811.controlengineering.gui.tape.ViewTapeScreen;
+import malte0811.controlengineering.network.logic.LogicSubPacket;
 import malte0811.controlengineering.network.panellayout.PanelSubPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
@@ -19,6 +21,14 @@ public class ClientHooks {
         PanelDesignScreen currentScreen = StackedScreen.findInstanceOf(PanelDesignScreen.class);
         if (currentScreen != null) {
             packet.process(Minecraft.getInstance().level, currentScreen.getComponents());
+        }
+    }
+
+    public static void processLogicPacketOnClient(LogicSubPacket packet) {
+        LogicDesignScreen currentScreen = StackedScreen.findInstanceOf(LogicDesignScreen.class);
+        if (currentScreen != null) {
+            packet.process(currentScreen.getSchematic(), currentScreen::setSchematic, Minecraft.getInstance().level);
+            currentScreen.updateErrors();
         }
     }
 }

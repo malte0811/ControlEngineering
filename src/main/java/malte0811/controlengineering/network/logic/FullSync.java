@@ -3,6 +3,7 @@ package malte0811.controlengineering.network.logic;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.util.serialization.serial.PacketBufferStorage;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
 
 import java.util.function.Consumer;
 
@@ -23,10 +24,9 @@ public class FullSync extends LogicSubPacket {
     }
 
     @Override
-    public void process(
-            Schematic applyTo, Consumer<Schematic> replace
-    ) {
+    public boolean process(Schematic applyTo, Consumer<Schematic> replace, Level level) {
         replace.accept(schematic);
+        return true;
     }
 
     @Override

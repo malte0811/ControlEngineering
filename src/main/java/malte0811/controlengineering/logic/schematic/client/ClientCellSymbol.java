@@ -19,7 +19,7 @@ public class ClientCellSymbol extends ClientSymbol<Unit, CellSymbol> {
         this.texture = new SubTexture(
                 SYMBOLS_SHEET,
                 uMin, vMin,
-                uMin + serverSymbol.getXSize(), vMin + serverSymbol.getYSize(),
+                uMin + serverSymbol.getWidth(), vMin + serverSymbol.getHeight(),
                 64
         );
     }

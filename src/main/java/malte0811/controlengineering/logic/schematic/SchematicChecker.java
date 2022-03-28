@@ -5,23 +5,19 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 
 import static malte0811.controlengineering.logic.schematic.Schematic.BOUNDARY;
 
-public class SchematicChecker {
+public record SchematicChecker(Schematic schematic, Level level) {
     public static final String WIRE_OUTSIDE_BOUNDARY = ControlEngineering.MODID + ".gui.wireOutsideBoundary";
     public static final String SYMBOL_OUTSIDE_BOUNDARY = ControlEngineering.MODID + ".gui.symbolOutsideBoundary";
     public static final String MULTIPLE_SOURCES = ControlEngineering.MODID + ".gui.multipleSources";
     public static final String CYCLE = ControlEngineering.MODID + ".gui.cycle";
     public static final String ANALOG_DIGITAL_MIX = ControlEngineering.MODID + ".gui.analogVsDigital";
     public static final String SYMBOL_INTERSECTION = ControlEngineering.MODID + ".gui.symbolIntersection";
-    private final Schematic schematic;
-
-    public SchematicChecker(Schematic schematic) {
-        this.schematic = schematic;
-    }
 
     public Optional<Component> getErrorForAdding(WireSegment segment) {
         if (!BOUNDARY.containsClosed(segment.start()) || !BOUNDARY.containsClosed(segment.end())) {
@@ -86,10 +82,10 @@ public class SchematicChecker {
     }
 
     public Optional<Component> getErrorForAdding(PlacedSymbol candidate) {
-        if (!BOUNDARY.contains(candidate.getShape())) {
+        if (!BOUNDARY.contains(candidate.getShape(level))) {
             return error(SYMBOL_OUTSIDE_BOUNDARY);
         }
-        if (!schematic.getSymbols().stream().allMatch(candidate::canCoexist)) {
+        if (!schematic.getSymbols().stream().allMatch(other -> candidate.canCoexist(other, level))) {
             return error(SYMBOL_INTERSECTION);
         }
         List<Collection<ConnectedPin>> nets = new ArrayList<>();

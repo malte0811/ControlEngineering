@@ -8,13 +8,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.Level;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class IOSymbol extends SchematicSymbol<BusSignalRef> {
-    public static final String INPUT_KEY = ControlEngineering.MODID + ".gui.inputPin";
-    public static final String OUTPUT_KEY = ControlEngineering.MODID + ".gui.outputPin";
+    public static final String INPUT_KEY = ControlEngineering.MODID + ".symbol.inputPin";
+    public static final String OUTPUT_KEY = ControlEngineering.MODID + ".symbol.outputPin";
     public static final String SIGNAL_KEY = ControlEngineering.MODID + ".gui.busRef";
     public static final String VANILLA_COLOR_PREFIX = "item.minecraft.firework_star.";
 
@@ -28,12 +30,12 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
     }
 
     @Override
-    public int getXSize() {
+    public int getXSize(BusSignalRef state, @Nonnull Level level) {
         return 6;
     }
 
     @Override
-    public int getYSize() {
+    public int getYSize(BusSignalRef state, @Nonnull Level level) {
         return 3;
     }
 

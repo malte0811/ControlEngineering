@@ -6,6 +6,7 @@ import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
 import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
 import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
+import net.minecraft.world.level.Level;
 
 public record PlacedSymbol(Vec2i position, SymbolInstance<?> symbol) {
     public static final MyCodec<PlacedSymbol> CODEC = new RecordCodec2<>(
@@ -14,19 +15,19 @@ public record PlacedSymbol(Vec2i position, SymbolInstance<?> symbol) {
             PlacedSymbol::new
     );
 
-    public RectangleI getShape() {
-        return new RectangleI(position(), getMaxPoint());
+    public RectangleI getShape(Level level) {
+        return new RectangleI(position(), getMaxPoint(level));
     }
 
-    public boolean canCoexist(PlacedSymbol other) {
-        return getShape().disjoint(other.getShape());
+    public boolean canCoexist(PlacedSymbol other, Level level) {
+        return getShape(level).disjoint(other.getShape(level));
     }
 
-    public boolean containsPoint(Vec2d p) {
-        return getShape().containsClosed(p);
+    public boolean containsPoint(Vec2d p, Level level) {
+        return getShape(level).containsClosed(p);
     }
 
-    public Vec2i getMaxPoint() {
-        return position.add(new Vec2i(symbol().getXSize(), symbol().getYSize()));
+    public Vec2i getMaxPoint(Level level) {
+        return position.add(new Vec2i(symbol().getXSize(level), symbol().getYSize(level)));
     }
 }

@@ -6,6 +6,7 @@ import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.serialization.serial.PacketBufferStorage;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
 
 import java.util.function.Consumer;
 
@@ -29,9 +30,11 @@ public class AddSymbol extends LogicSubPacket {
     }
 
     @Override
-    public void process(Schematic applyTo, Consumer<Schematic> replace) {
-        if (applyTo.getChecker().canAdd(symbol)) {
+    public boolean process(Schematic applyTo, Consumer<Schematic> replace, Level level) {
+        if (applyTo.makeChecker(level).canAdd(symbol)) {
             applyTo.addSymbol(symbol);
+            return true;
         }
+        return false;
     }
 }

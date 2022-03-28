@@ -7,13 +7,15 @@ import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class ConstantSymbol extends SchematicSymbol<Double> {
     public static final String INPUT_KEY = ControlEngineering.MODID + ".gui.analogStrength";
-    public static final String NAME = ControlEngineering.MODID + ".gui.constantSymbol";
+    public static final String NAME = ControlEngineering.MODID + ".symbol.constantSymbol";
     public static final int BOX_SIZE = 5;
 
     private static final List<SymbolPin> DIGITAL = ImmutableList.of(SymbolPin.digitalOut(
@@ -32,12 +34,12 @@ public class ConstantSymbol extends SchematicSymbol<Double> {
     }
 
     @Override
-    public int getXSize() {
+    public int getXSize(Double state, @Nonnull Level level) {
         return 6;
     }
 
     @Override
-    public int getYSize() {
+    public int getYSize(Double state, @Nonnull Level level) {
         return 3;
     }
 

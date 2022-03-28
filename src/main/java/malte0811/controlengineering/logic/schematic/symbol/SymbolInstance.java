@@ -4,6 +4,7 @@ import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -14,12 +15,12 @@ public class SymbolInstance<State> extends TypedInstance<State, SchematicSymbol<
         super(stateSchematicSymbol, currentState);
     }
 
-    public int getXSize() {
-        return getType().getXSize();
+    public int getXSize(Level level) {
+        return getType().getXSize(getCurrentState(), level);
     }
 
-    public int getYSize() {
-        return getType().getYSize();
+    public int getYSize(Level level) {
+        return getType().getYSize(getCurrentState(), level);
     }
 
     public Component getName() {

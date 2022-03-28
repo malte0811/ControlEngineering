@@ -126,12 +126,12 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         Optional<Component> currentError = Optional.empty();
         PlacedSymbol placed = getPlacingSymbol(mousePos);
         if (placed != null) {
-            currentError = schematic.getChecker().getErrorForAdding(placed);
+            currentError = schematic.makeChecker(minecraft.level).getErrorForAdding(placed);
             ClientSymbols.render(placed, matrixStack);
         } else {
             WireSegment placedWire = getPlacingSegment(mousePos);
             if (placedWire != null) {
-                currentError = schematic.getChecker().getErrorForAdding(placedWire);
+                currentError = schematic.makeChecker(minecraft.level).getErrorForAdding(placedWire);
                 final int color = currentError.isPresent() ? 0xffff5515 : 0xff785515;
                 placedWire.renderWithoutBlobs(matrixStack, color);
             }
@@ -152,7 +152,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
             }
             renderTooltip(transform, currentError, mouseX, mouseY);
         } else {
-            PlacedSymbol hovered = schematic.getSymbolAt(schematicMouse);
+            PlacedSymbol hovered = schematic.getSymbolAt(schematicMouse, minecraft.level);
             if (hovered != null) {
                 Component toShow = hovered.symbol().getName();
                 List<FormattedCharSequence> tooltip = new ArrayList<>();
@@ -289,7 +289,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         final Vec2d mousePos = getMousePosition(mouseX, mouseY);
         PlacedSymbol placed = getPlacingSymbol(mousePos);
         if (placed != null) {
-            if (schematic.getChecker().canAdd(placed)) {
+            if (schematic.makeChecker(minecraft.level).canAdd(placed)) {
                 runAndSendToServer(new AddSymbol(placed));
                 if (resetAfterPlacingSymbol) {
                     placingSymbol = null;
@@ -298,7 +298,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         } else {
             WireSegment placedWire = getPlacingSegment(mousePos);
             if (placedWire != null) {
-                if (schematic.getChecker().canAdd(placedWire)) {
+                if (schematic.makeChecker(minecraft.level).canAdd(placedWire)) {
                     runAndSendToServer(new AddWire(placedWire));
                     if (placedWire.end().equals(currentWireStart)) {
                         currentWireStart = placedWire.start();
@@ -307,7 +307,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                     }
                 }
             } else {
-                var clicked = schematic.getSymbolAt(mousePos);
+                var clicked = schematic.getSymbolAt(mousePos, minecraft.level);
                 if (clicked != null) {
                     handleSymbolClick(clicked, clicked.symbol(), mousePos, button);
                 }
@@ -331,7 +331,10 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         } else {
             ClientSymbols.createInstanceWithUI(instance.getType(), newInst -> {
                 runAndSendToServer(new Delete(mousePos));
-                runAndSendToServer(new AddSymbol(new PlacedSymbol(clicked.position(), newInst)));
+                if (!runAndSendToServer(new AddSymbol(new PlacedSymbol(clicked.position(), newInst)))) {
+                    // If the new symbol is invalid (e.g. text too long), put back the old one
+                    runAndSendToServer(new AddSymbol(new PlacedSymbol(clicked.position(), instance)));
+                }
             }, instance.getCurrentState());
         }
     }
@@ -377,7 +380,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                 }
             } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
                 final Vec2d mousePos = getMousePosition(ScreenUtils.getMousePosition());
-                if (schematic.removeOneContaining(mousePos)) {
+                if (schematic.removeOneContaining(mousePos, minecraft.level)) {
                     sendToServer(new Delete(mousePos));
                     return true;
                 }
@@ -470,9 +473,12 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         return schematic;
     }
 
-    private void runAndSendToServer(LogicSubPacket data) {
-        data.process(schematic, this::setSchematic);
-        sendToServer(data);
+    private boolean runAndSendToServer(LogicSubPacket data) {
+        if (data.process(schematic, this::setSchematic, minecraft.level)) {
+            sendToServer(data);
+            return true;
+        }
+        return false;
     }
 
     private void sendToServer(LogicSubPacket data) {
