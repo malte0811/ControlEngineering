@@ -25,6 +25,7 @@ public abstract class LogicSubPacket {
         register(AddSymbol.class, AddSymbol::new);
         register(AddWire.class, AddWire::new);
         register(Delete.class, Delete::new);
+        register(ClearAll.class, ClearAll::new);
     }
 
     private static <T extends LogicSubPacket>

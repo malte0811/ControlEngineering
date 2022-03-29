@@ -14,6 +14,7 @@ import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.gui.misc.BusSignalSelector;
+import malte0811.controlengineering.gui.misc.ConfirmScreen;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignScreen;
 import malte0811.controlengineering.gui.widget.ColorSelector;
@@ -137,7 +138,11 @@ public class LangGenerator extends LanguageProvider {
         add(IOSymbol.SIGNAL_KEY, "%d signal on line %d");
         add(ConstantSymbol.INPUT_KEY, "Signal strength: %d");
 
-        add(LogicDesignScreen.COMPONENTS_KEY, "Components");
+        add(LogicDesignScreen.COMPONENTS_KEY, "Add");
+        add(LogicDesignScreen.COMPONENTS_TOOLTIP, "Add new components");
+        add(LogicDesignScreen.CLEAR_ALL_KEY, "Clear");
+        add(LogicDesignScreen.CLEAR_ALL_TOOLTIP, "Remove all components and wires");
+        add(LogicDesignScreen.CLEAR_ALL_MESSAGE, "Clear entire schematic?");
         add(LogicDesignScreen.DRC_INFO_KEY, "Highlight floating input pins");
         add(LogicDesignScreen.PIN_KEY, "Pin: %d");
 
@@ -179,6 +184,9 @@ public class LangGenerator extends LanguageProvider {
         add(RSRemapperBlockEntity.GRAY_KEY, "Gray");
 
         add(PCBStackItem.FOR_USE_IN_KEY, "For use in a %s");
+
+        add(ConfirmScreen.CANCEL_KEY, "Cancel");
+        add(ConfirmScreen.OK_KEY, "Ok");
     }
 
     private void addManualStrings() {

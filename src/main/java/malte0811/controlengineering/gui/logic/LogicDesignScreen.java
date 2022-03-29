@@ -8,6 +8,7 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.logic.LogicCabinetBlockEntity;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity.AvailableIngredients;
 import malte0811.controlengineering.gui.StackedScreen;
+import malte0811.controlengineering.gui.misc.ConfirmScreen;
 import malte0811.controlengineering.gui.widget.SmallCheckbox;
 import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.logic.schematic.ConnectedPin;
@@ -46,6 +47,10 @@ import static net.minecraft.util.Mth.floor;
 
 public class LogicDesignScreen extends StackedScreen implements MenuAccess<LogicDesignMenu> {
     public static final String COMPONENTS_KEY = ControlEngineering.MODID + ".gui.components";
+    public static final String COMPONENTS_TOOLTIP = ControlEngineering.MODID + ".gui.components.tooltip";
+    public static final String CLEAR_ALL_KEY = ControlEngineering.MODID + ".gui.clearAll";
+    public static final String CLEAR_ALL_TOOLTIP = ControlEngineering.MODID + ".gui.clearAll.tooltip";
+    public static final String CLEAR_ALL_MESSAGE = ControlEngineering.MODID + ".gui.clearAll.warning";
     public static final String DRC_INFO_KEY = ControlEngineering.MODID + ".gui.drcOn";
     public static final String PIN_KEY = ControlEngineering.MODID + ".gui.pin";
 
@@ -80,15 +85,19 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         super.init();
         if (!container.readOnly) {
             addRenderableWidget(new Button(
-                    TOTAL_BORDER, TOTAL_BORDER, 20, 20, new TextComponent("C"),
+                    TOTAL_BORDER, TOTAL_BORDER, 40, 20, new TranslatableComponent(COMPONENTS_KEY),
                     btn -> minecraft.setScreen(new CellSelectionScreen(s -> {
                         placingSymbol = new PlacingSymbol(s, Vec2d.ZERO);
                         resetAfterPlacingSymbol = false;
                     })),
-                    makeTooltip(COMPONENTS_KEY)
+                    makeTooltip(COMPONENTS_TOOLTIP)
+            ));
+            addRenderableWidget(new Button(
+                    TOTAL_BORDER, TOTAL_BORDER + 20, 40, 20, new TranslatableComponent(CLEAR_ALL_KEY),
+                    this::handleClearAll, makeTooltip(CLEAR_ALL_TOOLTIP)
             ));
             addRenderableWidget(new SmallCheckbox(
-                    TOTAL_BORDER, TOTAL_BORDER + 20, 20, 20, new TextComponent("DRC"), errorsShown,
+                    TOTAL_BORDER, TOTAL_BORDER + 40, 20, 20, new TextComponent("DRC"), errorsShown,
                     newState -> {
                         errorsShown = newState;
                         updateErrors();
@@ -100,6 +109,12 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                 getScaleForShownSize(width, Schematic.BOUNDARY.getWidth()),
                 getScaleForShownSize(height, Schematic.BOUNDARY.getHeight())
         );
+    }
+
+    private void handleClearAll(Button $) {
+        Minecraft.getInstance().setScreen(new ConfirmScreen(
+                new TranslatableComponent(CLEAR_ALL_MESSAGE), () -> runAndSendToServer(new ClearAll())
+        ));
     }
 
     private Button.OnTooltip makeTooltip(String key) {

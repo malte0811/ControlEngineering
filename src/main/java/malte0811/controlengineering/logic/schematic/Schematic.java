@@ -176,4 +176,9 @@ public class Schematic {
     public int getSolderAmount() {
         return getTotalCost(CellCost::getSolderAmount);
     }
+
+    public void clear() {
+        symbols.clear();
+        nets.clear();
+    }
 }
