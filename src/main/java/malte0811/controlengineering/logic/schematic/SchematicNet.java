@@ -184,6 +184,10 @@ public class SchematicNet {
         mergeIntervalsIn(WireSegment.WireAxis.Y, verticalSegments);
     }
 
+    public Iterable<WireSegment> getAllSegments() {
+        return allSegments;
+    }
+
     private static void mergeIntervalsIn(WireSegment.WireAxis axis, List<WireSegment> segments) {
         segments.sort(
                 Comparator.<WireSegment>comparingInt(s -> axis.other().get(s.start()))

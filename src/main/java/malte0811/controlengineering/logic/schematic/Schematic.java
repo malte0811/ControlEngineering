@@ -94,11 +94,21 @@ public class Schematic {
     }
 
     private boolean isConnected(SchematicNet net, WireSegment wire) {
+        // Added segment ends inside the net
         for (Vec2i end : wire.getEnds()) {
             if (net.contains(end)) {
                 return true;
             }
         }
+        // Some net segment ends inside the added segment
+        for (var netWire : net.getAllSegments()) {
+            for (var netEnd : netWire.getEnds()) {
+                if (wire.containsClosed(netEnd)) {
+                    return true;
+                }
+            }
+        }
+        // Net and added segment have a pin in common (possibly internal to segments in both cases)
         for (var pin : net.getOrComputePins(getSymbols())) {
             if (wire.containsClosed(pin.getPosition())) {
                 return true;
