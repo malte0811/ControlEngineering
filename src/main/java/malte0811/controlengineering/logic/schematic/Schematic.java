@@ -1,6 +1,5 @@
 package malte0811.controlengineering.logic.schematic;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -60,19 +59,15 @@ public class Schematic {
         if (connectedIndices.isEmpty()) {
             // New net
             nets.add(new SchematicNet(segment));
-        } else if (connectedIndices.size() == 1) {
-            // Within one net
-            final int netId = connectedIndices.iterator().nextInt();
-            nets.get(netId).addSegment(segment);
         } else {
-            // connecting two nets
-            Preconditions.checkState(connectedIndices.size() == 2);
+            // Connected to existing net(s)
             IntIterator it = connectedIndices.iterator();
             final int netIdToKeep = it.nextInt();
-            final int netIdToRemove = it.nextInt();
             final SchematicNet netToKeep = nets.get(netIdToKeep);
-            final SchematicNet netToRemove = nets.remove(netIdToRemove);
-            netToKeep.addAll(netToRemove);
+            while (it.hasNext()) {
+                final SchematicNet netToRemove = nets.remove(it.nextInt());
+                netToKeep.addAll(netToRemove);
+            }
             netToKeep.addSegment(segment);
         }
         resetConnectedPins();
@@ -98,14 +93,25 @@ public class Schematic {
         return false;
     }
 
+    private boolean isConnected(SchematicNet net, WireSegment wire) {
+        for (Vec2i end : wire.getEnds()) {
+            if (net.contains(end)) {
+                return true;
+            }
+        }
+        for (var pin : net.getOrComputePins(getSymbols())) {
+            if (wire.containsClosed(pin.getPosition())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public IntSet getConnectedNetIndices(WireSegment toAdd) {
         IntSet indices = new IntArraySet();
         for (int i = 0; i < nets.size(); ++i) {
-            final SchematicNet net = nets.get(i);
-            for (Vec2i end : toAdd.getEnds()) {
-                if (net.contains(end)) {
-                    indices.add(i);
-                }
+            if (isConnected(nets.get(i), toAdd)) {
+                indices.add(i);
             }
         }
         return indices;

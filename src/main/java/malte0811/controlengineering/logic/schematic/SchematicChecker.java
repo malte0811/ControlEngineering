@@ -42,9 +42,9 @@ public record SchematicChecker(Schematic schematic, Level level) {
                     nets.add(schematic.getNets().get(i).getOrComputePins(schematic.getSymbols()));
                 }
             }
-            if (!SchematicCircuitConverter.getCellOrder(
+            if (SchematicCircuitConverter.getCellOrder(
                     schematic.getSymbols(), SchematicCircuitConverter.getNetsBySource(nets)
-            ).isPresent()) {
+            ).isEmpty()) {
                 return error(CYCLE);
             }
         }
@@ -52,7 +52,7 @@ public record SchematicChecker(Schematic schematic, Level level) {
     }
 
     public boolean canAdd(WireSegment segment) {
-        return !getErrorForAdding(segment).isPresent();
+        return getErrorForAdding(segment).isEmpty();
     }
 
     public static Optional<Component> getConsistencyError(Set<ConnectedPin> netPins) {
@@ -100,16 +100,16 @@ public record SchematicChecker(Schematic schematic, Level level) {
         }
         List<PlacedSymbol> allSymbols = new ArrayList<>(schematic.getSymbols());
         allSymbols.add(candidate);
-        if (!SchematicCircuitConverter.getCellOrder(
+        if (SchematicCircuitConverter.getCellOrder(
                 allSymbols, SchematicCircuitConverter.getNetsBySource(nets)
-        ).isPresent()) {
+        ).isEmpty()) {
             return error(CYCLE);
         }
         return Optional.empty();
     }
 
     public boolean canAdd(PlacedSymbol candidate) {
-        return !getErrorForAdding(candidate).isPresent();
+        return getErrorForAdding(candidate).isEmpty();
     }
 
     private static Optional<Component> error(String translationKey) {
