@@ -310,6 +310,8 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                 var clicked = schematic.getSymbolAt(mousePos, minecraft.level);
                 if (clicked != null) {
                     handleSymbolClick(clicked, clicked.symbol(), mousePos, button);
+                } else {
+                    currentWireStart = mousePos.floor();
                 }
             }
         }
