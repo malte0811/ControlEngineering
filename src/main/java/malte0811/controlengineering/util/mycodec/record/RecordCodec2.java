@@ -1,9 +1,9 @@
-package malte0811.controlengineering.util.serialization.mycodec.record;
+package malte0811.controlengineering.util.mycodec.record;
 
 import malte0811.controlengineering.util.FastDataResult;
-import malte0811.controlengineering.util.serialization.serial.SerialStorage;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import malte0811.controlengineering.util.mycodec.serial.SerialStorage;
+import malte0811.controlengineering.util.mycodec.tree.TreeElement;
+import malte0811.controlengineering.util.mycodec.tree.TreeStorage;
 
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
@@ -22,12 +22,12 @@ public class RecordCodec2<T, E1, E2> extends RecordCodecBase<T> {
 
     @Nullable
     @Override
-    public T fromNBT(Tag data) {
-        if (!(data instanceof CompoundTag compound)) {
+    public T fromTree(TreeElement<?> data) {
+        if (!(data instanceof TreeStorage tree)) {
             return null;
         }
-        var firstVal = first.fromNBT(compound);
-        var secondVal = second.fromNBT(compound);
+        var firstVal = first.fromNBT(tree);
+        var secondVal = second.fromNBT(tree);
         if (firstVal == null || secondVal == null) {
             return null;
         }

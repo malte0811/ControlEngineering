@@ -1,4 +1,4 @@
-package malte0811.controlengineering.util.serialization.serial;
+package malte0811.controlengineering.util.mycodec.serial;
 
 import malte0811.controlengineering.util.FastDataResult;
 

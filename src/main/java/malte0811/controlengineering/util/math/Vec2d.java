@@ -1,9 +1,9 @@
 package malte0811.controlengineering.util.math;
 
-import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
-import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
-import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.record.CodecField;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 

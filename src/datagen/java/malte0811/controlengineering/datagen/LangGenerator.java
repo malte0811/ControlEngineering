@@ -28,7 +28,7 @@ import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.ConstantSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.IOSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.TextSymbol;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;

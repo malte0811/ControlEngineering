@@ -1,9 +1,10 @@
-package malte0811.controlengineering.util.serialization.mycodec;
+package malte0811.controlengineering.util.mycodec;
 
 import malte0811.controlengineering.util.FastDataResult;
-import malte0811.controlengineering.util.serialization.serial.SerialStorage;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import malte0811.controlengineering.util.mycodec.serial.SerialStorage;
+import malte0811.controlengineering.util.mycodec.tree.TreeElement;
+import malte0811.controlengineering.util.mycodec.tree.TreeManager;
+import malte0811.controlengineering.util.mycodec.tree.TreeStorage;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
@@ -14,29 +15,29 @@ public record DispatchCodec<Type, Instance>(
         Function<? super Type, ? extends MyCodec<? extends Instance>> codec
 ) implements MyCodec<Instance> {
     @Override
-    public Tag toNBT(Instance in) {
-        var result = new CompoundTag();
+    public <B> TreeElement<B> toTree(Instance in, TreeManager<B> manager) {
+        var result = manager.makeTree();
         var type = type().apply(in);
-        result.put("type", typeCodec.toNBT(type));
+        result.put("type", typeCodec.toTree(type, manager));
         var instanceCodec = codec().apply(type);
-        result.put("data", toNBT(instanceCodec, in));
+        result.put("data", toNBT(instanceCodec, in, manager));
         return result;
     }
 
     @SuppressWarnings("unchecked")
-    private <I extends Instance> Tag toNBT(MyCodec<I> codec, Instance inst) {
-        return codec.toNBT((I) inst);
+    private <I extends Instance, B> TreeElement<B> toNBT(MyCodec<I> codec, Instance inst, TreeManager<B> manager) {
+        return codec.toTree((I) inst, manager);
     }
 
     @Nullable
     @Override
-    public Instance fromNBT(Tag data) {
-        if (!(data instanceof CompoundTag compound)) {
+    public Instance fromTree(TreeElement<?> data) {
+        if (!(data instanceof TreeStorage tree)) {
             return null;
         }
-        var type = typeCodec.fromNBT(compound.get("type"));
+        var type = typeCodec.fromTree(tree.get("type"));
         var instanceCodec = codec.apply(type);
-        return instanceCodec.fromNBT(compound.get("data"));
+        return instanceCodec.fromTree(tree.get("data"));
     }
 
     @Override

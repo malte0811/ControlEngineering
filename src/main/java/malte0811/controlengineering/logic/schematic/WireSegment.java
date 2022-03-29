@@ -5,10 +5,10 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.util.ScreenUtils;
 import malte0811.controlengineering.util.math.Vec2i;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
-import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
-import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec3;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.record.CodecField;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec3;
 
 import java.util.List;
 

@@ -3,7 +3,7 @@ package malte0811.controlengineering.logic.schematic.symbol;
 import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusLine;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;

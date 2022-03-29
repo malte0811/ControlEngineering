@@ -1,6 +1,6 @@
 package malte0811.controlengineering.logic.clock;
 
-import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 

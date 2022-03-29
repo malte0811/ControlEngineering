@@ -1,9 +1,9 @@
 package malte0811.controlengineering.logic.circuit;
 
-import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
-import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
-import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec3;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.record.CodecField;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec3;
 
 public record PinReference(int cell, boolean isOutput, String pinName) {
     public static final MyCodec<PinReference> CODEC = new RecordCodec3<>(

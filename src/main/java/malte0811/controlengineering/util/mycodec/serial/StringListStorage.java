@@ -1,4 +1,4 @@
-package malte0811.controlengineering.util.serialization.serial;
+package malte0811.controlengineering.util.mycodec.serial;
 
 import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.util.FastDataResult;

@@ -1,6 +1,6 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
-import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;

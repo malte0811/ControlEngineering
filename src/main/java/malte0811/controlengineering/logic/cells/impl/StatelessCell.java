@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 
 import java.util.Map;
 

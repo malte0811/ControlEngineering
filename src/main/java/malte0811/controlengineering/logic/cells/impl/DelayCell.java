@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
 import malte0811.controlengineering.logic.cells.*;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 
 public class DelayCell extends LeafcellType<Double> {
     public DelayCell(SignalType type, double numTubes, double wireLength) {

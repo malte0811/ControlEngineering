@@ -1,8 +1,8 @@
 package malte0811.controlengineering.util.typereg;
 
 import malte0811.controlengineering.util.FastDataResult;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 
 // Not "logically" abstract, but the using the class itself causes general issues with the type system
 public abstract class TypedInstance<State, Type extends TypedRegistryEntry<State, ?>> {

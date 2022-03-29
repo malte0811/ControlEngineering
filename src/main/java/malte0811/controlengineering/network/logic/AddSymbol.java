@@ -4,7 +4,7 @@ import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.util.math.Vec2i;
-import malte0811.controlengineering.util.serialization.serial.PacketBufferStorage;
+import malte0811.controlengineering.util.mycodec.serial.PacketBufferStorage;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 

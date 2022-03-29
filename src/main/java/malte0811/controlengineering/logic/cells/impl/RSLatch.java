@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import malte0811.controlengineering.logic.cells.*;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 
 import java.util.Random;
 

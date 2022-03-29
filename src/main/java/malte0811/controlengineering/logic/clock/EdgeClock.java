@@ -1,6 +1,6 @@
 package malte0811.controlengineering.logic.clock;
 
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 
 public class EdgeClock extends ClockGenerator<Boolean> {
     protected EdgeClock() {

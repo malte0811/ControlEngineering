@@ -3,9 +3,9 @@ package malte0811.controlengineering.logic.schematic.symbol;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
-import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
-import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.record.CodecField;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
 import net.minecraft.world.level.Level;
 
 public record PlacedSymbol(Vec2i position, SymbolInstance<?> symbol) {

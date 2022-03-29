@@ -1,7 +1,7 @@
 package malte0811.controlengineering.util.typereg;
 
 import com.google.common.base.Preconditions;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodec;
 import net.minecraft.resources.ResourceLocation;
 
 public abstract class TypedRegistryEntry<StateType, InstanceType extends TypedInstance<StateType, ?>> {

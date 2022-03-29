@@ -4,7 +4,7 @@ import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.util.math.Vec2d;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 
 public class PanelMeter extends PanelComponentType<BusSignalRef, Integer> {
     public static final Vec2d SIZE = new Vec2d(6, 4);

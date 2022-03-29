@@ -1,9 +1,9 @@
-package malte0811.controlengineering.util.serialization.mycodec.record;
+package malte0811.controlengineering.util.mycodec.record;
 
-import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
-import malte0811.controlengineering.util.serialization.serial.SerialStorage;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.serial.SerialStorage;
+import malte0811.controlengineering.util.mycodec.tree.TreeElement;
+import malte0811.controlengineering.util.mycodec.tree.TreeManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,10 +21,10 @@ public abstract class RecordCodecBase<T> implements MyCodec<T> {
     }
 
     @Override
-    public final Tag toNBT(T in) {
-        var result = new CompoundTag();
+    public final <B> TreeElement<B> toTree(T in, TreeManager<B> manager) {
+        var result = manager.makeTree();
         for (var field : fields) {
-            result.put(field.name(), field.toNBT(in));
+            result.put(field.name(), field.toNBT(in, manager));
         }
         return result;
     }

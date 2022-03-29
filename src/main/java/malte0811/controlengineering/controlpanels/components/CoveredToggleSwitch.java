@@ -6,8 +6,8 @@ import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.Vec3;
 

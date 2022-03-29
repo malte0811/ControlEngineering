@@ -2,7 +2,7 @@ package malte0811.controlengineering.logic.cells;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.resources.ResourceLocation;

@@ -1,10 +1,10 @@
 package malte0811.controlengineering.controlpanels.components.config;
 
 import malte0811.controlengineering.bus.BusSignalRef;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
-import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
-import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
-import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodecBase;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.record.CodecField;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
+import malte0811.controlengineering.util.mycodec.record.RecordCodecBase;
 
 public record ColorAndSignal(int color, BusSignalRef signal) {
     public static final RecordCodecBase<ColorAndSignal> CODEC = new RecordCodec2<>(

@@ -3,10 +3,10 @@ package malte0811.controlengineering.controlpanels;
 import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.util.math.MatrixUtils;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
-import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
-import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.record.CodecField;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 

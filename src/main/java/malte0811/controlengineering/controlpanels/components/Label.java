@@ -5,7 +5,7 @@ import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndText;
 import malte0811.controlengineering.crafting.noncrafting.ServerFontRecipe;
 import malte0811.controlengineering.util.math.Vec2d;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.world.level.Level;
 
 public class Label extends PanelComponentType<ColorAndText, Unit> {

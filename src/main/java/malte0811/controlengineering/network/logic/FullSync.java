@@ -1,7 +1,7 @@
 package malte0811.controlengineering.network.logic;
 
 import malte0811.controlengineering.logic.schematic.Schematic;
-import malte0811.controlengineering.util.serialization.serial.PacketBufferStorage;
+import malte0811.controlengineering.util.mycodec.serial.PacketBufferStorage;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 

@@ -8,10 +8,10 @@ import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodecs;
-import malte0811.controlengineering.util.serialization.mycodec.record.CodecField;
-import malte0811.controlengineering.util.serialization.mycodec.record.RecordCodec2;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.record.CodecField;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
 

@@ -1,7 +1,7 @@
 package malte0811.controlengineering.logic.cells;
 
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
-import malte0811.controlengineering.util.serialization.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 
 public final class LeafcellInstance<State> extends TypedInstance<State, LeafcellType<State>> {

@@ -1,9 +1,10 @@
-package malte0811.controlengineering.util.serialization.mycodec;
+package malte0811.controlengineering.util.mycodec;
 
 import malte0811.controlengineering.util.FastDataResult;
-import malte0811.controlengineering.util.serialization.serial.SerialStorage;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import malte0811.controlengineering.util.mycodec.serial.SerialStorage;
+import malte0811.controlengineering.util.mycodec.tree.TreeElement;
+import malte0811.controlengineering.util.mycodec.tree.TreeManager;
+import malte0811.controlengineering.util.mycodec.tree.TreeStorageList;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -11,22 +12,22 @@ import java.util.List;
 
 public record ListCodec<T>(MyCodec<T> inner) implements MyCodec<List<T>> {
     @Override
-    public Tag toNBT(List<T> in) {
-        ListTag result = new ListTag();
+    public <B> TreeElement<B> toTree(List<T> in, TreeManager<B> manager) {
+        var result = manager.makeList();
         for (T element : in) {
-            result.add(inner.toNBT(element));
+            result.add(inner.toTree(element, manager));
         }
         return result;
     }
 
     @Nullable
     @Override
-    public List<T> fromNBT(Tag data) {
-        if (!(data instanceof ListTag list))
+    public List<T> fromTree(TreeElement<?> data) {
+        if (!(data instanceof TreeStorageList<?> list))
             return null;
         List<T> result = new ArrayList<>();
-        for (Tag t : list) {
-            var element = inner.fromNBT(t);
+        for (var node : list) {
+            var element = inner.fromTree(node);
             if (element != null) {
                 result.add(element);
             }
