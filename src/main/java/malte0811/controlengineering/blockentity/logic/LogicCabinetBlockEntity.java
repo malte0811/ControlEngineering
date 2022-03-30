@@ -252,7 +252,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
             }
             if (!ctx.getLevel().isClientSide) {
                 final Pair<Schematic, BusConnectedCircuit> oldSchematic = bEntity.circuit;
-                Pair<Schematic, BusConnectedCircuit> schematic = PCBStackItem.getSchematic(ctx.getItemInHand());
+                Pair<Schematic, BusConnectedCircuit> schematic = PCBStackItem.getSchematicAndCircuit(ctx.getItemInHand());
                 if (schematic != null) {
                     bEntity.setCircuit(schematic.getFirst());
                     ctx.getItemInHand().shrink(1);

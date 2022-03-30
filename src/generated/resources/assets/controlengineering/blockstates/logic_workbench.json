@@ -1,18 +1,18 @@
 {
   "variants": {
     "facing=north,offset=origin": {
-      "model": "controlengineering:logic_cabinet/workbench_obj",
+      "model": "controlengineering:block/logic_workbench",
       "y": 180
     },
     "facing=south,offset=origin": {
-      "model": "controlengineering:logic_cabinet/workbench_obj"
+      "model": "controlengineering:block/logic_workbench"
     },
     "facing=west,offset=origin": {
-      "model": "controlengineering:logic_cabinet/workbench_obj",
+      "model": "controlengineering:block/logic_workbench",
       "y": 90
     },
     "facing=east,offset=origin": {
-      "model": "controlengineering:logic_cabinet/workbench_obj",
+      "model": "controlengineering:block/logic_workbench",
       "y": 270
     },
     "facing=north,offset=front_right": {

@@ -19,6 +19,7 @@ import malte0811.controlengineering.blocks.tape.SequencerBlock;
 import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.datagen.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.datagen.modelbuilder.LogicCabinetBuilder;
+import malte0811.controlengineering.datagen.modelbuilder.LogicWorkbenchBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
@@ -39,11 +40,11 @@ public class BlockstateGenerator extends BlockStateProvider {
     private static final ConfiguredModel EMPTY_MODEL = new ConfiguredModel(
             new ModelFile.UncheckedModelFile(new ResourceLocation(Lib.MODID, "block/ie_empty"))
     );
-    private final NongeneratedModels nongeneratedModels;
+    private final NongeneratedModels nongenerated;
 
     public BlockstateGenerator(DataGenerator gen, ExistingFileHelper exFileHelper) {
         super(gen, ControlEngineering.MODID, exFileHelper);
-        nongeneratedModels = new NongeneratedModels(gen, exFileHelper);
+        this.nongenerated = new NongeneratedModels(gen, exFileHelper);
     }
 
     @Override
@@ -58,17 +59,29 @@ public class BlockstateGenerator extends BlockStateProvider {
         keypunchModel();
         sequencerModel();
         logicCabinetModel();
-        rotatedWithOffset(
-                CEBlocks.LOGIC_WORKBENCH,
-                obj("logic_cabinet/workbench.obj", modLoc("transform/block_half_size")),
-                LogicWorkbenchBlock.Offset.ORIGIN, LogicWorkbenchBlock.OFFSET,
-                LogicWorkbenchBlock.FACING
-        );
+        logicWorkbench();
         rotatedWithOffset(
                 CEBlocks.PANEL_DESIGNER,
                 obj("panel_designer.obj", modLoc("transform/block_half_size")),
                 PanelDesignerBlock.Offset.ORIGIN, PanelDesignerBlock.OFFSET,
                 PanelDesignerBlock.FACING
+        );
+    }
+
+    private void logicWorkbench() {
+        var mainModel = obj("logic_cabinet/workbench.obj", nongenerated);
+        var schematicModel = obj("logic_cabinet/workbench_schematic.obj", nongenerated);
+        var combinedModel = models()
+                .withExistingParent("logic_workbench", modLoc("transform/block_half_size"))
+                .customLoader(LogicWorkbenchBuilder::new)
+                .workbenchModel(mainModel)
+                .schematicModel(schematicModel)
+                .end();
+        rotatedWithOffset(
+                CEBlocks.LOGIC_WORKBENCH,
+                combinedModel,
+                LogicWorkbenchBlock.Offset.ORIGIN, LogicWorkbenchBlock.OFFSET,
+                LogicWorkbenchBlock.FACING
         );
     }
 

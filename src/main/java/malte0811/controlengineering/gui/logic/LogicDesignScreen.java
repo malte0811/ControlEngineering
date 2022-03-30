@@ -9,6 +9,8 @@ import malte0811.controlengineering.blockentity.logic.LogicCabinetBlockEntity;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity.AvailableIngredients;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.misc.ConfirmScreen;
+import malte0811.controlengineering.gui.misc.DataProviderScreen;
+import malte0811.controlengineering.gui.misc.TextProviderWidget;
 import malte0811.controlengineering.gui.widget.SmallCheckbox;
 import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.logic.schematic.ConnectedPin;
@@ -46,13 +48,20 @@ import static net.minecraft.util.Mth.ceil;
 import static net.minecraft.util.Mth.floor;
 
 public class LogicDesignScreen extends StackedScreen implements MenuAccess<LogicDesignMenu> {
-    public static final String COMPONENTS_KEY = ControlEngineering.MODID + ".gui.components";
-    public static final String COMPONENTS_TOOLTIP = ControlEngineering.MODID + ".gui.components.tooltip";
-    public static final String CLEAR_ALL_KEY = ControlEngineering.MODID + ".gui.clearAll";
-    public static final String CLEAR_ALL_TOOLTIP = ControlEngineering.MODID + ".gui.clearAll.tooltip";
-    public static final String CLEAR_ALL_MESSAGE = ControlEngineering.MODID + ".gui.clearAll.warning";
-    public static final String DRC_INFO_KEY = ControlEngineering.MODID + ".gui.drcOn";
-    public static final String PIN_KEY = ControlEngineering.MODID + ".gui.pin";
+    private static final String KEY_PREFIX = ControlEngineering.MODID + ".logicworkbench.";
+    public static final String COMPONENTS_KEY = KEY_PREFIX + "components";
+    public static final String COMPONENTS_TOOLTIP = KEY_PREFIX + "components.tooltip";
+
+    public static final String SET_NAME_KEY = KEY_PREFIX + "setName";
+    public static final String SET_NAME_TOOLTIP = KEY_PREFIX + "setName.tooltip";
+    public static final String SET_NAME_MESSAGE = KEY_PREFIX + "setName.message";
+
+    public static final String CLEAR_ALL_KEY = KEY_PREFIX + "clearAll";
+    public static final String CLEAR_ALL_TOOLTIP = KEY_PREFIX + "clearAll.tooltip";
+    public static final String CLEAR_ALL_MESSAGE = KEY_PREFIX + "clearAll.warning";
+
+    public static final String DRC_INFO_KEY = KEY_PREFIX + "drcOn";
+    public static final String PIN_KEY = KEY_PREFIX + "pin";
 
     private static final int TRANSLUCENT_BORDER_SIZE = 20;
     private static final int WHITE_BORDER_SIZE = 1;
@@ -93,11 +102,15 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                     makeTooltip(COMPONENTS_TOOLTIP)
             ));
             addRenderableWidget(new Button(
-                    TOTAL_BORDER, TOTAL_BORDER + 20, 40, 20, new TranslatableComponent(CLEAR_ALL_KEY),
+                    TOTAL_BORDER, TOTAL_BORDER + 20, 40, 20, new TranslatableComponent(SET_NAME_KEY),
+                    this::handleSetName, makeTooltip(SET_NAME_TOOLTIP)
+            ));
+            addRenderableWidget(new Button(
+                    TOTAL_BORDER, TOTAL_BORDER + 40, 40, 20, new TranslatableComponent(CLEAR_ALL_KEY),
                     this::handleClearAll, makeTooltip(CLEAR_ALL_TOOLTIP)
             ));
             addRenderableWidget(new SmallCheckbox(
-                    TOTAL_BORDER, TOTAL_BORDER + 40, 20, 20, new TextComponent("DRC"), errorsShown,
+                    TOTAL_BORDER, TOTAL_BORDER + 60, 20, 20, new TextComponent("DRC"), errorsShown,
                     newState -> {
                         errorsShown = newState;
                         updateErrors();
@@ -109,6 +122,15 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                 getScaleForShownSize(width, Schematic.BOUNDARY.getWidth()),
                 getScaleForShownSize(height, Schematic.BOUNDARY.getHeight())
         );
+    }
+
+    private void handleSetName(Button $) {
+        Minecraft.getInstance().setScreen(new DataProviderScreen<>(
+                new TranslatableComponent(SET_NAME_MESSAGE),
+                TextProviderWidget::arbitrary,
+                schematic.getName(),
+                s -> runAndSendToServer(new SetName(s))
+        ));
     }
 
     private void handleClearAll(Button $) {
@@ -124,6 +146,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     @Override
     protected void renderForeground(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         matrixStack.pushPose();
+        drawCenteredString(matrixStack, minecraft.font, schematic.getName(), width / 2, TOTAL_BORDER - 11, -1);
         matrixStack.translate(width / 2., height / 2., 0);
         matrixStack.scale(currentScale, currentScale, 1);
         matrixStack.translate(-centerX, -centerY, 0);

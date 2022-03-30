@@ -7,7 +7,6 @@ import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.Item;
@@ -22,9 +21,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class PCBStackItem extends Item {
+public class PCBStackItem extends Item implements ISchematicItem {
     public static final String FOR_USE_IN_KEY = ControlEngineering.MODID + ".gui.useIn";
-    private static final String SCHEMATIC_KEY = "schematic";
 
     public PCBStackItem() {
         super(new Properties().tab(ControlEngineering.ITEM_GROUP));
@@ -44,15 +42,11 @@ public class PCBStackItem extends Item {
     }
 
     @Nullable
-    public static Pair<Schematic, BusConnectedCircuit> getSchematic(ItemStack stack) {
+    public static Pair<Schematic, BusConnectedCircuit> getSchematicAndCircuit(ItemStack stack) {
         if (stack.getItem() != CEItems.PCB_STACK.get()) {
             return null;
         }
-        CompoundTag tag = stack.getTag();
-        if (tag == null) {
-            return null;
-        }
-        Schematic schematic = Schematic.CODEC.fromNBT(tag.get(SCHEMATIC_KEY));
+        var schematic = ISchematicItem.getSchematic(stack);
         if (schematic == null) {
             return null;
         }
@@ -65,9 +59,7 @@ public class PCBStackItem extends Item {
 
     public static ItemStack forSchematic(Schematic schematic) {
         if (SchematicCircuitConverter.toCircuit(schematic).isPresent()) {
-            ItemStack result = CEItems.PCB_STACK.get().getDefaultInstance();
-            result.getOrCreateTag().put(SCHEMATIC_KEY, Schematic.CODEC.toNBT(schematic));
-            return result;
+            return ISchematicItem.create(CEItems.PCB_STACK, schematic);
         } else {
             return ItemStack.EMPTY;
         }

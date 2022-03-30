@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class KeypunchSwitchModel extends CEBakedModel {
+public class KeypunchSwitchModel implements CEBakedModel {
     public static final ResourceLocation TEXTURE_LOC = new ResourceLocation(ControlEngineering.MODID, "block/keypunch");
     private static final ModelProperty<Boolean> LOOPBACK = new ModelProperty<>();
 
@@ -66,7 +66,7 @@ public class KeypunchSwitchModel extends CEBakedModel {
 
     @Nonnull
     @Override
-    public TextureAtlasSprite getParticleIcon() {
+    public TextureAtlasSprite getParticleIcon(@Nonnull IModelData data) {
         return texture.get();
     }
 
@@ -91,8 +91,9 @@ public class KeypunchSwitchModel extends CEBakedModel {
             @Nonnull BlockState state,
             @Nonnull IModelData tileData
     ) {
-        if (world.getBlockEntity(pos) instanceof KeypunchBlockEntity keypunch)
+        if (world.getBlockEntity(pos) instanceof KeypunchBlockEntity keypunch) {
             return new SinglePropertyModelData<>(keypunch.isLoopback(), LOOPBACK);
-        return super.getModelData(world, pos, state, tileData);
+        }
+        return tileData;
     }
 }

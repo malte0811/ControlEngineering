@@ -32,6 +32,9 @@ public class CEItems {
     public static final RegistryObject<PanelTopItem> PANEL_TOP = REGISTER.register("panel_top", PanelTopItem::new);
     public static final Map<ResourceLocation, RegistryObject<Item>> CLOCK_GENERATORS;
     public static final RegistryObject<PCBStackItem> PCB_STACK = REGISTER.register("pcb_stack", PCBStackItem::new);
+    public static final RegistryObject<SchematicItem> SCHEMATIC = REGISTER.register(
+            "logic_schematic", SchematicItem::new
+    );
 
     //Blocks
     private static final RegistryObject<CEBlockItem<Direction>> BUS_RELAY = blockItemCE(CEBlocks.BUS_RELAY);

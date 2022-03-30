@@ -67,6 +67,7 @@ public class LangGenerator extends LanguageProvider {
         addItem(CEItems.PANEL_TOP, "Panel Top");
         addItem(CEItems.PCB_STACK, "Logic Circuit Boards");
         addItem(CEItems.BUS_WIRE_COIL, "Bus Wire Coil");
+        addItem(CEItems.SCHEMATIC, "Logic Circuit Schematic");
 
         addBlock(CEBlocks.LOGIC_CABINET, "Logic Cabinet");
         addBlock(CEBlocks.LOGIC_WORKBENCH, "Logic Workbench");
@@ -143,6 +144,9 @@ public class LangGenerator extends LanguageProvider {
         add(LogicDesignScreen.CLEAR_ALL_KEY, "Clear");
         add(LogicDesignScreen.CLEAR_ALL_TOOLTIP, "Remove all components and wires");
         add(LogicDesignScreen.CLEAR_ALL_MESSAGE, "Clear entire schematic?");
+        add(LogicDesignScreen.SET_NAME_KEY, "Name");
+        add(LogicDesignScreen.SET_NAME_TOOLTIP, "Set schematic name");
+        add(LogicDesignScreen.SET_NAME_MESSAGE, "Enter new schematic name");
         add(LogicDesignScreen.DRC_INFO_KEY, "Highlight floating input pins");
         add(LogicDesignScreen.PIN_KEY, "Pin: %d");
 

@@ -14,6 +14,7 @@ import malte0811.controlengineering.logic.clock.ClockTypes;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.SpecialRecipeBuilder;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
@@ -183,6 +184,13 @@ public class Recipes extends RecipeProvider {
                 .define('c', IEItemRefs.CRATE)
                 .define('b', IEItemRefs.BLUEPRINT)
                 .define('e', IEItemRefs.LIGHT_ENGINEERING)
+                .save(consumer);
+        SpecialRecipeBuilder.special(CERecipeSerializers.SCHEMATIC_COPY.get()).save(consumer, "schematic_copy");
+        NoAdvancementShapelessBuilder.shapeless(CEItems.SCHEMATIC)
+                .requires(Items.PAPER)
+                .requires(Tags.Items.DYES_RED)
+                .requires(Tags.Items.DYES_GREEN)
+                .requires(IETags.hopGraphiteDust)
                 .save(consumer);
     }
 }

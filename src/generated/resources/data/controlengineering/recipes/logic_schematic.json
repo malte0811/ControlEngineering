@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "tag": "forge:dyes/red"
+    },
+    {
+      "tag": "forge:dyes/green"
+    },
+    {
+      "tag": "forge:dusts/hop_graphite"
+    }
+  ],
+  "result": {
+    "item": "controlengineering:logic_schematic"
+  }
+}

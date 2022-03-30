@@ -18,6 +18,7 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class LogicDesignMenu extends CEContainerMenu<LogicSubPacket> {
     public final boolean readOnly;
@@ -29,13 +30,21 @@ public class LogicDesignMenu extends CEContainerMenu<LogicSubPacket> {
     LogicDesignMenu(MenuType<?> type, int id, BE schematicBE, boolean readOnly) {
         super(type, id, ContainerScreenManager.isValidFor(schematicBE), schematicBE::setChanged);
         this.readOnly = readOnly;
-        this.schematic = schematicBE.getSchematic();
+        this.schematic = Objects.requireNonNull(schematicBE.getSchematic());
         if (!readOnly) {
             var logicWorkbench = (LogicWorkbenchBlockEntity) schematicBE;
             availableIngredients = logicWorkbench.getCosts();
         } else {
             availableIngredients = null;
         }
+        addSlots();
+    }
+
+    public LogicDesignMenu(MenuType<?> type, int id, Schematic schematic) {
+        super(type, id, $ -> true, () -> {});
+        this.readOnly = true;
+        this.schematic = schematic;
+        availableIngredients = null;
         addSlots();
     }
 

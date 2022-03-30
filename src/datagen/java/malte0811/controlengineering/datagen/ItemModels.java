@@ -23,6 +23,7 @@ public class ItemModels extends ItemModelProvider {
         addItemModel("tty_tape_punched", CEItems.PUNCHED_TAPE);
         addItemModel("wirecoil_bus", CEItems.BUS_WIRE_COIL);
         addItemModel("logic_pcbs", CEItems.PCB_STACK);
+        addItemModel("logic_schematic", CEItems.SCHEMATIC);
         withExistingParent(name(CEItems.PANEL_TOP), modLoc("transform/panel_top_base"))
                 .customLoader(DynamicModelBuilder.customLoader(ModelLoaders.PANEL_MODEL))
                 .end();

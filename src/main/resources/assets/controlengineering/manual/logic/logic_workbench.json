@@ -4,6 +4,9 @@
     "recipes": [
       [
         "controlengineering:logic_workbench"
+      ],
+      [
+        "controlengineering:logic_schematic"
       ]
     ]
   }

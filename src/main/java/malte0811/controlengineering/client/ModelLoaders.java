@@ -4,6 +4,7 @@ package malte0811.controlengineering.client;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.model.SpecialModelLoader;
 import malte0811.controlengineering.client.model.logic.DynamicLogicModelLoader;
+import malte0811.controlengineering.client.model.logic.LogicWorkbenchModel;
 import malte0811.controlengineering.client.model.panel.PanelModel;
 import malte0811.controlengineering.client.model.tape.KeypunchSwitchModel;
 import malte0811.controlengineering.client.model.tape.SequencerSwitchModel;
@@ -27,6 +28,9 @@ public class ModelLoaders {
     public static final ResourceLocation SEQUENCER_SWITCH = new ResourceLocation(
             ControlEngineering.MODID, "sequencer_switch"
     );
+    public static final ResourceLocation LOGIC_WORKBENCH = new ResourceLocation(
+            ControlEngineering.MODID, "logic_workbench"
+    );
 
     @SubscribeEvent
     public static void registerModelLoaders(ModelRegistryEvent ev) {
@@ -40,5 +44,6 @@ public class ModelLoaders {
                 SequencerSwitchModel::new, SequencerSwitchModel.TEXTURE_LOC
         ));
         ModelLoaderRegistry.registerLoader(LOGIC_CABINET, new DynamicLogicModelLoader());
+        ModelLoaderRegistry.registerLoader(LOGIC_WORKBENCH, new LogicWorkbenchModel.Loader());
     }
 }

@@ -14,7 +14,7 @@ import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import malte0811.controlengineering.util.mycodec.record.CodecField;
-import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec3;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
@@ -30,23 +30,26 @@ public class Schematic {
     public static final int GLOBAL_MAX = 512;
     public static final RectangleI BOUNDARY = new RectangleI(GLOBAL_MIN, GLOBAL_MIN, GLOBAL_MAX, GLOBAL_MAX);
 
-    public static final MyCodec<Schematic> CODEC = new RecordCodec2<>(
+    public static final MyCodec<Schematic> CODEC = new RecordCodec3<>(
             new CodecField<>("symbols", Schematic::getSymbols, MyCodecs.list(PlacedSymbol.CODEC)),
             new CodecField<>("nets", Schematic::getNets, MyCodecs.list(SchematicNet.CODEC)),
+            new CodecField<>("name", Schematic::getName, MyCodecs.STRING),
             Schematic::new
     );
 
     private final List<PlacedSymbol> symbols;
     private final List<SchematicNet> nets;
+    private String name;
 
-    private Schematic(List<PlacedSymbol> symbols, List<SchematicNet> nets) {
+    private Schematic(List<PlacedSymbol> symbols, List<SchematicNet> nets, String name) {
         this.symbols = new ArrayList<>(symbols);
         this.nets = new ArrayList<>(nets);
+        this.name = name;
         this.resetConnectedPins();
     }
 
     public Schematic() {
-        this(ImmutableList.of(), ImmutableList.of());
+        this(ImmutableList.of(), ImmutableList.of(), "New schematic");
     }
 
     public void addSymbol(PlacedSymbol newSymbol) {
@@ -149,6 +152,14 @@ public class Schematic {
         return Collections.unmodifiableList(nets);
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public SchematicChecker makeChecker(Level level) {
         return new SchematicChecker(this, level);
     }
@@ -180,5 +191,13 @@ public class Schematic {
     public void clear() {
         symbols.clear();
         nets.clear();
+    }
+
+    public boolean isEmpty() {
+        return symbols.isEmpty() && nets.isEmpty();
+    }
+
+    public static boolean isEmpty(@Nullable Schematic schematic) {
+        return schematic == null || schematic.isEmpty();
     }
 }

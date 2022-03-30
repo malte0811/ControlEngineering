@@ -1,0 +1,18 @@
+{
+  "parent": "controlengineering:transform/block_half_size",
+  "loader": "controlengineering:logic_workbench",
+  "workbench": {
+    "parent": "minecraft:block/block",
+    "loader": "forge:obj",
+    "model": "controlengineering:models/logic_cabinet/workbench.obj",
+    "detectCullableFaces": false,
+    "flip-v": true
+  },
+  "schematic": {
+    "parent": "minecraft:block/block",
+    "loader": "forge:obj",
+    "model": "controlengineering:models/logic_cabinet/workbench_schematic.obj",
+    "detectCullableFaces": false,
+    "flip-v": true
+  }
+}

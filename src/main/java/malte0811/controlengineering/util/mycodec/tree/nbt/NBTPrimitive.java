@@ -3,7 +3,10 @@ package malte0811.controlengineering.util.mycodec.tree.nbt;
 import malte0811.controlengineering.util.mycodec.tree.TreePrimitive;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.NumericTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+
+import java.util.Objects;
 
 public class NBTPrimitive extends NBTElement<Tag> implements TreePrimitive<Tag> {
     public NBTPrimitive(Tag value) {
@@ -37,7 +40,7 @@ public class NBTPrimitive extends NBTElement<Tag> implements TreePrimitive<Tag> 
 
     @Override
     public String asString() {
-        return getDirect().getAsString();
+        return Objects.requireNonNullElseGet(getDirect(), () -> StringTag.valueOf("")).getAsString();
     }
 
     private NumericTag getNumeric() {

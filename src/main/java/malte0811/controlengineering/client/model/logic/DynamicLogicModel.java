@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
-public class DynamicLogicModel extends CEBakedModel {
+public class DynamicLogicModel implements CEBakedModel {
     private static final Random RANDOM = new Random(1234);
     private static final Vec2[] TUBE_OFFSETS;
     private static final float[] BOARD_HEIGHTS = {16.5f / 16f, 21.5f / 16f, 12.5f / 16f, 26.5f / 16f,};
@@ -114,7 +114,7 @@ public class DynamicLogicModel extends CEBakedModel {
 
     @Nonnull
     @Override
-    public TextureAtlasSprite getParticleIcon() {
+    public TextureAtlasSprite getParticleIcon(@Nonnull IModelData data) {
         return particles;
     }
 

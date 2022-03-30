@@ -14,11 +14,14 @@ import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.gui.misc.SyncContainer;
+import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.IEItemRefs;
+import malte0811.controlengineering.items.ISchematicItem;
 import malte0811.controlengineering.items.PCBStackItem;
 import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
+import malte0811.controlengineering.util.BEUtil;
 import malte0811.controlengineering.util.CachedValue;
 import malte0811.controlengineering.util.ItemUtil;
 import malte0811.controlengineering.util.math.MatrixUtils;
@@ -46,6 +49,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -65,7 +69,9 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
     //TODO add utility tag
     private static final TagKey<Item> WIRE = IETags.copperWire;
 
-    private Schematic schematic = new Schematic();
+    @Nullable
+    // Null = no logic schematic item on this bench
+    private Schematic schematic = null;
     private final CircuitIngredientDrawer tubeStorage = new CircuitIngredientDrawer(TUBES, TUBES_EMPTY_KEY);
     private final CircuitIngredientDrawer wireStorage = new CircuitIngredientDrawer(WIRE, WIRES_EMPTY_KEY);
     private final CachedValue<BlockState, SelectionShapes> shapes = new CachedValue<>(
@@ -145,12 +151,27 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
 
     @Override
     protected void writeSyncedData(CompoundTag out) {
+        writeCommonData(out);
+        out.putBoolean("hasSchematic", schematic != null);
+    }
+
+    private void writeCommonData(CompoundTag out) {
         out.put("tubes", tubeStorage.write());
         out.put("wires", wireStorage.write());
     }
 
     @Override
     protected void readSyncedData(CompoundTag in) {
+        readCommonData(in);
+        var hadSchematic = schematic != null;
+        var hasSchematic = in.getBoolean("hasSchematic");
+        schematic = hasSchematic ? new Schematic() : null;
+        if (hasSchematic != hadSchematic && level != null) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+        }
+    }
+
+    private void readCommonData(CompoundTag in) {
         tubeStorage.read(in.getCompound("tubes"));
         wireStorage.read(in.getCompound("wires"));
     }
@@ -158,33 +179,63 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
     @Override
     public void saveAdditional(@Nonnull CompoundTag compound) {
         super.saveAdditional(compound);
-        compound.put("schematic", Schematic.CODEC.toNBT(schematic));
-        writeSyncedData(compound);
+        if (schematic != null) {
+            compound.put("schematic", Schematic.CODEC.toNBT(schematic));
+        }
+        writeCommonData(compound);
     }
 
     @Override
     public void load(@Nonnull CompoundTag nbt) {
         super.load(nbt);
-        schematic = Schematic.CODEC.fromNBT(nbt.get("schematic"));
-        readSyncedData(nbt);
-        if (schematic == null) {
-            schematic = new Schematic();
+        var schematicNBT = nbt.get("schematic");
+        if (schematicNBT != null) {
+            schematic = Schematic.CODEC.fromNBT(schematicNBT);
+        } else {
+            schematic = null;
         }
+        readCommonData(nbt);
     }
 
     private InteractionResult handleMainClick(UseOnContext ctx) {
-        if (!level.isClientSide) {
-            CEBlocks.LOGIC_WORKBENCH.get().openContainer(ctx.getPlayer(), getBlockState(), ctx.getLevel(), worldPosition);
+        if (level == null) {
+            return InteractionResult.PASS;
+        } else if (schematic != null) {
+            if (!level.isClientSide) {
+                if (ctx.getPlayer() != null && ctx.getPlayer().isShiftKeyDown()) {
+                    ItemUtil.giveOrDrop(ctx.getPlayer(), ISchematicItem.create(CEItems.SCHEMATIC, schematic));
+                    schematic = null;
+                    BEUtil.markDirtyAndSync(this);
+                } else {
+                    CEBlocks.LOGIC_WORKBENCH.get().openContainer(
+                            ctx.getPlayer(), getBlockState(), ctx.getLevel(), worldPosition
+                    );
+                }
+            }
+            return InteractionResult.SUCCESS;
+        } else if (ctx.getItemInHand().is(CEItems.SCHEMATIC.get())) {
+            if (!level.isClientSide) {
+                schematic = Objects.requireNonNullElseGet(
+                        ISchematicItem.getSchematic(ctx.getItemInHand()), Schematic::new
+                );
+                ctx.getItemInHand().shrink(1);
+                BEUtil.markDirtyAndSync(this);
+            }
+            return InteractionResult.SUCCESS;
+        } else {
+            return InteractionResult.PASS;
         }
-        return InteractionResult.SUCCESS;
     }
 
     private InteractionResult handleCreationClick(UseOnContext ctx) {
-        if (ctx.getPlayer() == null || ctx.getItemInHand().getItem() != IEItemRefs.CIRCUIT_BOARD.asItem()) {
+        if (ctx.getPlayer() == null) {
+            return InteractionResult.PASS;
+        }
+        if (!ctx.getItemInHand().is(IEItemRefs.CIRCUIT_BOARD.asItem()) || schematic == null) {
             return InteractionResult.PASS;
         }
         Optional<BusConnectedCircuit> circuit = SchematicCircuitConverter.toCircuit(schematic);
-        if (!circuit.isPresent()) {
+        if (circuit.isEmpty()) {
             return InteractionResult.FAIL;
         }
         final int numTubes = circuit.get().getNumTubes();
@@ -209,6 +260,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
                 ctx.getItemInHand().shrink(numBoards);
                 level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
                 ItemUtil.giveOrDrop(ctx.getPlayer(), PCBStackItem.forSchematic(schematic));
+                schematic = null;
             } else if (!enoughTubes) {
                 ctx.getPlayer().displayClientMessage(new TranslatableComponent(TOO_FEW_TUBES, numTubes), true);
             } else {
@@ -254,6 +306,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
         });
     }
 
+    @Nullable
     @Override
     public Schematic getSchematic() {
         return schematic;
@@ -279,6 +332,9 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
     public void getExtraDrops(Consumer<ItemStack> dropper) {
         dropper.accept(tubeStorage.getStored());
         dropper.accept(wireStorage.getStored());
+        if (schematic != null) {
+            dropper.accept(ISchematicItem.create(CEItems.SCHEMATIC, schematic));
+        }
     }
 
     public static class AvailableIngredients {
