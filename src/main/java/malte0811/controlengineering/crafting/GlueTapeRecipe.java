@@ -1,5 +1,6 @@
 package malte0811.controlengineering.crafting;
 
+import malte0811.controlengineering.blockentity.tape.KeypunchState;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import net.minecraft.core.NonNullList;
@@ -15,8 +16,9 @@ import net.minecraftforge.common.crafting.IShapedRecipe;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 
-public record GlueTapeRecipe(ResourceLocation id,
-                             Ingredient glue) implements CraftingRecipe, IShapedRecipe<CraftingContainer> {
+public record GlueTapeRecipe(
+        ResourceLocation id, Ingredient glue
+) implements CraftingRecipe, IShapedRecipe<CraftingContainer> {
 
     @Override
     public boolean matches(@Nonnull CraftingContainer inv, @Nonnull Level worldIn) {
@@ -51,9 +53,13 @@ public record GlueTapeRecipe(ResourceLocation id,
                 ItemStack tape1 = inv.getItem(offset);
                 ItemStack glue = inv.getItem(offset + 1);
                 ItemStack tape2 = inv.getItem(offset + 2);
-                if (tape1.getItem() == CEItems.PUNCHED_TAPE.get() && this.glue.test(glue) &&
-                        tape2.getItem() == CEItems.PUNCHED_TAPE.get()) {
-                    return offset;
+                if (tape1.is(CEItems.PUNCHED_TAPE.get()) && this.glue.test(glue) && tape2.is(CEItems.PUNCHED_TAPE.get())) {
+                    var totalLength = PunchedTapeItem.getBytes(tape1).length + PunchedTapeItem.getBytes(tape2).length;
+                    if (totalLength > KeypunchState.MAX_TAPE_LENGTH) {
+                        return -1;
+                    } else {
+                        return offset;
+                    }
                 }
             }
         }

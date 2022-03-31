@@ -29,7 +29,6 @@ public class EmptyTapeItem extends Item {
         if (allowdedIn(group)) {
             items.add(withLength(16));
             items.add(withLength(256));
-            items.add(withLength(8192));
         }
     }
 

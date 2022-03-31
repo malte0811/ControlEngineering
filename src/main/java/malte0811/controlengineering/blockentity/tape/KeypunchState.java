@@ -19,6 +19,8 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Arrays;
 
 public class KeypunchState {
+    public static final int MAX_TAPE_LENGTH = 10_000;
+
     private final Runnable markDirty;
     private final Data data;
 
@@ -57,8 +59,13 @@ public class KeypunchState {
         this.markDirty.run();
     }
 
-    public void addAvailable(int length) {
+    private boolean addAvailable(int length) {
+        var newAvailable = length + getAvailable();
+        if (getErased() + newAvailable > MAX_TAPE_LENGTH) {
+            return false;
+        }
         setAvailable(getAvailable() + length);
+        return true;
     }
 
     public InteractionResult removeWrittenTape(Player player) {
@@ -76,9 +83,9 @@ public class KeypunchState {
     public InteractionResult removeOrAddClearTape(Player player, ItemStack item) {
         final int length = EmptyTapeItem.getLength(item);
         if (length > 0) {
-            //TODO limit?
-            addAvailable(length);
-            item.shrink(1);
+            if (addAvailable(length)) {
+                item.shrink(1);
+            }
         } else if (getAvailable() > 0 && player != null) {
             ItemUtil.giveOrDrop(player, EmptyTapeItem.withLength(getAvailable()));
             setAvailable(0);
@@ -98,6 +105,9 @@ public class KeypunchState {
         final int numPrinted = Math.min(bytes.size() - numLost, getAvailable());
         setAvailable(getAvailable() - numPrinted);
         getData().addAll(bytes.subList(numLost, numLost + numPrinted));
+        if (getData().size() > MAX_TAPE_LENGTH) {
+            getData().removeElements(MAX_TAPE_LENGTH - 1, getData().size());
+        }
         this.markDirty.run();
         return numLost + numPrinted;
     }
