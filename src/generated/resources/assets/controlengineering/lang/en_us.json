@@ -62,6 +62,7 @@
   "controlengineering.gui.remapper.colored": "Colored",
   "controlengineering.gui.remapper.gray": "Gray",
   "controlengineering.gui.reqVsAvTape": "%d characters required / %d available",
+  "controlengineering.gui.schematic.empty": "Empty schematic",
   "controlengineering.gui.sequencer.analog": "Analog mode",
   "controlengineering.gui.sequencer.autoreset": "Resets automatically",
   "controlengineering.gui.sequencer.compact": "Compact mode",

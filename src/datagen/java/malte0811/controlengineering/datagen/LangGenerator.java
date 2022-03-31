@@ -191,6 +191,8 @@ public class LangGenerator extends LanguageProvider {
 
         add(ConfirmScreen.CANCEL_KEY, "Cancel");
         add(ConfirmScreen.OK_KEY, "Ok");
+
+        add(SchematicItem.EMPTY_SCHEMATIC, "Empty schematic");
     }
 
     private void addManualStrings() {
