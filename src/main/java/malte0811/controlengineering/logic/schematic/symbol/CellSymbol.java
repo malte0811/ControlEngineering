@@ -2,6 +2,7 @@ package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Unit;
+import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.network.chat.Component;
@@ -67,6 +68,11 @@ public class CellSymbol extends SchematicSymbol<Unit> {
 
     public LeafcellType<?> getCellType() {
         return type;
+    }
+
+    @Override
+    public CellCost getCost() {
+        return type.getCost();
     }
 
     @Override

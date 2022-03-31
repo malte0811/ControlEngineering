@@ -5,9 +5,9 @@ import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import malte0811.controlengineering.logic.cells.CellCost;
-import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
+import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
@@ -15,7 +15,6 @@ import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import malte0811.controlengineering.util.mycodec.record.CodecField;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec3;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
@@ -165,15 +164,14 @@ public class Schematic {
     }
 
     private int getTotalCost(ToDoubleFunction<CellCost> individualCost) {
-        double sum = 0.0;
-        for (PlacedSymbol placedSymbol : getSymbols()) {
-            SchematicSymbol<?> s = placedSymbol.symbol().getType();
-            if (s instanceof CellSymbol cellSymbol) {
-                CellCost cost = cellSymbol.getCellType().getCost();
-                sum += individualCost.applyAsDouble(cost);
-            }
-        }
-        return Mth.ceil(sum);
+        return (int) Math.ceil(
+                getSymbols().stream()
+                        .map(PlacedSymbol::symbol)
+                        .map(SymbolInstance::getType)
+                        .map(SchematicSymbol::getCost)
+                        .mapToDouble(individualCost)
+                        .sum()
+        );
     }
 
     public int getNumTubes() {

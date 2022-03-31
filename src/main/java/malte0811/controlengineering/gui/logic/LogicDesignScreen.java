@@ -13,6 +13,7 @@ import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.gui.misc.TextProviderWidget;
 import malte0811.controlengineering.gui.widget.SmallCheckbox;
 import malte0811.controlengineering.items.IEItemRefs;
+import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.ConnectedPin;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
@@ -61,7 +62,8 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     public static final String CLEAR_ALL_MESSAGE = KEY_PREFIX + "clearAll.warning";
 
     public static final String DRC_INFO_KEY = KEY_PREFIX + "drcOn";
-    public static final String PIN_KEY = KEY_PREFIX + "pin";
+    public static final String DIGITAL_PIN_KEY = KEY_PREFIX + "digitalPin";
+    public static final String ANALOG_PIN_KEY = KEY_PREFIX + "analogPin";
 
     private static final int TRANSLUCENT_BORDER_SIZE = 20;
     private static final int WHITE_BORDER_SIZE = 1;
@@ -196,8 +198,9 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                 List<FormattedCharSequence> tooltip = new ArrayList<>();
                 tooltip.add(toShow.getVisualOrderText());
                 for (SymbolPin pin : getHoveredPins(hovered, schematicMouse)) {
+                    var key = pin.type() == SignalType.DIGITAL ? DIGITAL_PIN_KEY : ANALOG_PIN_KEY;
                     tooltip.add(
-                            new TranslatableComponent(PIN_KEY, pin.pinName())
+                            new TranslatableComponent(key, pin.pinName())
                                     .withStyle(ChatFormatting.GRAY)
                                     .getVisualOrderText()
                     );

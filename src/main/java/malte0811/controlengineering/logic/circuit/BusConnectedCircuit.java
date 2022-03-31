@@ -6,8 +6,11 @@ import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.logic.cells.LeafcellType;
+import malte0811.controlengineering.logic.cells.impl.Digitizer;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.record.CodecField;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec3;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 
@@ -20,22 +23,26 @@ public class BusConnectedCircuit {
     private static final MyCodec<Map<NetReference, List<BusSignalRef>>> OUTPUT_CODEC = MyCodecs.codecForMap(
             NetReference.CODEC, MyCodecs.list(BusSignalRef.CODEC)
     );
-    private static final MyCodec<Map<BusSignalRef, List<NetReference>>> INPUT_CODEC = MyCodecs.codecForMap(
-            BusSignalRef.CODEC, MyCodecs.list(NetReference.CODEC)
-    );
+    private static final MyCodec<List<InputConnection>> INPUT_CODEC = MyCodecs.list(new RecordCodec3<>(
+            // Names are for backward compatibility
+            new CodecField<>("first", InputConnection::busSignal, BusSignalRef.CODEC),
+            new CodecField<>("second", InputConnection::connectedNets, MyCodecs.list(NetReference.CODEC)),
+            new CodecField<>("digital", InputConnection::digitized, MyCodecs.BOOL),
+            InputConnection::new
+    ));
     private static final MyCodec<Map<NetReference, Double>> CONSTANCE_CODEC = MyCodecs.codecForMap(
             NetReference.CODEC, MyCodecs.DOUBLE
     );
     private final Circuit circuit;
     private final Map<NetReference, List<BusSignalRef>> outputConnections;
-    private final Map<BusSignalRef, List<NetReference>> inputConnections;
+    private final List<InputConnection> inputConnections;
     private final Map<NetReference, Double> constantInputs;
     private BusState outputValues = BusState.EMPTY;
 
     public BusConnectedCircuit(
             Circuit circuit,
             Map<NetReference, List<BusSignalRef>> outputConnections,
-            Map<BusSignalRef, List<NetReference>> inputConnections,
+            List<InputConnection> inputConnections,
             Map<NetReference, Double> constantInputs
     ) {
         this.circuit = circuit;
@@ -43,7 +50,8 @@ public class BusConnectedCircuit {
         this.inputConnections = inputConnections;
         this.constantInputs = constantInputs;
         Preconditions.checkArgument(
-                inputConnections.values().stream()
+                inputConnections.stream()
+                        .map(InputConnection::connectedNets)
                         .flatMap(List::stream)
                         .noneMatch(constantInputs::containsKey)
         );
@@ -60,11 +68,11 @@ public class BusConnectedCircuit {
     }
 
     public void updateInputs(BusState bus) {
-        for (Map.Entry<BusSignalRef, List<NetReference>> netPair : inputConnections.entrySet()) {
-            for (NetReference circuitNet : netPair.getValue()) {
-                circuit.updateInputValue(
-                        circuitNet, bus.getSignal(netPair.getKey()) / (double) BusLine.MAX_VALID_VALUE
-                );
+        for (var input : inputConnections) {
+            final var rawValue = bus.getSignal(input.busSignal()) / (double) BusLine.MAX_VALID_VALUE;
+            final var realValue = input.digitized() ? Digitizer.digitize(rawValue) : rawValue;
+            for (NetReference circuitNet : input.connectedNets()) {
+                circuit.updateInputValue(circuitNet, realValue);
             }
         }
     }
@@ -125,4 +133,6 @@ public class BusConnectedCircuit {
     public int getSolderAmount() {
         return getTotalCost(CellCost::getSolderAmount);
     }
+
+    public record InputConnection(BusSignalRef busSignal, List<NetReference> connectedNets, boolean digitized) {}
 }

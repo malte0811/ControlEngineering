@@ -1,13 +1,12 @@
 package malte0811.controlengineering.logic.schematic;
 
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
+import malte0811.controlengineering.logic.circuit.BusConnectedCircuit.InputConnection;
 import malte0811.controlengineering.logic.circuit.CircuitBuilder;
 import malte0811.controlengineering.logic.circuit.NetReference;
 import malte0811.controlengineering.logic.schematic.symbol.*;
@@ -16,6 +15,8 @@ import net.minecraftforge.fml.loading.toposort.TopologicalSort;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class SchematicCircuitConverter {
@@ -88,7 +89,7 @@ public class SchematicCircuitConverter {
         for (PlacedSymbol symbol : symbols) {
             graph.addNode(symbol);
         }
-        for (Map.Entry<ConnectedPin, List<ConnectedPin>> net : nets.entrySet()) {
+        for (Entry<ConnectedPin, List<ConnectedPin>> net : nets.entrySet()) {
             if (!net.getKey().pin().isCombinatorialOutput()) {
                 continue;
             }
@@ -109,7 +110,7 @@ public class SchematicCircuitConverter {
 
     private static Map<ConnectedPin, NetReference> toPinNetMap(Map<NetReference, List<ConnectedPin>> netsBySource) {
         Map<ConnectedPin, NetReference> result = new HashMap<>();
-        for (Map.Entry<NetReference, List<ConnectedPin>> entry : netsBySource.entrySet()) {
+        for (Entry<NetReference, List<ConnectedPin>> entry : netsBySource.entrySet()) {
             for (ConnectedPin sink : entry.getValue()) {
                 result.put(sink, entry.getKey());
             }
@@ -131,7 +132,7 @@ public class SchematicCircuitConverter {
             Map<NetReference, List<ConnectedPin>> nets, SchematicSymbol<T> sourceType
     ) {
         Map<NetReference, T> result = new HashMap<>();
-        for (Map.Entry<NetReference, List<ConnectedPin>> entry : nets.entrySet()) {
+        for (Entry<NetReference, List<ConnectedPin>> entry : nets.entrySet()) {
             Optional<ConnectedPin> source = getSource(entry.getValue());
             if (source.isPresent()) {
                 SymbolInstance<?> symbol = source.get().symbol().symbol();
@@ -143,11 +144,21 @@ public class SchematicCircuitConverter {
         return result;
     }
 
-    private static Map<BusSignalRef, List<NetReference>> getInputConnections(Map<NetReference, List<ConnectedPin>> nets) {
-        return Multimaps.asMap(
-                getNetsWithSource(nets, SchematicSymbols.INPUT_PIN).entrySet().stream()
-                        .collect(ImmutableListMultimap.toImmutableListMultimap(Map.Entry::getValue, Map.Entry::getKey))
-        );
+    private static List<InputConnection> getInputConnections(Map<NetReference, List<ConnectedPin>> nets) {
+        record Input(BusSignalRef busSignal, boolean digital) {}
+        Map<Input, List<NetReference>> netsByInput = new HashMap<>();
+        BiConsumer<Entry<NetReference, BusSignalRef>, Boolean> add = (entry, digital) -> netsByInput.computeIfAbsent(
+                new Input(entry.getValue(), digital), $ -> new ArrayList<>()
+        ).add(entry.getKey());
+        for (var entry : getNetsWithSource(nets, SchematicSymbols.INPUT_PIN_ANALOG).entrySet()) {
+            add.accept(entry, false);
+        }
+        for (var entry : getNetsWithSource(nets, SchematicSymbols.INPUT_PIN_DIGITAL).entrySet()) {
+            add.accept(entry, true);
+        }
+        return netsByInput.entrySet().stream()
+                .map(e -> new InputConnection(e.getKey().busSignal(), e.getValue(), e.getKey().digital))
+                .toList();
     }
 
     private static Map<NetReference, Double> getConstantNets(Map<NetReference, List<ConnectedPin>> nets) {
@@ -156,7 +167,7 @@ public class SchematicCircuitConverter {
 
     private static Map<NetReference, List<BusSignalRef>> getOutputConnections(Map<NetReference, List<ConnectedPin>> nets) {
         Map<NetReference, List<BusSignalRef>> result = new HashMap<>();
-        for (Map.Entry<NetReference, List<ConnectedPin>> entry : nets.entrySet()) {
+        for (Entry<NetReference, List<ConnectedPin>> entry : nets.entrySet()) {
             for (ConnectedPin sink : getSinks(entry.getValue())) {
                 SymbolInstance<?> symbol = sink.symbol().symbol();
                 if (symbol.getType() instanceof IOSymbol) {
@@ -175,19 +186,19 @@ public class SchematicCircuitConverter {
         }
         final Map<ConnectedPin, NetReference> pinsToNet = toPinNetMap(nets);
         final Map<NetReference, List<BusSignalRef>> outputConnections = getOutputConnections(nets);
-        final Map<BusSignalRef, List<NetReference>> inputConnections = getInputConnections(nets);
+        final List<InputConnection> inputConnections = getInputConnections(nets);
         final Map<NetReference, Double> constantNets = getConstantNets(nets);
         CircuitBuilder builder = CircuitBuilder.builder();
-        for (List<NetReference> netReferences : inputConnections.values()) {
-            for (NetReference input : netReferences) {
-                builder.addInputNet(input, SignalType.ANALOG);
+        for (var inputConnection : inputConnections) {
+            for (NetReference netAtInput : inputConnection.connectedNets()) {
+                builder.addInputNet(netAtInput, inputConnection.digitized() ? SignalType.DIGITAL : SignalType.ANALOG);
             }
         }
-        for (Map.Entry<NetReference, Double> entry : constantNets.entrySet()) {
+        for (Entry<NetReference, Double> entry : constantNets.entrySet()) {
             double value = entry.getValue();
             builder.addInputNet(entry.getKey(), value == 1 || value == 0 ? SignalType.DIGITAL : SignalType.ANALOG);
         }
-        for (Map.Entry<NetReference, List<ConnectedPin>> net : nets.entrySet()) {
+        for (Entry<NetReference, List<ConnectedPin>> net : nets.entrySet()) {
             Optional<ConnectedPin> source = getSource(net.getValue());
             if (source.isPresent() && !source.get().pin().isCombinatorialOutput()) {
                 builder.addDelayedNet(net.getKey(), source.get().pin().type());
@@ -195,12 +206,12 @@ public class SchematicCircuitConverter {
         }
 
         Optional<List<PlacedSymbol>> order = getCellOrder(schematic.getSymbols(), getNetsBySource(nets.values()));
-        if (!order.isPresent()) {
+        if (order.isEmpty()) {
             return Optional.empty();
         }
         List<PlacedSymbol> cells = order.get().stream()
                 .filter(s -> s.symbol().getType() instanceof CellSymbol)
-                .collect(Collectors.toList());
+                .toList();
         for (PlacedSymbol cell : cells) {
             SymbolInstance<?> instance = cell.symbol();
             CellSymbol symbol = (CellSymbol) instance.getType();
@@ -219,8 +230,8 @@ public class SchematicCircuitConverter {
             }
             cellBuilder.buildCell();
         }
-        return Optional.of(
-                new BusConnectedCircuit(builder.build(), outputConnections, inputConnections, constantNets)
-        );
+        return Optional.of(new BusConnectedCircuit(
+                builder.build(), outputConnections, inputConnections, constantNets
+        ));
     }
 }

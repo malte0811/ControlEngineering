@@ -112,7 +112,8 @@ public class LangGenerator extends LanguageProvider {
         add(Leafcells.DIGITIZER, "Signal Digitizer");
         add(Leafcells.COMPARATOR, "Comparator");
 
-        add(IOSymbol.INPUT_KEY, "Input pin");
+        add(IOSymbol.ANALOG_INPUT_KEY, "Analog input pin");
+        add(IOSymbol.DIGITAL_INPUT_KEY, "Digitized input pin");
         add(IOSymbol.OUTPUT_KEY, "Output pin");
         add(ConstantSymbol.NAME, "Constant");
         add(TextSymbol.NAME_KEY, "Text");
@@ -148,7 +149,8 @@ public class LangGenerator extends LanguageProvider {
         add(LogicDesignScreen.SET_NAME_TOOLTIP, "Set schematic name");
         add(LogicDesignScreen.SET_NAME_MESSAGE, "Enter new schematic name");
         add(LogicDesignScreen.DRC_INFO_KEY, "Highlight floating input pins");
-        add(LogicDesignScreen.PIN_KEY, "Pin: %d");
+        add(LogicDesignScreen.ANALOG_PIN_KEY, "Analog pin: %d");
+        add(LogicDesignScreen.DIGITAL_PIN_KEY, "Digital pin: %d");
 
         add(SchematicChecker.ANALOG_DIGITAL_MIX, "Net would connect an analog source to digital sinks");
         add(SchematicChecker.CYCLE, "Net would form a cycle");

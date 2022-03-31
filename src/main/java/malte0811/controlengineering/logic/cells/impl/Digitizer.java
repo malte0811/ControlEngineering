@@ -19,6 +19,10 @@ public class Digitizer extends StatelessCell {
 
     @Override
     protected Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals) {
-        return Object2DoubleMaps.singleton(DEFAULT_OUT_NAME, debool(inputSignals.getDouble(DEFAULT_IN_NAME) > 0.5));
+        return Object2DoubleMaps.singleton(DEFAULT_OUT_NAME, digitize(inputSignals.getDouble(DEFAULT_IN_NAME)));
+    }
+
+    public static double digitize(double in) {
+        return debool(in > 0.5);
     }
 }

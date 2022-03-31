@@ -1,6 +1,7 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.google.common.collect.ImmutableList;
+import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.network.chat.Component;
@@ -36,6 +37,10 @@ public abstract class SchematicSymbol<State> extends TypedRegistryEntry<State, S
     public abstract List<SymbolPin> getPins(@Nullable State state);
 
     public abstract Component getName();
+
+    public CellCost getCost() {
+        return CellCost.FOR_FREE;
+    }
 
     public List<MutableComponent> getExtraDescription(State state) {
         return ImmutableList.of();

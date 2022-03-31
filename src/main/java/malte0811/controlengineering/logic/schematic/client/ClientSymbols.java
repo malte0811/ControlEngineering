@@ -17,7 +17,8 @@ public class ClientSymbols {
     public static void init() {
         final int secondColumn = 13;
         register(SchematicSymbols.CONSTANT, ClientConstantSymbol::new);
-        register(SchematicSymbols.INPUT_PIN, ClientIOSymbol::new);
+        register(SchematicSymbols.INPUT_PIN_ANALOG, ClientIOSymbol::new);
+        register(SchematicSymbols.INPUT_PIN_DIGITAL, ClientIOSymbol::new);
         register(SchematicSymbols.OUTPUT_PIN, ClientIOSymbol::new);
 
         register(SchematicSymbols.AND2, 0, 0);

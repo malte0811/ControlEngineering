@@ -23,8 +23,9 @@ public class SchematicSymbols {
     public static final ResourceLocation SYMBOLS_SHEET = new ResourceLocation(
             ControlEngineering.MODID, "textures/gui/schematic_symbols.png"
     );
-    public static final IOSymbol INPUT_PIN = new IOSymbol(true);
-    public static final IOSymbol OUTPUT_PIN = new IOSymbol(false);
+    public static final IOSymbol INPUT_PIN_ANALOG = new IOSymbol(true, false);
+    public static final IOSymbol INPUT_PIN_DIGITAL = new IOSymbol(true, true);
+    public static final IOSymbol OUTPUT_PIN = new IOSymbol(false, false);
     public static final ConstantSymbol CONSTANT = new ConstantSymbol();
     public static final CellSymbol NOT;
     public static final CellSymbol AND2;
@@ -105,7 +106,8 @@ public class SchematicSymbols {
         D_LATCH = delayCell(Leafcells.D_LATCH, 10, SignalType.DIGITAL);
         DELAY_LINE = delayCell(Leafcells.DELAY_LINE, 13, SignalType.ANALOG);
 
-        REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin"), INPUT_PIN);
+        REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin"), INPUT_PIN_ANALOG);
+        REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin_digitized"), INPUT_PIN_DIGITAL);
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "output_pin"), OUTPUT_PIN);
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "constant"), CONSTANT);
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "text"), TEXT);
