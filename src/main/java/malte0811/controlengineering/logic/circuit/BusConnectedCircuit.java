@@ -7,11 +7,6 @@ import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.impl.Digitizer;
-import malte0811.controlengineering.util.mycodec.MyCodec;
-import malte0811.controlengineering.util.mycodec.MyCodecs;
-import malte0811.controlengineering.util.mycodec.record.CodecField;
-import malte0811.controlengineering.util.mycodec.record.RecordCodec3;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 
 import java.util.List;
@@ -19,20 +14,6 @@ import java.util.Map;
 import java.util.function.ToDoubleFunction;
 
 public class BusConnectedCircuit {
-
-    private static final MyCodec<Map<NetReference, List<BusSignalRef>>> OUTPUT_CODEC = MyCodecs.codecForMap(
-            NetReference.CODEC, MyCodecs.list(BusSignalRef.CODEC)
-    );
-    private static final MyCodec<List<InputConnection>> INPUT_CODEC = MyCodecs.list(new RecordCodec3<>(
-            // Names are for backward compatibility
-            new CodecField<>("first", InputConnection::busSignal, BusSignalRef.CODEC),
-            new CodecField<>("second", InputConnection::connectedNets, MyCodecs.list(NetReference.CODEC)),
-            new CodecField<>("digital", InputConnection::digitized, MyCodecs.BOOL),
-            InputConnection::new
-    ));
-    private static final MyCodec<Map<NetReference, Double>> CONSTANCE_CODEC = MyCodecs.codecForMap(
-            NetReference.CODEC, MyCodecs.DOUBLE
-    );
     private final Circuit circuit;
     private final Map<NetReference, List<BusSignalRef>> outputConnections;
     private final List<InputConnection> inputConnections;
@@ -56,15 +37,6 @@ public class BusConnectedCircuit {
                         .noneMatch(constantInputs::containsKey)
         );
         constantInputs.forEach(circuit::updateInputValue);
-    }
-
-    public BusConnectedCircuit(CompoundTag nbt) {
-        this(
-                Circuit.fromNBT(nbt.getCompound("circuit")),
-                OUTPUT_CODEC.fromNBT(nbt.get("outputs")),
-                INPUT_CODEC.fromNBT(nbt.get("inputs")),
-                CONSTANCE_CODEC.fromNBT(nbt.get("constants"))
-        );
     }
 
     public void updateInputs(BusState bus) {
@@ -99,15 +71,6 @@ public class BusConnectedCircuit {
 
     public Circuit getCircuit() {
         return circuit;
-    }
-
-    public CompoundTag toNBT() {
-        CompoundTag result = new CompoundTag();
-        result.put("circuit", circuit.toNBT());
-        result.put("inputs", INPUT_CODEC.toNBT(inputConnections));
-        result.put("outputs", OUTPUT_CODEC.toNBT(outputConnections));
-        result.put("constants", CONSTANCE_CODEC.toNBT(constantInputs));
-        return result;
     }
 
     public BusState getOutputState() {
