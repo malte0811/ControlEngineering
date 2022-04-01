@@ -1,5 +1,6 @@
 package malte0811.controlengineering.blockentity.logic;
 
+import blusunrize.immersiveengineering.api.IETags;
 import blusunrize.immersiveengineering.api.utils.client.SinglePropertyModelData;
 import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
@@ -31,6 +32,7 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -50,6 +52,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+
+import static malte0811.controlengineering.blocks.logic.LogicCabinetBlock.NOT_MIRRORED;
 
 public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IBusInterface,
         ISchematicBE, IExtraDropBE, IHasMaster<LogicCabinetBlockEntity> {
@@ -78,7 +82,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
             return;
         }
         final Direction facing = getFacing(getBlockState());
-        final Direction clockFace = facing.getCounterClockWise();
+        final Direction clockFace = getRotatedDirection(true);
         boolean rsIn = level.getSignal(worldPosition.relative(clockFace), clockFace.getOpposite()) > 0;
         if (!clock.getClock().tick(rsIn)) {
             return;
@@ -152,7 +156,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
 
     @Override
     public boolean canConnect(Direction fromSide) {
-        return fromSide == getFacing(getBlockState()).getClockWise();
+        return fromSide == getRotatedDirection(false);
     }
 
     private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(energy::insertOnlyView);
@@ -205,13 +209,21 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         return state.getValue(LogicCabinetBlock.FACING);
     }
 
+    private Direction getRotatedDirection(boolean leftIfNonMirrored) {
+        var facing = getFacing(getBlockState());
+        var mirrored = getBlockState().getValue(NOT_MIRRORED);
+        return (mirrored != leftIfNonMirrored) ? facing.getClockWise() : facing.getCounterClockWise();
+    }
+
     private static boolean isUpper(BlockState state) {
         return state.getValue(LogicCabinetBlock.HEIGHT) != 0;
     }
 
     private final CachedValue<BlockState, SelectionShapes> selectionShapes = new CachedValue<>(
             this::getBlockState,
-            state -> createSelectionShapes(getFacing(state), computeMasterBE(state), isUpper(state))
+            state -> createSelectionShapes(
+                    getFacing(state), computeMasterBE(state), isUpper(state), !state.getValue(NOT_MIRRORED)
+            )
     );
 
     @Override
@@ -219,7 +231,9 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         return selectionShapes.get();
     }
 
-    private static SelectionShapes createSelectionShapes(Direction d, LogicCabinetBlockEntity bEntity, boolean upper) {
+    private static SelectionShapes createSelectionShapes(
+            Direction d, LogicCabinetBlockEntity bEntity, boolean upper, boolean mirror
+    ) {
         List<SelectionShapes> subshapes = new ArrayList<>(1);
         DirectionalShapeProvider baseShape = upper ? LogicCabinetBlock.TOP_SHAPE : LogicCabinetBlock.BOTTOM_SHAPE;
         if (!upper) {
@@ -229,8 +243,25 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         }
         subshapes.add(makeBoardInteraction(bEntity, upper));
         return new ListShapes(
-                baseShape.apply(d), MatrixUtils.inverseFacing(d), subshapes, $ -> InteractionResult.PASS
+                baseShape.apply(d), MatrixUtils.inverseFacing(d, mirror), subshapes, bEntity::mainInteraction
         );
+    }
+
+    private InteractionResult mainInteraction(UseOnContext ctx) {
+        if (ctx.getItemInHand().is(IETags.hammers)) {
+            if (level != null && !level.isClientSide) {
+                var otherPos = isUpper(getBlockState()) ? worldPosition.below() : worldPosition.above();
+                for (var pos : List.of(worldPosition, otherPos)) {
+                    var state = level.getBlockState(pos);
+                    if (state.is(getBlockState().getBlock())) {
+                        var newState = state.setValue(NOT_MIRRORED, !state.getValue(NOT_MIRRORED));
+                        level.setBlock(pos, newState, Block.UPDATE_ALL);
+                    }
+                }
+            }
+            return InteractionResult.SUCCESS;
+        }
+        return InteractionResult.PASS;
     }
 
     private static SelectionShapes makeClockInteraction(LogicCabinetBlockEntity bEntity) {

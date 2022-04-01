@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
-public class DynamicLogicModel implements CEBakedModel {
+public class DynamicLogicModel implements CEBakedModel.Cacheable<DynamicLogicModel.ModelData> {
     private static final Random RANDOM = new Random(1234);
     private static final Vec2[] TUBE_OFFSETS;
     private static final float[] BOARD_HEIGHTS = {16.5f / 16f, 21.5f / 16f, 12.5f / 16f, 26.5f / 16f,};
@@ -87,15 +87,8 @@ public class DynamicLogicModel implements CEBakedModel {
         this.clockQuad = quads.get(0);
     }
 
-    @Nonnull
     @Override
-    public List<BakedQuad> getQuads(
-            @Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData
-    ) {
-        ModelData data = extraData.getData(DATA);
-        if (data == null) {
-            data = new ModelData(0, false);
-        }
+    public List<BakedQuad> getQuads(ModelData data) {
         while (this.knownModels.size() <= data.numTubes) {
             this.knownModels.add(null);
         }
@@ -110,6 +103,14 @@ public class DynamicLogicModel implements CEBakedModel {
             quads.add(clockQuad);
         }
         return quads;
+    }
+
+    @Nullable
+    @Override
+    public ModelData getKey(
+            @Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData
+    ) {
+        return Objects.requireNonNullElseGet(extraData.getData(DATA), () -> new ModelData(0, false));
     }
 
     @Nonnull

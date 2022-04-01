@@ -1,22 +1,37 @@
 {
   "variants": {
-    "facing=north,height=0": {
+    "height=1": {
+      "model": "immersiveengineering:block/ie_empty"
+    },
+    "facing=north,height=0,not_mirrored=false": {
+      "model": "controlengineering:block/mirrored_logic_cabinet",
+      "y": 180
+    },
+    "facing=south,height=0,not_mirrored=false": {
+      "model": "controlengineering:block/mirrored_logic_cabinet"
+    },
+    "facing=west,height=0,not_mirrored=false": {
+      "model": "controlengineering:block/mirrored_logic_cabinet",
+      "y": 90
+    },
+    "facing=east,height=0,not_mirrored=false": {
+      "model": "controlengineering:block/mirrored_logic_cabinet",
+      "y": 270
+    },
+    "facing=north,height=0,not_mirrored=true": {
       "model": "controlengineering:block/combined_logic_cabinet",
       "y": 180
     },
-    "facing=south,height=0": {
+    "facing=south,height=0,not_mirrored=true": {
       "model": "controlengineering:block/combined_logic_cabinet"
     },
-    "facing=west,height=0": {
+    "facing=west,height=0,not_mirrored=true": {
       "model": "controlengineering:block/combined_logic_cabinet",
       "y": 90
     },
-    "facing=east,height=0": {
+    "facing=east,height=0,not_mirrored=true": {
       "model": "controlengineering:block/combined_logic_cabinet",
       "y": 270
-    },
-    "height=1": {
-      "model": "immersiveengineering:block/ie_empty"
     }
   }
 }

@@ -1,17 +1,18 @@
 {
-  "loader": "forge:composite",
-  "parts": {
-    "static": {
-      "parent": "controlengineering:transform/block_half_size",
+  "parent": "controlengineering:transform/block_half_size",
+  "loader": "controlengineering:cacheable_composite",
+  "submodels": [
+    {
+      "parent": "minecraft:block/block",
       "loader": "forge:obj",
       "model": "controlengineering:models/logic_cabinet/chassis.obj",
       "detectCullableFaces": false,
       "flip-v": true
     },
-    "dynamic": {
+    {
       "loader": "controlengineering:dynamic_logic",
       "board": "controlengineering:logic_cabinet/board_obj",
       "tube": "controlengineering:logic_cabinet/tube_obj"
     }
-  }
+  ]
 }

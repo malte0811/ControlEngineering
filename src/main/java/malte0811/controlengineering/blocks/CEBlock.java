@@ -75,6 +75,10 @@ public abstract class CEBlock<PlacementData> extends Block implements EntityBloc
             @Nonnull BlockState newState,
             boolean isMoving
     ) {
+        if (state.is(newState.getBlock())) {
+            super.onRemove(state, worldIn, pos, newState, isMoving);
+            return;
+        }
         BlockEntity bEntity = worldIn.getBlockEntity(pos);
         if (bEntity instanceof IHasMaster hasMaster) {
             hasMaster.setCachedMaster(hasMaster.computeMasterBE(state));

@@ -2,6 +2,7 @@ package malte0811.controlengineering.client;
 
 
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.client.model.CacheableCompositeModel;
 import malte0811.controlengineering.client.model.SpecialModelLoader;
 import malte0811.controlengineering.client.model.logic.DynamicLogicModelLoader;
 import malte0811.controlengineering.client.model.logic.LogicWorkbenchModel;
@@ -31,6 +32,9 @@ public class ModelLoaders {
     public static final ResourceLocation LOGIC_WORKBENCH = new ResourceLocation(
             ControlEngineering.MODID, "logic_workbench"
     );
+    public static final ResourceLocation CACHED_COMPOSITE = new ResourceLocation(
+            ControlEngineering.MODID, "cacheable_composite"
+    );
 
     @SubscribeEvent
     public static void registerModelLoaders(ModelRegistryEvent ev) {
@@ -45,5 +49,6 @@ public class ModelLoaders {
         ));
         ModelLoaderRegistry.registerLoader(LOGIC_CABINET, new DynamicLogicModelLoader());
         ModelLoaderRegistry.registerLoader(LOGIC_WORKBENCH, new LogicWorkbenchModel.Loader());
+        ModelLoaderRegistry.registerLoader(CACHED_COMPOSITE, new CacheableCompositeModel.Loader());
     }
 }

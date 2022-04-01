@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -24,6 +25,7 @@ import javax.annotation.Nullable;
 
 public class LogicCabinetBlock extends CEBlock<Direction> {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final BooleanProperty NOT_MIRRORED = BooleanProperty.create("not_mirrored");
     public static final IntegerProperty HEIGHT = IntegerProperty.create("height", 0, 1);
 
     public static DirectionalShapeProvider BOTTOM_SHAPE = new DirectionalShapeProvider(
@@ -57,7 +59,7 @@ public class LogicCabinetBlock extends CEBlock<Direction> {
     @Override
     protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(FACING, HEIGHT);
+        builder.add(FACING, HEIGHT, NOT_MIRRORED);
     }
 
     @Nullable

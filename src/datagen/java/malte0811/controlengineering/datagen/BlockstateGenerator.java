@@ -1,6 +1,7 @@
 package malte0811.controlengineering.datagen;
 
 import blusunrize.immersiveengineering.api.Lib;
+import blusunrize.immersiveengineering.data.models.MirroredModelBuilder;
 import blusunrize.immersiveengineering.data.models.NongeneratedModels;
 import blusunrize.immersiveengineering.data.models.SpecialModelBuilder;
 import com.google.common.collect.ImmutableMap;
@@ -17,6 +18,7 @@ import malte0811.controlengineering.blocks.panels.PanelDesignerBlock;
 import malte0811.controlengineering.blocks.tape.KeypunchBlock;
 import malte0811.controlengineering.blocks.tape.SequencerBlock;
 import malte0811.controlengineering.client.ModelLoaders;
+import malte0811.controlengineering.datagen.modelbuilder.CacheableCompositeBuilder;
 import malte0811.controlengineering.datagen.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.datagen.modelbuilder.LogicCabinetBuilder;
 import malte0811.controlengineering.datagen.modelbuilder.LogicWorkbenchBuilder;
@@ -100,11 +102,11 @@ public class BlockstateGenerator extends BlockStateProvider {
     }
 
     private void logicCabinetModel() {
-        BlockModelBuilder chassis = obj("logic_cabinet/chassis.obj", modLoc("transform/block_half_size"));
-        BlockModelBuilder logicModel = models().getBuilder("combined_logic_cabinet")
-                .customLoader(CompositeModelBuilder::begin)
-                .submodel("static", chassis)
-                .submodel("dynamic", models().getBuilder("dynamic_logic_cabinet")
+        var chassis = obj("logic_cabinet/chassis.obj", nongenerated);
+        var logicModel = models().withExistingParent("combined_logic_cabinet", modLoc("transform/block_half_size"))
+                .customLoader(CacheableCompositeBuilder::begin)
+                .submodel(chassis)
+                .submodel(nongenerated.getBuilder("dynamic_logic_cabinet")
                         .customLoader(LogicCabinetBuilder::begin)
                         .board(obj("logic_cabinet/board.obj"))
                         .tube(obj("logic_cabinet/tube.obj"))
@@ -114,11 +116,20 @@ public class BlockstateGenerator extends BlockStateProvider {
                 CEBlocks.LOGIC_CABINET,
                 LogicCabinetBlock.FACING,
                 logicModel,
-                ImmutableMap.of(LogicCabinetBlock.HEIGHT, 0)
+                ImmutableMap.of(LogicCabinetBlock.HEIGHT, 0, LogicCabinetBlock.NOT_MIRRORED, true)
+        );
+        horizontalRotated(
+                CEBlocks.LOGIC_CABINET,
+                LogicCabinetBlock.FACING,
+                models().getBuilder("mirrored_logic_cabinet")
+                        .customLoader(MirroredModelBuilder::begin)
+                        .inner(nongenerated.withExistingParent("mirrored_logic", logicModel.getLocation()))
+                        .end(),
+                ImmutableMap.of(LogicCabinetBlock.HEIGHT, 0, LogicCabinetBlock.NOT_MIRRORED, false)
         );
         emptyModel(CEBlocks.LOGIC_CABINET, ImmutableMap.of(LogicCabinetBlock.HEIGHT, 1));
         itemModels().getBuilder(ItemModels.name(CEBlocks.LOGIC_CABINET))
-                .parent(chassis);
+                .parent(logicModel);
     }
 
     private void sequencerModel() {

@@ -1,5 +1,6 @@
 package malte0811.controlengineering.client.model;
 
+import blusunrize.immersiveengineering.api.client.ICacheKeyProvider;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -62,5 +63,36 @@ public interface CEBakedModel extends BakedModel {
     @Override
     default ItemOverrides getOverrides() {
         return ItemOverrides.EMPTY;
+    }
+
+    interface Cacheable<Key> extends CEBakedModel, ICacheKeyProvider<Key> {
+        @Override
+        List<BakedQuad> getQuads(Key key);
+
+        @Nullable
+        @Override
+        Key getKey(
+                @Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData beData
+        );
+
+        @Nonnull
+        @Override
+        default List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
+            return CEBakedModel.super.getQuads(state, side, rand);
+        }
+
+        @Nonnull
+        @Override
+        default List<BakedQuad> getQuads(
+                @Nullable BlockState state,
+                @Nullable Direction side,
+                @Nonnull Random rand,
+                @Nonnull IModelData extraData
+        ) {
+            return ICacheKeyProvider.super.getQuads(state, side, rand, extraData);
+        }
+
+        @Override
+        TextureAtlasSprite getParticleIcon(@Nonnull IModelData data);
     }
 }

@@ -3,12 +3,20 @@ package malte0811.controlengineering.util.math;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector4f;
+import net.minecraft.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.Vec3;
 
 public class MatrixUtils {
+    private static final Matrix4f MIRROR = Util.make(new Matrix4f(), mat -> {
+        mat.setIdentity();
+        mat.multiplyWithTranslation(0.5F, 0, 0);
+        mat.multiply(Matrix4f.createScaleMatrix(-1, 1, 1));
+        mat.multiplyWithTranslation(-0.5F, 0, 0);
+    });
+
     public static Vec3 transform(Matrix4f transform, double x, double y, double z) {
         Vector4f vec = new Vector4f((float) x, (float) y, (float) z, 1);
         vec.transform(transform);
@@ -46,6 +54,14 @@ public class MatrixUtils {
 
     public static Matrix4f inverseFacing(Direction facing) {
         return facing(facing, -1);
+    }
+
+    public static Matrix4f inverseFacing(Direction facing, boolean mirror) {
+        var result = inverseFacing(facing);
+        if (mirror) {
+            result.multiply(MIRROR);
+        }
+        return result;
     }
 
     public static Matrix4f facing(Direction facing) {
