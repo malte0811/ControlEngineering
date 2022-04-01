@@ -63,12 +63,20 @@ public abstract class SelectionShapes {
     }
 
     public final Pair<List<SelectionShapes>, Vec3> getTargeted(ClipContext ray) {
-        List<SelectionShapes> result = new ArrayList<>();
-        Vec3 innermostHit = fillTargetedStack(ray, result);
-        return Pair.of(result, innermostHit);
+        double maxDistanceForInner = Double.POSITIVE_INFINITY;
+        var mainShape = mainShape();
+        if (mainShape != null) {
+            final BlockHitResult result = mainShape.clip(ray.getFrom(), ray.getTo(), BlockPos.ZERO);
+            if (result != null) {
+                maxDistanceForInner = result.getLocation().distanceToSqr(ray.getFrom());
+            }
+        }
+        List<SelectionShapes> stack = new ArrayList<>();
+        Vec3 innermostHit = fillTargetedStack(ray, maxDistanceForInner, stack);
+        return Pair.of(stack, innermostHit);
     }
 
-    private Vec3 fillTargetedStack(ClipContext ray, List<SelectionShapes> out) {
+    private Vec3 fillTargetedStack(ClipContext ray, double limitDistanceSq, List<SelectionShapes> out) {
         out.add(this);
         List<? extends SelectionShapes> innerShapes = innerShapes();
         if (innerShapes.isEmpty()) {
@@ -76,7 +84,7 @@ public abstract class SelectionShapes {
         }
         ClipContext innerRay = MatrixUtils.transformRay(outerToInnerPosition(), ray.getFrom(), ray.getTo());
         SelectionShapes closest = null;
-        double minDistanceSq = Double.POSITIVE_INFINITY;
+        double minDistanceSq = allowTargetThroughOuter() ? Double.POSITIVE_INFINITY : (limitDistanceSq + 1e-3);
         Vec3 closestHit = null;
         for (SelectionShapes inner : innerShapes) {
             final VoxelShape innerShape = inner.mainShape();
@@ -93,7 +101,7 @@ public abstract class SelectionShapes {
             }
         }
         if (closest != null) {
-            var innerHit = closest.fillTargetedStack(innerRay, out);
+            var innerHit = closest.fillTargetedStack(innerRay, minDistanceSq, out);
             if (innerHit != null)
                 return innerHit;
         }
@@ -101,6 +109,10 @@ public abstract class SelectionShapes {
     }
 
     public boolean shouldRenderNonTop() {
+        return false;
+    }
+
+    public boolean allowTargetThroughOuter() {
         return false;
     }
 }

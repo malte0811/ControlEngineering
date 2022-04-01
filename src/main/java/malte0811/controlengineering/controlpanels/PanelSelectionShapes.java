@@ -66,4 +66,10 @@ public class PanelSelectionShapes extends SelectionShapes {
     public boolean shouldRenderNonTop() {
         return true;
     }
+
+    @Override
+    public boolean allowTargetThroughOuter() {
+        // TODO make more flexible by allowing the actual hit position to be computed
+        return true;
+    }
 }
