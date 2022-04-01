@@ -1,8 +1,10 @@
 package malte0811.controlengineering.client.model.tape;
 
+import blusunrize.immersiveengineering.api.utils.client.SinglePropertyModelData;
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.blockentity.tape.SequencerBlockEntity;
 import malte0811.controlengineering.client.model.CEBakedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
@@ -12,9 +14,11 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.ForgeModelBakery;
@@ -110,6 +114,21 @@ public class SequencerSwitchModel implements CEBakedModel {
             result.add(clockQuad.get());
         }
         return result;
+    }
+
+    @Nonnull
+    @Override
+    public IModelData getModelData(
+            @Nonnull BlockAndTintGetter world,
+            @Nonnull BlockPos pos,
+            @Nonnull BlockState state,
+            @Nonnull IModelData tileData
+    ) {
+        if (world.getBlockEntity(pos) instanceof SequencerBlockEntity sequencer)
+            return new SinglePropertyModelData<>(
+                    new Data(sequencer.isCompact(), sequencer.isAutoreset(), sequencer.hasClock()), DATA
+            );
+        return CEBakedModel.super.getModelData(world, pos, state, tileData);
     }
 
     private record Data(boolean compact, boolean autoReset, boolean hasClock) {}
