@@ -25,7 +25,7 @@ public class PCBStackItem extends Item implements ISchematicItem {
     public static final String FOR_USE_IN_KEY = ControlEngineering.MODID + ".gui.useIn";
 
     public PCBStackItem() {
-        super(new Properties().tab(ControlEngineering.ITEM_GROUP));
+        super(new Properties().tab(ControlEngineering.ITEM_GROUP).stacksTo(1));
     }
 
     @Override
