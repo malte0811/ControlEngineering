@@ -18,6 +18,7 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Objects;
 
 public class LogicDesignMenu extends CEContainerMenu<LogicSubPacket> {
@@ -58,8 +59,13 @@ public class LogicDesignMenu extends CEContainerMenu<LogicSubPacket> {
 
     private void addSlots() {
         if (availableIngredients != null) {
-            addSlot(availableIngredients.makeTubeSlot(0));
-            addSlot(availableIngredients.makeWireSlot(1));
+            for (var tracker : List.of(
+                    availableIngredients.makeTubeSlot(0),
+                    availableIngredients.makeWireSlot(1)
+            )) {
+                addSlot(tracker.getFirst());
+                addDataSlot(tracker.getSecond());
+            }
         }
     }
 

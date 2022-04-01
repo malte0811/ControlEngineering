@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.blockentity.logic.CircuitIngredientDrawer.BigItemStack;
 import malte0811.controlengineering.blockentity.logic.LogicCabinetBlockEntity;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity.AvailableIngredients;
 import malte0811.controlengineering.gui.StackedScreen;
@@ -235,12 +236,12 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     }
 
     private void renderIngredient(
-            PoseStack transform, @Nullable ItemStack available, int required, ItemLike defaultItem
+            PoseStack transform, @Nullable BigItemStack available, int required, ItemLike defaultItem
     ) {
         MutableComponent info;
         if (available != null) {
-            info = new TextComponent(Math.min(available.getCount(), required) + " / " + required);
-            if (available.getCount() < required) {
+            info = new TextComponent(Math.min(available.count(), required) + " / " + required);
+            if (available.count() < required) {
                 info.withStyle(ChatFormatting.RED);
             }
         } else {
@@ -250,10 +251,13 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         final Font font = Minecraft.getInstance().font;
         final int width = font.width(info);
         font.draw(transform, info, -width, (16 - font.lineHeight) / 2f, -1);
-        if (available == null || available.isEmpty()) {
-            available = defaultItem.asItem().getDefaultInstance();
+        ItemStack renderType;
+        if (available == null || available.type().isEmpty()) {
+            renderType = defaultItem.asItem().getDefaultInstance();
+        } else {
+            renderType = available.type();
         }
-        ManualUtils.renderItemStack(transform, available, 0, 0, false);
+        ManualUtils.renderItemStack(transform, renderType, 0, 0, false);
     }
 
     private List<SymbolPin> getHoveredPins(PlacedSymbol hovered, Vec2d schematicMouse) {

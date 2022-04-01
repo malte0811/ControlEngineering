@@ -2,10 +2,12 @@ package malte0811.controlengineering.blockentity.logic;
 
 import blusunrize.immersiveengineering.api.IETags;
 import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.base.IExtraDropBE;
 import malte0811.controlengineering.blockentity.base.IHasMaster;
+import malte0811.controlengineering.blockentity.logic.CircuitIngredientDrawer.BigItemStack;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
@@ -37,6 +39,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -46,6 +49,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -288,6 +293,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
                     bEntity.level.sendBlockUpdated(
                             bEntity.worldPosition, bEntity.getBlockState(), bEntity.getBlockState(), Block.UPDATE_ALL
                     );
+                    bEntity.setChanged();
                     return ret;
                 }
         );
@@ -297,11 +303,11 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
                 return null;
             }
             final CircuitIngredientDrawer drawer = getDrawer.apply(main);
-            if (drawer.getStored().isEmpty()) {
+            if (drawer.getStored().count() == 0) {
                 return new TranslatableComponent(drawer.getEmptyKey());
             } else {
-                return new TextComponent(drawer.getStored().getCount() + " x ")
-                        .append(drawer.getStored().getHoverName().getString());
+                return new TextComponent(drawer.getStored().count() + " x ")
+                        .append(drawer.getStored().type().getHoverName().getString());
             }
         });
     }
@@ -330,41 +336,62 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
 
     @Override
     public void getExtraDrops(Consumer<ItemStack> dropper) {
-        dropper.accept(tubeStorage.getStored());
-        dropper.accept(wireStorage.getStored());
+        tubeStorage.drop(dropper);
+        wireStorage.drop(dropper);
         if (schematic != null) {
             dropper.accept(ISchematicItem.create(CEItems.SCHEMATIC, schematic));
         }
     }
 
     public static class AvailableIngredients {
-        private ItemStack availableTubes;
-        private ItemStack availableWires;
+        private Mutable<BigItemStack> availableTubes;
+        private Mutable<BigItemStack> availableWires;
 
         public AvailableIngredients(LogicWorkbenchBlockEntity bEntity) {
-            this.availableTubes = bEntity.getTubeStorage().getStored();
-            this.availableWires = bEntity.getWireStorage().getStored();
+            this.availableTubes = bEntity.getTubeStorage().getStoredRef();
+            this.availableWires = bEntity.getWireStorage().getStoredRef();
         }
 
         public AvailableIngredients() {
-            this.availableTubes = ItemStack.EMPTY;
-            this.availableWires = ItemStack.EMPTY;
+            this.availableTubes = new MutableObject<>(BigItemStack.EMPTY);
+            this.availableWires = new MutableObject<>(BigItemStack.EMPTY);
         }
 
-        public ItemStack getAvailableTubes() {
-            return availableTubes;
+        public BigItemStack getAvailableTubes() {
+            return availableTubes.getValue();
         }
 
-        public ItemStack getAvailableWires() {
-            return availableWires;
+        public BigItemStack getAvailableWires() {
+            return availableWires.getValue();
         }
 
-        public Slot makeTubeSlot(int id) {
-            return SyncContainer.makeSyncSlot(id, s -> availableTubes = s, () -> availableTubes);
+        public Pair<Slot, DataSlot> makeTubeSlot(int id) {
+            return makeSlot(id, availableTubes);
         }
 
-        public Slot makeWireSlot(int id) {
-            return SyncContainer.makeSyncSlot(id, s -> availableWires = s, () -> availableWires);
+        public Pair<Slot, DataSlot> makeWireSlot(int id) {
+            return makeSlot(id, availableWires);
+        }
+
+        private static Pair<Slot, DataSlot> makeSlot(int id, Mutable<BigItemStack> stack) {
+            return Pair.of(
+                    SyncContainer.makeSyncSlot(id, s -> {
+                        var oldCount = stack.getValue().count();
+                        stack.setValue(new BigItemStack(s, oldCount));
+                    }, () -> stack.getValue().type()),
+                    new DataSlot() {
+                        @Override
+                        public int get() {
+                            return stack.getValue().count();
+                        }
+
+                        @Override
+                        public void set(int value) {
+                            var oldType = stack.getValue().type();
+                            stack.setValue(new BigItemStack(oldType, value));
+                        }
+                    }
+            );
         }
     }
 }
