@@ -81,9 +81,8 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         if (circuit == null || energy.extractOrTrue(64) || level.getGameTime() % 2 != 0) {
             return;
         }
-        final Direction facing = getFacing(getBlockState());
         final Direction clockFace = getRotatedDirection(true);
-        boolean rsIn = level.getSignal(worldPosition.relative(clockFace), clockFace.getOpposite()) > 0;
+        boolean rsIn = level.getSignal(worldPosition.relative(clockFace), clockFace) > 0;
         if (!clock.getClock().tick(rsIn)) {
             return;
         }
