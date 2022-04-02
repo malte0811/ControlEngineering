@@ -74,7 +74,7 @@ public class LeafcellWithStatesElement extends SpecialManualElement {
     }
 
     private int getPixelsBeforeTable() {
-        return display.getPixelsTaken() + 2 * manual.fontRenderer().lineHeight;
+        return display.getPixelsTaken() + manual.fontRenderer().lineHeight;
     }
 
     @Override
@@ -86,7 +86,7 @@ public class LeafcellWithStatesElement extends SpecialManualElement {
         var nameWidth = manual.fontRenderer().width(symbol.getName());
         manual.fontRenderer().draw(
                 transform, symbol.getName(),
-                x + (manual.pageWidth - nameWidth) / 2f, y + display.getPixelsTaken(), 0
+                x + (manual.pageWidth - nameWidth) / 2f, y + display.getPixelsTaken() - 4, 0
         );
         truthTable.render(transform, gui, x, y + getPixelsBeforeTable(), mouseX, mouseY);
     }
