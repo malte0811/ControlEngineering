@@ -5,17 +5,42 @@ import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.logic.cells.impl.Digitizer;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.record.CodecField;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec3;
 import net.minecraft.util.Mth;
 
 import java.util.List;
 import java.util.Map;
 
 public class BusConnectedCircuit {
+    private static final MyCodec<Map<NetReference, List<BusSignalRef>>> OUTPUT_CONN_CODEC =
+            MyCodecs.codecForMap(NetReference.CODEC, MyCodecs.list(BusSignalRef.CODEC));
+    private static final MyCodec<Map<NetReference, Double>> CONSTANTS_CODEC =
+            MyCodecs.codecForMap(NetReference.CODEC, MyCodecs.DOUBLE);
+    public static final MyCodec<BusConnectedCircuit> CODEC = new RecordCodec3<>(
+            new CodecField<>("circuit", b -> b.circuit, Circuit.CODEC),
+            new CodecField<>("outputs", b -> b.outputConnections, OUTPUT_CONN_CODEC),
+            new CodecField<>("inputs", b -> b.inputConnections, MyCodecs.list(InputConnection.CODEC)),
+            BusConnectedCircuit::new
+    );
+
     private final Circuit circuit;
     private final Map<NetReference, List<BusSignalRef>> outputConnections;
     private final List<InputConnection> inputConnections;
-    private final Map<NetReference, Double> constantInputs;
     private BusState outputValues = BusState.EMPTY;
+
+    public BusConnectedCircuit(
+            Circuit circuit,
+            Map<NetReference, List<BusSignalRef>> outputConnections,
+            List<InputConnection> inputConnections
+    ) {
+        this.circuit = circuit;
+        this.outputConnections = outputConnections;
+        this.inputConnections = inputConnections;
+        propagateToOutputs();
+    }
 
     public BusConnectedCircuit(
             Circuit circuit,
@@ -23,10 +48,7 @@ public class BusConnectedCircuit {
             List<InputConnection> inputConnections,
             Map<NetReference, Double> constantInputs
     ) {
-        this.circuit = circuit;
-        this.outputConnections = outputConnections;
-        this.inputConnections = inputConnections;
-        this.constantInputs = constantInputs;
+        this(circuit, outputConnections, inputConnections);
         Preconditions.checkArgument(
                 inputConnections.stream()
                         .map(InputConnection::connectedNets)
@@ -34,6 +56,7 @@ public class BusConnectedCircuit {
                         .noneMatch(constantInputs::containsKey)
         );
         constantInputs.forEach(circuit::updateInputValue);
+        propagateToOutputs();
     }
 
     public void updateInputs(BusState bus) {
@@ -48,6 +71,10 @@ public class BusConnectedCircuit {
 
     public boolean tick() {
         circuit.tick();
+        return propagateToOutputs();
+    }
+
+    private boolean propagateToOutputs() {
         boolean changed = false;
         for (Map.Entry<NetReference, List<BusSignalRef>> output : outputConnections.entrySet()) {
             final int newValue = (int) Mth.clamp(
@@ -74,5 +101,12 @@ public class BusConnectedCircuit {
         return outputValues;
     }
 
-    public record InputConnection(BusSignalRef busSignal, List<NetReference> connectedNets, boolean digitized) {}
+    public record InputConnection(BusSignalRef busSignal, List<NetReference> connectedNets, boolean digitized) {
+        public static final MyCodec<InputConnection> CODEC = new RecordCodec3<>(
+                new CodecField<>("signal", InputConnection::busSignal, BusSignalRef.CODEC),
+                new CodecField<>("nets", InputConnection::connectedNets, MyCodecs.list(NetReference.CODEC)),
+                new CodecField<>("digitized", InputConnection::digitized, MyCodecs.BOOL),
+                InputConnection::new
+        );
+    }
 }

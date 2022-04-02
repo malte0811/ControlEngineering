@@ -21,6 +21,8 @@ import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import malte0811.controlengineering.util.math.MatrixUtils;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -60,6 +62,9 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     public static final int MAX_NUM_BOARDS = 4;
     public static final int LOGIC_TUBE_PER_RENDER_TUBES = 2;
     public static final int NUM_TUBES_PER_BOARD = 16;
+    private static final MyCodec<Pair<Schematic, BusConnectedCircuit>> CIRCUIT_CODEC = MyCodecs.pair(
+            Schematic.CODEC, BusConnectedCircuit.CODEC
+    );
 
     private final CEEnergyStorage energy = new CEEnergyStorage(2048, 2 * 128, 128);
     @Nullable
@@ -98,9 +103,9 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         super.load(nbt);
         clock.load(nbt.get("clock"));
         if (nbt.contains("circuit")) {
-            setCircuit(Schematic.CODEC.fromNBT(nbt.get("circuit")));
+            setSchematicAndComputeCircuit(Schematic.CODEC.fromNBT(nbt.get("circuit")));
         } else {
-            setCircuit(null);
+            setCircuit(CIRCUIT_CODEC.fromNBT(nbt.get("schematicAndCircuit")));
         }
         energy.readNBT(nbt.get("energy"));
     }
@@ -110,7 +115,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         super.saveAdditional(compound);
         compound.put("clock", clock.toNBT());
         if (circuit != null) {
-            compound.put("circuit", Schematic.CODEC.toNBT(circuit.getFirst()));
+            compound.put("schematicAndCircuit", CIRCUIT_CODEC.toNBT(circuit));
         }
         compound.put("energy", energy.writeNBT());
     }
@@ -189,21 +194,24 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         this.markBusDirty.run();
     }
 
-    public void setCircuit(@Nullable Schematic schematic) {
-        this.circuit = null;
-        if (schematic != null) {
-            Optional<BusConnectedCircuit> busCircuit = SchematicCircuitConverter.toCircuit(schematic);
-            if (busCircuit.isPresent()) {
-                this.circuit = Pair.of(schematic, busCircuit.get());
-            }
-        }
-        if (this.circuit != null) {
+    private void setCircuit(@Nullable Pair<Schematic, BusConnectedCircuit> circuit) {
+        this.circuit = circuit;
+        if (circuit != null) {
             this.numRenderTubes = Mth.ceil(
-                    this.circuit.getFirst().getNumLogicTubes() / (double) LOGIC_TUBE_PER_RENDER_TUBES
+                    circuit.getFirst().getNumLogicTubes() / (double) LOGIC_TUBE_PER_RENDER_TUBES
             );
-            this.circuit.getSecond().updateInputs(currentBusState);
+            circuit.getSecond().updateInputs(currentBusState);
         } else {
             this.numRenderTubes = 0;
+        }
+    }
+
+    public void setSchematicAndComputeCircuit(@Nonnull Schematic schematic) {
+        Optional<BusConnectedCircuit> busCircuit = SchematicCircuitConverter.toCircuit(schematic);
+        if (busCircuit.isPresent()) {
+            setCircuit(Pair.of(schematic, busCircuit.get()));
+        } else {
+            setCircuit(null);
         }
     }
 
@@ -287,7 +295,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
                 final Pair<Schematic, BusConnectedCircuit> oldSchematic = bEntity.circuit;
                 Pair<Schematic, BusConnectedCircuit> schematic = PCBStackItem.getSchematicAndCircuit(ctx.getItemInHand());
                 if (schematic != null) {
-                    bEntity.setCircuit(schematic.getFirst());
+                    bEntity.setSchematicAndComputeCircuit(schematic.getFirst());
                     ctx.getItemInHand().shrink(1);
                 } else {
                     bEntity.setCircuit(null);

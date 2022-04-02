@@ -82,8 +82,8 @@ public class CircuitTest {
         assertTrue(c, OUT_A);
         assertFalse(c, OUT_B);
 
-        CompoundTag serialized = c.toNBT();
-        c = Circuit.fromNBT(serialized);
+        var serialized = Circuit.CODEC.toNBT(c);
+        c = Circuit.CODEC.fromNBT(serialized);
         assertTrue(c, OUT_A);
         c.updateInputValue(IN_A, 1);
         assertTrue(c, OUT_A);

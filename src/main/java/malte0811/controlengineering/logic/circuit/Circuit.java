@@ -3,60 +3,40 @@ package malte0811.controlengineering.logic.circuit;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import malte0811.controlengineering.logic.cells.LeafcellInstance;
-import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import malte0811.controlengineering.util.mycodec.record.CodecField;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec4;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Circuit {
-    private static final String STAGES_KEY = "stages";
-    private static final String NETS_KEY = "nets";
-    private static final String CURRENT_VALUE_KEY = "current";
-    private static final String IS_INPUT_KEY = "isInput";
-    private static final String PINS_KEY = "pins";
     private static final MyCodec<List<LeafcellInstance<?>>> CELLS_CODEC = MyCodecs.list(LeafcellInstance.CODEC);
+    private static final MyCodec<Object2DoubleMap<NetReference>> NET_VALUES_CODEC =
+            MyCodecs.codecForMap(NetReference.CODEC, MyCodecs.DOUBLE).xmap(Object2DoubleOpenHashMap::new, m -> m);
+    private static final MyCodec<Map<PinReference, NetReference>> PIN_NET_CODEC =
+            MyCodecs.codecForMap(PinReference.CODEC, NetReference.CODEC);
+    public static final MyCodec<Circuit> CODEC = new RecordCodec4<>(
+            new CodecField<>("cellsInOrder", c -> c.cellsInTopoOrder, CELLS_CODEC),
+            new CodecField<>("inputValues", c -> c.inputValues, NET_VALUES_CODEC),
+            new CodecField<>("pinToNet", c -> c.pinToNet, PIN_NET_CODEC),
+            new CodecField<>("allNetValues", c -> c.allNetValues, NET_VALUES_CODEC),
+            Circuit::new
+    );
 
     private final List<LeafcellInstance<?>> cellsInTopoOrder;
     private final Object2DoubleMap<NetReference> allNetValues;
     private final Object2DoubleMap<NetReference> inputValues;
     private final Map<NetReference, PinReference> delayedNetsBySource;
     private final Map<PinReference, NetReference> pinToNet;
-
-    public static Circuit fromNBT(CompoundTag nbt) {
-        ListTag stages = nbt.getList(STAGES_KEY, Tag.TAG_LIST);
-        List<LeafcellInstance<?>> cellsInTopoOrder = CELLS_CODEC.fromNBT(stages);
-        Map<PinReference, NetReference> pinToNet = new HashMap<>();
-        CompoundTag netsNBT = nbt.getCompound(NETS_KEY);
-        Object2DoubleMap<NetReference> allNetValues = new Object2DoubleOpenHashMap<>();
-        Object2DoubleMap<NetReference> inputValues = new Object2DoubleOpenHashMap<>();
-        for (String netName : netsNBT.getAllKeys()) {
-            CompoundTag netNBT = netsNBT.getCompound(netName);
-            NetReference netRef = new NetReference(netName);
-            final double value = netNBT.getDouble(CURRENT_VALUE_KEY);
-            allNetValues.put(netRef, value);
-            if (netNBT.getBoolean(IS_INPUT_KEY)) {
-                inputValues.put(netRef, value);
-            }
-            for (Tag pinNBT : netNBT.getList(PINS_KEY, Tag.TAG_COMPOUND)) {
-                PinReference pin = PinReference.CODEC.fromNBT(pinNBT);
-                if (pin != null && isValidPin(pin, cellsInTopoOrder) && !pinToNet.containsKey(pin)) {
-                    pinToNet.put(pin, netRef);
-                }
-            }
-        }
-        return new Circuit(cellsInTopoOrder, inputValues, pinToNet, allNetValues);
-    }
 
     public Circuit(
             List<LeafcellInstance<?>> cellsInOrder,
@@ -92,45 +72,6 @@ public class Circuit {
         }
         this.delayedNetsBySource = delayedSources;
         this.allNetValues = netValues;
-    }
-
-    private static boolean isValidPin(PinReference pin, List<LeafcellInstance<?>> cellsInTopoOrder) {
-        if (pin.cell() >= cellsInTopoOrder.size()) {
-            return false;
-        }
-        LeafcellInstance<?> cell = cellsInTopoOrder.get(pin.cell());
-        Map<String, Pin> pins;
-        if (pin.isOutput()) {
-            pins = cell.getType().getOutputPins();
-        } else {
-            pins = cell.getType().getInputPins();
-        }
-        return pins.containsKey(pin.pinName());
-    }
-
-    public CompoundTag toNBT() {
-        Tag stages = CELLS_CODEC.toNBT(cellsInTopoOrder);
-        Map<NetReference, List<PinReference>> pinsByNet = new HashMap<>();
-        for (Map.Entry<PinReference, NetReference> entry : pinToNet.entrySet()) {
-            pinsByNet.computeIfAbsent(entry.getValue(), $ -> new ArrayList<>()).add(entry.getKey());
-        }
-        CompoundTag nets = new CompoundTag();
-        for (Map.Entry<NetReference, List<PinReference>> entry : pinsByNet.entrySet()) {
-            NetReference net = entry.getKey();
-            CompoundTag netNBT = new CompoundTag();
-            netNBT.putDouble(CURRENT_VALUE_KEY, allNetValues.getDouble(net));
-            ListTag netPins = new ListTag();
-            for (PinReference pin : entry.getValue()) {
-                netPins.add(PinReference.CODEC.toNBT(pin));
-            }
-            netNBT.put(PINS_KEY, netPins);
-            netNBT.putBoolean(IS_INPUT_KEY, inputValues.containsKey(net));
-            nets.put(net.id(), netNBT);
-        }
-        CompoundTag result = new CompoundTag();
-        result.put(STAGES_KEY, stages);
-        result.put(NETS_KEY, nets);
-        return result;
     }
 
     public double getNetValue(NetReference net) {
@@ -178,17 +119,5 @@ public class Circuit {
             inputValues.put(entry.getKey(), allNetValues.getDouble(netAtInput));
         }
         return inputValues;
-    }
-
-    public Object2DoubleMap<NetReference> getNetValues() {
-        return Object2DoubleMaps.unmodifiable(allNetValues);
-    }
-
-    public Collection<NetReference> getInputNets() {
-        return inputValues.keySet();
-    }
-
-    public Stream<LeafcellType<?>> getCellTypes() {
-        return cellsInTopoOrder.stream().map(LeafcellInstance::getType);
     }
 }
