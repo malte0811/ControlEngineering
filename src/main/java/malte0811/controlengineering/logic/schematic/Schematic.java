@@ -174,7 +174,7 @@ public class Schematic {
         );
     }
 
-    public int getNumTubes() {
+    public int getNumLogicTubes() {
         return getTotalCost(CellCost::numTubes);
     }
 

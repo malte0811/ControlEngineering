@@ -4,14 +4,11 @@ import com.google.common.base.Preconditions;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusState;
-import malte0811.controlengineering.logic.cells.CellCost;
-import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.impl.Digitizer;
 import net.minecraft.util.Mth;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.ToDoubleFunction;
 
 public class BusConnectedCircuit {
     private final Circuit circuit;
@@ -75,26 +72,6 @@ public class BusConnectedCircuit {
 
     public BusState getOutputState() {
         return outputValues;
-    }
-
-    private int getTotalCost(ToDoubleFunction<CellCost> individualCost) {
-        return Mth.ceil(getCircuit()
-                .getCellTypes()
-                .map(LeafcellType::getCost)
-                .mapToDouble(individualCost)
-                .sum());
-    }
-
-    public int getNumTubes() {
-        return getTotalCost(CellCost::numTubes);
-    }
-
-    public int getWireLength() {
-        return getTotalCost(CellCost::wireLength);
-    }
-
-    public int getSolderAmount() {
-        return getTotalCost(CellCost::getSolderAmount);
     }
 
     public record InputConnection(BusSignalRef busSignal, List<NetReference> connectedNets, boolean digitized) {}

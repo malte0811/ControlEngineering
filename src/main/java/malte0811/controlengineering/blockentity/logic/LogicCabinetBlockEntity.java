@@ -58,6 +58,7 @@ import static malte0811.controlengineering.blocks.logic.LogicCabinetBlock.NOT_MI
 public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IBusInterface,
         ISchematicBE, IExtraDropBE, IHasMaster<LogicCabinetBlockEntity> {
     public static final int MAX_NUM_BOARDS = 4;
+    public static final int LOGIC_TUBE_PER_RENDER_TUBES = 2;
     public static final int NUM_TUBES_PER_BOARD = 16;
 
     private final CEEnergyStorage energy = new CEEnergyStorage(2048, 2 * 128, 128);
@@ -65,15 +66,15 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     private Pair<Schematic, BusConnectedCircuit> circuit;
     private final ClockSlot clock = new ClockSlot();
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
-    private int numTubes;
+    private int numRenderTubes;
     private BusState currentBusState = BusState.EMPTY;
 
     public LogicCabinetBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
-    public static int getNumBoardsFor(int numTubes) {
-        return Mth.ceil(numTubes / (double) NUM_TUBES_PER_BOARD);
+    public static int getNumBoardsFor(int numLogicTubes) {
+        return Mth.ceil(numLogicTubes / (double) (NUM_TUBES_PER_BOARD * LOGIC_TUBE_PER_RENDER_TUBES));
     }
 
     public void tick() {
@@ -117,13 +118,13 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     @Override
     protected void writeSyncedData(CompoundTag result) {
         result.put("hasClock", clock.toClientNBT());
-        result.putInt("numTubes", numTubes);
+        result.putInt("numTubes", numRenderTubes);
     }
 
     @Override
     protected void readSyncedData(CompoundTag tag) {
         clock.loadClientNBT(tag.get("hasClock"));
-        numTubes = tag.getInt("numTubes");
+        numRenderTubes = tag.getInt("numTubes");
         requestModelDataUpdate();
         level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
     }
@@ -132,7 +133,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     @Override
     public IModelData getModelData() {
         return new SinglePropertyModelData<>(
-                new DynamicLogicModel.ModelData(numTubes, clock.isPresent()), DynamicLogicModel.DATA
+                new DynamicLogicModel.ModelData(numRenderTubes, clock.isPresent()), DynamicLogicModel.DATA
         );
     }
 
@@ -197,10 +198,12 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
             }
         }
         if (this.circuit != null) {
-            this.numTubes = this.circuit.getSecond().getNumTubes();
+            this.numRenderTubes = Mth.ceil(
+                    this.circuit.getFirst().getNumLogicTubes() / (double) LOGIC_TUBE_PER_RENDER_TUBES
+            );
             this.circuit.getSecond().updateInputs(currentBusState);
         } else {
-            this.numTubes = 0;
+            this.numRenderTubes = 0;
         }
     }
 

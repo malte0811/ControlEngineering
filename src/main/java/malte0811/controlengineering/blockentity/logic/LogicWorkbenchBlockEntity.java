@@ -239,11 +239,14 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
         if (!ctx.getItemInHand().is(IEItemRefs.CIRCUIT_BOARD.asItem()) || schematic == null) {
             return InteractionResult.PASS;
         }
+        if (level.isClientSide) {
+            return InteractionResult.SUCCESS;
+        }
         Optional<BusConnectedCircuit> circuit = SchematicCircuitConverter.toCircuit(schematic);
         if (circuit.isEmpty()) {
             return InteractionResult.FAIL;
         }
-        final int numTubes = circuit.get().getNumTubes();
+        final int numTubes = schematic.getNumLogicTubes();
         final int numBoards = LogicCabinetBlockEntity.getNumBoardsFor(numTubes);
         if (numBoards > LogicCabinetBlockEntity.MAX_NUM_BOARDS) {
             ctx.getPlayer().displayClientMessage(
@@ -255,7 +258,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
             ctx.getPlayer().displayClientMessage(new TranslatableComponent(TOO_FEW_BOARDS_HELD, numBoards), true);
             return InteractionResult.FAIL;
         }
-        final int numWires = circuit.get().getWireLength();
+        final int numWires = schematic.getWireLength();
         if (!level.isClientSide) {
             final boolean enoughTubes = tubeStorage.canConsume(numTubes);
             final boolean enoughWires = wireStorage.canConsume(numWires);
@@ -266,6 +269,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
                 level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
                 ItemUtil.giveOrDrop(ctx.getPlayer(), PCBStackItem.forSchematic(schematic));
                 schematic = null;
+                setChanged();
             } else if (!enoughTubes) {
                 ctx.getPlayer().displayClientMessage(new TranslatableComponent(TOO_FEW_TUBES, numTubes), true);
             } else {

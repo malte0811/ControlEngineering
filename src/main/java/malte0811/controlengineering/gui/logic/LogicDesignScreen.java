@@ -219,7 +219,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         AvailableIngredients stored = container.getAvailableIngredients();
         transform.pushPose();
         transform.translate(width - TOTAL_BORDER - 17, height - TOTAL_BORDER - 17, 0);
-        final int numTubes = schematic.getNumTubes();
+        final int numTubes = schematic.getNumLogicTubes();
         final int numWires = schematic.getWireLength();
         final int numBoards = LogicCabinetBlockEntity.getNumBoardsFor(numTubes);
         renderIngredient(transform, null, numBoards, IEItemRefs.CIRCUIT_BOARD);
