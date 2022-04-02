@@ -16,6 +16,7 @@ public class ListShapes extends SelectionShapes {
     private final Matrix4f outerToInner;
     private final List<? extends SelectionShapes> shapes;
     private final Function<UseOnContext, InteractionResult> onClick;
+    private boolean allowTargetThrough = false;
 
     public ListShapes(
             VoxelShape mainShape,
@@ -54,5 +55,15 @@ public class ListShapes extends SelectionShapes {
         } else {
             return defaultType;
         }
+    }
+
+    public SelectionShapes setAllowTargetThrough(boolean b) {
+        this.allowTargetThrough = b;
+        return this;
+    }
+
+    @Override
+    public boolean allowTargetThroughOuter() {
+        return this.allowTargetThrough;
     }
 }

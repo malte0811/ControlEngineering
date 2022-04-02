@@ -81,7 +81,7 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
                                     new SingleShape(KeypunchBlockEntity.OUTPUT_SHAPE, takeTape)
                             ),
                             $ -> InteractionResult.PASS
-                    );
+                    ).setAllowTargetThrough(true);
                 } else {
                     return new SingleShape(baseShape, $ -> InteractionResult.PASS);
                 }
