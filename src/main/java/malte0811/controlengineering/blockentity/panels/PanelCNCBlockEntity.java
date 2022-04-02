@@ -28,7 +28,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -128,10 +127,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
             if (PanelTopItem.isEmptyPanelTop(heldItem)) {
                 if (!level.isClientSide) {
                     setState(state.addPanel());
-                    Player player = ctx.getPlayer();
-                    if (player == null || !player.getAbilities().instabuild) {
-                        heldItem.shrink(1);
-                    }
+                    heldItem.shrink(1);
                 }
                 return InteractionResult.SUCCESS;
             }

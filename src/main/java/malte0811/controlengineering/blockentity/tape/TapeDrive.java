@@ -8,7 +8,6 @@ import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 
@@ -37,10 +36,7 @@ public class TapeDrive {
                 if (!level.isClientSide) {
                     insertedTape = PunchedTapeItem.getBytes(held);
                     onAdd.run();
-                    Player player = ctx.getPlayer();
-                    if (player == null || !player.getAbilities().instabuild) {
-                        held.shrink(1);
-                    }
+                    held.shrink(1);
                 }
                 return InteractionResult.SUCCESS;
             }
