@@ -331,7 +331,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
             return false;
         }
         clickWasConsumed = true;
-        final Vec2d mousePos = getMousePosition(mouseX, mouseY);
+        final Vec2d mousePos = getMousePosition((int) mouseXDown, (int) mouseYDown);
         PlacedSymbol placed = getPlacingSymbol(mousePos);
         if (placed != null) {
             if (schematic.makeChecker(minecraft.level).canAdd(placed)) {
