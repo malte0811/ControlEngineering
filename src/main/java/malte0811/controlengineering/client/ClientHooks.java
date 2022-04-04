@@ -27,8 +27,7 @@ public class ClientHooks {
     public static void processLogicPacketOnClient(LogicSubPacket packet) {
         LogicDesignScreen currentScreen = StackedScreen.findInstanceOf(LogicDesignScreen.class);
         if (currentScreen != null) {
-            packet.process(currentScreen.getSchematic(), currentScreen::setSchematic, Minecraft.getInstance().level);
-            currentScreen.updateErrors();
+            currentScreen.process(packet);
         }
     }
 }

@@ -26,7 +26,11 @@ public record Vec2i(int x, int y) implements Comparable<Vec2i> {
     }
 
     public Vec2i add(Vec2i other) {
-        return new Vec2i(x + other.x, y + other.y);
+        return add(other.x, other.y);
+    }
+
+    public Vec2i add(int x, int y) {
+        return new Vec2i(this.x + x, this.y + y);
     }
 
     private static final Comparator<Vec2i> COMPARATOR = Comparator.<Vec2i>comparingInt(v -> v.x)

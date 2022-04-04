@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.util.ScreenUtils;
+import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
@@ -95,6 +96,10 @@ public record WireSegment(Vec2i start, int length, WireAxis axis) {
                 end().x() + 1 - WIRE_SPACE, end().y() + 1 - WIRE_SPACE,
                 color
         );
+    }
+
+    public RectangleI getShape() {
+        return new RectangleI(start(), end().add(1, 1));
     }
 
     public enum WireAxis {

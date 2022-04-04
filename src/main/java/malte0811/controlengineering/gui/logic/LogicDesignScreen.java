@@ -26,6 +26,7 @@ import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
 import malte0811.controlengineering.network.logic.*;
 import malte0811.controlengineering.util.ScreenUtils;
 import malte0811.controlengineering.util.TextUtil;
+import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.ChatFormatting;
@@ -44,6 +45,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static net.minecraft.util.Mth.ceil;
@@ -406,14 +408,17 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         if (!super.mouseScrolled(mouseX, mouseY, delta)) {
             final float zoomScale = 1.1f;
             if (delta > 0) {
-                currentScale *= zoomScale;
+                setScale(currentScale * zoomScale);
             } else {
-                currentScale /= zoomScale;
+                setScale(currentScale / zoomScale);
             }
-            currentScale = Mth.clamp(currentScale, minScale, 10);
             clampView();
         }
         return true;
+    }
+
+    private void setScale(float newScale) {
+        currentScale = Mth.clamp(newScale, minScale, 10);
     }
 
     @Override
@@ -514,6 +519,27 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
 
     public void setSchematic(Schematic schematic) {
         this.schematic = schematic;
+        var level = Objects.requireNonNull(Minecraft.getInstance().level);
+        RectangleI totalArea = null;
+        for (var symbol : schematic.getSymbols()) {
+            totalArea = symbol.getShape(level).union(totalArea);
+        }
+        for (var net : schematic.getNets()) {
+            for (var wire : net.getAllSegments()) {
+                totalArea = wire.getShape().union(totalArea);
+            }
+        }
+        if (totalArea == null) {
+            totalArea = new RectangleI(-1, -1, 1, 1);
+        }
+        var center = totalArea.center();
+        centerX = center.x();
+        centerY = center.y();
+        // Subtract 3x border to get a bit of space between circuit and actual border
+        var scaleX = (width - 3 * TOTAL_BORDER) / (float) totalArea.getWidth();
+        var scaleY = (height - 3 * TOTAL_BORDER) / (float) totalArea.getHeight();
+        setScale(Math.min(Math.min(scaleX, scaleY), BASE_SCALE));
+        clampView();
     }
 
     public Schematic getSchematic() {
@@ -521,8 +547,16 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     }
 
     private boolean runAndSendToServer(LogicSubPacket data) {
-        if (data.process(schematic, this::setSchematic, minecraft.level)) {
+        if (process(data)) {
             sendToServer(data);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean process(LogicSubPacket packet) {
+        if (packet.process(getSchematic(), this::setSchematic, Minecraft.getInstance().level)) {
+            updateErrors();
             return true;
         }
         return false;
