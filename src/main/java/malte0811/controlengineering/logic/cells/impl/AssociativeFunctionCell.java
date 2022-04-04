@@ -2,12 +2,7 @@ package malte0811.controlengineering.logic.cells.impl;
 
 import blusunrize.immersiveengineering.api.tool.LogicCircuitHandler;
 import com.google.common.collect.ImmutableMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
-import malte0811.controlengineering.logic.cells.CellCost;
-import malte0811.controlengineering.logic.cells.Pin;
-import malte0811.controlengineering.logic.cells.PinDirection;
-import malte0811.controlengineering.logic.cells.SignalType;
+import malte0811.controlengineering.logic.cells.*;
 import net.minecraft.world.phys.shapes.BooleanOp;
 
 public class AssociativeFunctionCell extends StatelessCell {
@@ -34,12 +29,13 @@ public class AssociativeFunctionCell extends StatelessCell {
     }
 
     @Override
-    public Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals) {
+    public CircuitSignals getOutputSignals(CircuitSignals inputSignals) {
         boolean result = baseState;
-        for (double d : inputSignals.values()) {
-            result = func.apply(result, bool(d));
+        var numTrue = inputSignals.numTrue();
+        for (int i = 0; i < inputSignals.size(); ++i) {
+            result = func.apply(result, i < numTrue);
         }
-        return Object2DoubleMaps.singleton(DEFAULT_OUT_NAME, debool(result));
+        return CircuitSignals.singleton(DEFAULT_OUT_NAME, result);
     }
 
     public BooleanOp getBaseFunction() {

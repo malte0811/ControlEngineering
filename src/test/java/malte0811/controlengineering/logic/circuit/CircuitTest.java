@@ -1,5 +1,6 @@
 package malte0811.controlengineering.logic.circuit;
 
+import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.cells.SignalType;
 import net.minecraft.nbt.CompoundTag;
@@ -30,11 +31,11 @@ public class CircuitTest {
     }
 
     private void assertTrue(Circuit c, NetReference net) {
-        Assert.assertEquals(1, c.getNetValue(net), 0);
+        Assert.assertEquals(BusLine.MAX_VALID_VALUE, c.getNetValue(net));
     }
 
     private void assertFalse(Circuit c, NetReference net) {
-        Assert.assertEquals(0, c.getNetValue(net), 0);
+        Assert.assertEquals(BusLine.MIN_VALID_VALUE, c.getNetValue(net));
     }
 
     @Test

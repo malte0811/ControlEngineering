@@ -1,12 +1,7 @@
 package malte0811.controlengineering.logic.cells.impl;
 
 import com.google.common.collect.ImmutableMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
-import malte0811.controlengineering.logic.cells.CellCost;
-import malte0811.controlengineering.logic.cells.Pin;
-import malte0811.controlengineering.logic.cells.PinDirection;
-import malte0811.controlengineering.logic.cells.SignalType;
+import malte0811.controlengineering.logic.cells.*;
 
 public class NotCell extends StatelessCell {
     private static final String IN_NAME = "in";
@@ -20,7 +15,7 @@ public class NotCell extends StatelessCell {
     }
 
     @Override
-    public Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals) {
-        return Object2DoubleMaps.singleton(DEFAULT_OUT_NAME, debool(!bool(inputSignals.getDouble(IN_NAME))));
+    public CircuitSignals getOutputSignals(CircuitSignals inputSignals) {
+        return CircuitSignals.singleton(DEFAULT_OUT_NAME, !inputSignals.bool(IN_NAME));
     }
 }

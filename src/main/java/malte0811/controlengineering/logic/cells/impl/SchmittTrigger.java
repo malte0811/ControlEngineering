@@ -1,8 +1,6 @@
 package malte0811.controlengineering.logic.cells.impl;
 
 import com.google.common.collect.ImmutableMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
 import malte0811.controlengineering.logic.cells.*;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 
@@ -25,19 +23,19 @@ public class SchmittTrigger extends LeafcellType<Boolean> {
     }
 
     @Override
-    public Boolean nextState(Object2DoubleMap<String> inputSignals, Boolean currentState) {
+    public Boolean nextState(CircuitSignals inputSignals, Boolean currentState) {
         if (currentState) {
-            if (inputSignals.getDouble(DEFAULT_IN_NAME) <= inputSignals.getDouble(LOW_PIN)) {
+            if (inputSignals.value(DEFAULT_IN_NAME) <= inputSignals.value(LOW_PIN)) {
                 return false;
             }
-        } else if (inputSignals.getDouble(DEFAULT_IN_NAME) >= inputSignals.getDouble(HIGH_PIN)) {
+        } else if (inputSignals.value(DEFAULT_IN_NAME) >= inputSignals.value(HIGH_PIN)) {
             return true;
         }
         return currentState;
     }
 
     @Override
-    public Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals, Boolean oldState) {
-        return Object2DoubleMaps.singleton(DEFAULT_OUT_NAME, debool(nextState(inputSignals, oldState)));
+    public CircuitSignals getOutputSignals(CircuitSignals inputSignals, Boolean oldState) {
+        return CircuitSignals.singleton(DEFAULT_OUT_NAME, nextState(inputSignals, oldState));
     }
 }

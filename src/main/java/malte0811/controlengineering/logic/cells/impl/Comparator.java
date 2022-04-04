@@ -1,12 +1,7 @@
 package malte0811.controlengineering.logic.cells.impl;
 
 import com.google.common.collect.ImmutableMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
-import malte0811.controlengineering.logic.cells.CellCost;
-import malte0811.controlengineering.logic.cells.Pin;
-import malte0811.controlengineering.logic.cells.PinDirection;
-import malte0811.controlengineering.logic.cells.SignalType;
+import malte0811.controlengineering.logic.cells.*;
 
 public class Comparator extends StatelessCell {
     public static final String POSITIVE = "positive";
@@ -24,9 +19,9 @@ public class Comparator extends StatelessCell {
     }
 
     @Override
-    protected Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals) {
-        return Object2DoubleMaps.singleton(
-                DEFAULT_OUT_NAME, debool(inputSignals.getDouble(POSITIVE) >= inputSignals.getDouble(NEGATIVE))
+    protected CircuitSignals getOutputSignals(CircuitSignals inputSignals) {
+        return CircuitSignals.singleton(
+                DEFAULT_OUT_NAME, inputSignals.value(POSITIVE) >= inputSignals.value(NEGATIVE)
         );
     }
 }

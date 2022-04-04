@@ -1,7 +1,6 @@
 package malte0811.controlengineering.logic.cells;
 
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
@@ -24,10 +23,8 @@ public abstract class LeafcellType<State> extends TypedRegistryEntry<State, Leaf
     private final CellCost cost;
 
     protected LeafcellType(
-            Map<String, Pin> inputPins,
-            Map<String, Pin> outputPins,
-            State initialState,
-            MyCodec<State> stateCodec,
+            Map<String, Pin> inputPins, Map<String, Pin> outputPins,
+            State initialState, MyCodec<State> stateCodec,
             CellCost cost
     ) {
         super(initialState, stateCodec);
@@ -43,9 +40,9 @@ public abstract class LeafcellType<State> extends TypedRegistryEntry<State, Leaf
         return new LeafcellInstance<>(this, state);
     }
 
-    public abstract State nextState(Object2DoubleMap<String> inputSignals, State currentState);
+    public abstract State nextState(CircuitSignals inputSignals, State currentState);
 
-    public abstract Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals, State oldState);
+    public abstract CircuitSignals getOutputSignals(CircuitSignals inputSignals, State oldState);
 
     public Map<String, Pin> getInputPins() {
         return inputPins;
@@ -57,13 +54,5 @@ public abstract class LeafcellType<State> extends TypedRegistryEntry<State, Leaf
 
     public CellCost getCost() {
         return cost;
-    }
-
-    protected static boolean bool(double value) {
-        return value > 0.5;
-    }
-
-    protected static double debool(boolean value) {
-        return value ? 1 : 0;
     }
 }

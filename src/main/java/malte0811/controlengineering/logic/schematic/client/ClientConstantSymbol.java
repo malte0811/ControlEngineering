@@ -16,14 +16,14 @@ import java.util.function.Consumer;
 import static malte0811.controlengineering.logic.schematic.symbol.ConstantSymbol.BOX_SIZE;
 import static malte0811.controlengineering.logic.schematic.symbol.ConstantSymbol.INPUT_KEY;
 
-public class ClientConstantSymbol extends ClientSymbol<Double, ConstantSymbol> {
+public class ClientConstantSymbol extends ClientSymbol<Integer, ConstantSymbol> {
     public ClientConstantSymbol(ConstantSymbol serverSymbol) {
         super(serverSymbol);
     }
 
     @Override
-    public void renderCustom(PoseStack transform, int x, int y, @Nullable Double state) {
-        int color = RedstoneTapeUtils.getRSColor(state == null ? 0 : state.floatValue());
+    public void renderCustom(PoseStack transform, int x, int y, @Nullable Integer state) {
+        int color = RedstoneTapeUtils.getRSColor(state == null ? 0 : state / (float) BusLine.MAX_VALID_VALUE);
         GuiComponent.fill(
                 transform,
                 x + BOX_SIZE, y + BOX_SIZE / 2,
@@ -32,7 +32,7 @@ public class ClientConstantSymbol extends ClientSymbol<Double, ConstantSymbol> {
         );
         final String text;
         if (state != null) {
-            text = Integer.toString((int) Math.round(state * BusLine.MAX_VALID_VALUE));
+            text = Integer.toString(state);
         } else {
             text = "";
         }
@@ -40,11 +40,11 @@ public class ClientConstantSymbol extends ClientSymbol<Double, ConstantSymbol> {
     }
 
     @Override
-    public void createInstanceWithUI(Consumer<? super SymbolInstance<Double>> onDone, Double initialState) {
+    public void createInstanceWithUI(Consumer<? super SymbolInstance<Integer>> onDone, Integer initialState) {
         Minecraft.getInstance().setScreen(new IntSelector(
-                i -> onDone.accept(new SymbolInstance<>(serverSymbol, i / (double) BusLine.MAX_VALID_VALUE)),
+                i -> onDone.accept(new SymbolInstance<>(serverSymbol, i)),
                 INPUT_KEY,
-                BusLine.MIN_VALID_VALUE, BusLine.MAX_VALID_VALUE, (int) (initialState * BusLine.MAX_VALID_VALUE)
+                BusLine.MIN_VALID_VALUE, BusLine.MAX_VALID_VALUE, initialState
         ));
     }
 }

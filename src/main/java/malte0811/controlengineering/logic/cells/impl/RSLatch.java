@@ -1,8 +1,6 @@
 package malte0811.controlengineering.logic.cells.impl;
 
 import com.google.common.collect.ImmutableMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import malte0811.controlengineering.logic.cells.*;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 
@@ -32,9 +30,9 @@ public class RSLatch extends LeafcellType<Boolean> {
     }
 
     @Override
-    public Boolean nextState(Object2DoubleMap<String> inputSignals, Boolean currentState) {
-        boolean r = bool(inputSignals.getDouble(RESET));
-        boolean s = bool(inputSignals.getDouble(SET));
+    public Boolean nextState(CircuitSignals inputSignals, Boolean currentState) {
+        boolean r = inputSignals.bool(RESET);
+        boolean s = inputSignals.bool(SET);
         if (r && s) {
             //TODO?
             return RAND.nextBoolean();
@@ -48,8 +46,7 @@ public class RSLatch extends LeafcellType<Boolean> {
     }
 
     @Override
-    public Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals, Boolean oldState) {
-        final double q = oldState ? 1 : 0;
-        return new Object2DoubleArrayMap<>(ImmutableMap.of(Q, q, NOT_Q, 1 - q));
+    public CircuitSignals getOutputSignals(CircuitSignals inputSignals, Boolean oldState) {
+        return CircuitSignals.ofBools(ImmutableMap.of(Q, oldState, NOT_Q, !oldState));
     }
 }

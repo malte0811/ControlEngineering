@@ -3,6 +3,7 @@ package malte0811.controlengineering.logic.schematic;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import com.mojang.datafixers.util.Pair;
+import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
@@ -161,7 +162,7 @@ public class SchematicCircuitConverter {
                 .toList();
     }
 
-    private static Map<NetReference, Double> getConstantNets(Map<NetReference, List<ConnectedPin>> nets) {
+    private static Map<NetReference, Integer> getConstantNets(Map<NetReference, List<ConnectedPin>> nets) {
         return getNetsWithSource(nets, SchematicSymbols.CONSTANT);
     }
 
@@ -187,16 +188,21 @@ public class SchematicCircuitConverter {
         final Map<ConnectedPin, NetReference> pinsToNet = toPinNetMap(nets);
         final Map<NetReference, List<BusSignalRef>> outputConnections = getOutputConnections(nets);
         final List<InputConnection> inputConnections = getInputConnections(nets);
-        final Map<NetReference, Double> constantNets = getConstantNets(nets);
+        final Map<NetReference, Integer> constantNets = getConstantNets(nets);
         CircuitBuilder builder = CircuitBuilder.builder();
         for (var inputConnection : inputConnections) {
             for (NetReference netAtInput : inputConnection.connectedNets()) {
                 builder.addInputNet(netAtInput, inputConnection.digitized() ? SignalType.DIGITAL : SignalType.ANALOG);
             }
         }
-        for (Entry<NetReference, Double> entry : constantNets.entrySet()) {
-            double value = entry.getValue();
-            builder.addInputNet(entry.getKey(), value == 1 || value == 0 ? SignalType.DIGITAL : SignalType.ANALOG);
+        for (var entry : constantNets.entrySet()) {
+            int value = entry.getValue();
+            SignalType type;
+            if (value == BusLine.MIN_VALID_VALUE || value == BusLine.MAX_VALID_VALUE)
+                type = SignalType.DIGITAL;
+            else
+                type = SignalType.ANALOG;
+            builder.addInputNet(entry.getKey(), type);
         }
         for (Entry<NetReference, List<ConnectedPin>> net : nets.entrySet()) {
             Optional<ConnectedPin> source = getSource(net.getValue());

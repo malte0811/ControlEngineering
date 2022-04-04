@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ConstantSymbol extends SchematicSymbol<Double> {
+public class ConstantSymbol extends SchematicSymbol<Integer> {
     public static final String INPUT_KEY = ControlEngineering.MODID + ".gui.analogStrength";
     public static final String NAME = ControlEngineering.MODID + ".symbol.constantSymbol";
     public static final int BOX_SIZE = 5;
@@ -30,22 +30,22 @@ public class ConstantSymbol extends SchematicSymbol<Double> {
     ));
 
     public ConstantSymbol() {
-        super(0., MyCodecs.DOUBLE);
+        super(0, MyCodecs.INTEGER);
     }
 
     @Override
-    public int getXSize(Double state, @Nonnull Level level) {
+    public int getXSize(Integer state, @Nonnull Level level) {
         return 6;
     }
 
     @Override
-    public int getYSize(Double state, @Nonnull Level level) {
-        return 3;
+    public int getYSize(Integer state, @Nonnull Level level) {
+        return 5;
     }
 
     @Override
-    public List<SymbolPin> getPins(@Nullable Double state) {
-        if (state == null || (state != 0 && state != 1)) {
+    public List<SymbolPin> getPins(@Nullable Integer state) {
+        if (state == null || (state != BusLine.MIN_VALID_VALUE && state != BusLine.MAX_VALID_VALUE)) {
             return ANALOG;
         } else {
             return DIGITAL;
@@ -58,7 +58,7 @@ public class ConstantSymbol extends SchematicSymbol<Double> {
     }
 
     @Override
-    public List<MutableComponent> getExtraDescription(Double state) {
-        return ImmutableList.of(new TranslatableComponent(INPUT_KEY, (int) (state * BusLine.MAX_VALID_VALUE)));
+    public List<MutableComponent> getExtraDescription(Integer state) {
+        return ImmutableList.of(new TranslatableComponent(INPUT_KEY, state));
     }
 }

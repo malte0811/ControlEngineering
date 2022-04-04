@@ -46,7 +46,7 @@ public class BusConnectedCircuit {
             Circuit circuit,
             Map<NetReference, List<BusSignalRef>> outputConnections,
             List<InputConnection> inputConnections,
-            Map<NetReference, Double> constantInputs
+            Map<NetReference, Integer> constantInputs
     ) {
         this(circuit, outputConnections, inputConnections);
         Preconditions.checkArgument(
@@ -61,7 +61,7 @@ public class BusConnectedCircuit {
 
     public void updateInputs(BusState bus) {
         for (var input : inputConnections) {
-            final var rawValue = bus.getSignal(input.busSignal()) / (double) BusLine.MAX_VALID_VALUE;
+            final var rawValue = bus.getSignal(input.busSignal());
             final var realValue = input.digitized() ? Digitizer.digitize(rawValue) : rawValue;
             for (NetReference circuitNet : input.connectedNets()) {
                 circuit.updateInputValue(circuitNet, realValue);
@@ -77,10 +77,8 @@ public class BusConnectedCircuit {
     private boolean propagateToOutputs() {
         boolean changed = false;
         for (Map.Entry<NetReference, List<BusSignalRef>> output : outputConnections.entrySet()) {
-            final int newValue = (int) Mth.clamp(
-                    BusLine.MAX_VALID_VALUE * circuit.getNetValue(output.getKey()),
-                    BusLine.MIN_VALID_VALUE,
-                    BusLine.MAX_VALID_VALUE
+            final int newValue = Mth.clamp(
+                    circuit.getNetValue(output.getKey()), BusLine.MIN_VALID_VALUE, BusLine.MAX_VALID_VALUE
             );
             for (BusSignalRef busSignal : output.getValue()) {
                 final int currentValue = outputValues.getSignal(busSignal);

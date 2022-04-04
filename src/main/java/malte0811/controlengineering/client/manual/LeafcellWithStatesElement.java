@@ -6,8 +6,10 @@ import blusunrize.lib.manual.SpecialManualElement;
 import blusunrize.lib.manual.gui.ManualScreen;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
-import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import malte0811.controlengineering.bus.BusLine;
+import malte0811.controlengineering.logic.cells.CircuitSignals;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbols;
@@ -45,17 +47,17 @@ public class LeafcellWithStatesElement extends SpecialManualElement {
             }
             table.add(namesRow);
         }
-        Object2DoubleMap<String> inputs = new Object2DoubleOpenHashMap<>();
+        Object2IntMap<String> inputs = new Object2IntOpenHashMap<>();
         for (int packedInputs = 0; packedInputs < 1 << inputNames.size(); ++packedInputs) {
             List<Component> line = new ArrayList<>();
             for (int i = 0; i < inputNames.size(); ++i) {
                 var value = (packedInputs >> i) & 1;
-                inputs.put(inputNames.get(i), value);
+                inputs.put(inputNames.get(i), value * BusLine.MAX_VALID_VALUE);
                 line.add(new TextComponent(Integer.toString(value)));
             }
-            var outputs = cell.getOutputSignals(inputs, null);
+            var outputs = cell.getOutputSignals(new CircuitSignals(inputs), null);
             for (var output : outputNames) {
-                line.add(new TextComponent(Integer.toString((int) outputs.getDouble(output))));
+                line.add(new TextComponent(outputs.bool(output) ? "1" : "0"));
             }
             table.add(line);
         }

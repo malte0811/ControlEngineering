@@ -1,8 +1,8 @@
 package malte0811.controlengineering.logic.cells.impl;
 
 import com.mojang.datafixers.util.Unit;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import malte0811.controlengineering.logic.cells.CellCost;
+import malte0811.controlengineering.logic.cells.CircuitSignals;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
@@ -15,14 +15,14 @@ public abstract class StatelessCell extends LeafcellType<Unit> {
     }
 
     @Override
-    public final Unit nextState(Object2DoubleMap<String> inputSignals, Unit currentState) {
+    public final Unit nextState(CircuitSignals inputSignals, Unit currentState) {
         return currentState;
     }
 
     @Override
-    public final Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals, Unit oldState) {
+    public final CircuitSignals getOutputSignals(CircuitSignals inputSignals, Unit oldState) {
         return getOutputSignals(inputSignals);
     }
 
-    protected abstract Object2DoubleMap<String> getOutputSignals(Object2DoubleMap<String> inputSignals);
+    protected abstract CircuitSignals getOutputSignals(CircuitSignals inputSignals);
 }
