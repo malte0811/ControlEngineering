@@ -10,6 +10,7 @@
   "block.controlengineering.panel_designer": "Panel Designer",
   "block.controlengineering.rs_remapper": "Redstone Wire Remapper",
   "block.controlengineering.sequencer": "Signal Sequencer",
+  "cell.controlengineering.analog_mux.name": "Analog Multiplexer",
   "cell.controlengineering.and2.name": "2-input AND",
   "cell.controlengineering.and3.name": "3-input AND",
   "cell.controlengineering.comparator.name": "Comparator",

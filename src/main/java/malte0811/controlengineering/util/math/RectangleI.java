@@ -49,4 +49,8 @@ public record RectangleI(int minX, int minY, int maxX, int maxY) {
     public Vec2d center() {
         return new Vec2d(minX() + getWidth() / 2., minY() + getHeight() / 2.);
     }
+
+    public RectangleI offset(Vec2i by) {
+        return new RectangleI(minX() + by.x(), minY() + by.y(), maxX() + by.x(), maxY + by.y());
+    }
 }

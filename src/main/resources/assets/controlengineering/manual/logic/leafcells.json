@@ -23,6 +23,14 @@
     "type": "controlengineering:leafcell",
     "cell": "controlengineering:schmitt_trigger"
   },
+  "analog_mux": {
+    "type": "controlengineering:leafcell",
+    "cell": "controlengineering:analog_mux"
+  },
+  "digital_mux": {
+    "type": "controlengineering:leafcell",
+    "cell": "controlengineering:digital_mux"
+  },
   "and2": {
     "type": "controlengineering:leafcell_truth",
     "cell": "controlengineering:and2"

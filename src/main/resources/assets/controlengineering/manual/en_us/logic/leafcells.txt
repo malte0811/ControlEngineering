@@ -7,6 +7,8 @@ The most common types of leafcell are simple logic gates. Except for the NOT gat
 <&digitizer>The Digitizer is the simplest way of converting an analog signal to a digital one. The output is high if the input signal exceeds 127 and low otherwise.
 <&comparator>A comparator can be thought of as a more general version of the digitizer. Its output is high if the input on the positive input pin as at least as strong as the signal on the negative input pin.
 <&schmitt_trigger>A Schmitt-Trigger is a special way of converting analog signals to digital ones. In addition to the signal to be digitized it accepts a lower and upper threshold. When the output signal is high, the input signal has to sink below the lower threshold for the output to become low; when the output is low the input has to rise over the upper threshold for the output to toggle. This can be useful to avoid rapid toggling when the input is near a threshold.
+<&analog_mux>An analog multiplexer is used to connect an output to one of two different signals depending on a third signal. When the selection input at the bottom is low the output signal is the same as the analog signal on the upper input pin, otherwise it is the signal at the lower input pin.
+<&digital_mux>The digital multiplexer works just as the analog one, but accepts and outputs only digital signals.
 <&and2>
 <&and3>
 <&or2>

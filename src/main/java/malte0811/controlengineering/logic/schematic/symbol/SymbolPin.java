@@ -1,13 +1,20 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Quaternion;
 import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.WireSegment;
 import malte0811.controlengineering.util.ScreenUtils;
 import malte0811.controlengineering.util.math.Vec2i;
+import net.minecraft.util.Mth;
 
-public record SymbolPin(Vec2i position, SignalType type, PinDirection direction, String pinName)  {
+public record SymbolPin(
+        Vec2i position, SignalType type, PinDirection direction, String pinName, boolean vertical
+) {
+    public SymbolPin(Vec2i position, SignalType type, PinDirection direction, String pinName) {
+        this(position, type, direction, pinName, false);
+    }
 
     public SymbolPin(int x, int y, SignalType type, PinDirection direction, String pinName) {
         this(new Vec2i(x, y), type, direction, pinName);
@@ -38,19 +45,28 @@ public record SymbolPin(Vec2i position, SignalType type, PinDirection direction,
     }
 
     public void render(PoseStack stack, int x, int y, int wireColor) {
-        final Vec2i pinPos = position();
+        final Vec2i pinPos = position().add(x, y);
+        if (vertical) {
+            stack.pushPose();
+            stack.translate(pinPos.x() + 0.5, pinPos.y() + 0.5, 0);
+            stack.mulPose(new Quaternion(0, 0, -Mth.HALF_PI, false));
+            stack.translate(-0.5 - pinPos.x(), -0.5 - pinPos.y(), 0);
+        }
         final int wirePixels = 1;
-        final float wireXMin = pinPos.x() + x + (isOutput() ? -wirePixels : WireSegment.WIRE_SPACE);
-        final float wireXMax = pinPos.x() + x + (isOutput() ? 1 - WireSegment.WIRE_SPACE : (1 + wirePixels));
-        final float yMin = y + pinPos.y() + WireSegment.WIRE_SPACE;
-        final float yMax = y + pinPos.y() + 1 - WireSegment.WIRE_SPACE;
+        final float wireXMin = pinPos.x() + (isOutput() ? -wirePixels : WireSegment.WIRE_SPACE);
+        final float wireXMax = pinPos.x() + (isOutput() ? 1 - WireSegment.WIRE_SPACE : (1 + wirePixels));
+        final float yMin = pinPos.y() + WireSegment.WIRE_SPACE;
+        final float yMax = pinPos.y() + 1 - WireSegment.WIRE_SPACE;
         ScreenUtils.fill(stack, wireXMin, yMin, wireXMax, yMax, wireColor);
         final int color = isOutput() ? 0xffff0000 : 0xff00ff00;
         ScreenUtils.fill(
                 stack,
-                x + pinPos.x() + WireSegment.WIRE_SPACE, yMin,
-                x + pinPos.x() + 1 - WireSegment.WIRE_SPACE, yMax,
+                pinPos.x() + WireSegment.WIRE_SPACE, yMin,
+                pinPos.x() + 1 - WireSegment.WIRE_SPACE, yMax,
                 color
         );
+        if (vertical) {
+            stack.popPose();
+        }
     }
 }

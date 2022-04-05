@@ -7,15 +7,17 @@ import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.cells.impl.Comparator;
+import malte0811.controlengineering.logic.cells.impl.Multiplexer;
 import malte0811.controlengineering.logic.cells.impl.RSLatch;
 import malte0811.controlengineering.logic.cells.impl.SchmittTrigger;
+import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static malte0811.controlengineering.logic.cells.PinDirection.DELAYED_OUTPUT;
+import static malte0811.controlengineering.logic.cells.PinDirection.*;
 import static malte0811.controlengineering.logic.schematic.symbol.SymbolPin.*;
 
 public class SchematicSymbols {
@@ -44,6 +46,8 @@ public class SchematicSymbols {
     public static final CellSymbol D_LATCH;
     public static final CellSymbol DIGITIZER;
     public static final CellSymbol COMPARATOR;
+    public static final CellSymbol ANALOG_MUX;
+    public static final CellSymbol DIGITAL_MUX;
     public static final TextSymbol TEXT = new TextSymbol();
 
     static {
@@ -105,6 +109,8 @@ public class SchematicSymbols {
 
         D_LATCH = delayCell(Leafcells.D_LATCH, 10, SignalType.DIGITAL);
         DELAY_LINE = delayCell(Leafcells.DELAY_LINE, 13, SignalType.ANALOG);
+        ANALOG_MUX = registerMUX(Leafcells.ANALOG_MUX, SignalType.ANALOG);
+        DIGITAL_MUX = registerMUX(Leafcells.DIGITAL_MUX, SignalType.DIGITAL);
 
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin"), INPUT_PIN_ANALOG);
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin_digitized"), INPUT_PIN_DIGITAL);
@@ -121,6 +127,15 @@ public class SchematicSymbols {
         return registerCell(cell, uSize, pins);
     }
 
+    private static CellSymbol registerMUX(LeafcellType<?> cell, SignalType type) {
+        return registerCell(cell, 7, 8, List.of(
+                new SymbolPin(0, 1, type, INPUT, Multiplexer.INPUT_0),
+                new SymbolPin(0, 5, type, INPUT, Multiplexer.INPUT_1),
+                new SymbolPin(new Vec2i(4, 7), SignalType.DIGITAL, INPUT, Multiplexer.SELECT, true),
+                new SymbolPin(6, 3, type, OUTPUT, Multiplexer.OUTPUT)
+        ));
+    }
+
     private static CellSymbol registerSimpleCell(
             LeafcellType<?> cell, int uSize, List<SymbolPin> inputPins
     ) {
@@ -130,6 +145,10 @@ public class SchematicSymbols {
     }
 
     private static CellSymbol registerCell(LeafcellType<?> cell, int uSize, List<SymbolPin> pins) {
-        return REGISTRY.register(cell.getRegistryName(), new CellSymbol(cell, uSize, 7, pins));
+        return registerCell(cell, uSize, 7, pins);
+    }
+
+    private static CellSymbol registerCell(LeafcellType<?> cell, int uSize, int vSize, List<SymbolPin> pins) {
+        return REGISTRY.register(cell.getRegistryName(), new CellSymbol(cell, uSize, vSize, pins));
     }
 }

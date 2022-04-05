@@ -53,6 +53,12 @@ public class Leafcells {
     public static final DelayCell D_LATCH = register("d_latch", new DelayCell(SignalType.DIGITAL, 3, 3));
     public static final Digitizer DIGITIZER = register("digitizer", new Digitizer());
     public static final Comparator COMPARATOR = register("comparator", new Comparator());
+    public static final Multiplexer ANALOG_MUX = register("analog_mux", new Multiplexer(
+            SignalType.ANALOG, new CellCost(5, 5)
+    ));
+    public static final Multiplexer DIGITAL_MUX = register("digital_mux", new Multiplexer(
+            SignalType.ANALOG, new CellCost(4, 5)
+    ));
 
     private static <T extends LeafcellType<?>> T register(String name, T type) {
         return LeafcellType.register(new ResourceLocation(ControlEngineering.MODID, name), type);

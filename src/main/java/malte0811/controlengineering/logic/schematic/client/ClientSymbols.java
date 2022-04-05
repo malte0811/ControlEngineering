@@ -38,6 +38,8 @@ public class ClientSymbols {
         register(SchematicSymbols.COMPARATOR, secondColumn, 35);
         register(SchematicSymbols.D_LATCH, 0, 49);
         register(SchematicSymbols.DELAY_LINE, 0, 56);
+        register(SchematicSymbols.ANALOG_MUX, secondColumn, 56);
+        register(SchematicSymbols.DIGITAL_MUX, secondColumn, 56);
         register(SchematicSymbols.TEXT, ClientTextSymbol::new);
     }
 
