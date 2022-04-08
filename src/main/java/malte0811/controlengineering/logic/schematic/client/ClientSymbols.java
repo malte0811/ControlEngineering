@@ -17,8 +17,8 @@ public class ClientSymbols {
     public static void init() {
         final int secondColumn = 13;
         register(SchematicSymbols.CONSTANT, ClientConstantSymbol::new);
-        register(SchematicSymbols.INPUT_PIN_ANALOG, ClientIOSymbol::new);
-        register(SchematicSymbols.INPUT_PIN_DIGITAL, ClientIOSymbol::new);
+        registerWithOverlay(SchematicSymbols.INPUT_PIN_ANALOG, ClientIOSymbol::new, "A", 4, 0);
+        registerWithOverlay(SchematicSymbols.INPUT_PIN_DIGITAL, ClientIOSymbol::new, "D", 4, 0);
         register(SchematicSymbols.OUTPUT_PIN, ClientIOSymbol::new);
 
         register(SchematicSymbols.AND2, 0, 0);
@@ -38,8 +38,8 @@ public class ClientSymbols {
         register(SchematicSymbols.COMPARATOR, secondColumn, 35);
         register(SchematicSymbols.D_LATCH, 0, 49);
         register(SchematicSymbols.DELAY_LINE, 0, 56);
-        register(SchematicSymbols.ANALOG_MUX, secondColumn, 56);
-        register(SchematicSymbols.DIGITAL_MUX, secondColumn, 56);
+        registerMUX(SchematicSymbols.ANALOG_MUX, "A");
+        registerMUX(SchematicSymbols.DIGITAL_MUX, "D");
         register(SchematicSymbols.TEXT, ClientTextSymbol::new);
     }
 
@@ -88,9 +88,22 @@ public class ClientSymbols {
         register(cell, new ClientCellSymbol(cell, uMin, vMin));
     }
 
+    private static void registerMUX(CellSymbol cell, String overlay) {
+        register(cell, new ClientOverlaySymbol<>(new ClientCellSymbol(cell, 13, 56), overlay, 3, 3));
+    }
+
     private static <State, Symbol extends SchematicSymbol<State>>
     void register(Symbol server, Function<Symbol, ClientSymbol<State, Symbol>> makeClient) {
         register(server, makeClient.apply(server));
+    }
+
+    private static <State, Symbol extends SchematicSymbol<State>>
+    void registerWithOverlay(
+            Symbol server,
+            Function<Symbol, ClientSymbol<State, Symbol>> makeClient,
+            String overlay, float xOff, float yOff
+    ) {
+        register(server, new ClientOverlaySymbol<>(makeClient.apply(server), overlay, xOff, yOff));
     }
 
     private static <State, Symbol extends SchematicSymbol<State>>

@@ -16,6 +16,7 @@
   "cell.controlengineering.comparator.name": "Comparator",
   "cell.controlengineering.d_latch.name": "D Flip-Flop",
   "cell.controlengineering.delay_line.name": "Delay Line",
+  "cell.controlengineering.digital_mux.name": "Digital Multiplexer",
   "cell.controlengineering.digitizer.name": "Signal Digitizer",
   "cell.controlengineering.nand2.name": "2-input NAND",
   "cell.controlengineering.nand3.name": "3-input NAND",
