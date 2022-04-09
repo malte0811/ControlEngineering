@@ -3,6 +3,7 @@ package malte0811.controlengineering.logic.schematic.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.gui.widget.IntSelector;
+import malte0811.controlengineering.logic.cells.CircuitSignals;
 import malte0811.controlengineering.logic.schematic.symbol.ConstantSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.util.RedstoneTapeUtils;
@@ -23,12 +24,9 @@ public class ClientConstantSymbol extends ClientSymbol<Integer, ConstantSymbol> 
 
     @Override
     public void renderCustom(PoseStack transform, int x, int y, @Nullable Integer state) {
-        int color = RedstoneTapeUtils.getRSColor(state == null ? 0 : state / (float) BusLine.MAX_VALID_VALUE);
+        int color = RedstoneTapeUtils.getRSColor(state == null ? 0 : Math.abs(state / (float) BusLine.MAX_VALID_VALUE));
         GuiComponent.fill(
-                transform,
-                x + BOX_SIZE, y + BOX_SIZE / 2,
-                x + BOX_SIZE + 1, y + BOX_SIZE / 2 + 1,
-                color
+                transform, x + BOX_SIZE, y + BOX_SIZE / 2, x + BOX_SIZE + 1, y + BOX_SIZE / 2 + 1, color
         );
         final String text;
         if (state != null) {
@@ -44,7 +42,7 @@ public class ClientConstantSymbol extends ClientSymbol<Integer, ConstantSymbol> 
         Minecraft.getInstance().setScreen(new IntSelector(
                 i -> onDone.accept(new SymbolInstance<>(serverSymbol, i)),
                 INPUT_KEY,
-                BusLine.MIN_VALID_VALUE, BusLine.MAX_VALID_VALUE, initialState
+                CircuitSignals.MIN_VALID, CircuitSignals.MAX_VALID, initialState
         ));
     }
 }

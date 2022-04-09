@@ -18,16 +18,12 @@ public class ConstantSymbol extends SchematicSymbol<Integer> {
     public static final String NAME = ControlEngineering.MODID + ".symbol.constantSymbol";
     public static final int BOX_SIZE = 5;
 
-    private static final List<SymbolPin> DIGITAL = ImmutableList.of(SymbolPin.digitalOut(
-            BOX_SIZE + 2,
-            BOX_SIZE / 2,
-            "out"
-    ));
-    private static final List<SymbolPin> ANALOG = ImmutableList.of(SymbolPin.analogOut(
-            BOX_SIZE + 2,
-            BOX_SIZE / 2,
-            "out"
-    ));
+    private static final List<SymbolPin> DIGITAL = ImmutableList.of(
+            SymbolPin.digitalOut(BOX_SIZE + 2, BOX_SIZE / 2, "out")
+    );
+    private static final List<SymbolPin> ANALOG = ImmutableList.of(
+            SymbolPin.analogOut(BOX_SIZE + 2, BOX_SIZE / 2, "out")
+    );
 
     public ConstantSymbol() {
         super(0, MyCodecs.INTEGER);

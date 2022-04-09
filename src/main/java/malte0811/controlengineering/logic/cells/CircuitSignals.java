@@ -5,14 +5,26 @@ import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import malte0811.controlengineering.bus.BusLine;
+import net.minecraft.util.Mth;
 
 import java.util.Map;
 
-public class CircuitSignals {
-    private final Object2IntMap<String> signals;
+public record CircuitSignals(Object2IntMap<String> signals) {
+    public static final int MIN_VALID = -BusLine.MAX_VALID_VALUE;
+    public static final int MAX_VALID = BusLine.MAX_VALID_VALUE;
 
-    public CircuitSignals(Object2IntMap<String> signals) {
-        this.signals = signals;
+    public CircuitSignals {
+        boolean modifiable = false;
+        for (var entry : signals.object2IntEntrySet()) {
+            if (isValid(entry.getIntValue())) {
+                continue;
+            }
+            if (!modifiable) {
+                signals = new Object2IntOpenHashMap<>(signals);
+                modifiable = true;
+            }
+            signals.put(entry.getKey(), Mth.clamp(entry.getIntValue(), MIN_VALID, MAX_VALID));
+        }
     }
 
     public static CircuitSignals singleton(String name, int strength) {
@@ -67,5 +79,9 @@ public class CircuitSignals {
 
     public ObjectSet<Object2IntMap.Entry<String>> entries() {
         return signals.object2IntEntrySet();
+    }
+
+    private static boolean isValid(int strength) {
+        return strength >= MIN_VALID && strength <= MAX_VALID;
     }
 }
