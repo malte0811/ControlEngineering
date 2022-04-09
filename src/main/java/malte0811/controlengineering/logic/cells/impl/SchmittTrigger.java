@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import malte0811.controlengineering.logic.cells.*;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 
-public class SchmittTrigger extends LeafcellType<Boolean> {
+public class SchmittTrigger extends UnconfiguredCell<Boolean> {
     public static final String LOW_PIN = "low";
     public static final String HIGH_PIN = "high";
 

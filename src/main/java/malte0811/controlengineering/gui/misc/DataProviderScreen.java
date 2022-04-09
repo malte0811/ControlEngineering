@@ -6,6 +6,9 @@ import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndText;
 import malte0811.controlengineering.gui.StackedScreen;
+import malte0811.controlengineering.gui.widget.ColorSelector;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -18,22 +21,24 @@ import java.util.function.Consumer;
 
 public class DataProviderScreen<T> extends StackedScreen {
     public static final String DONE_KEY = ControlEngineering.MODID + ".gui.done";
-    private static final Map<Class<?>, DataProviderWidget.Factory<?>> KNOWN_FACTORIES = new HashMap<>();
+    private static final Map<MyCodec<?>, DataProviderWidget.Factory<?>> KNOWN_FACTORIES = new HashMap<>();
 
-    private static <T> void registerFactory(Class<T> type, DataProviderWidget.Factory<T> factory) {
+    private static <T> void registerFactory(MyCodec<T> type, DataProviderWidget.Factory<T> factory) {
         KNOWN_FACTORIES.put(type, factory);
     }
 
     static {
-        registerFactory(BusSignalRef.class, BusSignalSelector::new);
-        registerFactory(ColorAndSignal.class, ColorAndSignalWidget::new);
-        registerFactory(ColorAndText.class, ColorAndTextWidget::new);
+        registerFactory(BusSignalRef.CODEC, BusSignalSelector::new);
+        registerFactory(ColorAndSignal.CODEC, ColorAndSignalWidget::new);
+        registerFactory(ColorAndText.CODEC, ColorAndTextWidget::new);
+        registerFactory(MyCodecs.HEX_COLOR, ColorSelector::new);
+        registerFactory(MyCodecs.STRING, TextProviderWidget::arbitrary);
     }
 
     @Nullable
     public static <T>
-    DataProviderScreen<T> makeFor(Component title, @Nonnull T initial, Consumer<T> out) {
-        DataProviderWidget.Factory<T> factory = (DataProviderWidget.Factory<T>) KNOWN_FACTORIES.get(initial.getClass());
+    DataProviderScreen<T> makeFor(Component title, @Nonnull T initial, MyCodec<T> type, Consumer<T> out) {
+        DataProviderWidget.Factory<T> factory = (DataProviderWidget.Factory<T>) KNOWN_FACTORIES.get(type);
         if (factory != null) {
             return new DataProviderScreen<>(title, factory, initial, out);
         } else {

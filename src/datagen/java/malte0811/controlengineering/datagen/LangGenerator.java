@@ -207,7 +207,7 @@ public class LangGenerator extends LanguageProvider {
         add(CEManual.EXAMPLE_KEY, "Example");
         add(CEManual.OPTIONS_KEY, "Options");
         add(CEManual.NAME_KEY, "Name");
-        add(CEManual.CODEC_NAMES.get(MyCodecs.HEX_INTEGER), "color");
+        add(CEManual.CODEC_NAMES.get(MyCodecs.HEX_COLOR), "color");
         add(CEManual.CODEC_NAMES.get(MyCodecs.STRING), "text");
         add(CEManual.CODEC_NAMES.get(MyCodecs.INTEGER), "integer");
 
@@ -215,7 +215,7 @@ public class LangGenerator extends LanguageProvider {
         add(LeafcellElement.COST_KEY, "Cost");
     }
 
-    private void add(LeafcellType<?> type, String name) {
+    private void add(LeafcellType<?, ?> type, String name) {
         add(CellSymbol.getTranslationKey(type), name);
     }
 

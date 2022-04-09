@@ -1,6 +1,7 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.util.Unit;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
@@ -29,25 +30,25 @@ public class SchematicSymbols {
     public static final IOSymbol INPUT_PIN_DIGITAL = new IOSymbol(true, true);
     public static final IOSymbol OUTPUT_PIN = new IOSymbol(false, false);
     public static final ConstantSymbol CONSTANT = new ConstantSymbol();
-    public static final CellSymbol NOT;
-    public static final CellSymbol AND2;
-    public static final CellSymbol AND3;
-    public static final CellSymbol OR2;
-    public static final CellSymbol OR3;
-    public static final CellSymbol NAND2;
-    public static final CellSymbol NAND3;
-    public static final CellSymbol NOR2;
-    public static final CellSymbol NOR3;
-    public static final CellSymbol XOR2;
-    public static final CellSymbol XOR3;
-    public static final CellSymbol RS_LATCH;
-    public static final CellSymbol SCHMITT_TRIGGER;
-    public static final CellSymbol DELAY_LINE;
-    public static final CellSymbol D_LATCH;
-    public static final CellSymbol DIGITIZER;
-    public static final CellSymbol COMPARATOR;
-    public static final CellSymbol ANALOG_MUX;
-    public static final CellSymbol DIGITAL_MUX;
+    public static final CellSymbol<Unit> NOT;
+    public static final CellSymbol<Unit> AND2;
+    public static final CellSymbol<Unit> AND3;
+    public static final CellSymbol<Unit> OR2;
+    public static final CellSymbol<Unit> OR3;
+    public static final CellSymbol<Unit> NAND2;
+    public static final CellSymbol<Unit> NAND3;
+    public static final CellSymbol<Unit> NOR2;
+    public static final CellSymbol<Unit> NOR3;
+    public static final CellSymbol<Unit> XOR2;
+    public static final CellSymbol<Unit> XOR3;
+    public static final CellSymbol<Unit> RS_LATCH;
+    public static final CellSymbol<Unit> SCHMITT_TRIGGER;
+    public static final CellSymbol<Unit> DELAY_LINE;
+    public static final CellSymbol<Unit> D_LATCH;
+    public static final CellSymbol<Unit> DIGITIZER;
+    public static final CellSymbol<Unit> COMPARATOR;
+    public static final CellSymbol<Unit> ANALOG_MUX;
+    public static final CellSymbol<Unit> DIGITAL_MUX;
     public static final TextSymbol TEXT = new TextSymbol();
 
     static {
@@ -119,7 +120,7 @@ public class SchematicSymbols {
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "text"), TEXT);
     }
 
-    private static CellSymbol delayCell(LeafcellType<?> cell, int uSize, SignalType type) {
+    private static CellSymbol<Unit> delayCell(LeafcellType<?, Unit> cell, int uSize, SignalType type) {
         List<SymbolPin> pins = ImmutableList.of(
                 new SymbolPin(0, 3, type, PinDirection.INPUT, LeafcellType.DEFAULT_IN_NAME),
                 new SymbolPin(uSize - 1, 3, type, DELAYED_OUTPUT, LeafcellType.DEFAULT_OUT_NAME)
@@ -127,7 +128,7 @@ public class SchematicSymbols {
         return registerCell(cell, uSize, pins);
     }
 
-    private static CellSymbol registerMUX(LeafcellType<?> cell, SignalType type) {
+    private static CellSymbol<Unit> registerMUX(LeafcellType<?, Unit> cell, SignalType type) {
         return registerCell(cell, 7, 8, List.of(
                 new SymbolPin(0, 1, type, INPUT, Multiplexer.INPUT_0),
                 new SymbolPin(0, 5, type, INPUT, Multiplexer.INPUT_1),
@@ -136,19 +137,19 @@ public class SchematicSymbols {
         ));
     }
 
-    private static CellSymbol registerSimpleCell(
-            LeafcellType<?> cell, int uSize, List<SymbolPin> inputPins
+    private static <C> CellSymbol<C> registerSimpleCell(
+            LeafcellType<?, C> cell, int uSize, List<SymbolPin> inputPins
     ) {
         List<SymbolPin> allPins = new ArrayList<>(inputPins);
         allPins.add(digitalOut(uSize - 1, 3, LeafcellType.DEFAULT_OUT_NAME));
         return registerCell(cell, uSize, allPins);
     }
 
-    private static CellSymbol registerCell(LeafcellType<?> cell, int uSize, List<SymbolPin> pins) {
+    private static <C> CellSymbol<C> registerCell(LeafcellType<?, C> cell, int uSize, List<SymbolPin> pins) {
         return registerCell(cell, uSize, 7, pins);
     }
 
-    private static CellSymbol registerCell(LeafcellType<?> cell, int uSize, int vSize, List<SymbolPin> pins) {
-        return REGISTRY.register(cell.getRegistryName(), new CellSymbol(cell, uSize, vSize, pins));
+    private static <C> CellSymbol<C> registerCell(LeafcellType<?, C> cell, int uSize, int vSize, List<SymbolPin> pins) {
+        return REGISTRY.register(cell.getRegistryName(), new CellSymbol<>(cell, uSize, vSize, pins));
     }
 }

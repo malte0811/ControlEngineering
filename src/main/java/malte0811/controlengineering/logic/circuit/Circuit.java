@@ -19,7 +19,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Circuit {
-    private static final MyCodec<List<LeafcellInstance<?>>> CELLS_CODEC = MyCodecs.list(LeafcellInstance.CODEC);
+    private static final MyCodec<List<LeafcellInstance<?, ?>>> CELLS_CODEC = MyCodecs.list(LeafcellInstance.CODEC);
     private static final MyCodec<Object2IntMap<NetReference>> NET_VALUES_CODEC =
             MyCodecs.codecForMap(NetReference.CODEC, MyCodecs.INTEGER).xmap(Object2IntOpenHashMap::new, m -> m);
     private static final MyCodec<Map<PinReference, NetReference>> PIN_NET_CODEC =
@@ -32,14 +32,14 @@ public class Circuit {
             Circuit::new
     );
 
-    private final List<LeafcellInstance<?>> cellsInTopoOrder;
+    private final List<LeafcellInstance<?, ?>> cellsInTopoOrder;
     private final Object2IntMap<NetReference> allNetValues;
     private final Object2IntMap<NetReference> inputValues;
     private final Map<NetReference, PinReference> delayedNetsBySource;
     private final Map<PinReference, NetReference> pinToNet;
 
     public Circuit(
-            List<LeafcellInstance<?>> cellsInOrder,
+            List<LeafcellInstance<?, ?>> cellsInOrder,
             Set<NetReference> inputs,
             Map<PinReference, NetReference> pinNets
     ) {
@@ -52,7 +52,7 @@ public class Circuit {
     }
 
     public Circuit(
-            List<LeafcellInstance<?>> cellsInOrder,
+            List<LeafcellInstance<?, ?>> cellsInOrder,
             Object2IntMap<NetReference> inputs,
             Map<PinReference, NetReference> pinNets,
             Object2IntMap<NetReference> netValues
@@ -89,13 +89,13 @@ public class Circuit {
         for (Map.Entry<NetReference, PinReference> delayedNet : delayedNetsBySource.entrySet()) {
             NetReference net = delayedNet.getKey();
             PinReference pin = delayedNet.getValue();
-            LeafcellInstance<?> cell = cellsInTopoOrder.get(pin.cell());
+            var cell = cellsInTopoOrder.get(pin.cell());
             allNetValues.put(
                     net, cell.getCurrentOutput(getCellInputs(pin.cell())).value(pin.pinName())
             );
         }
         for (int cellId = 0; cellId < cellsInTopoOrder.size(); cellId++) {
-            LeafcellInstance<?> cell = cellsInTopoOrder.get(cellId);
+            var cell = cellsInTopoOrder.get(cellId);
             for (Object2IntMap.Entry<String> entry : cell.tick(getCellInputs(cellId)).entries()) {
                 NetReference net = pinToNet.get(new PinReference(cellId, true, entry.getKey()));
                 if (net != null) {
@@ -112,7 +112,7 @@ public class Circuit {
     }
 
     private CircuitSignals getCellInputs(int cellId) {
-        LeafcellInstance<?> cell = cellsInTopoOrder.get(cellId);
+        var cell = cellsInTopoOrder.get(cellId);
         Object2IntMap<String> inputValues = new Object2IntOpenHashMap<>();
         for (Map.Entry<String, Pin> entry : cell.getType().getInputPins().entrySet()) {
             NetReference netAtInput = pinToNet.get(new PinReference(cellId, false, entry.getKey()));

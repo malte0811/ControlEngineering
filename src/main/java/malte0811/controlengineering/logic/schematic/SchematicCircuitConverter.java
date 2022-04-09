@@ -220,7 +220,7 @@ public class SchematicCircuitConverter {
                 .toList();
         for (PlacedSymbol cell : cells) {
             SymbolInstance<?> instance = cell.symbol();
-            CellSymbol symbol = (CellSymbol) instance.getType();
+            var symbol = (CellSymbol<?>) instance.getType();
             CircuitBuilder.CellBuilder cellBuilder = builder.addCell(symbol.getCellType().newInstance());
             for (SymbolPin pin : instance.getPins()) {
                 ConnectedPin connectedPin = new ConnectedPin(cell, pin);

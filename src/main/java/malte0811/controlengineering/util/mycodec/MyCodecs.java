@@ -25,7 +25,7 @@ public class MyCodecs {
             return manager.makeInt(in);
         }
     };
-    public static final MyCodec<Integer> HEX_INTEGER = new SimpleCodec<>(
+    public static final MyCodec<Integer> HEX_COLOR = new SimpleCodec<>(
             TreePrimitive.class, TreePrimitive::asInt, SerialStorage::writeHexInt, SerialStorage::readHexInt
     ) {
         @Override

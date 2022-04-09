@@ -55,7 +55,7 @@ public class LeafcellWithStatesElement extends SpecialManualElement {
                 inputs.put(inputNames.get(i), value * BusLine.MAX_VALID_VALUE);
                 line.add(new TextComponent(Integer.toString(value)));
             }
-            var outputs = cell.getOutputSignals(new CircuitSignals(inputs), null);
+            var outputs = cell.getOutputSignals(new CircuitSignals(inputs), null, null);
             for (var output : outputNames) {
                 line.add(new TextComponent(outputs.bool(output) ? "1" : "0"));
             }

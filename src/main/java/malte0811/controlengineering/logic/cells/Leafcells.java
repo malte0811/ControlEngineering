@@ -60,7 +60,7 @@ public class Leafcells {
             SignalType.ANALOG, new CellCost(4, 5)
     ));
 
-    private static <T extends LeafcellType<?>> T register(String name, T type) {
+    private static <T extends LeafcellType<?, ?>> T register(String name, T type) {
         return LeafcellType.register(new ResourceLocation(ControlEngineering.MODID, name), type);
     }
 }

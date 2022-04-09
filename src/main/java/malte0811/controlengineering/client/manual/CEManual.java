@@ -29,7 +29,7 @@ public class CEManual {
     public static final String EXAMPLE_KEY = makeKey("example");
     public static final Map<MyCodec<?>, String> CODEC_NAMES = ImmutableMap.<MyCodec<?>, String>builder()
             .put(MyCodecs.INTEGER, makeKey("integer"))
-            .put(MyCodecs.HEX_INTEGER, makeKey("color"))
+            .put(MyCodecs.HEX_COLOR, makeKey("color"))
             .put(MyCodecs.STRING, makeKey("text"))
             .build();
 

@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import malte0811.controlengineering.logic.cells.*;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 
-public class DelayCell extends LeafcellType<Integer> {
+public class DelayCell extends UnconfiguredCell<Integer> {
     public DelayCell(SignalType type, double numTubes, double wireLength) {
         super(
                 ImmutableMap.of(DEFAULT_IN_NAME, new Pin(type, PinDirection.INPUT)),

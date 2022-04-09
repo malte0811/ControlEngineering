@@ -8,7 +8,7 @@ import malte0811.controlengineering.util.mycodec.record.RecordCodecBase;
 
 public record ColorAndSignal(int color, BusSignalRef signal) {
     public static final RecordCodecBase<ColorAndSignal> CODEC = new RecordCodec2<>(
-            new CodecField<>("color", ColorAndSignal::color, MyCodecs.HEX_INTEGER),
+            new CodecField<>("color", ColorAndSignal::color, MyCodecs.HEX_COLOR),
             new CodecField<>("signal", ColorAndSignal::signal, BusSignalRef.CODEC),
             ColorAndSignal::new
     );

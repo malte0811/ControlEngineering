@@ -6,7 +6,7 @@ import malte0811.controlengineering.util.mycodec.MyCodecs;
 
 import java.util.Random;
 
-public class RSLatch extends LeafcellType<Boolean> {
+public class RSLatch extends UnconfiguredCell<Boolean> {
     private static final Random RAND = new Random();
     public static final String RESET = "reset";
     public static final String SET = "set";

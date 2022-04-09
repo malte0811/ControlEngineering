@@ -9,7 +9,7 @@ import malte0811.controlengineering.logic.cells.SignalType;
 import java.util.*;
 
 public class CircuitBuilder {
-    private final List<LeafcellInstance<?>> cells = new ArrayList<>();
+    private final List<LeafcellInstance<?, ?>> cells = new ArrayList<>();
     private final Map<PinReference, NetReference> pins = new HashMap<>();
     private final Set<NetReference> existingNets = new HashSet<>();
     private final Set<NetReference> analogNets = new HashSet<>();
@@ -20,11 +20,11 @@ public class CircuitBuilder {
         return new CircuitBuilder();
     }
 
-    public CellBuilder addCell(LeafcellType<?> cell) {
+    public CellBuilder addCell(LeafcellType<?, ?> cell) {
         return addCell(cell.newInstance());
     }
 
-    public CellBuilder addCell(LeafcellInstance<?> cell) {
+    public CellBuilder addCell(LeafcellInstance<?, ?> cell) {
         return new CellBuilder(cell);
     }
 
@@ -54,11 +54,11 @@ public class CircuitBuilder {
     }
 
     public class CellBuilder {
-        private final LeafcellInstance<?> cell;
+        private final LeafcellInstance<?, ?> cell;
         private final Map<PinReference, NetReference> cellPins = new HashMap<>();
         private final Set<NetReference> outputNets = new HashSet<>();
 
-        public CellBuilder(LeafcellInstance<?> cell) {
+        public CellBuilder(LeafcellInstance<?, ?> cell) {
             this.cell = cell;
         }
 

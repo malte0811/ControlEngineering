@@ -1,17 +1,22 @@
 package malte0811.controlengineering.logic.cells;
 
 import com.google.common.base.Preconditions;
+import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;
 
-public abstract class LeafcellType<State> extends TypedRegistryEntry<State, LeafcellInstance<State>> {
-    public static final TypedRegistry<LeafcellType<?>> REGISTRY = new TypedRegistry<>();
+public abstract class LeafcellType<State, Config> extends TypedRegistryEntry<
+        Pair<State, Config>, LeafcellInstance<State, Config>
+        > {
+    public static final TypedRegistry<LeafcellType<?, ?>> REGISTRY = new TypedRegistry<>();
+    private final MyCodec<Config> configCodec;
 
-    public static <T extends LeafcellType<?>> T register(ResourceLocation name, T type) {
+    public static <T extends LeafcellType<?, ?>> T register(ResourceLocation name, T type) {
         return REGISTRY.register(name, type);
     }
 
@@ -25,24 +30,43 @@ public abstract class LeafcellType<State> extends TypedRegistryEntry<State, Leaf
     protected LeafcellType(
             Map<String, Pin> inputPins, Map<String, Pin> outputPins,
             State initialState, MyCodec<State> stateCodec,
+            Config initialConfig, MyCodec<Config> configCodec,
             CellCost cost
     ) {
-        super(initialState, stateCodec);
+        this(
+                inputPins, outputPins,
+                initialState, initialConfig,
+                MyCodecs.pair(stateCodec, configCodec), configCodec,
+                cost
+        );
+    }
+
+    protected LeafcellType(
+            Map<String, Pin> inputPins, Map<String, Pin> outputPins,
+            State initialState, Config initialConfig, MyCodec<Pair<State, Config>> codec,
+            MyCodec<Config> configCodec, CellCost cost
+    ) {
+        super(Pair.of(initialState, initialConfig), codec);
         Preconditions.checkArgument(inputPins.values().stream().noneMatch(p -> p.direction().isOutput()));
         Preconditions.checkArgument(outputPins.values().stream().allMatch(p -> p.direction().isOutput()));
         this.inputPins = inputPins;
         this.outputPins = outputPins;
         this.cost = cost;
+        this.configCodec = configCodec;
+    }
+
+    public LeafcellInstance<State, Config> newInstance(State state, Config config) {
+        return newInstance(Pair.of(state, config));
     }
 
     @Override
-    public LeafcellInstance<State> newInstance(State state) {
+    public LeafcellInstance<State, Config> newInstance(Pair<State, Config> state) {
         return new LeafcellInstance<>(this, state);
     }
 
-    public abstract State nextState(CircuitSignals inputSignals, State currentState);
+    public abstract State nextState(CircuitSignals inputSignals, State currentState, Config config);
 
-    public abstract CircuitSignals getOutputSignals(CircuitSignals inputSignals, State oldState);
+    public abstract CircuitSignals getOutputSignals(CircuitSignals inputSignals, State oldState, Config config);
 
     public Map<String, Pin> getInputPins() {
         return inputPins;
@@ -54,5 +78,9 @@ public abstract class LeafcellType<State> extends TypedRegistryEntry<State, Leaf
 
     public CellCost getCost() {
         return cost;
+    }
+
+    public MyCodec<Config> getConfigCodec() {
+        return configCodec;
     }
 }
