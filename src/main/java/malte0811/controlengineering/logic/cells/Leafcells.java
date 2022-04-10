@@ -59,6 +59,7 @@ public class Leafcells {
     public static final Multiplexer DIGITAL_MUX = register("digital_mux", new Multiplexer(
             SignalType.ANALOG, new CellCost(4, 5)
     ));
+    public static final VoltageDivider DIVIDER = register("divider", new VoltageDivider());
 
     private static <T extends LeafcellType<?, ?>> T register(String name, T type) {
         return LeafcellType.register(new ResourceLocation(ControlEngineering.MODID, name), type);

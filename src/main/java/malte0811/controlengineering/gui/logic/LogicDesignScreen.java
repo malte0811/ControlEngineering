@@ -11,7 +11,6 @@ import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity.
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.misc.ConfirmScreen;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
-import malte0811.controlengineering.gui.misc.TextProviderWidget;
 import malte0811.controlengineering.gui.widget.SmallCheckbox;
 import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.logic.cells.SignalType;
@@ -29,6 +28,7 @@ import malte0811.controlengineering.util.TextUtil;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -130,10 +130,10 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     }
 
     private void handleSetName(Button $) {
-        Minecraft.getInstance().setScreen(new DataProviderScreen<>(
+        Minecraft.getInstance().setScreen(DataProviderScreen.makeFor(
                 new TranslatableComponent(SET_NAME_MESSAGE),
-                TextProviderWidget::arbitrary,
                 schematic.getName(),
+                MyCodecs.STRING,
                 s -> runAndSendToServer(new SetName(s))
         ));
     }

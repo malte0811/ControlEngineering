@@ -7,10 +7,7 @@ import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
-import malte0811.controlengineering.logic.cells.impl.Comparator;
-import malte0811.controlengineering.logic.cells.impl.Multiplexer;
-import malte0811.controlengineering.logic.cells.impl.RSLatch;
-import malte0811.controlengineering.logic.cells.impl.SchmittTrigger;
+import malte0811.controlengineering.logic.cells.impl.*;
 import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import net.minecraft.resources.ResourceLocation;
@@ -49,6 +46,7 @@ public class SchematicSymbols {
     public static final CellSymbol<Unit> COMPARATOR;
     public static final CellSymbol<Unit> ANALOG_MUX;
     public static final CellSymbol<Unit> DIGITAL_MUX;
+    public static final CellSymbol<Integer> VOLTAGE_DIVIDER;
     public static final TextSymbol TEXT = new TextSymbol();
 
     static {
@@ -112,6 +110,11 @@ public class SchematicSymbols {
         DELAY_LINE = delayCell(Leafcells.DELAY_LINE, 13, SignalType.ANALOG);
         ANALOG_MUX = registerMUX(Leafcells.ANALOG_MUX, SignalType.ANALOG);
         DIGITAL_MUX = registerMUX(Leafcells.DIGITAL_MUX, SignalType.DIGITAL);
+        VOLTAGE_DIVIDER = registerCell(Leafcells.DIVIDER, 8, 11, List.of(
+                analogIn(0, 0, VoltageDivider.INPUT_TOP),
+                analogIn(0, 10, VoltageDivider.INPUT_BOTTOM),
+                analogOut(7, 5, VoltageDivider.DEFAULT_OUT_NAME)
+        ));
 
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin"), INPUT_PIN_ANALOG);
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin_digitized"), INPUT_PIN_DIGITAL);

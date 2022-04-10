@@ -21,6 +21,7 @@ import malte0811.controlengineering.gui.widget.ColorSelector;
 import malte0811.controlengineering.items.*;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
+import malte0811.controlengineering.logic.cells.impl.VoltageDivider;
 import malte0811.controlengineering.logic.clock.ClockGenerator;
 import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.logic.schematic.SchematicChecker;
@@ -113,6 +114,7 @@ public class LangGenerator extends LanguageProvider {
         add(Leafcells.COMPARATOR, "Comparator");
         add(Leafcells.ANALOG_MUX, "Analog Multiplexer");
         add(Leafcells.DIGITAL_MUX, "Digital Multiplexer");
+        add(Leafcells.DIVIDER, "Voltage Divider");
 
         add(IOSymbol.ANALOG_INPUT_KEY, "Analog input pin");
         add(IOSymbol.DIGITAL_INPUT_KEY, "Digitized input pin");
@@ -197,6 +199,8 @@ public class LangGenerator extends LanguageProvider {
         add(ConfirmScreen.OK_KEY, "Ok");
 
         add(SchematicItem.EMPTY_SCHEMATIC, "Empty schematic");
+
+        add(VoltageDivider.RESISTANCE_KEY, "Lower resistance: %d");
     }
 
     private void addManualStrings() {

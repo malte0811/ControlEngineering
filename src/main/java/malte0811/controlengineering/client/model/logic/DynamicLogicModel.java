@@ -92,12 +92,17 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<DynamicLogicMod
         while (this.knownModels.size() <= data.numTubes) {
             this.knownModels.add(null);
         }
-        FixedTubeModel result = this.knownModels.get(data.numTubes);
-        if (result == null) {
-            result = new FixedTubeModel(data.numTubes);
-            this.knownModels.set(data.numTubes, result);
+        List<BakedQuad> quads;
+        if (data.numTubes >= 0) {
+            FixedTubeModel result = this.knownModels.get(data.numTubes);
+            if (result == null) {
+                result = new FixedTubeModel(data.numTubes);
+                this.knownModels.set(data.numTubes, result);
+            }
+            quads = result.getQuads();
+        } else {
+            quads = new ArrayList<>();
         }
-        List<BakedQuad> quads = result.getQuads();
         if (data.hasClock) {
             quads = new ArrayList<>(quads);
             quads.add(clockQuad);
@@ -110,7 +115,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<DynamicLogicMod
     public ModelData getKey(
             @Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData
     ) {
-        return Objects.requireNonNullElseGet(extraData.getData(DATA), () -> new ModelData(0, false));
+        return Objects.requireNonNullElseGet(extraData.getData(DATA), () -> new ModelData(-1, false));
     }
 
     @Nonnull
@@ -126,20 +131,18 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<DynamicLogicMod
         public FixedTubeModel(int numTubes) {
             List<BakedQuad> solid = new ArrayList<>();
             List<BakedQuad> translucent = new ArrayList<>();
-            if (numTubes > 0) {
-                int numAdded = 0;
-                for (float y : BOARD_HEIGHTS) {
-                    solid.addAll(translated(board, new Vector3f(0, y, 0)));
-                    for (Vec2 xz : TUBE_OFFSETS) {
-                        translucent.addAll(translated(tube, new Vector3f(-xz.x, y, -xz.y)));
-                        ++numAdded;
-                        if (numAdded >= numTubes) {
-                            break;
-                        }
-                    }
+            int numAdded = 0;
+            for (float y : BOARD_HEIGHTS) {
+                solid.addAll(translated(board, new Vector3f(0, y, 0)));
+                for (Vec2 xz : TUBE_OFFSETS) {
                     if (numAdded >= numTubes) {
                         break;
                     }
+                    translucent.addAll(translated(tube, new Vector3f(-xz.x, y, -xz.y)));
+                    ++numAdded;
+                }
+                if (numAdded >= numTubes) {
+                    break;
                 }
             }
             this.solid = ImmutableList.copyOf(solid);

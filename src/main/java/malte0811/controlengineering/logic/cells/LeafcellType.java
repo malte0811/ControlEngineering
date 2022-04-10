@@ -55,8 +55,8 @@ public abstract class LeafcellType<State, Config> extends TypedRegistryEntry<
         this.configCodec = configCodec;
     }
 
-    public LeafcellInstance<State, Config> newInstance(State state, Config config) {
-        return newInstance(Pair.of(state, config));
+    public LeafcellInstance<State, Config> newInstanceFromConfig(Config config) {
+        return newInstance(Pair.of(getInitialState().getFirst(), config));
     }
 
     @Override

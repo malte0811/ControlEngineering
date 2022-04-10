@@ -27,7 +27,7 @@ public class SchematicCircuitConverter {
             final Set<ConnectedPin> allPins = net.getOrComputePins(schematic.getSymbols());
             if (!allPins.isEmpty()) {
                 List<ConnectedPin> asList = new ArrayList<>(allPins);
-                result.put(new NetReference(asList.get(0).toString()), asList);
+                result.put(new NetReference(asList.get(0).getPosition().toString()), asList);
             }
         }
         return result;
@@ -220,8 +220,7 @@ public class SchematicCircuitConverter {
                 .toList();
         for (PlacedSymbol cell : cells) {
             SymbolInstance<?> instance = cell.symbol();
-            var symbol = (CellSymbol<?>) instance.getType();
-            CircuitBuilder.CellBuilder cellBuilder = builder.addCell(symbol.getCellType().newInstance());
+            CircuitBuilder.CellBuilder cellBuilder = builder.addCell(instance.makeCell());
             for (SymbolPin pin : instance.getPins()) {
                 ConnectedPin connectedPin = new ConnectedPin(cell, pin);
                 NetReference circuitNet = pinsToNet.get(connectedPin);

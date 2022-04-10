@@ -2,9 +2,9 @@ package malte0811.controlengineering.logic.schematic.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
-import malte0811.controlengineering.gui.misc.TextProviderWidget;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.logic.schematic.symbol.TextSymbol;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.TextComponent;
 
@@ -26,10 +26,10 @@ public class ClientTextSymbol extends ClientSymbol<String, TextSymbol> {
 
     @Override
     public void createInstanceWithUI(Consumer<? super SymbolInstance<String>> onDone, String initialState) {
-        Minecraft.getInstance().setScreen(new DataProviderScreen<>(
+        Minecraft.getInstance().setScreen(DataProviderScreen.makeFor(
                 TextComponent.EMPTY,
-                TextProviderWidget::arbitrary,
                 initialState,
+                MyCodecs.STRING,
                 s -> onDone.accept(new SymbolInstance<>(serverSymbol, s))
         ));
     }

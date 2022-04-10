@@ -1,5 +1,6 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
+import malte0811.controlengineering.logic.cells.LeafcellInstance;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 import net.minecraft.network.chat.Component;
@@ -38,5 +39,12 @@ public class SymbolInstance<State> extends TypedInstance<State, SchematicSymbol<
     @Override
     public String toString() {
         return "[type=" + getType() + ", state=" + getCurrentState() + "]";
+    }
+
+    public LeafcellInstance<?, State> makeCell() {
+        if (!(getType() instanceof CellSymbol<State> cell)) {
+            throw new RuntimeException("Expected cell symbol, got " + getType().getRegistryName());
+        }
+        return cell.getCellType().newInstanceFromConfig(getCurrentState());
     }
 }

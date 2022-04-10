@@ -64,7 +64,7 @@ public class CellSymbol<Config> extends SchematicSymbol<Config> {
         return new TranslatableComponent(getTranslationKey(type));
     }
 
-    public LeafcellType<?, ?> getCellType() {
+    public LeafcellType<?, Config> getCellType() {
         return type;
     }
 

@@ -1,10 +1,13 @@
 package malte0811.controlengineering.gui.widget;
 
+import malte0811.controlengineering.gui.misc.IDataProviderWidget;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 
-public class BasicSlider extends AbstractSliderButton {
+import javax.annotation.Nullable;
+
+public class BasicSlider extends AbstractSliderButton implements IDataProviderWidget<Integer> {
     private final int min;
     private final int max;
     private final String translationKey;
@@ -21,6 +24,10 @@ public class BasicSlider extends AbstractSliderButton {
         this.max = max;
         this.translationKey = key;
         updateMessage();
+    }
+
+    public static IDataProviderWidget.Factory<Integer, BasicSlider> withRange(int min, int max, String key) {
+        return (initial, x, y) -> new BasicSlider(x, y, 128, 20, min, max, key, initial == null ? min : initial);
     }
 
     @Override
@@ -42,5 +49,11 @@ public class BasicSlider extends AbstractSliderButton {
     private double exactSliderValue() {
         final int numValuesMin1 = max - min;
         return Math.round(value * numValuesMin1) / (double) numValuesMin1;
+    }
+
+    @Nullable
+    @Override
+    public Integer getData() {
+        return getValue();
     }
 }

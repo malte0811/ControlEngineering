@@ -202,7 +202,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
             );
             circuit.getSecond().updateInputs(currentBusState);
         } else {
-            this.numRenderTubes = 0;
+            this.numRenderTubes = -1;
         }
     }
 

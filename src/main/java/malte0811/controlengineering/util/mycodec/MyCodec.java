@@ -71,4 +71,8 @@ public interface MyCodec<T> {
     ) {
         return new DispatchCodec<>(this, type, codec);
     }
+
+    default MyCodec<T> copy() {
+        return xmap(Function.identity(), Function.identity());
+    }
 }

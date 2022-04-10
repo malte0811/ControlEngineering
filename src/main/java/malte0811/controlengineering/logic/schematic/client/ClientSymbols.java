@@ -40,6 +40,7 @@ public class ClientSymbols {
         register(SchematicSymbols.DELAY_LINE, 0, 56);
         registerMUX(SchematicSymbols.ANALOG_MUX, "A");
         registerMUX(SchematicSymbols.DIGITAL_MUX, "D");
+        register(SchematicSymbols.VOLTAGE_DIVIDER, ClientDividerSymbol::new);
         register(SchematicSymbols.TEXT, ClientTextSymbol::new);
     }
 

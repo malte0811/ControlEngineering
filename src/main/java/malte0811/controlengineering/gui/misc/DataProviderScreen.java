@@ -1,14 +1,18 @@
 package malte0811.controlengineering.gui.misc;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.datafixers.util.Function3;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndText;
 import malte0811.controlengineering.gui.StackedScreen;
+import malte0811.controlengineering.gui.widget.BasicSlider;
 import malte0811.controlengineering.gui.widget.ColorSelector;
+import malte0811.controlengineering.logic.cells.impl.VoltageDivider;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -21,24 +25,38 @@ import java.util.function.Consumer;
 
 public class DataProviderScreen<T> extends StackedScreen {
     public static final String DONE_KEY = ControlEngineering.MODID + ".gui.done";
-    private static final Map<MyCodec<?>, DataProviderWidget.Factory<?>> KNOWN_FACTORIES = new HashMap<>();
+    private static final Map<MyCodec<?>, DataProviderWidget.Factory<?, ?>> KNOWN_FACTORIES = new HashMap<>();
 
-    private static <T> void registerFactory(MyCodec<T> type, DataProviderWidget.Factory<T> factory) {
+    // Workaround for generics issues
+    private static <T, W extends AbstractWidget & IDataProviderWidget<T>>
+    void registerFactoryFunc3(MyCodec<T> type, Function3<T, Integer, Integer, W> factory) {
+        registerFactory(type, new IDataProviderWidget.Factory<T, W>() {
+            @Override
+            public W create(@Nullable T currentValue, int x, int y) {
+                return factory.apply(currentValue, x, y);
+            }
+        });
+    }
+
+    private static <T> void registerFactory(MyCodec<T> type, IDataProviderWidget.Factory<T, ?> factory) {
         KNOWN_FACTORIES.put(type, factory);
     }
 
     static {
-        registerFactory(BusSignalRef.CODEC, BusSignalSelector::new);
-        registerFactory(ColorAndSignal.CODEC, ColorAndSignalWidget::new);
-        registerFactory(ColorAndText.CODEC, ColorAndTextWidget::new);
-        registerFactory(MyCodecs.HEX_COLOR, ColorSelector::new);
-        registerFactory(MyCodecs.STRING, TextProviderWidget::arbitrary);
+        registerFactoryFunc3(BusSignalRef.CODEC, BusSignalSelector::new);
+        registerFactoryFunc3(ColorAndSignal.CODEC, ColorAndSignalWidget::new);
+        registerFactoryFunc3(ColorAndText.CODEC, ColorAndTextWidget::new);
+        registerFactoryFunc3(MyCodecs.HEX_COLOR, ColorSelector::new);
+        registerFactoryFunc3(MyCodecs.STRING, TextProviderWidget::arbitrary);
+        registerFactory(VoltageDivider.RESISTANCE_CODEC, BasicSlider.withRange(
+                0, VoltageDivider.TOTAL_RESISTANCE, VoltageDivider.RESISTANCE_KEY
+        ));
     }
 
     @Nullable
     public static <T>
     DataProviderScreen<T> makeFor(Component title, @Nonnull T initial, MyCodec<T> type, Consumer<T> out) {
-        DataProviderWidget.Factory<T> factory = (DataProviderWidget.Factory<T>) KNOWN_FACTORIES.get(type);
+        var factory = (DataProviderWidget.Factory<T, ?>) KNOWN_FACTORIES.get(type);
         if (factory != null) {
             return new DataProviderScreen<>(title, factory, initial, out);
         } else {
@@ -46,14 +64,14 @@ public class DataProviderScreen<T> extends StackedScreen {
         }
     }
 
-    private final DataProviderWidget.Factory<T> factory;
+    private final IDataProviderWidget.Factory<T, ?> factory;
     @Nullable
     private final T initial;
     private final Consumer<T> out;
-    private DataProviderWidget<T> provider;
+    private IDataProviderWidget<T> provider;
 
     public DataProviderScreen(
-            Component titleIn, DataProviderWidget.Factory<T> factory, @Nullable T initial, Consumer<T> out
+            Component titleIn, IDataProviderWidget.Factory<T, ?> factory, @Nullable T initial, Consumer<T> out
     ) {
         super(titleIn);
         this.factory = factory;
@@ -64,15 +82,16 @@ public class DataProviderScreen<T> extends StackedScreen {
     @Override
     protected void init() {
         super.init();
-        DataProviderWidget<T> providerTemp = factory.create(initial, 0, 0);
+        var providerTemp = factory.create(initial, 0, 0);
         final int xMin = (width - providerTemp.getWidth()) / 2;
         final int yMin = (height - providerTemp.getHeight()) / 2;
-        provider = factory.create(initial, xMin, yMin);
+        var provider = factory.create(initial, xMin, yMin);
         addRenderableWidget(provider);
         addRenderableWidget(new Button(
                 xMin, yMin + provider.getHeight(), provider.getWidth(), 20, new TranslatableComponent(DONE_KEY),
                 $ -> onClose()
         ));
+        this.provider = provider;
     }
 
     @Override

@@ -2,7 +2,6 @@ package malte0811.controlengineering.logic.schematic.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.bus.BusSignalRef;
-import malte0811.controlengineering.gui.misc.BusSignalSelector;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.logic.schematic.symbol.IOSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
@@ -41,8 +40,8 @@ public class ClientIOSymbol extends ClientSymbol<BusSignalRef, IOSymbol> {
 
     @Override
     public void createInstanceWithUI(Consumer<? super SymbolInstance<BusSignalRef>> onDone, BusSignalRef initialState) {
-        Minecraft.getInstance().setScreen(new DataProviderScreen<>(
-                TextComponent.EMPTY, BusSignalSelector::new, initialState,
+        Minecraft.getInstance().setScreen(DataProviderScreen.makeFor(
+                TextComponent.EMPTY, initialState, BusSignalRef.CODEC,
                 ref -> {
                     SymbolInstance<BusSignalRef> instance = new SymbolInstance<>(serverSymbol, ref);
                     onDone.accept(instance);
