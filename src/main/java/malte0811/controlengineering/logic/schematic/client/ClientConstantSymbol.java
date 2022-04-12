@@ -34,7 +34,7 @@ public class ClientConstantSymbol extends ClientSymbol<Integer, ConstantSymbol> 
         } else {
             text = "";
         }
-        TextUtil.renderBoxWithText(transform, color, text, 4, x, y, BOX_SIZE, BOX_SIZE);
+        TextUtil.renderBoxWithText(transform, color, text, 5, x, y, BOX_SIZE, BOX_SIZE);
     }
 
     @Override

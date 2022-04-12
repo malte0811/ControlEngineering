@@ -41,6 +41,7 @@ public class ClientSymbols {
         registerMUX(SchematicSymbols.ANALOG_MUX, "A");
         registerMUX(SchematicSymbols.DIGITAL_MUX, "D");
         register(SchematicSymbols.VOLTAGE_DIVIDER, ClientDividerSymbol::new);
+        register(SchematicSymbols.ANALOG_ADDER, 24, 14);
         register(SchematicSymbols.TEXT, ClientTextSymbol::new);
     }
 

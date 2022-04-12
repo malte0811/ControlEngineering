@@ -115,6 +115,7 @@ public class LangGenerator extends LanguageProvider {
         add(Leafcells.ANALOG_MUX, "Analog Multiplexer");
         add(Leafcells.DIGITAL_MUX, "Digital Multiplexer");
         add(Leafcells.DIVIDER, "Voltage Divider");
+        add(Leafcells.ANALOG_ADDER, "Analog Adder");
 
         add(IOSymbol.ANALOG_INPUT_KEY, "Analog input pin");
         add(IOSymbol.DIGITAL_INPUT_KEY, "Digitized input pin");

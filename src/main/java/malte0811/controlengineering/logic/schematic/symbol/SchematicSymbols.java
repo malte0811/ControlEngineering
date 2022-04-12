@@ -47,6 +47,7 @@ public class SchematicSymbols {
     public static final CellSymbol<Unit> ANALOG_MUX;
     public static final CellSymbol<Unit> DIGITAL_MUX;
     public static final CellSymbol<Integer> VOLTAGE_DIVIDER;
+    public static final CellSymbol<Unit> ANALOG_ADDER;
     public static final TextSymbol TEXT = new TextSymbol();
 
     static {
@@ -114,6 +115,11 @@ public class SchematicSymbols {
                 analogIn(0, 0, VoltageDivider.INPUT_TOP),
                 analogIn(0, 10, VoltageDivider.INPUT_BOTTOM),
                 analogOut(7, 5, VoltageDivider.DEFAULT_OUT_NAME)
+        ));
+        ANALOG_ADDER = registerCell(Leafcells.ANALOG_ADDER, 9, List.of(
+                analogIn(0, 0, Adder.IN_A),
+                analogIn(0, 6, Adder.IN_B),
+                analogOut(7, 3, Adder.OUTPUT)
         ));
 
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin"), INPUT_PIN_ANALOG);

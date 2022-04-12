@@ -19,7 +19,7 @@ public class BasicSlider extends AbstractSliderButton implements IDataProviderWi
     public BasicSlider(
             int x, int y, int width, int height, int min, int max, String key, int defaultValue
     ) {
-        super(x, y, width, height, new TranslatableComponent(key, min), min + defaultValue / (double) (max - min));
+        super(x, y, width, height, new TranslatableComponent(key, min), (defaultValue - min) / (double) (max - min));
         this.min = min;
         this.max = max;
         this.translationKey = key;
