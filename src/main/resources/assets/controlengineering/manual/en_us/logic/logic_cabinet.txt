@@ -1,7 +1,5 @@
 Logic cabinets
 Tubes are big, so it's VLSI
 <&recipe>Logic cabinets provide a compact way of implementing complex redstone circuits. The <link;controlengineering:logic/logic_workbench;logic workbench> is used to design the circuit and produce the necessary logic circuit boards (note that these are not the same as logic circuits). The circuit boards are then placed in the main area of the logic cabinet. The schematic of the installed circuit is always pinned to the right side of the cabinet.
-The bus connection the circuit can interact with is on the right side of the cabinet. All circuits operate in steps controlled by a <link;controlengineering:clocks;clock module> installed on the left side of the cabinet.
+The bus connection the circuit can interact with is on the right side of the cabinet. Signals within a circuit can take values between -255 and 255, negative signals will be clamped to 0 when connected to a bus output. All circuits operate in steps controlled by a <link;controlengineering:clocks;clock module> installed on the left side of the cabinet.
 Unlike the purely digital <link;logic_circuits;logic units>, logic cabinets require flux power to be supplied to them on the back. This is necessary for both the low-noise power supplies required for analog components and the cooling of these supplies.
-
-TODO: hint at independent development from logic units

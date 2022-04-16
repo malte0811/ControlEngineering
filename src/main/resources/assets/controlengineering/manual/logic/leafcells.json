@@ -31,6 +31,18 @@
     "type": "controlengineering:leafcell",
     "cell": "controlengineering:digital_mux"
   },
+  "voltage_divider": {
+    "type": "controlengineering:leafcell",
+    "cell": "controlengineering:divider"
+  },
+  "analog_adder": {
+    "type": "controlengineering:leafcell",
+    "cell": "controlengineering:adder"
+  },
+  "inverting_amplifier": {
+    "type": "controlengineering:leafcell",
+    "cell": "controlengineering:inv_amplifier"
+  },
   "and2": {
     "type": "controlengineering:leafcell_truth",
     "cell": "controlengineering:and2"

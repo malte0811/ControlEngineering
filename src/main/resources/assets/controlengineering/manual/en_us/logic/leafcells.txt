@@ -9,6 +9,9 @@ The most common types of leafcell are simple logic gates. Except for the NOT gat
 <&schmitt_trigger>A Schmitt-Trigger is a special way of converting analog signals to digital ones. In addition to the signal to be digitized it accepts a lower and upper threshold. When the output signal is high, the input signal has to sink below the lower threshold for the output to become low; when the output is low the input has to rise over the upper threshold for the output to toggle. This can be useful to avoid rapid toggling when the input is near a threshold.
 <&analog_mux>An analog multiplexer is used to connect an output to one of two different signals depending on a third signal. When the selection input at the bottom is low the output signal is the same as the analog signal on the upper input pin, otherwise it is the signal at the lower input pin.
 <&digital_mux>The digital multiplexer works just as the analog one, but accepts and outputs only digital signals.
+<&voltage_divider>In full generality, a voltage divider outputs a convex combination of its input signals according to the values of its upper and lower resistor. In the most common use-case the lower input terminals is connected to a constant signal with value 0, here the output signal strength will be x% of the input signal where x is the configured lower reiststance.
+<&analog_adder>An analog adder adds the values of two analog signals. However due to the exact nature of the circuit the output is the §lnegative§r of the sum of the input signals.
+<&inverting_amplifier>An inverting amplifier produces a §lnegative§r multiple of its analog input signal. The multiple can be configured as the quotient of an attentuation- and an amplification factor.
 <&and2>
 <&and3>
 <&or2>
