@@ -8,6 +8,7 @@ import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.cells.impl.*;
+import malte0811.controlengineering.util.math.Fraction;
 import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import net.minecraft.resources.ResourceLocation;
@@ -48,6 +49,7 @@ public class SchematicSymbols {
     public static final CellSymbol<Unit> DIGITAL_MUX;
     public static final CellSymbol<Integer> VOLTAGE_DIVIDER;
     public static final CellSymbol<Unit> ANALOG_ADDER;
+    public static final CellSymbol<Fraction> INVERTING_AMPLIFIER;
     public static final TextSymbol TEXT = new TextSymbol();
 
     static {
@@ -120,6 +122,10 @@ public class SchematicSymbols {
                 analogIn(0, 0, Adder.IN_A),
                 analogIn(0, 6, Adder.IN_B),
                 analogOut(7, 3, Adder.OUTPUT)
+        ));
+        INVERTING_AMPLIFIER = registerCell(Leafcells.INVERTING_AMPLIFIER, 13, List.of(
+                analogIn(0, 3, InvertingAmplifier.DEFAULT_IN_NAME),
+                analogOut(12, 3, InvertingAmplifier.DEFAULT_OUT_NAME)
         ));
 
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin"), INPUT_PIN_ANALOG);

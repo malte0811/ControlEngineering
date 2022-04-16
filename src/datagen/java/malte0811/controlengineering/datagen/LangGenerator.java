@@ -21,6 +21,7 @@ import malte0811.controlengineering.gui.widget.ColorSelector;
 import malte0811.controlengineering.items.*;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
+import malte0811.controlengineering.logic.cells.impl.InvertingAmplifier;
 import malte0811.controlengineering.logic.cells.impl.VoltageDivider;
 import malte0811.controlengineering.logic.clock.ClockGenerator;
 import malte0811.controlengineering.logic.clock.ClockTypes;
@@ -116,6 +117,7 @@ public class LangGenerator extends LanguageProvider {
         add(Leafcells.DIGITAL_MUX, "Digital Multiplexer");
         add(Leafcells.DIVIDER, "Voltage Divider");
         add(Leafcells.ANALOG_ADDER, "Analog Adder");
+        add(Leafcells.INVERTING_AMPLIFIER, "Inverting Amplifier");
 
         add(IOSymbol.ANALOG_INPUT_KEY, "Analog input pin");
         add(IOSymbol.DIGITAL_INPUT_KEY, "Digitized input pin");
@@ -202,6 +204,9 @@ public class LangGenerator extends LanguageProvider {
         add(SchematicItem.EMPTY_SCHEMATIC, "Empty schematic");
 
         add(VoltageDivider.RESISTANCE_KEY, "Lower resistance: %d");
+
+        add(InvertingAmplifier.AMPLIFY_BY, "Amplify by %dx");
+        add(InvertingAmplifier.ATTENUATE_BY, "Attenuate by %dx");
     }
 
     private void addManualStrings() {

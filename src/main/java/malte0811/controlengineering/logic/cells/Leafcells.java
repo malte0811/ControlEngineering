@@ -61,6 +61,7 @@ public class Leafcells {
     ));
     public static final VoltageDivider DIVIDER = register("divider", new VoltageDivider());
     public static final Adder ANALOG_ADDER = register("adder", new Adder());
+    public static final InvertingAmplifier INVERTING_AMPLIFIER = register("inv_amplifier", new InvertingAmplifier());
 
     private static <T extends LeafcellType<?, ?>> T register(String name, T type) {
         return LeafcellType.register(new ResourceLocation(ControlEngineering.MODID, name), type);

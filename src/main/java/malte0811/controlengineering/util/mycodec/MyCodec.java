@@ -26,7 +26,10 @@ public interface MyCodec<T> {
     default <T2> MyCodec<T2> xmap(Function<T, T2> to, Function<T2, T> from) {
         return new SimpleCodec<>(
                 TreeElement.class,
-                t -> to.apply(fromTree(t)),
+                t -> {
+                    final var original = fromTree(t);
+                    return original != null ? to.apply(original) : null;
+                },
                 (s, t2) -> toSerial(s, from.apply(t2)),
                 s -> fromSerial(s).map(to)
         ) {

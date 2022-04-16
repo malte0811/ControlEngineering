@@ -16,7 +16,7 @@ public class Adder extends StatelessCell {
                         IN_B, new Pin(SignalType.ANALOG, PinDirection.INPUT)
                 ),
                 Map.of(OUTPUT, new Pin(SignalType.ANALOG, PinDirection.OUTPUT)),
-                new CellCost(2, 4)
+                new CellCost(3, 4)
         );
     }
 

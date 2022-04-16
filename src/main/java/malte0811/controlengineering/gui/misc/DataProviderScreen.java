@@ -9,7 +9,10 @@ import malte0811.controlengineering.controlpanels.components.config.ColorAndText
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.widget.BasicSlider;
 import malte0811.controlengineering.gui.widget.ColorSelector;
+import malte0811.controlengineering.gui.widget.FractionSelector;
+import malte0811.controlengineering.logic.cells.impl.InvertingAmplifier;
 import malte0811.controlengineering.logic.cells.impl.VoltageDivider;
+import malte0811.controlengineering.util.math.Fraction;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -51,6 +54,9 @@ public class DataProviderScreen<T> extends StackedScreen {
         registerFactory(VoltageDivider.RESISTANCE_CODEC, BasicSlider.withRange(
                 0, VoltageDivider.TOTAL_RESISTANCE, VoltageDivider.RESISTANCE_KEY
         ));
+        registerFactory(Fraction.CODEC, FractionSelector.with(
+                255, InvertingAmplifier.AMPLIFY_BY, InvertingAmplifier.ATTENUATE_BY
+        ));
     }
 
     @Nullable
@@ -88,7 +94,7 @@ public class DataProviderScreen<T> extends StackedScreen {
         var provider = factory.create(initial, xMin, yMin);
         addRenderableWidget(provider);
         addRenderableWidget(new Button(
-                xMin, yMin + provider.getHeight(), provider.getWidth(), 20, new TranslatableComponent(DONE_KEY),
+                xMin, yMin + provider.getHeight() + 10, provider.getWidth(), 20, new TranslatableComponent(DONE_KEY),
                 $ -> onClose()
         ));
         this.provider = provider;

@@ -22,8 +22,9 @@ public abstract class NestedWidget extends AbstractWidget implements ContainerEv
         super(x, y, width, height, TextComponent.EMPTY);
     }
 
-    protected void addWidget(AbstractWidget newPart) {
+    protected <T extends AbstractWidget> T addWidget(T newPart) {
         subWidgets.add(newPart);
+        return newPart;
     }
 
     @Override
