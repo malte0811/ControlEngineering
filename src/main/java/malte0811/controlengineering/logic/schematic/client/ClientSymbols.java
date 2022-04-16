@@ -5,9 +5,11 @@ import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicNet;
 import malte0811.controlengineering.logic.schematic.symbol.*;
 import malte0811.controlengineering.util.math.Vec2d;
+import net.minecraft.client.Minecraft;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -44,6 +46,22 @@ public class ClientSymbols {
         register(SchematicSymbols.ANALOG_ADDER, 24, 11);
         register(SchematicSymbols.INVERTING_AMPLIFIER, ClientInvAmpSymbol::new);
         register(SchematicSymbols.TEXT, ClientTextSymbol::new);
+    }
+
+    public static <State> void renderCenteredInBox(
+            SymbolInstance<State> inst, PoseStack transform, int x, int y, int xSpace, int ySpace
+    ) {
+        final var level = Objects.requireNonNull(Minecraft.getInstance().level);
+        final var type = inst.getType();
+        final var width = type.getXSize(inst.getCurrentState(), level);
+        final var height = type.getYSize(inst.getCurrentState(), level);
+        final var scale = Math.max(1, Math.min(width / (float) xSpace, height / (float) ySpace));
+        transform.pushPose();
+        transform.translate(x + xSpace / 2., y + ySpace / 2., 0);
+        transform.scale(scale, scale, 1);
+        transform.translate(-width / 2., -height / 2., 0);
+        render(inst, transform, 0, 0);
+        transform.popPose();
     }
 
     public static <State> void render(SymbolInstance<State> inst, PoseStack transform, int x, int y) {

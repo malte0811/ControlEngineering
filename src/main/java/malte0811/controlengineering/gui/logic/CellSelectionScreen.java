@@ -29,8 +29,8 @@ public class CellSelectionScreen extends StackedScreen {
     private final List<SchematicSymbol<?>> symbols;
     private int xGrid;
     private int yGrid;
-    private int numCols;
-    private int numRowsPerPage;
+    private final int numCols = 4;
+    private final int numRowsPerPage = 4;
     private PageSelector pageSelector;
     // Necessary to prevent closing two screens at once, which isn't possible
     private SymbolInstance<?> selected;
@@ -44,19 +44,9 @@ public class CellSelectionScreen extends StackedScreen {
     @Override
     protected void init() {
         super.init();
-        xGrid = symbols.stream()
-                .mapToInt(symbol -> (int) Math.max(
-                        symbol.getDefaultXSize(level()), font.width(symbol.getName()) / TEXT_SCALE
-                ))
-                .max()
-                .orElse(5) + 2;
-        yGrid = symbols.stream()
-                .mapToInt(s -> s.getDefaultYSize(level()))
-                .max()
-                .orElse(5) + 2 + getTotalFontHeight();
-        numCols = (width - 2 * BORDER_SIZE_X) / (xGrid * LogicDesignScreen.BASE_SCALE);
-        numRowsPerPage = (height - 2 * BORDER_SIZE_Y - PageSelector.HEIGHT) / (yGrid * LogicDesignScreen.BASE_SCALE);
-        addRenderableWidget(this.pageSelector = new PageSelector(
+        xGrid = (width - 2 * BORDER_SIZE_X) / (numCols * LogicDesignScreen.BASE_SCALE);
+        yGrid = (height - 2 * BORDER_SIZE_Y - PageSelector.HEIGHT) / (numRowsPerPage * LogicDesignScreen.BASE_SCALE);
+        this.pageSelector = addRenderableWidget(new PageSelector(
                 BORDER_SIZE_X, height - BORDER_SIZE_Y - PageSelector.HEIGHT, width - 2 * BORDER_SIZE_X,
                 Mth.positiveCeilDiv(symbols.size(), numCols * numRowsPerPage),
                 this.pageSelector != null ? this.pageSelector.getCurrentPage() : 0
@@ -70,18 +60,21 @@ public class CellSelectionScreen extends StackedScreen {
         matrixStack.pushPose();
         matrixStack.translate(BORDER_SIZE_X, BORDER_SIZE_Y, 0);
         matrixStack.scale(LogicDesignScreen.BASE_SCALE, LogicDesignScreen.BASE_SCALE, 1);
+        final var fontHeight = getTotalFontHeight();
         int index = getFirstIndexOnPage();
         for (int row = 0; index < symbols.size() && row < numRowsPerPage; ++row) {
             for (int col = 0; index < symbols.size() && col < numCols; ++col) {
                 SchematicSymbol<?> symbol = symbols.get(index);
-                final int xBase = col * xGrid + (xGrid - symbol.getDefaultXSize(level())) / 2;
-                final int yBase = row * yGrid + 1;
-                ClientSymbols.render(symbol.newInstance(), matrixStack, xBase, yBase + getTotalFontHeight());
+                final int xBase = col * xGrid;
+                final int yBase = row * yGrid;
+                ClientSymbols.renderCenteredInBox(
+                        symbol.newInstance(), matrixStack, xBase, yBase + fontHeight, xGrid, yGrid - fontHeight - 1
+                );
                 matrixStack.pushPose();
-                matrixStack.translate(xBase, yBase, 0);
+                matrixStack.translate(xBase + xGrid / 2., yBase + 1, 0);
                 matrixStack.scale(1 / TEXT_SCALE, 1 / TEXT_SCALE, 1);
                 Component desc = symbol.getName();
-                final int offset = (int) ((symbol.getDefaultXSize(level()) * TEXT_SCALE - font.width(desc)) / 2);
+                final var offset = -font.width(desc) / 2f;
                 font.draw(matrixStack, desc, offset, 0, 0xff000000);
                 matrixStack.popPose();
                 ++index;
