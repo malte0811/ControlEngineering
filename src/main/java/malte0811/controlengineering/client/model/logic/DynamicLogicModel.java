@@ -2,12 +2,14 @@ package malte0811.controlengineering.client.model.logic;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.model.CEBakedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
+import malte0811.controlengineering.client.model.logic.DynamicLogicModel.ModelData;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -29,7 +31,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
-public class DynamicLogicModel implements CEBakedModel.Cacheable<DynamicLogicModel.ModelData> {
+public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<ModelData, RenderType>> {
     private static final Random RANDOM = new Random(1234);
     private static final Vec2[] TUBE_OFFSETS;
     private static final float[] BOARD_HEIGHTS = {16.5f / 16f, 21.5f / 16f, 12.5f / 16f, 26.5f / 16f,};
@@ -88,7 +90,8 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<DynamicLogicMod
     }
 
     @Override
-    public List<BakedQuad> getQuads(ModelData data) {
+    public List<BakedQuad> getQuads(Pair<ModelData, RenderType> dataPair) {
+        var data = dataPair.getFirst();
         while (this.knownModels.size() <= data.numTubes) {
             this.knownModels.add(null);
         }
@@ -99,7 +102,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<DynamicLogicMod
                 result = new FixedTubeModel(data.numTubes);
                 this.knownModels.set(data.numTubes, result);
             }
-            quads = result.getQuads();
+            quads = result.getQuads(dataPair.getSecond());
         } else {
             quads = new ArrayList<>();
         }
@@ -112,10 +115,13 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<DynamicLogicMod
 
     @Nullable
     @Override
-    public ModelData getKey(
+    public Pair<ModelData, RenderType> getKey(
             @Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData
     ) {
-        return Objects.requireNonNullElseGet(extraData.getData(DATA), () -> new ModelData(-1, false));
+        return Pair.of(
+                Objects.requireNonNullElseGet(extraData.getData(DATA), () -> new ModelData(-1, false)),
+                MinecraftForgeClient.getRenderType()
+        );
     }
 
     @Nonnull
@@ -164,8 +170,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<DynamicLogicMod
             }
         }
 
-        public List<BakedQuad> getQuads() {
-            RenderType currentType = MinecraftForgeClient.getRenderType();
+        public List<BakedQuad> getQuads(RenderType currentType) {
             if (currentType == RenderType.solid()) {
                 return solid;
             } else if (currentType == RenderType.translucent()) {

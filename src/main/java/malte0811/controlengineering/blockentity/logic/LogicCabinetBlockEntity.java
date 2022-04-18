@@ -71,7 +71,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     private Pair<Schematic, BusConnectedCircuit> circuit;
     private final ClockSlot clock = new ClockSlot();
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
-    private int numRenderTubes;
+    private int numRenderTubes = -1;
     private BusState currentBusState = BusState.EMPTY;
 
     public LogicCabinetBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
