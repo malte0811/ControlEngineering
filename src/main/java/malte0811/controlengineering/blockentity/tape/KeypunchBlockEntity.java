@@ -212,7 +212,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
                     );
                     return InteractionResult.SUCCESS;
                 }
-        ).setAllowTargetThrough(true);
+        );
     }
 
     private static class Dummy extends CEBlockEntity implements SelectionShapeOwner, IHasMaster<KeypunchBlockEntity> {
@@ -252,7 +252,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
                         );
                         return InteractionResult.SUCCESS;
                     }
-            );
+            ).setAllowTargetThrough(true);
         }
 
         @Nullable

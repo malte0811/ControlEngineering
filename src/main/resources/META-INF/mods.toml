@@ -6,6 +6,8 @@ modId = "controlengineering"
 version = "${ce_version}"
 displayName = "Control Engineering"
 authors = "malte0811"
+logoFile = "logo.png"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/control-engineering"
 description = '''
 An addon for Immersive Engineering providing control panels and logic cabinets among other related devices
 '''
