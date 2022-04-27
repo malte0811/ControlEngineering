@@ -9,5 +9,5 @@ created using the **Control Panel CNC**. This allows existing designs to easily 
 designs can either be written out manually using a **Keypunch** or created in the visual interface of the **Panel
 Designer**.
 
-Logic cabinets are an independent take on redstone logic in IEs visual style. Unlike the logic units added by IE, these
-support analog signals, but also require power to keep them running.
+**Logic cabinets** are an independent take on redstone logic in IEs visual style. Unlike the logic units added by IE,
+these support analog signals, but also require power to keep them running.

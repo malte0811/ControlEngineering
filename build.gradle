@@ -58,6 +58,7 @@ def version_replacements = [
         'mc_version': minecraft_version,
         'ie_version': ie_version,
         'ce_version': project.version,
+        'forge_version': forge_version,
 ]
 
 processResources {
@@ -65,6 +66,7 @@ processResources {
     filesMatching("META-INF/mods.toml") {
         expand version_replacements
     }
+    exclude ".cache"
 }
 
 // When using "Run using IntelliJ" (the only option with well-working hotswapping) the used "resources" directory is

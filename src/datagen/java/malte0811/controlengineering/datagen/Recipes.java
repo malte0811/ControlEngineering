@@ -2,6 +2,7 @@ package malte0811.controlengineering.datagen;
 
 import blusunrize.immersiveengineering.api.EnumMetals;
 import blusunrize.immersiveengineering.api.IETags;
+import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
 import malte0811.controlengineering.datagen.recipes.NoAdvancementShapedBuilder;
@@ -185,7 +186,8 @@ public class Recipes extends RecipeProvider {
                 .define('b', IEItemRefs.BLUEPRINT)
                 .define('e', IEItemRefs.LIGHT_ENGINEERING)
                 .save(consumer);
-        SpecialRecipeBuilder.special(CERecipeSerializers.SCHEMATIC_COPY.get()).save(consumer, "schematic_copy");
+        SpecialRecipeBuilder.special(CERecipeSerializers.SCHEMATIC_COPY.get())
+                .save(consumer, ControlEngineering.MODID+":schematic_copy");
         NoAdvancementShapelessBuilder.shapeless(CEItems.SCHEMATIC)
                 .requires(Items.PAPER)
                 .requires(Tags.Items.DYES_RED)

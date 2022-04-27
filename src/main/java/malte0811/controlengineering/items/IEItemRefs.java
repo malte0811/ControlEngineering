@@ -34,6 +34,6 @@ public class IEItemRefs {
 
     private static <T extends IForgeRegistryEntry<T>>
     RegistryObject<T> of(String name, IForgeRegistry<T> registry) {
-        return RegistryObject.of(new ResourceLocation(Lib.MODID, name), registry);
+        return RegistryObject.create(new ResourceLocation(Lib.MODID, name), registry);
     }
 }
