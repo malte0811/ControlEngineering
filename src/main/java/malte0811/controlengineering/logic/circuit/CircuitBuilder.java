@@ -2,14 +2,14 @@ package malte0811.controlengineering.logic.circuit;
 
 import com.google.common.base.Preconditions;
 import malte0811.controlengineering.logic.cells.LeafcellInstance;
-import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
 import malte0811.controlengineering.logic.cells.SignalType;
+import malte0811.controlengineering.util.math.Vec2i;
 
 import java.util.*;
 
 public class CircuitBuilder {
-    private final List<LeafcellInstance<?, ?>> cells = new ArrayList<>();
+    private final List<Circuit.PlacedLeafcell> cells = new ArrayList<>();
     private final Map<PinReference, NetReference> pins = new HashMap<>();
     private final Set<NetReference> existingNets = new HashSet<>();
     private final Set<NetReference> analogNets = new HashSet<>();
@@ -20,12 +20,8 @@ public class CircuitBuilder {
         return new CircuitBuilder();
     }
 
-    public CellBuilder addCell(LeafcellType<?, ?> cell) {
-        return addCell(cell.newInstance());
-    }
-
-    public CellBuilder addCell(LeafcellInstance<?, ?> cell) {
-        return new CellBuilder(cell);
+    public CellBuilder addCell(LeafcellInstance<?, ?> cell, Vec2i pos) {
+        return new CellBuilder(cell, pos);
     }
 
     public CircuitBuilder addInputNet(NetReference input, SignalType type) {
@@ -55,11 +51,13 @@ public class CircuitBuilder {
 
     public class CellBuilder {
         private final LeafcellInstance<?, ?> cell;
+        private Vec2i pos;
         private final Map<PinReference, NetReference> cellPins = new HashMap<>();
         private final Set<NetReference> outputNets = new HashSet<>();
 
-        public CellBuilder(LeafcellInstance<?, ?> cell) {
+        public CellBuilder(LeafcellInstance<?, ?> cell, Vec2i pos) {
             this.cell = cell;
+            this.pos = pos;
         }
 
         public CellBuilder output(String name, NetReference net) {
@@ -88,7 +86,7 @@ public class CircuitBuilder {
                     .filter(p -> !p.isOutput())
                     .count();
             Preconditions.checkState(numConnectedInputs == cell.getType().getInputPins().size());
-            cells.add(cell);
+            cells.add(new Circuit.PlacedLeafcell(cell, pos));
             pins.putAll(cellPins);
             for (Map.Entry<PinReference, NetReference> e : cellPins.entrySet()) {
                 if (e.getKey().isOutput()) {

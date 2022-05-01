@@ -5,21 +5,22 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.logic.cells.CircuitSignals;
 import malte0811.controlengineering.logic.cells.LeafcellInstance;
+import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Pin;
+import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import malte0811.controlengineering.util.mycodec.record.CodecField;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec4;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Circuit {
-    private static final MyCodec<List<LeafcellInstance<?, ?>>> CELLS_CODEC = MyCodecs.list(LeafcellInstance.CODEC);
+    private static final MyCodec<List<PlacedLeafcell>> CELLS_CODEC =
+            MyCodecs.list(PlacedLeafcell.CODEC);
     private static final MyCodec<Object2IntMap<NetReference>> NET_VALUES_CODEC =
             MyCodecs.codecForMap(NetReference.CODEC, MyCodecs.INTEGER).xmap(Object2IntOpenHashMap::new, m -> m);
     private static final MyCodec<Map<PinReference, NetReference>> PIN_NET_CODEC =
@@ -32,14 +33,14 @@ public class Circuit {
             Circuit::new
     );
 
-    private final List<LeafcellInstance<?, ?>> cellsInTopoOrder;
+    private final List<PlacedLeafcell> cellsInTopoOrder;
     private final Object2IntMap<NetReference> allNetValues;
     private final Object2IntMap<NetReference> inputValues;
     private final Map<NetReference, PinReference> delayedNetsBySource;
     private final Map<PinReference, NetReference> pinToNet;
 
     public Circuit(
-            List<LeafcellInstance<?, ?>> cellsInOrder,
+            List<PlacedLeafcell> cellsInOrder,
             Set<NetReference> inputs,
             Map<PinReference, NetReference> pinNets
     ) {
@@ -52,7 +53,7 @@ public class Circuit {
     }
 
     public Circuit(
-            List<LeafcellInstance<?, ?>> cellsInOrder,
+            List<PlacedLeafcell> cellsInOrder,
             Object2IntMap<NetReference> inputs,
             Map<PinReference, NetReference> pinNets,
             Object2IntMap<NetReference> netValues
@@ -119,5 +120,31 @@ public class Circuit {
             inputValues.put(entry.getKey(), allNetValues.getInt(netAtInput));
         }
         return new CircuitSignals(inputValues);
+    }
+
+    public List<PlacedLeafcell> getCells() {
+        return Collections.unmodifiableList(cellsInTopoOrder);
+    }
+
+    public record PlacedLeafcell(LeafcellInstance<?, ?> cell, Vec2i pos) {
+        public static MyCodec<PlacedLeafcell> CODEC = new RecordCodec2<>(
+                new CodecField<>("cell", PlacedLeafcell::cell, LeafcellInstance.CODEC),
+                new CodecField<>("pos", PlacedLeafcell::pos, Vec2i.CODEC),
+                PlacedLeafcell::new
+        ).orElse(LeafcellInstance.CODEC.xmap(
+                c -> new PlacedLeafcell(c, Vec2i.ZERO), PlacedLeafcell::cell
+        ));
+
+        public LeafcellType<?, ?> getType() {
+            return cell.getType();
+        }
+
+        public CircuitSignals getCurrentOutput(CircuitSignals cellInputs) {
+            return cell.getCurrentOutput(cellInputs);
+        }
+
+        public CircuitSignals tick(CircuitSignals cellInputs) {
+            return cell.tick(cellInputs);
+        }
     }
 }
