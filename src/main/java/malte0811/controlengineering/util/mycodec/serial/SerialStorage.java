@@ -42,4 +42,10 @@ public interface SerialStorage {
     FastDataResult<Double> readDouble();
 
     void writeDouble(double value);
+
+    void pushMark();
+
+    void resetToMark();
+
+    void popMark();
 }

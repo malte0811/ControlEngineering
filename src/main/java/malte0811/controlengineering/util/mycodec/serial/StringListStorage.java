@@ -1,30 +1,33 @@
 package malte0811.controlengineering.util.mycodec.serial;
 
-import com.google.common.collect.ImmutableList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntStack;
 import malte0811.controlengineering.util.FastDataResult;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 import java.util.function.Function;
 
 public class StringListStorage implements SerialStorage {
-    private final Deque<String> data;
+    private final List<String> data;
+    private final IntStack marks = new IntArrayList();
+    private int nextReadIndex;
 
     public StringListStorage(List<String> data) {
-        this.data = new ArrayDeque<>(data);
+        this.data = data;
     }
 
     public StringListStorage() {
-        this(ImmutableList.of());
+        this(new ArrayList<>());
     }
 
     @Nonnull
     private FastDataResult<String> poll() {
-        if (!data.isEmpty()) {
-            return FastDataResult.success(data.poll());
+        if (nextReadIndex < data.size()) {
+            var result = FastDataResult.success(data.get(nextReadIndex));
+            ++nextReadIndex;
+            return result;
         } else {
             return FastDataResult.error("Not enough data");
         }
@@ -47,16 +50,12 @@ public class StringListStorage implements SerialStorage {
 
     @Override
     public FastDataResult<String> readString() {
-        if (!data.isEmpty()) {
-            return FastDataResult.success(data.poll());
-        } else {
-            return FastDataResult.error("No more data");
-        }
+        return poll();
     }
 
     @Override
     public void writeBoolean(boolean value) {
-        data.push(Boolean.toString(value));
+        data.add(Boolean.toString(value));
     }
 
     @Override
@@ -71,7 +70,7 @@ public class StringListStorage implements SerialStorage {
 
     @Override
     public void writeByte(byte value) {
-        data.push(Byte.toString(value));
+        data.add(Byte.toString(value));
     }
 
     @Override
@@ -81,7 +80,7 @@ public class StringListStorage implements SerialStorage {
 
     @Override
     public void writeFloat(float value) {
-        data.push(Float.toString(value));
+        data.add(Float.toString(value));
     }
 
     @Override
@@ -91,7 +90,22 @@ public class StringListStorage implements SerialStorage {
 
     @Override
     public void writeDouble(double value) {
-        data.push(Double.toString(value));
+        data.add(Double.toString(value));
+    }
+
+    @Override
+    public void pushMark() {
+        marks.push(nextReadIndex);
+    }
+
+    @Override
+    public void resetToMark() {
+        nextReadIndex = marks.peekInt(0);
+    }
+
+    @Override
+    public void popMark() {
+        marks.popInt();
     }
 
     public List<String> getData() {

@@ -1,11 +1,13 @@
 package malte0811.controlengineering.util.mycodec;
 
 import malte0811.controlengineering.util.FastDataResult;
+import malte0811.controlengineering.util.mycodec.serial.PacketBufferStorage;
 import malte0811.controlengineering.util.mycodec.serial.SerialStorage;
 import malte0811.controlengineering.util.mycodec.tree.TreeElement;
 import malte0811.controlengineering.util.mycodec.tree.TreeManager;
 import malte0811.controlengineering.util.mycodec.tree.nbt.NBTManager;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -77,5 +79,46 @@ public interface MyCodec<T> {
 
     default MyCodec<T> copy() {
         return xmap(Function.identity(), Function.identity());
+    }
+
+    default T from(FriendlyByteBuf in) {
+        return fromSerial(new PacketBufferStorage(in)).get();
+    }
+
+    default MyCodec<T> orElse(MyCodec<T> fallback) {
+        return new MyCodec<T>() {
+            @Override
+            public <B> TreeElement<B> toTree(T in, TreeManager<B> manager) {
+                return MyCodec.this.toTree(in, manager);
+            }
+
+            @Nullable
+            @Override
+            public T fromTree(TreeElement<?> data) {
+                final T mainResult = MyCodec.this.fromTree(data);
+                if (mainResult != null) {
+                    return mainResult;
+                } else {
+                    return fallback.fromTree(data);
+                }
+            }
+
+            @Override
+            public void toSerial(SerialStorage out, T in) {
+                MyCodec.this.toSerial(out, in);
+            }
+
+            @Override
+            public FastDataResult<T> fromSerial(SerialStorage in) {
+                in.pushMark();
+                var result = MyCodec.this.fromSerial(in);
+                if (result.isError()) {
+                    in.resetToMark();
+                    result = fallback.fromSerial(in);
+                }
+                in.popMark();
+                return result;
+            }
+        };
     }
 }

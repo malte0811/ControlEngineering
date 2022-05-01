@@ -1,10 +1,13 @@
 package malte0811.controlengineering.util.mycodec.serial;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntStack;
 import malte0811.controlengineering.util.FastDataResult;
 import net.minecraft.network.FriendlyByteBuf;
 
 public class PacketBufferStorage implements SerialStorage {
     private final FriendlyByteBuf buffer;
+    private final IntStack marks = new IntArrayList();
 
     public PacketBufferStorage(FriendlyByteBuf buffer) {
         this.buffer = buffer;
@@ -68,5 +71,20 @@ public class PacketBufferStorage implements SerialStorage {
     @Override
     public void writeDouble(double value) {
         buffer.writeDouble(value);
+    }
+
+    @Override
+    public void pushMark() {
+        marks.push(buffer.readerIndex());
+    }
+
+    @Override
+    public void resetToMark() {
+        buffer.readerIndex(marks.peekInt(0));
+    }
+
+    @Override
+    public void popMark() {
+        marks.popInt();
     }
 }
