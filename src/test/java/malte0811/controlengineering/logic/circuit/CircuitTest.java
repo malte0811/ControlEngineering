@@ -3,6 +3,7 @@ package malte0811.controlengineering.logic.circuit;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.cells.SignalType;
+import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.nbt.CompoundTag;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -23,7 +24,7 @@ public class CircuitTest {
         new CompoundTag();
         CircuitBuilder.builder()
                 .addInputNet(IN_A, SignalType.DIGITAL)
-                .addCell(Leafcells.AND2)
+                .addCell(Leafcells.AND2.newInstance(), Vec2i.ZERO)
                 .input("in1", IN_A)
                 .input("in2", IN_A)
                 .buildCell()
@@ -43,7 +44,7 @@ public class CircuitTest {
         Circuit c = CircuitBuilder.builder()
                 .addInputNet(IN_A, SignalType.DIGITAL)
                 .addInputNet(IN_B, SignalType.DIGITAL)
-                .addCell(Leafcells.AND2)
+                .addCell(Leafcells.AND2.newInstance(), Vec2i.ZERO)
                 .input("in1", IN_A)
                 .input("in2", IN_B)
                 .output("out", OUT_A)
@@ -65,7 +66,7 @@ public class CircuitTest {
         Circuit c = CircuitBuilder.builder()
                 .addInputNet(IN_A, SignalType.DIGITAL)
                 .addInputNet(IN_B, SignalType.DIGITAL)
-                .addCell(RS_LATCH)
+                .addCell(RS_LATCH.newInstance(), Vec2i.ZERO)
                 .input("reset", IN_A)
                 .input("set", IN_B)
                 .output("q", OUT_A)
@@ -97,11 +98,11 @@ public class CircuitTest {
     public void delayedNet() {
         Circuit c = CircuitBuilder.builder()
                 .addDelayedNet(OUT_A, SignalType.DIGITAL)
-                .addCell(Leafcells.NOT)
+                .addCell(Leafcells.NOT.newInstance(), Vec2i.ZERO)
                 .input("in", OUT_A)
                 .output("out", INTERNAL)
                 .buildCell()
-                .addCell(Leafcells.D_LATCH)
+                .addCell(Leafcells.D_LATCH.newInstance(), Vec2i.ZERO)
                 .input("in", INTERNAL)
                 .output("out", OUT_A)
                 .buildCell()

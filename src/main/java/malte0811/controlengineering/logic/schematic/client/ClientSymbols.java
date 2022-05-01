@@ -46,6 +46,7 @@ public class ClientSymbols {
         register(SchematicSymbols.ANALOG_ADDER, 24, 11);
         register(SchematicSymbols.INVERTING_AMPLIFIER, ClientInvAmpSymbol::new);
         register(SchematicSymbols.TEXT, ClientTextSymbol::new);
+        register(SchematicSymbols.CONFIG_SWITCH, ClientConfigSwitch::new);
     }
 
     public static <State> void renderCenteredInBox(

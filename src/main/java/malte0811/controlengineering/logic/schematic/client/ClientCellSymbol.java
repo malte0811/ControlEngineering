@@ -11,16 +11,12 @@ import net.minecraft.network.chat.TextComponent;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-import static malte0811.controlengineering.logic.schematic.symbol.SchematicSymbols.SYMBOLS_SHEET;
-
 public class ClientCellSymbol<C> extends ClientSymbol<C, CellSymbol<C>> {
     private final SubTexture texture;
 
     public ClientCellSymbol(CellSymbol<C> serverSymbol, int uMin, int vMin) {
         super(serverSymbol);
-        this.texture = new SubTexture(
-                SYMBOLS_SHEET, uMin, vMin, uMin + serverSymbol.getWidth(), vMin + serverSymbol.getHeight(), 64
-        );
+        this.texture = makeSubtexture(serverSymbol, uMin, vMin);
     }
 
     @Override

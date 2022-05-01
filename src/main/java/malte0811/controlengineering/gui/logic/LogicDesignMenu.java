@@ -29,7 +29,7 @@ public class LogicDesignMenu extends CEContainerMenu<LogicSubPacket> {
 
     public <BE extends BlockEntity & ISchematicBE>
     LogicDesignMenu(MenuType<?> type, int id, BE schematicBE, boolean readOnly) {
-        super(type, id, ContainerScreenManager.isValidFor(schematicBE), schematicBE::setChanged);
+        super(type, id, ContainerScreenManager.isValidFor(schematicBE), schematicBE::setSchematicChanged);
         this.readOnly = readOnly;
         this.schematic = Objects.requireNonNull(schematicBE.getSchematic());
         if (!readOnly) {

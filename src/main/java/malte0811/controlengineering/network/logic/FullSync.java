@@ -15,7 +15,7 @@ public class FullSync extends LogicSubPacket {
     }
 
     public FullSync(FriendlyByteBuf in) {
-        schematic = Schematic.CODEC.fromSerial(new PacketBufferStorage(in)).get();
+        schematic = Schematic.CODEC.from(in);
     }
 
     @Override

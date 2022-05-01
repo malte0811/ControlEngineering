@@ -30,7 +30,10 @@ public class LogicPacket extends SimplePacket {
         if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             Preconditions.checkState(packet.allowSendingToServer());
             AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
-            if (activeContainer instanceof LogicDesignMenu logicMenu && !logicMenu.readOnly) {
+            if (!(activeContainer instanceof LogicDesignMenu logicMenu)) {
+                return;
+            }
+            if (!logicMenu.readOnly || packet.canApplyOnReadOnly()) {
                 packet.process(logicMenu.getSchematic(), $ -> {
                     throw new RuntimeException();
                 }, ctx.getSender().level);

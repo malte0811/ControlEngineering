@@ -36,7 +36,11 @@ public abstract class SchematicSymbol<State> extends TypedRegistryEntry<State, S
 
     public abstract List<SymbolPin> getPins(@Nullable State state);
 
-    public abstract Component getName();
+    public abstract Component getDefaultName();
+
+    public Component getName(State config) {
+        return getDefaultName();
+    }
 
     public CellCost getCost() {
         return CellCost.FOR_FREE;
@@ -44,5 +48,9 @@ public abstract class SchematicSymbol<State> extends TypedRegistryEntry<State, S
 
     public List<MutableComponent> getExtraDescription(State state) {
         return ImmutableList.of();
+    }
+
+    public boolean canConfigureOnReadOnly() {
+        return false;
     }
 }

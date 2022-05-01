@@ -51,9 +51,13 @@ public class Schematic {
         this(ImmutableList.of(), ImmutableList.of(), "New schematic");
     }
 
-    public void addSymbol(PlacedSymbol newSymbol) {
+    public boolean addSymbol(PlacedSymbol newSymbol, Level level) {
+        if (!makeChecker(level).canAdd(newSymbol)) {
+            return false;
+        }
         symbols.add(newSymbol);
         resetConnectedPins();
+        return true;
     }
 
     public void addWire(WireSegment segment) {
@@ -189,6 +193,18 @@ public class Schematic {
     public void clear() {
         symbols.clear();
         nets.clear();
+    }
+
+    public boolean replaceBy(int index, PlacedSymbol newSymbol, Level level) {
+        final var oldSymbol = symbols.remove(index);
+        resetConnectedPins();
+        if (addSymbol(newSymbol, level)) {
+            return true;
+        } else {
+            // Add back old symbol
+            addSymbol(oldSymbol, level);
+            return false;
+        }
     }
 
     public boolean isEmpty() {

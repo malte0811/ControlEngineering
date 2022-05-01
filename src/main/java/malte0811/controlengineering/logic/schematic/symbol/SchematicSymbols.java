@@ -50,6 +50,7 @@ public class SchematicSymbols {
     public static final CellSymbol<Integer> VOLTAGE_DIVIDER;
     public static final CellSymbol<Unit> ANALOG_ADDER;
     public static final CellSymbol<Fraction> INVERTING_AMPLIFIER;
+    public static final CellSymbol<Boolean> CONFIG_SWITCH;
     public static final TextSymbol TEXT = new TextSymbol();
 
     static {
@@ -127,6 +128,7 @@ public class SchematicSymbols {
                 analogIn(0, 3, InvertingAmplifier.DEFAULT_IN_NAME),
                 analogOut(12, 3, InvertingAmplifier.DEFAULT_OUT_NAME)
         ));
+        CONFIG_SWITCH = registerCell(new ConfigSwitchSymbol());
 
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin"), INPUT_PIN_ANALOG);
         REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin_digitized"), INPUT_PIN_DIGITAL);
@@ -165,6 +167,10 @@ public class SchematicSymbols {
     }
 
     private static <C> CellSymbol<C> registerCell(LeafcellType<?, C> cell, int uSize, int vSize, List<SymbolPin> pins) {
-        return REGISTRY.register(cell.getRegistryName(), new CellSymbol<>(cell, uSize, vSize, pins));
+        return registerCell(new CellSymbol<>(cell, uSize, vSize, pins));
+    }
+
+    private static <C> CellSymbol<C> registerCell(CellSymbol<C> symbol) {
+        return REGISTRY.register(symbol.getCellType().getRegistryName(), symbol);
     }
 }

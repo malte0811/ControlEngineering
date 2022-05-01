@@ -60,7 +60,7 @@ public class CellSymbol<Config> extends SchematicSymbol<Config> {
     }
 
     @Override
-    public Component getName() {
+    public Component getDefaultName() {
         return new TranslatableComponent(getTranslationKey(type));
     }
 

@@ -58,7 +58,7 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
     }
 
     @Override
-    public Component getName() {
+    public Component getDefaultName() {
         return new TranslatableComponent(!isInput ? OUTPUT_KEY : (isDigitized ? DIGITAL_INPUT_KEY : ANALOG_INPUT_KEY));
     }
 

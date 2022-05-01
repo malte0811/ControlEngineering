@@ -27,6 +27,7 @@ public abstract class LogicSubPacket {
         register(Delete.class, Delete::new);
         register(ClearAll.class, ClearAll::new);
         register(SetName.class, SetName::new);
+        register(ModifySymbol.class, ModifySymbol::new);
     }
 
     private static <T extends LogicSubPacket>
@@ -52,5 +53,9 @@ public abstract class LogicSubPacket {
 
     public boolean allowSendingToServer() {
         return true;
+    }
+
+    public boolean canApplyOnReadOnly() {
+        return false;
     }
 }

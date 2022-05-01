@@ -15,12 +15,15 @@ import malte0811.controlengineering.client.model.logic.DynamicLogicModel;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PCBStackItem;
+import malte0811.controlengineering.logic.cells.LeafcellInstance;
 import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
+import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import malte0811.controlengineering.util.math.MatrixUtils;
+import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.core.BlockPos;
@@ -50,9 +53,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static malte0811.controlengineering.blocks.logic.LogicCabinetBlock.NOT_MIRRORED;
@@ -334,6 +335,29 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
             // should never happen(?)
             return new Schematic();
         }
+    }
+
+    @Override
+    public void setSchematicChanged() {
+        if (circuit == null) {
+            return;
+        }
+        // Some cells can be reconfigured in-circuit, apply these changes here
+        Map<Vec2i, LeafcellInstance<?, ?>> leafcells = new HashMap<>();
+        for (var cell : circuit.getSecond().getCircuit().getCells()) {
+            leafcells.put(cell.pos(), cell.cell());
+        }
+        for (var symbol : circuit.getFirst().getSymbols()) {
+            var symbolType = symbol.symbol().getType();
+            if (!(symbolType instanceof CellSymbol<?> cellSymbol) || !cellSymbol.canConfigureOnReadOnly()) {
+                continue;
+            }
+            var inCircuit = leafcells.get(symbol.position());
+            if (inCircuit != null && inCircuit.getType() == cellSymbol.getCellType()) {
+                inCircuit.applyConfigChange(symbol.symbol().getCurrentState());
+            }
+        }
+        this.setChanged();
     }
 
     @Override

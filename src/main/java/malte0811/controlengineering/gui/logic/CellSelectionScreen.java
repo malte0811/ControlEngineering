@@ -73,7 +73,7 @@ public class CellSelectionScreen extends StackedScreen {
                 matrixStack.pushPose();
                 matrixStack.translate(xBase + xGrid / 2., yBase + 1, 0);
                 matrixStack.scale(1 / TEXT_SCALE, 1 / TEXT_SCALE, 1);
-                Component desc = symbol.getName();
+                Component desc = symbol.getDefaultName();
                 final var offset = -font.width(desc) / 2f;
                 font.draw(matrixStack, desc, offset, 0, 0xff000000);
                 matrixStack.popPose();

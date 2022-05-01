@@ -49,7 +49,7 @@ public class ConstantSymbol extends SchematicSymbol<Integer> {
     }
 
     @Override
-    public Component getName() {
+    public Component getDefaultName() {
         return new TranslatableComponent(NAME);
     }
 

@@ -36,7 +36,7 @@ public class TextSymbol extends SchematicSymbol<String> {
     }
 
     @Override
-    public Component getName() {
+    public Component getDefaultName() {
         return new TranslatableComponent(NAME_KEY);
     }
 }

@@ -15,6 +15,7 @@ public record Vec2i(int x, int y) implements Comparable<Vec2i> {
             new CodecField<>("y", Vec2i::y, MyCodecs.INTEGER),
             Vec2i::new
     );
+    public static final Vec2i ZERO = new Vec2i(0, 0);
 
     public Vec2i(FriendlyByteBuf buffer) {
         this(buffer.readVarInt(), buffer.readVarInt());

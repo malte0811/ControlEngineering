@@ -11,6 +11,10 @@
     "type": "controlengineering:leafcell",
     "cell": "controlengineering:delay_line"
   },
+  "config_switch": {
+    "type": "controlengineering:leafcell",
+    "cell": "controlengineering:config_switch"
+  },
   "digitizer": {
     "type": "controlengineering:leafcell",
     "cell": "controlengineering:digitizer"

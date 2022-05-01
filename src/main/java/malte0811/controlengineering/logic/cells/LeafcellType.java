@@ -64,7 +64,9 @@ public abstract class LeafcellType<State, Config> extends TypedRegistryEntry<
         return new LeafcellInstance<>(this, state);
     }
 
-    public abstract State nextState(CircuitSignals inputSignals, State currentState, Config config);
+    public State nextState(CircuitSignals inputSignals, State currentState, Config config) {
+        return currentState;
+    }
 
     public abstract CircuitSignals getOutputSignals(CircuitSignals inputSignals, State oldState, Config config);
 

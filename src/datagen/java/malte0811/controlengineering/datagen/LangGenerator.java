@@ -26,10 +26,7 @@ import malte0811.controlengineering.logic.cells.impl.VoltageDivider;
 import malte0811.controlengineering.logic.clock.ClockGenerator;
 import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.logic.schematic.SchematicChecker;
-import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
-import malte0811.controlengineering.logic.schematic.symbol.ConstantSymbol;
-import malte0811.controlengineering.logic.schematic.symbol.IOSymbol;
-import malte0811.controlengineering.logic.schematic.symbol.TextSymbol;
+import malte0811.controlengineering.logic.schematic.symbol.*;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
@@ -124,6 +121,7 @@ public class LangGenerator extends LanguageProvider {
         add(IOSymbol.OUTPUT_KEY, "Output pin");
         add(ConstantSymbol.NAME, "Constant");
         add(TextSymbol.NAME_KEY, "Text");
+        add(Leafcells.CONFIG_SWITCH, "Configuration switch");
     }
 
     private void addPanelComponents() {
@@ -207,6 +205,9 @@ public class LangGenerator extends LanguageProvider {
 
         add(InvertingAmplifier.AMPLIFY_BY, "Amplify by %dx");
         add(InvertingAmplifier.ATTENUATE_BY, "Attenuate by %dx");
+
+        add(ConfigSwitchSymbol.OFF_KEY, "Low output");
+        add(ConfigSwitchSymbol.ON_KEY, "High output");
     }
 
     private void addManualStrings() {

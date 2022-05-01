@@ -30,11 +30,6 @@ public class VoltageDivider extends LeafcellType<Unit, Integer> {
     }
 
     @Override
-    public Unit nextState(CircuitSignals inputSignals, Unit currentState, Integer ratio) {
-        return Unit.INSTANCE;
-    }
-
-    @Override
     public CircuitSignals getOutputSignals(CircuitSignals inputSignals, Unit oldState, Integer ratio) {
         final var top = inputSignals.value(INPUT_TOP);
         final var bottom = inputSignals.value(INPUT_BOTTOM);

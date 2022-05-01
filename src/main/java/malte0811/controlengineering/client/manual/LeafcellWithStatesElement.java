@@ -85,10 +85,10 @@ public class LeafcellWithStatesElement extends SpecialManualElement {
     @Override
     public void render(PoseStack transform, ManualScreen gui, int x, int y, int mouseX, int mouseY) {
         display.render(transform, gui, x, y, mouseX, mouseY);
-        var nameWidth = manual.fontRenderer().width(symbol.getName());
+        var name = symbol.getDefaultName();
+        var nameWidth = manual.fontRenderer().width(name);
         manual.fontRenderer().draw(
-                transform, symbol.getName(),
-                x + (manual.pageWidth - nameWidth) / 2f, y + display.getPixelsTaken() - 4, 0
+                transform, name, x + (manual.pageWidth - nameWidth) / 2f, y + display.getPixelsTaken() - 4, 0
         );
         truthTable.render(transform, gui, x, y + getPixelsBeforeTable(), mouseX, mouseY);
     }

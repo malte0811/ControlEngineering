@@ -326,7 +326,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (super.mouseReleased(mouseX, mouseY, button) || container.readOnly) {
+        if (super.mouseReleased(mouseX, mouseY, button)) {
             return true;
         }
         if (clickWasConsumed) {
@@ -357,7 +357,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                 var clicked = schematic.getSymbolAt(mousePos, minecraft.level);
                 if (clicked != null) {
                     handleSymbolClick(clicked, clicked.symbol(), mousePos, button);
-                } else {
+                } else if (!container.readOnly) {
                     currentWireStart = mousePos.floor();
                 }
             }
@@ -367,24 +367,23 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
 
     private <State>
     void handleSymbolClick(PlacedSymbol clicked, SymbolInstance<State> instance, Vec2d mousePos, int button) {
-        if (!getHoveredPins(clicked, mousePos).isEmpty()) {
+        if (!getHoveredPins(clicked, mousePos).isEmpty() && !container.readOnly) {
             currentWireStart = mousePos.floor();
             return;
         }
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-            runAndSendToServer(new Delete(mousePos));
-            placingSymbol = new PlacingSymbol(
-                    clicked.symbol(), clicked.position().subtract(mousePos).add(0.5, 0.5)
+            if (runAndSendToServer(new Delete(mousePos))) {
+                placingSymbol = new PlacingSymbol(
+                        clicked.symbol(), clicked.position().subtract(mousePos).add(0.5, 0.5)
+                );
+                resetAfterPlacingSymbol = true;
+            }
+        } else if (!container.readOnly || instance.getType().canConfigureOnReadOnly()) {
+            ClientSymbols.createInstanceWithUI(
+                    instance.getType(),
+                    newInst -> runAndSendToServer(new ModifySymbol(new PlacedSymbol(clicked.position(), newInst))),
+                    instance.getCurrentState()
             );
-            resetAfterPlacingSymbol = true;
-        } else {
-            ClientSymbols.createInstanceWithUI(instance.getType(), newInst -> {
-                runAndSendToServer(new Delete(mousePos));
-                if (!runAndSendToServer(new AddSymbol(new PlacedSymbol(clicked.position(), newInst)))) {
-                    // If the new symbol is invalid (e.g. text too long), put back the old one
-                    runAndSendToServer(new AddSymbol(new PlacedSymbol(clicked.position(), instance)));
-                }
-            }, instance.getCurrentState());
         }
     }
 
@@ -547,6 +546,9 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     }
 
     private boolean runAndSendToServer(LogicSubPacket data) {
+        if (!data.canApplyOnReadOnly() && container.readOnly) {
+            return false;
+        }
         if (process(data)) {
             sendToServer(data);
             return true;

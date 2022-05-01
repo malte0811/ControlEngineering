@@ -322,6 +322,11 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
         return schematic;
     }
 
+    @Override
+    public void setSchematicChanged() {
+        this.setChanged();
+    }
+
     public AvailableIngredients getCosts() {
         return new AvailableIngredients(this);
     }

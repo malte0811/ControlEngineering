@@ -23,11 +23,6 @@ public class InvertingAmplifier extends LeafcellType<Unit, Fraction> {
     }
 
     @Override
-    public Unit nextState(CircuitSignals inputSignals, Unit currentState, Fraction scalingFactor) {
-        return currentState;
-    }
-
-    @Override
     public CircuitSignals getOutputSignals(CircuitSignals inputSignals, Unit oldState, Fraction scalingFactor) {
         return CircuitSignals.singleton(DEFAULT_OUT_NAME, -scalingFactor.apply(inputSignals.value(DEFAULT_IN_NAME)));
     }

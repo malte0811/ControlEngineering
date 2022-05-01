@@ -25,7 +25,7 @@ public class SymbolInstance<State> extends TypedInstance<State, SchematicSymbol<
     }
 
     public Component getName() {
-        return getType().getName();
+        return getType().getName(currentState);
     }
 
     public List<MutableComponent> getExtraDesc() {

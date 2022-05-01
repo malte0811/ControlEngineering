@@ -4,9 +4,8 @@ import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 
-public final class LeafcellInstance<State, Config> extends TypedInstance<
-        Pair<State, Config>, LeafcellType<State, Config>
-        > {
+public final class LeafcellInstance<State, Config>
+        extends TypedInstance<Pair<State, Config>, LeafcellType<State, Config>> {
     public static final MyCodec<LeafcellInstance<?, ?>> CODEC = makeCodec(LeafcellType.REGISTRY);
 
     public LeafcellInstance(LeafcellType<State, Config> type, State currentState, Config currentConfig) {
@@ -27,5 +26,9 @@ public final class LeafcellInstance<State, Config> extends TypedInstance<
 
     public CircuitSignals getCurrentOutput(CircuitSignals inputs) {
         return getType().getOutputSignals(inputs, currentState.getFirst(), currentState.getSecond());
+    }
+
+    public void applyConfigChange(Object newConfig) {
+        currentState = Pair.of(getCurrentState().getFirst(), (Config) newConfig);
     }
 }
