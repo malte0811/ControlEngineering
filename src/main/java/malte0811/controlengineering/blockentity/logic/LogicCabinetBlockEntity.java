@@ -80,6 +80,9 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     }
 
     public static int getNumBoardsFor(int numLogicTubes) {
+        if (numLogicTubes <= 0) {
+            return 1;
+        }
         return Mth.ceil(numLogicTubes / (double) (NUM_TUBES_PER_BOARD * LOGIC_TUBE_PER_RENDER_TUBES));
     }
 
