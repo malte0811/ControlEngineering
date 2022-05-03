@@ -8,7 +8,7 @@ import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.world.phys.Vec3;
 
 public interface ComponentRenderer<Config, State> {
-    double EPSILON = 1e-3;
+    double EPSILON = 1e-2;
 
     void render(MixedModel output, Config config, State state, PoseStack transform);
 

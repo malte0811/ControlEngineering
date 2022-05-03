@@ -38,7 +38,7 @@ public class PanelMeterRender implements ComponentRenderer<BusSignalRef, Integer
     public void render(MixedModel output, BusSignalRef line, Integer strength, PoseStack transform) {
         ComponentRenderer.renderBase(output, transform, SIZE, -1);
         transform.pushPose();
-        transform.translate(AXIS_X, 2e-3, SIZE.y() - AXIS_Y);
+        transform.translate(AXIS_X, 2 * EPSILON, SIZE.y() - AXIS_Y);
         renderMarkers(output, transform);
         renderNeedle(output, transform, strength);
         transform.popPose();
