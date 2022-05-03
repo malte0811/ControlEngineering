@@ -5,10 +5,12 @@ buildscript {
         maven { url = 'https://maven.minecraftforge.net' }
         mavenCentral()
         maven {url 'https://maven.parchmentmc.org'}
+        maven {url 'https://repo.spongepowered.org/repository/maven-public/'}
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
         classpath 'org.parchmentmc:librarian:1.+'
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -16,6 +18,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
+apply plugin: 'org.spongepowered.mixin'
 
 version = project.ce_version+makeVersionSuffix()
 group = "malte0811.controlengineering"
@@ -94,7 +97,6 @@ minecraft {
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', ''
-            property 'mixin.env.disableRefMap', 'true'
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
@@ -113,7 +115,6 @@ minecraft {
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
-            property 'mixin.env.disableRefMap', 'true'
 
             mods {
                 controlengineering {
@@ -129,7 +130,6 @@ minecraft {
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
-            property 'mixin.env.disableRefMap', 'true'
             ideaModule project.name+".datagen"
 
             args '--mod', 'controlengineering', '--all', '--output', file('src/generated/resources/'), '--validate',
