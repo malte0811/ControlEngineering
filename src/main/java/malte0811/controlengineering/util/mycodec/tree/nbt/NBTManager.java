@@ -49,6 +49,11 @@ public class NBTManager implements TreeManager<Tag> {
     }
 
     @Override
+    public TreeElement<Tag> makeLong(Long value) {
+        return new NBTPrimitive(LongTag.valueOf(value));
+    }
+
+    @Override
     public TreeElement<Tag> of(Tag tag) {
         if (tag instanceof ListTag list) {
             return new NBTList(list);

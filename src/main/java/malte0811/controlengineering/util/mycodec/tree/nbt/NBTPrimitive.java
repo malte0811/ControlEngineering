@@ -43,6 +43,11 @@ public class NBTPrimitive extends NBTElement<Tag> implements TreePrimitive<Tag> 
         return Objects.requireNonNullElseGet(getDirect(), () -> StringTag.valueOf("")).getAsString();
     }
 
+    @Override
+    public Long asLong() {
+        return getNumeric().getAsLong();
+    }
+
     private NumericTag getNumeric() {
         return getDirect() instanceof NumericTag numeric ? numeric : IntTag.valueOf(0);
     }

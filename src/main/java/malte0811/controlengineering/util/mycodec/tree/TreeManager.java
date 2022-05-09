@@ -17,5 +17,7 @@ public interface TreeManager<Base> {
 
     TreePrimitive<Base> makeBoolean(boolean value);
 
+    TreeElement<Base> makeLong(Long value);
+
     TreeElement<Base> of(Base base);
 }

@@ -74,6 +74,16 @@ public class PacketBufferStorage implements SerialStorage {
     }
 
     @Override
+    public FastDataResult<Long> readLong() {
+        return FastDataResult.success(buffer.readLong());
+    }
+
+    @Override
+    public void writeLong(long value) {
+        buffer.writeLong(value);
+    }
+
+    @Override
     public void pushMark() {
         marks.push(buffer.readerIndex());
     }
