@@ -19,8 +19,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class CEBlocks {
     public static final DeferredRegister<Block> REGISTER = DeferredRegister.create(
-            ForgeRegistries.BLOCKS,
-            ControlEngineering.MODID
+            ForgeRegistries.BLOCKS, ControlEngineering.MODID
     );
 
     public static final RegistryObject<BusInterfaceBlock> BUS_INTERFACE = REGISTER.register(
@@ -50,8 +49,7 @@ public class CEBlocks {
     public static final RegistryObject<SequencerBlock> SEQUENCER = REGISTER.register("sequencer", SequencerBlock::new);
 
     public static final RegistryObject<LogicCabinetBlock> LOGIC_CABINET = REGISTER.register(
-            "logic_cabinet",
-            LogicCabinetBlock::new
+            "logic_cabinet", LogicCabinetBlock::new
     );
 
     public static final RegistryObject<LogicWorkbenchBlock> LOGIC_WORKBENCH = REGISTER.register(

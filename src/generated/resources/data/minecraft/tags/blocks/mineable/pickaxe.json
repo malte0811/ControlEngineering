@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "controlengineering:bus_interface",
+    "controlengineering:bus_relay",
+    "controlengineering:line_access",
+    "controlengineering:rs_remapper",
+    "controlengineering:control_panel",
+    "controlengineering:panel_cnc",
+    "controlengineering:keypunch",
+    "controlengineering:logic_cabinet"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "controlengineering:bus_interface",
+    "controlengineering:bus_relay",
+    "controlengineering:line_access",
+    "controlengineering:rs_remapper"
+  ]
+}

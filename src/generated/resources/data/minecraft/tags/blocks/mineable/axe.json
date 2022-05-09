@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "controlengineering:panel_designer",
+    "controlengineering:sequencer",
+    "controlengineering:logic_workbench"
+  ]
+}
