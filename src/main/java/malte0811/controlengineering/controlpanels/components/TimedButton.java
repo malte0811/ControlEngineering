@@ -7,7 +7,6 @@ import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.phys.Vec3;
 
 public class TimedButton extends PanelComponentType<ColorAndSignal, Integer> {
     //TODO config?
@@ -33,7 +32,7 @@ public class TimedButton extends PanelComponentType<ColorAndSignal, Integer> {
 
     @Override
     public Pair<InteractionResult, Integer> click(
-            ColorAndSignal config, Integer remainingOn, boolean sneaking, Vec3 relativeHit
+            ColorAndSignal config, Integer remainingOn, ComponentClickContext ctx
     ) {
         if (isActive(remainingOn)) {
             return Pair.of(InteractionResult.PASS, remainingOn);

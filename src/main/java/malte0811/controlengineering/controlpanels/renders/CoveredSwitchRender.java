@@ -17,7 +17,7 @@ import java.util.Objects;
 
 public class CoveredSwitchRender implements ComponentRenderer<ColorAndSignal, State> {
     private static final Vec3 SIZE = Util.make(() -> {
-        var shape = Objects.requireNonNull(PanelComponents.COVERED_SWITCH.getSelectionShape());
+        var shape = Objects.requireNonNull(PanelComponents.COVERED_SWITCH.newInstance().getSelectionShape());
         return new Vec3(shape.maxX, shape.maxY, shape.maxZ);
     });
     private static final Quaternion OPEN_ROTATION = new Quaternion(-60, 0, 0, true);

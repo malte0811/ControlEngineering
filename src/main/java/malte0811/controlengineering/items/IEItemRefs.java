@@ -19,6 +19,7 @@ public class IEItemRefs {
     public static final ItemLike DRILL_HEAD_IRON = of("drillhead_iron");
     public static final ItemLike LOGIC_CIRCUIT = of("logic_circuit");
     public static final ItemLike BLUEPRINT = of("blueprint");
+    public static final ItemLike COMPONENT_IRON = of("component_iron");
     public static final RegistryObject<Block> LOGIC_UNIT = of("logic_unit", ForgeRegistries.BLOCKS);
     public static final RegistryObject<Block> RADIATOR = of("radiator", ForgeRegistries.BLOCKS);
     public static final RegistryObject<Block> CRATE = of("crate", ForgeRegistries.BLOCKS);

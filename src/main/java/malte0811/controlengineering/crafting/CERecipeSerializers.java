@@ -29,4 +29,7 @@ public class CERecipeSerializers {
     public static final RegistryObject<SimpleRecipeSerializer<SchematicCopyRecipe>> SCHEMATIC_COPY = REGISTER.register(
             "schematic_copy", () -> new SimpleRecipeSerializer<>(SchematicCopyRecipe::new)
     );
+    public static final RegistryObject<OptionalKeyCopySerializer> OPTIONAL_KEY_COPY = REGISTER.register(
+            "key_copy", OptionalKeyCopySerializer::new
+    );
 }

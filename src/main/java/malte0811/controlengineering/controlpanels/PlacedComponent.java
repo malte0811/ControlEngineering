@@ -44,7 +44,7 @@ public class PlacedComponent extends SelectionShapes {
         this.component = component;
         this.pos = pos;
         shape = Lazy.of(() -> {
-            AABB compShape = component.getType().getSelectionShape();
+            AABB compShape = component.getSelectionShape();
             if (compShape == null) {
                 return null;
             } else {
@@ -131,8 +131,11 @@ public class PlacedComponent extends SelectionShapes {
     @Override
     public InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType, Vec3 relativeHit) {
         return component.onClick(
-                ctx.getPlayer() != null && ctx.getPlayer().isShiftKeyDown(),
-                relativeHit.scale(16).subtract(pos.x(), 0, pos.y()),
+                new PanelComponentType.ComponentClickContext(
+                        relativeHit.scale(16).subtract(pos.x(), 0, pos.y()),
+                        ctx.getPlayer(),
+                        ctx.getHand()
+                ),
                 ctx.getLevel().isClientSide()
         );
     }

@@ -30,6 +30,8 @@ public class CEItems {
     );
     public static final RegistryObject<EmptyTapeItem> EMPTY_TAPE = REGISTER.register("empty_tape", EmptyTapeItem::new);
     public static final RegistryObject<PanelTopItem> PANEL_TOP = REGISTER.register("panel_top", PanelTopItem::new);
+    public static final RegistryObject<ItemWithKeyID> LOCK = REGISTER.register("lock", ItemWithKeyID::new);
+    public static final RegistryObject<ItemWithKeyID> KEY = REGISTER.register("key", ItemWithKeyID::new);
     public static final Map<ResourceLocation, RegistryObject<Item>> CLOCK_GENERATORS;
     public static final RegistryObject<PCBStackItem> PCB_STACK = REGISTER.register("pcb_stack", PCBStackItem::new);
     public static final RegistryObject<SchematicItem> SCHEMATIC = REGISTER.register(
@@ -63,7 +65,7 @@ public class CEItems {
         return REGISTER.register(block.getId().getPath(), () -> new CEBlockItem<>(block.get(), properties));
     }
 
-    private static Item.Properties simpleItemProperties() {
+    public static Item.Properties simpleItemProperties() {
         return new Item.Properties().tab(ControlEngineering.ITEM_GROUP);
     }
 

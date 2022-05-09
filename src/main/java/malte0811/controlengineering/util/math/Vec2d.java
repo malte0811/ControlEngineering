@@ -6,6 +6,7 @@ import malte0811.controlengineering.util.mycodec.record.CodecField;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 
 public record Vec2d(double x, double y) {
     public static final MyCodec<Vec2d> CODEC = new RecordCodec2<>(
@@ -58,5 +59,9 @@ public record Vec2d(double x, double y) {
 
     public Vec2i floor() {
         return new Vec2i(Mth.floor(x), Mth.floor(y));
+    }
+
+    public Vec3 withHeight(double height) {
+        return new Vec3(x(), height, y());
     }
 }

@@ -10,7 +10,6 @@ import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.phys.Vec3;
 
 public class Variac extends PanelComponentType<BusSignalRef, Integer> {
     public static final Vec2d SIZE = new Vec2d(4, 4);
@@ -22,16 +21,14 @@ public class Variac extends PanelComponentType<BusSignalRef, Integer> {
     }
 
     @Override
-    public Pair<InteractionResult, Integer> click(
-            BusSignalRef line, Integer oldState, boolean sneaking, Vec3 relativeHit
-    ) {
-        var xRelativeCenter = relativeHit.x - SIZE.x() / 2;
-        var yRelativeCenter = relativeHit.z - SIZE.y() / 2;
+    public Pair<InteractionResult, Integer> click(BusSignalRef line, Integer oldState, ComponentClickContext ctx) {
+        var xRelativeCenter = ctx.relativeHit().x - SIZE.x() / 2;
+        var yRelativeCenter = ctx.relativeHit().z - SIZE.y() / 2;
         var angle = Math.atan2(-xRelativeCenter, -yRelativeCenter);
         var target = Mth.clamp(getStrengthForRotation(angle), BusLine.MIN_VALID_VALUE, BusLine.MAX_VALID_VALUE);
         if (target == oldState) {
             return Pair.of(InteractionResult.PASS, oldState);
-        } else if (!sneaking) {
+        } else if (!ctx.isSneaking()) {
             return Pair.of(InteractionResult.SUCCESS, target);
         } else if (target < oldState) {
             return Pair.of(InteractionResult.SUCCESS, oldState - 1);

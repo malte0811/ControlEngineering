@@ -9,7 +9,6 @@ import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.phys.Vec3;
 
 public class Slider extends PanelComponentType<ColorAndSignal, Integer> {
     public static final double KNOB_SIZE = 1;
@@ -27,10 +26,8 @@ public class Slider extends PanelComponentType<ColorAndSignal, Integer> {
     }
 
     @Override
-    public Pair<InteractionResult, Integer> click(
-            ColorAndSignal config, Integer oldState, boolean sneaking, Vec3 relativeHit
-    ) {
-        var hitCoord = horizontal ? LENGTH - relativeHit.x : relativeHit.z;
+    public Pair<InteractionResult, Integer> click(ColorAndSignal config, Integer oldState, ComponentClickContext ctx) {
+        var hitCoord = horizontal ? LENGTH - ctx.relativeHit().x : ctx.relativeHit().z;
         var relativeStrength = Mth.clamp(Mth.inverseLerp(hitCoord, MIN_CENTER, MAX_CENTER), 0, 1);
         var strength = (int) Math.round(relativeStrength * BusLine.MAX_VALID_VALUE);
         return Pair.of(InteractionResult.SUCCESS, strength);

@@ -34,5 +34,22 @@
   "label": {
     "type": "controlengineering:panel_component",
     "component": "controlengineering:label"
-  }
+  },
+  "key_switch": [
+    {
+      "type": "controlengineering:panel_component",
+      "component": "controlengineering:key_switch",
+      "offset": 0
+    },
+    {
+      "type": "crafting",
+      "recipes": [
+        [
+          "controlengineering:lock",
+          "controlengineering:key"
+        ]
+      ],
+      "offset": 1
+    }
+  ]
 }

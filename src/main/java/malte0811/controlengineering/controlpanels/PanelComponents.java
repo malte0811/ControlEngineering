@@ -21,6 +21,7 @@ public class PanelComponents {
     public static final Variac VARIAC = register("variac", new Variac());
     public static final Slider SLIDER_HOR = register("slider_hor", new Slider(true));
     public static final Slider SLIDER_VERT = register("slider_vert", new Slider(false));
+    public static final KeySwitch KEY_SWITCH = register("key_switch", new KeySwitch());
     // Signal viewers
     public static final Indicator INDICATOR = register("indicator", new Indicator());
     public static final PanelMeter PANEL_METER = register("panel_meter", new PanelMeter());

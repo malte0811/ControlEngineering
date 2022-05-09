@@ -81,4 +81,14 @@ public class RenderUtils {
         );
     }
 
+    public static Map<Direction, Integer> makeColorsExcept(int color, Direction... excluded) {
+        Map<Direction, Integer> map = new EnumMap<>(Direction.class);
+        for (var side : DirectionUtils.VALUES) {
+            map.put(side, color);
+        }
+        for (var excludedSide : excluded) {
+            map.remove(excludedSide);
+        }
+        return map;
+    }
 }

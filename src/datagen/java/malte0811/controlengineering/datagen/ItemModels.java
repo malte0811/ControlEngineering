@@ -9,7 +9,6 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
-import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 public class ItemModels extends ItemModelProvider {
@@ -24,6 +23,8 @@ public class ItemModels extends ItemModelProvider {
         addItemModel("wirecoil_bus", CEItems.BUS_WIRE_COIL);
         addItemModel("logic_pcbs", CEItems.PCB_STACK);
         addItemModel("logic_schematic", CEItems.SCHEMATIC);
+        addItemModel("key", CEItems.KEY);
+        addItemModel("lock_with_key", CEItems.LOCK);
         withExistingParent(name(CEItems.PANEL_TOP), modLoc("transform/panel_top_base"))
                 .customLoader(DynamicModelBuilder.customLoader(ModelLoaders.PANEL_MODEL))
                 .end();
@@ -37,10 +38,8 @@ public class ItemModels extends ItemModelProvider {
         return item.get().asItem().getRegistryName().getPath();
     }
 
-    private void addItemModel(@Nullable String texture, Supplier<? extends ItemLike> item) {
-        String path = name(item);
-        String textureLoc = texture == null ? path : ("item/" + texture);
-        withExistingParent(path, mcLoc("item/generated"))
-                .texture("layer0", modLoc(textureLoc));
+    private void addItemModel(String texture, Supplier<? extends ItemLike> item) {
+        withExistingParent(name(item), mcLoc("item/generated"))
+                .texture("layer0", modLoc("item/" + texture));
     }
 }

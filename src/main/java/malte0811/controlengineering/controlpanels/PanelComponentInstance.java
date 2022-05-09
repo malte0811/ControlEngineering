@@ -10,7 +10,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -42,8 +42,8 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
         return type.newInstance(buffer);
     }
 
-    public InteractionResult onClick(boolean sneaking, Vec3 relativeHit, boolean isClient) {
-        Pair<InteractionResult, State> clickResult = getType().click(getConfig(), getState(), sneaking, relativeHit);
+    public InteractionResult onClick(PanelComponentType.ComponentClickContext ctx, boolean isClient) {
+        Pair<InteractionResult, State> clickResult = getType().click(getConfig(), getState(), ctx);
         if (!isClient) {
             currentState = Pair.of(getConfig(), clickResult.getSecond());
         }
@@ -82,7 +82,10 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
     }
 
     public PanelComponentInstance<?, ?> copy(boolean clearState) {
-        State stateToUse = clearState ? getType().getInitialState().getSecond() : getState();
+        var stateToUse = currentState.getSecond();
+        if (clearState) {
+            stateToUse = getType().updateTotalState(getConfig(), stateToUse, BusState.EMPTY);
+        }
         return new PanelComponentInstance<>(getType(), Pair.of(getConfig(), stateToUse));
     }
 
@@ -116,6 +119,10 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
     @Override
     public String toString() {
         return "type=" + getType() + ";config=" + getConfig() + ";state=" + getState();
+    }
+
+    public AABB getSelectionShape() {
+        return getType().getSelectionShape(getState());
     }
 
     public record TickResult(boolean updateBus, boolean updateClient) {}

@@ -27,6 +27,7 @@ public class ComponentRenderers {
         register(PanelComponents.VARIAC, new VariacRender());
         register(PanelComponents.SLIDER_HOR, new SliderRender(true));
         register(PanelComponents.SLIDER_VERT, new SliderRender(false));
+        register(PanelComponents.KEY_SWITCH, new KeySwitchRender());
     }
 
     public static <Config, State> void register(

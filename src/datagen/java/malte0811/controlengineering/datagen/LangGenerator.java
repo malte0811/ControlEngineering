@@ -67,6 +67,8 @@ public class LangGenerator extends LanguageProvider {
         addItem(CEItems.PCB_STACK, "Logic Circuit Boards");
         addItem(CEItems.BUS_WIRE_COIL, "Bus Wire Coil");
         addItem(CEItems.SCHEMATIC, "Logic Circuit Schematic");
+        addItem(CEItems.KEY, "Key");
+        addItem(CEItems.LOCK, "Lock with key");
 
         addBlock(CEBlocks.LOGIC_CABINET, "Logic Cabinet");
         addBlock(CEBlocks.LOGIC_WORKBENCH, "Logic Workbench");

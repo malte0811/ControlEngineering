@@ -8,7 +8,6 @@ import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.phys.Vec3;
 
 public class ToggleSwitch extends PanelComponentType<BusSignalRef, Boolean> {
     public static final Vec2d SIZE = new Vec2d(1, 2);
@@ -33,7 +32,7 @@ public class ToggleSwitch extends PanelComponentType<BusSignalRef, Boolean> {
 
     @Override
     public Pair<InteractionResult, Boolean> click(
-            BusSignalRef outputSignal, Boolean oldState, boolean sneaking, Vec3 relativeHit
+            BusSignalRef outputSignal, Boolean oldState, ComponentClickContext ctx
     ) {
         return Pair.of(InteractionResult.SUCCESS, !oldState);
     }

@@ -76,6 +76,7 @@ public class NoAdvancementShapedBuilder extends ShapedRecipeBuilder {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void save(@Nonnull Consumer<FinishedRecipe> out, @Nonnull ResourceLocation recipeId) {
         super.unlockedBy("dummy", new ImpossibleTrigger.TriggerInstance());
         super.save(

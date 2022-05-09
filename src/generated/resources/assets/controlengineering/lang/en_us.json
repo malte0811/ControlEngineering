@@ -114,6 +114,8 @@
   "item.controlengineering.clock_free": "Clock Generator: Free running",
   "item.controlengineering.clock_state": "Clock Generator: State triggered",
   "item.controlengineering.empty_tape": "Empty Tape",
+  "item.controlengineering.key": "Key",
+  "item.controlengineering.lock": "Lock with key",
   "item.controlengineering.logic_schematic": "Logic Circuit Schematic",
   "item.controlengineering.panel_top": "Panel Top",
   "item.controlengineering.pcb_stack": "Logic Circuit Boards",

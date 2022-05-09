@@ -5,6 +5,7 @@ import blusunrize.immersiveengineering.api.IETags;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
+import malte0811.controlengineering.datagen.recipes.KeyDataRecipeBuilder;
 import malte0811.controlengineering.datagen.recipes.NoAdvancementShapedBuilder;
 import malte0811.controlengineering.datagen.recipes.NoAdvancementShapelessBuilder;
 import malte0811.controlengineering.datagen.recipes.SingleIngredRecipeBuilder;
@@ -140,6 +141,21 @@ public class Recipes extends RecipeProvider {
                 .define('d', IEItemRefs.DRILL_HEAD_IRON)
                 .define('S', CEBlocks.SEQUENCER)
                 .define('w', IETags.getItemTag(IETags.treatedWood))
+                .save(consumer);
+        KeyDataRecipeBuilder.shaped(CEItems.KEY, false)
+                .pattern("haa")
+                .pattern(" aa")
+                .define('a', IETags.getTagsFor(EnumMetals.ALUMINUM).plate)
+                .define('h', IETags.getItemTag(IETags.treatedWood))
+                .save(consumer);
+        KeyDataRecipeBuilder.shaped(CEItems.LOCK, true)
+                .pattern(" cw")
+                .pattern("haa")
+                .pattern(" cw")
+                .define('a', IETags.getTagsFor(EnumMetals.ALUMINUM).plate)
+                .define('h', IETags.getItemTag(IETags.treatedWood))
+                .define('w', IETags.copperWire)
+                .define('c', IEItemRefs.COMPONENT_IRON)
                 .save(consumer);
     }
 

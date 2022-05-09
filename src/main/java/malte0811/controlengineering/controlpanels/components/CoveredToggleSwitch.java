@@ -9,7 +9,6 @@ import malte0811.controlengineering.controlpanels.components.config.ColorAndSign
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.phys.Vec3;
 
 public class CoveredToggleSwitch extends PanelComponentType<ColorAndSignal, CoveredToggleSwitch.State> {
     public CoveredToggleSwitch() {
@@ -31,9 +30,9 @@ public class CoveredToggleSwitch extends PanelComponentType<ColorAndSignal, Cove
 
     @Override
     public Pair<InteractionResult, State> click(
-            ColorAndSignal config, State oldState, boolean sneaking, Vec3 relativeHit
+            ColorAndSignal config, State oldState, ComponentClickContext ctx
     ) {
-        if (sneaking) {
+        if (ctx.isSneaking()) {
             return Pair.of(oldState == State.CLOSED ? InteractionResult.PASS : InteractionResult.SUCCESS, State.CLOSED);
         } else {
             var newState = switch (oldState) {

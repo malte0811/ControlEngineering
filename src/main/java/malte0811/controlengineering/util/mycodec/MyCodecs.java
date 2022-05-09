@@ -14,6 +14,8 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 public class MyCodecs {
@@ -23,6 +25,14 @@ public class MyCodecs {
         @Override
         public <B> TreeElement<B> toTree(Integer in, TreeManager<B> manager) {
             return manager.makeInt(in);
+        }
+    };
+    public static final MyCodec<Long> LONG = new SimpleCodec<>(
+            TreePrimitive.class, TreePrimitive::asLong, SerialStorage::writeLong, SerialStorage::readLong
+    ) {
+        @Override
+        public <B> TreeElement<B> toTree(Long in, TreeManager<B> manager) {
+            return manager.makeLong(in);
         }
     };
     public static final MyCodec<Integer> HEX_COLOR = new SimpleCodec<>(
@@ -83,6 +93,11 @@ public class MyCodecs {
             ResourceLocation::new,
             ResourceLocation::toString
     );
+    public static final MyCodec<UUID> UUID_CODEC = new RecordCodec2<>(
+            new CodecField<>("msb", UUID::getMostSignificantBits, LONG),
+            new CodecField<>("lsb", UUID::getLeastSignificantBits, LONG),
+            UUID::new
+    );
 
     public static <T> MyCodec<List<T>> list(MyCodec<T> in) {
         return new ListCodec<>(in);
@@ -115,5 +130,10 @@ public class MyCodecs {
                         .map(e -> Pair.of(e.getKey(), e.getValue()))
                         .collect(Collectors.toList())
         );
+    }
+
+    public static <E extends Enum<E>>
+    MyCodec<E> forEnum(E[] values, ToIntFunction<E> ordinal) {
+        return INTEGER.xmap(i -> values[i], ordinal::applyAsInt);
     }
 }

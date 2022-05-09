@@ -52,6 +52,7 @@ public class ComponentCostGenerator extends RecipeProvider {
         addCosts(out, PanelComponents.VARIAC, blackDye, coil, graphite);
         for (var slider : List.of(PanelComponents.SLIDER_HOR, PanelComponents.SLIDER_VERT))
             addCosts(out, slider, coil, glowstone, anyDye);
+        addCosts(out, PanelComponents.KEY_SWITCH, new IngredientWithSize(IETags.copperWire));
     }
 
     private void addCosts(

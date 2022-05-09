@@ -15,7 +15,10 @@ import malte0811.controlengineering.util.mycodec.serial.StringListStorage;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
@@ -91,12 +94,12 @@ public abstract class PanelComponentType<Config, State>
         return oldState;
     }
 
-    public Pair<InteractionResult, State> click(Config config, State oldState, boolean sneaking, Vec3 relativeHit) {
+    public Pair<InteractionResult, State> click(Config config, State oldState, ComponentClickContext ctx) {
         return Pair.of(InteractionResult.PASS, oldState);
     }
 
     @Nullable
-    public AABB getSelectionShape() {
+    public AABB getSelectionShape(State state) {
         return defaultSelectionShape;
     }
 
@@ -132,5 +135,25 @@ public abstract class PanelComponentType<Config, State>
 
     public ResourceLocation getCostLocation() {
         return new ResourceLocation(getRegistryName().getNamespace(), "component_cost/" + getRegistryName().getPath());
+    }
+
+    protected static <T> Pair<InteractionResult, T> success(T newState) {
+        return Pair.of(InteractionResult.SUCCESS, newState);
+    }
+
+    protected static <T> Pair<InteractionResult, T> pass(T newState) {
+        return Pair.of(InteractionResult.PASS, newState);
+    }
+
+    public record ComponentClickContext(
+            Vec3 relativeHit, @Nullable Player player, InteractionHand hand
+    ) {
+        public boolean isSneaking() {
+            return player != null && player.isShiftKeyDown();
+        }
+
+        public ItemStack getHeldItem() {
+            return player == null ? ItemStack.EMPTY : player.getItemInHand(hand);
+        }
     }
 }
