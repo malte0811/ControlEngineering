@@ -28,6 +28,7 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
     protected static final int WIDTH = 165;
     protected static final int HEIGHT = 154;
     private static final int WIRE_COLOR = 0xffb66232;
+    private static final int HIGHLIGHT_WIRE_COLOR = 0xffb68332;
     private static final SubTexture BACKGROUND = new SubTexture(TEXTURE, 0, 0, WIDTH, HEIGHT);
     private final AbstractRemapperMenu menu;
     private final List<ConnectionPoint> sourceConnectionPoints;
@@ -56,6 +57,14 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
         renderConnections(transform);
         if (fixedEndOfConnecting != null) {
             renderWireAtMouse(transform, fixedEndOfConnecting, mouseX - this.leftPos, mouseY - this.topPos);
+        } else {
+            var hovered = getCPUnder(mouseX, mouseY);
+            if (hovered != null) {
+                var connectedTo = getOtherEnd(hovered);
+                if (connectedTo != null) {
+                    renderFullyConnectedWire(transform, hovered, connectedTo, HIGHLIGHT_WIRE_COLOR);
+                }
+            }
         }
         transform.popPose();
         super.render(transform, mouseX, mouseY, partialTick);
@@ -88,16 +97,25 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
             fixedEndOfConnecting = null;
             return true;
         } else if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-            var relativeX = (int) (mouseX - leftPos);
-            var relativeY = (int) (mouseY - topPos);
-            for (var connPoint : getAllConnectionPoints()) {
-                if (connPoint.area().contains(relativeX, relativeY)) {
-                    onClicked(connPoint);
-                    return true;
-                }
+            var clicked = getCPUnder(mouseX, mouseY);
+            if (clicked != null) {
+                onClicked(clicked);
+                return true;
             }
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Nullable
+    private ConnectionPoint getCPUnder(double mouseX, double mouseY) {
+        var relativeX = (int) (mouseX - leftPos);
+        var relativeY = (int) (mouseY - topPos);
+        for (var connPoint : getAllConnectionPoints()) {
+            if (connPoint.area().contains(relativeX, relativeY)) {
+                return connPoint;
+            }
+        }
+        return null;
     }
 
     private void onClicked(ConnectionPoint clicked) {
@@ -133,13 +151,20 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
             var targetCP = targetConnectionPoints.get(mappedTo);
             sourceCP.sprite.blit(transform, sourceCP.area().getX(), sourceCP.area().getY());
             targetCP.sprite.blit(transform, targetCP.area().getX(), targetCP.area().getY());
-            renderFullyConnectedWire(
-                    transform, sourceCP.wireX, sourceCP.wireY, targetCP.wireX, targetCP.wireY
-            );
+            renderFullyConnectedWire(transform, sourceCP, targetCP, WIRE_COLOR);
         }
     }
 
-    private void renderFullyConnectedWire(PoseStack transform, float xStart, float yStart, float xEnd, float yEnd) {
+    private void renderFullyConnectedWire(PoseStack transform, ConnectionPoint start, ConnectionPoint end, int color) {
+        if (!start.isMappingSource) {
+            var temp = start;
+            start = end;
+            end = temp;
+        }
+        final var yStart = start.wireY();
+        final var xStart = start.wireX();
+        final var yEnd = end.wireY();
+        final var xEnd = end.wireX();
         final float wireRadius = 1;
         float deltaX = xEnd - xStart;
         float deltaY = yEnd - yStart;
@@ -151,7 +176,8 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
                 xStart, yStart + halfWireHeight,
                 xEnd, yEnd + halfWireHeight,
                 xEnd, yEnd - halfWireHeight,
-                xStart, yStart - halfWireHeight
+                xStart, yStart - halfWireHeight,
+                color
         );
     }
 
@@ -165,12 +191,18 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
                 fixedX + radius.x, fixedY + radius.y,
                 mouseX + radius.x, mouseY + radius.y,
                 mouseX - radius.x, mouseY - radius.y,
-                fixedX - radius.x, fixedY - radius.y
+                fixedX - radius.x, fixedY - radius.y,
+                WIRE_COLOR
         );
     }
 
     private void renderWire(
-            PoseStack transform, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4
+            PoseStack transform,
+            float x1, float y1,
+            float x2, float y2,
+            float x3, float y3,
+            float x4, float y4,
+            int color
     ) {
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.enableBlend();
@@ -179,10 +211,10 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         var matrix = transform.last().pose();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferbuilder.vertex(matrix, x1, y1, 0.0F).color(WIRE_COLOR).endVertex();
-        bufferbuilder.vertex(matrix, x2, y2, 0.0F).color(WIRE_COLOR).endVertex();
-        bufferbuilder.vertex(matrix, x3, y3, 0.0F).color(WIRE_COLOR).endVertex();
-        bufferbuilder.vertex(matrix, x4, y4, 0.0F).color(WIRE_COLOR).endVertex();
+        bufferbuilder.vertex(matrix, x1, y1, 0.0F).color(color).endVertex();
+        bufferbuilder.vertex(matrix, x2, y2, 0.0F).color(color).endVertex();
+        bufferbuilder.vertex(matrix, x3, y3, 0.0F).color(color).endVertex();
+        bufferbuilder.vertex(matrix, x4, y4, 0.0F).color(color).endVertex();
         bufferbuilder.end();
         BufferUploader.end(bufferbuilder);
         RenderSystem.enableTexture();
