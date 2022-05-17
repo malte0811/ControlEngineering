@@ -1,9 +1,9 @@
 package malte0811.controlengineering.network.remapper;
 
-import malte0811.controlengineering.blockentity.bus.RSRemapperBlockEntity;
+import malte0811.controlengineering.gui.remapper.AbstractRemapperMenu;
 import net.minecraft.network.FriendlyByteBuf;
 
-public class ClearMapping extends RSRemapperSubPacket {
+public class ClearMapping extends RemapperSubPacket {
     private final int colorIndex;
 
     public ClearMapping(int colorIndex) {
@@ -21,7 +21,7 @@ public class ClearMapping extends RSRemapperSubPacket {
 
     @Override
     protected int[] process(int[] colorToGray) {
-        colorToGray[colorIndex] = RSRemapperBlockEntity.NOT_MAPPED;
+        colorToGray[colorIndex] = AbstractRemapperMenu.NOT_MAPPED;
         return colorToGray;
     }
 }

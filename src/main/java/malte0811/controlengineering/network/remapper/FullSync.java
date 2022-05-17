@@ -2,7 +2,7 @@ package malte0811.controlengineering.network.remapper;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-public class FullSync extends RSRemapperSubPacket {
+public class FullSync extends RemapperSubPacket {
     private final int[] colorToGray;
 
     public FullSync(int[] colorToGray) {
