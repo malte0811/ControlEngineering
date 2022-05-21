@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 
 public class SequencerBlock extends CEBlock<Direction> {
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    public static final BooleanProperty HALTED = BooleanProperty.create("powered");
+    public static final BooleanProperty HALTED = BooleanProperty.create("halted");
 
     public SequencerBlock() {
         super(
