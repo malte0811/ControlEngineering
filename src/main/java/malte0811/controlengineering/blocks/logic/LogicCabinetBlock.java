@@ -6,7 +6,9 @@ import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.HorizontalStructurePlacement;
 import malte0811.controlengineering.blocks.shapes.DirectionalShapeProvider;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -74,5 +76,12 @@ public class LogicCabinetBlock extends CEBlock<Direction> {
 
     public static boolean isMaster(BlockState state) {
         return state.getValue(HEIGHT) == 0;
+    }
+    
+    @Override
+    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+    	if (direction == null) {return false;};
+    	Direction facing = state.getValue(FACING);
+    	return isMaster(state) && facing != null && facing == direction.getCounterClockWise();
     }
 }
