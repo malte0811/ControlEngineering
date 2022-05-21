@@ -25,6 +25,7 @@ import javax.annotation.Nullable;
 
 public class SequencerBlock extends CEBlock<Direction> {
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final BooleanProperty HALTED = BooleanProperty.create("powered");
 
     public SequencerBlock() {
         super(
@@ -33,12 +34,14 @@ public class SequencerBlock extends CEBlock<Direction> {
                 FromBlockFunction.constant(Shapes.block()),
                 CEBlockEntities.SEQUENCER
         );
+        this.registerDefaultState(this.defaultBlockState().setValue(HALTED, false));
     }
 
     @Override
     protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(FACING);
+        builder.add(HALTED);
     }
 
     @Nullable
@@ -55,7 +58,16 @@ public class SequencerBlock extends CEBlock<Direction> {
     @Override
     public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
     	Direction facing = state.getValue(FACING);
-    	return facing != null && facing == direction.getCounterClockWise();
+    	return facing != null &&( facing == direction || facing == direction.getCounterClockWise() );
     }
 
+    @Override
+    public int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+    	Direction facing = state.getValue(FACING);
+    	if (facing != null && facing == direction && state.getValue(HALTED)) {
+    		return 15;
+    	}
+    	return 0;
+    }
+    
 }
