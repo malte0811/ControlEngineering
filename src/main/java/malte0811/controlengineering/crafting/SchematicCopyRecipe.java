@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
@@ -63,6 +64,16 @@ public record SchematicCopyRecipe(ResourceLocation id) implements CraftingRecipe
     @Override
     public RecipeSerializer<?> getSerializer() {
         return CERecipeSerializers.SCHEMATIC_COPY.get();
+    }
+
+    @Nonnull
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        return NonNullList.of(
+                Ingredient.EMPTY,
+                Ingredient.of(CEItems.SCHEMATIC.get()),
+                Ingredient.of(CEItems.SCHEMATIC.get(), CEItems.PCB_STACK.get())
+        );
     }
 
     @Nullable
