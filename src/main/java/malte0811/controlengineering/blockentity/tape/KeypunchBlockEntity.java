@@ -7,6 +7,7 @@ import malte0811.controlengineering.blockentity.MultiblockBEType;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.base.IExtraDropBE;
 import malte0811.controlengineering.blockentity.base.IHasMaster;
+import malte0811.controlengineering.blockentity.bus.IParallelPortOwner;
 import malte0811.controlengineering.blockentity.bus.ParallelPort;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
@@ -48,8 +49,10 @@ import java.util.function.Consumer;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 
-public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, IBusInterface, SelectionShapeOwner {
+public class KeypunchBlockEntity extends CEBlockEntity
+        implements IExtraDropBE, IBusInterface, SelectionShapeOwner, IParallelPortOwner {
     public static final VoxelShape SWITCH_SHAPE = createPixelRelative(6, 13, 0, 10, 16, 1);
+    public static final VoxelShape CONNECTOR_SHAPE = createPixelRelative(4, 4, 0, 12, 12, 1);
     public static final VoxelShape INPUT_SHAPE = createPixelRelative(11, 3, 2, 15, 6, 4);
     public static final VoxelShape OUTPUT_SHAPE = createPixelRelative(2, 3, 1, 6, 7, 5);
     public static final String LOOPBACK_KEY = ControlEngineering.MODID + ".gui.loopback";
@@ -59,7 +62,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
     private final Set<KeypunchMenu> onTapeChanged = new ReferenceOpenHashSet<>();
     private KeypunchState state = new KeypunchState(this::setChanged);
     private boolean loopback = true;
-    private ParallelPort busInterface = new ParallelPort();
+    private final ParallelPort busInterface = new ParallelPort();
 
     private final CachedValue<Direction, SelectionShapes> selectionShapes = new CachedValue<>(
             () -> getBlockState().getValue(KeypunchBlock.FACING),
@@ -92,7 +95,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
         readSyncedData(nbt);
         state = new KeypunchState(this::setChanged, nbt.get("state"));
         onTapeChanged.forEach(KeypunchMenu::resyncFullTape);
-        busInterface = new ParallelPort(nbt.getCompound("busInterface"));
+        busInterface.readNBT(nbt.getCompound("busInterface"));
     }
 
     @Override
@@ -202,6 +205,7 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
             }
             return InteractionResult.SUCCESS;
         }).setTextGetter(() -> new TranslatableComponent(bEntity.isLoopback() ? LOOPBACK_KEY : REMOTE_KEY)));
+        subshapes.add(new SingleShape(CONNECTOR_SHAPE, bEntity.getPort().makeRemapInteraction(bEntity)));
         return new ListShapes(
                 Shapes.block(),
                 MatrixUtils.inverseFacing(d),
@@ -213,6 +217,11 @@ public class KeypunchBlockEntity extends CEBlockEntity implements IExtraDropBE, 
                     return InteractionResult.SUCCESS;
                 }
         );
+    }
+
+    @Override
+    public ParallelPort getPort() {
+        return busInterface;
     }
 
     private static class Dummy extends CEBlockEntity implements SelectionShapeOwner, IHasMaster<KeypunchBlockEntity> {

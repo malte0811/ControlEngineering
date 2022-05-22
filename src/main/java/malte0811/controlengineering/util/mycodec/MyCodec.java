@@ -71,10 +71,19 @@ public interface MyCodec<T> {
 
     default <E>
     MyCodec<E> dispatch(
-            Function<? super E, ? extends T> type,
-            Function<? super T, ? extends MyCodec<? extends E>> codec
+            Function<? super E, ? extends T> type, Function<? super T, ? extends MyCodec<? extends E>> codec
     ) {
-        return new DispatchCodec<>(this, type, codec);
+        return dispatch(type, codec, "type", "data");
+    }
+
+    default <E>
+    MyCodec<E> dispatch(
+            Function<? super E, ? extends T> type,
+            Function<? super T, ? extends MyCodec<? extends E>> codec,
+            String typeKey,
+            String valueKey
+    ) {
+        return new DispatchCodec<>(this, type, codec, typeKey, valueKey);
     }
 
     default MyCodec<T> copy() {

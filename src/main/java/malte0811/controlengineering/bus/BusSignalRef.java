@@ -16,4 +16,16 @@ public record BusSignalRef(int line, int color) {
     public BusState singleSignalState(int value) {
         return BusState.EMPTY.with(this, value);
     }
+
+    public int index() {
+        return line * BusLine.LINE_SIZE + color;
+    }
+
+    public static BusSignalRef fromIndex(int index) {
+        if (index < 0 || index >= BusLine.LINE_SIZE * BusWireType.NUM_LINES) {
+            return null;
+        } else {
+            return new BusSignalRef(index / BusLine.LINE_SIZE, index % BusLine.LINE_SIZE);
+        }
+    }
 }

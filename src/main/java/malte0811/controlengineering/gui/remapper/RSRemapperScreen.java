@@ -3,7 +3,7 @@ package malte0811.controlengineering.gui.remapper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.gui.SubTexture;
-import net.minecraft.client.renderer.Rect2i;
+import malte0811.controlengineering.util.math.Vec2i;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ public class RSRemapperScreen extends AbstractRemapperScreen {
     private static final int WRAP_X_GRAY = 142;
     private static final int FIRST_WRAP_Y = 15;
     private static final int COLOR_HEIGHT = 8;
-    private static final SubTexture WRAPPED_WIRE = new SubTexture(TEXTURE, 192, 128, 195, 132);
+    public static final SubTexture WRAPPED_WIRE = new SubTexture(TEXTURE, 192, 128, 195, 132);
     private static final SubTexture POINTS_LEFT = new SubTexture(TEXTURE, 192, 0, 204, 128);
     private static final SubTexture POINTS_RIGHT = new SubTexture(TEXTURE, 204, 0, 216, 128);
 
@@ -37,18 +37,7 @@ public class RSRemapperScreen extends AbstractRemapperScreen {
         for (int i = 0; i < BusLine.LINE_SIZE; ++i) {
             var yMin = FIRST_WRAP_Y + i * COLOR_HEIGHT;
             var xMin = color ? WRAP_X_COLOR : WRAP_X_GRAY;
-            int wireX;
-            if (color) {
-                wireX = WRAP_X_COLOR + WRAPPED_WIRE.getWidth();
-            } else {
-                wireX = WRAP_X_GRAY;
-            }
-            pointsOnSide.add(new ConnectionPoint(
-                    color, i,
-                    wireX, yMin + WRAPPED_WIRE.getHeight() / 2,
-                    new Rect2i(xMin, yMin, WRAPPED_WIRE.getWidth(), WRAPPED_WIRE.getHeight()),
-                    WRAPPED_WIRE
-            ));
+            pointsOnSide.add(new ConnectionPoint(color, i, new Vec2i(xMin, yMin), WRAPPED_WIRE));
         }
         return pointsOnSide;
     }

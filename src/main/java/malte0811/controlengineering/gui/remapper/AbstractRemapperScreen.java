@@ -7,6 +7,7 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.network.remapper.ClearMapping;
 import malte0811.controlengineering.network.remapper.SetMapping;
+import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.renderer.GameRenderer;
@@ -182,8 +183,8 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
     }
 
     private void renderWireAtMouse(PoseStack transform, ConnectionPoint fixed, int mouseX, int mouseY) {
-        var fixedY = fixed.wireY;
-        var fixedX = fixed.wireX;
+        var fixedY = fixed.wireY();
+        var fixedX = fixed.wireX();
         Vec2 radius = new Vec2(fixedY - mouseY, mouseX - fixedX).normalized();
 
         renderWire(
@@ -208,13 +209,14 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
+        RenderSystem.enableDepthTest();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         var matrix = transform.last().pose();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferbuilder.vertex(matrix, x1, y1, 0.0F).color(color).endVertex();
-        bufferbuilder.vertex(matrix, x2, y2, 0.0F).color(color).endVertex();
-        bufferbuilder.vertex(matrix, x3, y3, 0.0F).color(color).endVertex();
-        bufferbuilder.vertex(matrix, x4, y4, 0.0F).color(color).endVertex();
+        bufferbuilder.vertex(matrix, x1, y1, 1.0F).color(color).endVertex();
+        bufferbuilder.vertex(matrix, x2, y2, 1.0F).color(color).endVertex();
+        bufferbuilder.vertex(matrix, x3, y3, 1.0F).color(color).endVertex();
+        bufferbuilder.vertex(matrix, x4, y4, 1.0F).color(color).endVertex();
         bufferbuilder.end();
         BufferUploader.end(bufferbuilder);
         RenderSystem.enableTexture();
@@ -259,6 +261,18 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
     }
 
     protected record ConnectionPoint(
-            boolean isMappingSource, int index, int wireX, int wireY, Rect2i area, SubTexture sprite
-    ) {}
+            boolean isMappingSource, int index, Vec2i min, SubTexture sprite
+    ) {
+        public Rect2i area() {
+            return new Rect2i(min.x(), min.y(), sprite.getWidth(), sprite.getHeight());
+        }
+
+        public int wireX() {
+            return isMappingSource ? area().getX() + area().getWidth() : area().getX();
+        }
+
+        public int wireY() {
+            return area().getY() + area().getHeight() / 2;
+        }
+    }
 }

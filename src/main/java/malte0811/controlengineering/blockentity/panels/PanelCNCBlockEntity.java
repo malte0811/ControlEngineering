@@ -84,7 +84,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
     );
     private final EnergyStorage energy = new EnergyStorage(20 * ENERGY_CONSUMPTION);
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
-    private ParallelPort dataOutput = new ParallelPort();
+    private final ParallelPort dataOutput = new ParallelPort();
     // Used and initialized by the renderer
     public CachedValue<CNCJob, PiecewiseAffinePath<Vec3>> headPath;
 
@@ -95,7 +95,11 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
                     MatrixUtils.inverseFacing(facing),
                     ImmutableList.of(
                             new SingleShape(createPixelRelative(1, 14, 1, 15, 16, 15), this::panelClick),
-                            new SingleShape(createPixelRelative(2, 4, 14, 14, 12, 16), tape::click)
+                            new SingleShape(createPixelRelative(2, 4, 14, 14, 12, 16), tape::click),
+                            new SingleShape(
+                                    createPixelRelative(4, 4, 0, 12, 12, 1),
+                                    dataOutput.makeRemapInteraction(this)
+                            )
                     ),
                     ctx -> InteractionResult.PASS
             )
@@ -223,7 +227,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
         super.load(nbt);
         readSyncedData(nbt);
         energy.deserializeNBT(nbt.get("energy"));
-        dataOutput = new ParallelPort(nbt.getCompound("dataOutput"));
+        dataOutput.readNBT(nbt.getCompound("dataOutput"));
     }
 
     @Override
