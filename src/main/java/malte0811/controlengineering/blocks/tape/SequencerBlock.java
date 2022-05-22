@@ -57,17 +57,17 @@ public class SequencerBlock extends CEBlock<Direction> {
     
     @Override
     public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-    	Direction facing = state.getValue(FACING);
-    	return facing != null &&( facing == direction || facing == direction.getCounterClockWise() );
+        Direction facing = state.getValue(FACING);
+        return direction != null && (facing == direction || facing == direction.getCounterClockWise());
     }
 
     @Override
     public int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-    	Direction facing = state.getValue(FACING);
-    	if (facing != null && facing == direction && state.getValue(HALTED)) {
-    		return 15;
-    	}
-    	return 0;
+        Direction facing = state.getValue(FACING);
+        if (direction != null && facing == direction && state.getValue(HALTED)) {
+            return 15;
+        }
+        return 0;
     }
     
 }
