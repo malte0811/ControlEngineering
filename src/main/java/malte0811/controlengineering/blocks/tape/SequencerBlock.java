@@ -5,7 +5,9 @@ import malte0811.controlengineering.blockentity.tape.SequencerBlockEntity;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.placement.BlockPropertyPlacement;
 import malte0811.controlengineering.blocks.shapes.FromBlockFunction;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -14,6 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.shapes.Shapes;
 
@@ -22,6 +25,7 @@ import javax.annotation.Nullable;
 
 public class SequencerBlock extends CEBlock<Direction> {
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final BooleanProperty HALTED = BooleanProperty.create("halted");
 
     public SequencerBlock() {
         super(
@@ -30,12 +34,14 @@ public class SequencerBlock extends CEBlock<Direction> {
                 FromBlockFunction.constant(Shapes.block()),
                 CEBlockEntities.SEQUENCER
         );
+        this.registerDefaultState(this.defaultBlockState().setValue(HALTED, false));
     }
 
     @Override
     protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(FACING);
+        builder.add(HALTED);
     }
 
     @Nullable
@@ -48,4 +54,20 @@ public class SequencerBlock extends CEBlock<Direction> {
         }
         return super.getTicker(pLevel, pState, pBlockEntityType);
     }
+    
+    @Override
+    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+        Direction facing = state.getValue(FACING);
+        return direction != null && (facing == direction || facing == direction.getCounterClockWise());
+    }
+
+    @Override
+    public int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+        Direction facing = state.getValue(FACING);
+        if (direction != null && facing == direction && state.getValue(HALTED)) {
+            return 15;
+        }
+        return 0;
+    }
+    
 }
