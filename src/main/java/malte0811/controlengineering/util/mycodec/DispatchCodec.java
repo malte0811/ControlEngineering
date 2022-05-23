@@ -12,15 +12,17 @@ import java.util.function.Function;
 public record DispatchCodec<Type, Instance>(
         MyCodec<Type> typeCodec,
         Function<? super Instance, ? extends Type> type,
-        Function<? super Type, ? extends MyCodec<? extends Instance>> codec
+        Function<? super Type, ? extends MyCodec<? extends Instance>> codec,
+        String typeKey,
+        String dataKey
 ) implements MyCodec<Instance> {
     @Override
     public <B> TreeElement<B> toTree(Instance in, TreeManager<B> manager) {
         var result = manager.makeTree();
         var type = type().apply(in);
-        result.put("type", typeCodec.toTree(type, manager));
+        result.put(typeKey, typeCodec.toTree(type, manager));
         var instanceCodec = codec().apply(type);
-        result.put("data", toNBT(instanceCodec, in, manager));
+        result.put(dataKey, toNBT(instanceCodec, in, manager));
         return result;
     }
 
@@ -35,9 +37,9 @@ public record DispatchCodec<Type, Instance>(
         if (!(data instanceof TreeStorage tree)) {
             return null;
         }
-        var type = typeCodec.fromTree(tree.get("type"));
+        var type = typeCodec.fromTree(tree.get(typeKey));
         var instanceCodec = codec.apply(type);
-        return instanceCodec.fromTree(tree.get("data"));
+        return instanceCodec.fromTree(tree.get(dataKey));
     }
 
     @Override

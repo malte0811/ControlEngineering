@@ -1,7 +1,7 @@
 package malte0811.controlengineering.network.remapper;
 
 import com.google.common.base.Preconditions;
-import malte0811.controlengineering.gui.remapper.RSRemapperMenu;
+import malte0811.controlengineering.gui.remapper.AbstractRemapperMenu;
 import malte0811.controlengineering.network.SimplePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -9,14 +9,14 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
-public class RSRemapperPacket extends SimplePacket {
-    private final RSRemapperSubPacket packet;
+public class RemapperPacket extends SimplePacket {
+    private final RemapperSubPacket packet;
 
-    public RSRemapperPacket(FriendlyByteBuf buffer) {
-        this(RSRemapperSubPacket.read(buffer));
+    public RemapperPacket(FriendlyByteBuf buffer) {
+        this(RemapperSubPacket.read(buffer));
     }
 
-    public RSRemapperPacket(RSRemapperSubPacket data) {
+    public RemapperPacket(RemapperSubPacket data) {
         this.packet = data;
     }
 
@@ -34,7 +34,7 @@ public class RSRemapperPacket extends SimplePacket {
         } else {
             abstractMenu = Minecraft.getInstance().player.containerMenu;
         }
-        if (abstractMenu instanceof RSRemapperMenu menu) {
+        if (abstractMenu instanceof AbstractRemapperMenu menu) {
             updateConnections(menu);
             if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
                 menu.sendToListeningPlayersExcept(ctx.getSender(), packet);
@@ -43,8 +43,8 @@ public class RSRemapperPacket extends SimplePacket {
         }
     }
 
-    public void updateConnections(RSRemapperMenu menu) {
-        var newCToG = packet.process(menu.getColorToGray());
-        menu.setColorToGray(newCToG);
+    public void updateConnections(AbstractRemapperMenu menu) {
+        var newCToG = packet.process(menu.getMapping());
+        menu.setMapping(newCToG);
     }
 }

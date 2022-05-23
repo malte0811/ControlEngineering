@@ -11,9 +11,11 @@ import malte0811.controlengineering.util.mycodec.tree.TreeElement;
 import malte0811.controlengineering.util.mycodec.tree.TreeManager;
 import malte0811.controlengineering.util.mycodec.tree.TreePrimitive;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -129,6 +131,13 @@ public class MyCodecs {
                 m -> m.entrySet().stream()
                         .map(e -> Pair.of(e.getKey(), e.getValue()))
                         .collect(Collectors.toList())
+        );
+    }
+
+    public static <T> MyCodec<@Nullable T> nullable(MyCodec<T> fullCodec) {
+        return BOOL.dispatch(
+                Objects::isNull, present -> present ? unit(null) : fullCodec,
+                "isNull", "value"
         );
     }
 

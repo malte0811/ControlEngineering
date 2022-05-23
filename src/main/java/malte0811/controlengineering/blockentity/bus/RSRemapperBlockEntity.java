@@ -27,9 +27,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import static malte0811.controlengineering.gui.remapper.AbstractRemapperMenu.NOT_MAPPED;
+
 public class RSRemapperBlockEntity extends DualConnectorBlockEntity implements IRedstoneConnector {
     private static final int COLOR_ID = MIN_ID;
-    public static final int NOT_MAPPED = BusLine.LINE_SIZE + 1;
     public static final String COLORED_KEY = ControlEngineering.MODID + ".gui.remapper.colored";
     public static final String GRAY_KEY = ControlEngineering.MODID + ".gui.remapper.gray";
 
@@ -48,6 +49,12 @@ public class RSRemapperBlockEntity extends DualConnectorBlockEntity implements I
         var newColorToGray = nbt.getIntArray("colorToGray");
         if (newColorToGray.length != BusLine.LINE_SIZE) {
             newColorToGray = makeInitialMapping();
+        }
+        for (int i = 0; i < newColorToGray.length; ++i) {
+            var mappedTo = newColorToGray[i];
+            if (mappedTo < 0 || mappedTo >= BusLine.LINE_SIZE) {
+                newColorToGray[i] = NOT_MAPPED;
+            }
         }
         setColorToGray(newColorToGray);
     }
@@ -182,7 +189,7 @@ public class RSRemapperBlockEntity extends DualConnectorBlockEntity implements I
         int[] result = new int[mapping.length];
         Arrays.fill(result, NOT_MAPPED);
         for (int i = 0; i < mapping.length; ++i) {
-            if (mapping[i] < result.length) {
+            if (mapping[i] >= 0 && mapping[i] < result.length) {
                 result[mapping[i]] = i;
             }
         }

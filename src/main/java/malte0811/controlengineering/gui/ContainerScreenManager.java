@@ -4,7 +4,9 @@ import malte0811.controlengineering.gui.logic.LogicDesignMenu;
 import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignMenu;
 import malte0811.controlengineering.gui.panel.PanelDesignScreen;
-import malte0811.controlengineering.gui.remapper.RSRemapperMenu;
+import malte0811.controlengineering.gui.remapper.AbstractRemapperMenu;
+import malte0811.controlengineering.gui.remapper.AbstractRemapperScreen;
+import malte0811.controlengineering.gui.remapper.ParallelPortMapperScreen;
 import malte0811.controlengineering.gui.remapper.RSRemapperScreen;
 import malte0811.controlengineering.gui.tape.KeypunchMenu;
 import malte0811.controlengineering.gui.tape.KeypunchScreen;
@@ -32,8 +34,11 @@ public class ContainerScreenManager {
         MenuScreens.<PanelDesignMenu, PanelDesignScreen>register(
                 CEContainers.PANEL_DESIGN.get(), (container, inv, title) -> new PanelDesignScreen(container, title)
         );
-        MenuScreens.<RSRemapperMenu, RSRemapperScreen>register(
+        MenuScreens.<AbstractRemapperMenu, AbstractRemapperScreen>register(
                 CEContainers.RS_REMAPPER.get(), (container, inv, title) -> new RSRemapperScreen(container)
+        );
+        MenuScreens.<AbstractRemapperMenu, AbstractRemapperScreen>register(
+                CEContainers.PORT_REMAPPER.get(), (container, inv, title) -> new ParallelPortMapperScreen(container)
         );
     }
 

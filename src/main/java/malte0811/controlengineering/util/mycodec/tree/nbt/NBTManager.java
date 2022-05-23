@@ -55,7 +55,9 @@ public class NBTManager implements TreeManager<Tag> {
 
     @Override
     public TreeElement<Tag> of(Tag tag) {
-        if (tag instanceof ListTag list) {
+        if (tag == null) {
+            return new NBTTree(new CompoundTag());
+        } else if (tag instanceof ListTag list) {
             return new NBTList(list);
         } else if (tag instanceof CompoundTag tree) {
             return new NBTTree(tree);
