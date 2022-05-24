@@ -12,8 +12,6 @@ import malte0811.controlengineering.gui.tape.KeypunchMenu;
 import malte0811.controlengineering.gui.tape.KeypunchScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.function.Predicate;
 
@@ -40,9 +38,5 @@ public class ContainerScreenManager {
         MenuScreens.<AbstractRemapperMenu, AbstractRemapperScreen>register(
                 CEContainers.PORT_REMAPPER.get(), (container, inv, title) -> new ParallelPortMapperScreen(container)
         );
-    }
-
-    public static Predicate<Player> isValidFor(BlockEntity menuBE) {
-        return p -> !menuBE.isRemoved() && p.distanceToSqr(Vec3.atCenterOf(menuBE.getBlockPos())) <= 64.0D;
     }
 }

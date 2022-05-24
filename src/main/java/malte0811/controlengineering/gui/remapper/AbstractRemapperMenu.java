@@ -2,7 +2,6 @@ package malte0811.controlengineering.gui.remapper;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.CEContainerMenu;
-import malte0811.controlengineering.gui.ContainerScreenManager;
 import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.remapper.FullSync;
 import malte0811.controlengineering.network.remapper.RemapperPacket;
@@ -25,7 +24,7 @@ public abstract class AbstractRemapperMenu extends CEContainerMenu<RemapperSubPa
     protected AbstractRemapperMenu(
             MenuType<?> type, int id, BlockEntity bEntity, Consumer<int[]> setMapping, Supplier<int[]> getMapping
     ) {
-        super(type, id, ContainerScreenManager.isValidFor(bEntity), bEntity::setChanged);
+        super(type, id, isValidFor(bEntity), bEntity::setChanged);
         this.setMapping = setMapping;
         this.getMapping = getMapping;
     }

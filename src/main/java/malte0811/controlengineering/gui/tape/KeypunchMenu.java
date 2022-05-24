@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.bytes.ByteConsumer;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchState;
 import malte0811.controlengineering.gui.CEContainerMenu;
-import malte0811.controlengineering.gui.ContainerScreenManager;
 import malte0811.controlengineering.gui.misc.LambdaDataSlot;
 import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.keypunch.FullSync;
@@ -24,7 +23,7 @@ public class KeypunchMenu extends CEContainerMenu<KeypunchSubPacket> {
     private final Set<KeypunchMenu> openMenus;
 
     public KeypunchMenu(MenuType<?> type, int id, KeypunchBlockEntity keypunch) {
-        super(type, id, ContainerScreenManager.isValidFor(keypunch), keypunch::setChanged);
+        super(type, id, isValidFor(keypunch), keypunch::setChanged);
         this.state = keypunch.getState();
         this.printNonLoopback = keypunch::queueForRemotePrint;
         this.isLoopback = addDataSlot(LambdaDataSlot.serverSide(() -> keypunch.isLoopback() ? 1 : 0));

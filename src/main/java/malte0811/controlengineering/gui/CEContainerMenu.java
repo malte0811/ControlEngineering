@@ -3,9 +3,11 @@ package malte0811.controlengineering.gui;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.network.SimplePacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -101,5 +103,9 @@ public abstract class CEContainerMenu<PacketType> extends AbstractContainerMenu 
         if (ceContainer.listeners.isEmpty()) {
             ceContainer.onLastClosed();
         }
+    }
+
+    public static Predicate<Player> isValidFor(BlockEntity menuBE) {
+        return p -> !menuBE.isRemoved() && p.distanceToSqr(Vec3.atCenterOf(menuBE.getBlockPos())) <= 64.0D;
     }
 }

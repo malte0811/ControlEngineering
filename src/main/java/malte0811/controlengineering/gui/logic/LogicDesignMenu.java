@@ -4,7 +4,6 @@ import malte0811.controlengineering.blockentity.logic.ISchematicBE;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity.AvailableIngredients;
 import malte0811.controlengineering.gui.CEContainerMenu;
-import malte0811.controlengineering.gui.ContainerScreenManager;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.logic.FullSync;
@@ -29,7 +28,7 @@ public class LogicDesignMenu extends CEContainerMenu<LogicSubPacket> {
 
     public <BE extends BlockEntity & ISchematicBE>
     LogicDesignMenu(MenuType<?> type, int id, BE schematicBE, boolean readOnly) {
-        super(type, id, ContainerScreenManager.isValidFor(schematicBE), schematicBE::setSchematicChanged);
+        super(type, id, isValidFor(schematicBE), schematicBE::setSchematicChanged);
         this.readOnly = readOnly;
         this.schematic = Objects.requireNonNull(schematicBE.getSchematic());
         if (!readOnly) {
