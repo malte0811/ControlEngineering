@@ -78,14 +78,14 @@ public class LogicCabinetBlock extends CEBlock<Direction> {
         return state.getValue(HEIGHT) == 0;
     }
     
-    public static Direction getRotatedDirection(BlockState state) {
-        Direction facing = state.getValue(FACING);
-        boolean mirrored = state.getValue(NOT_MIRRORED);
-        return mirrored ? facing.getClockWise() : facing.getCounterClockWise();
+    public static Direction getRotatedDirection(BlockState state, boolean leftIfNonMirrored) {
+        var facing = state.getValue(FACING);
+        var mirrored = state.getValue(NOT_MIRRORED);
+        return (mirrored != leftIfNonMirrored) ? facing.getClockWise() : facing.getCounterClockWise();
     }
 
     @Override
     public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return direction != null && isMaster(state) && direction == getRotatedDirection(state);
+        return direction != null && isMaster(state) && direction == getRotatedDirection(state, true);
     }
 }

@@ -224,9 +224,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     }
 
     private Direction getRotatedDirection(boolean leftIfNonMirrored) {
-        var facing = getFacing(getBlockState());
-        var mirrored = getBlockState().getValue(NOT_MIRRORED);
-        return (mirrored != leftIfNonMirrored) ? facing.getClockWise() : facing.getCounterClockWise();
+        return LogicCabinetBlock.getRotatedDirection(getBlockState(), leftIfNonMirrored);
     }
 
     private static boolean isUpper(BlockState state) {
