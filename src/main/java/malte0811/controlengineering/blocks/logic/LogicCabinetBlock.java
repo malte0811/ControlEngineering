@@ -86,6 +86,6 @@ public class LogicCabinetBlock extends CEBlock<Direction> {
 
     @Override
     public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        return direction != null && isMaster(state) && direction == getRotatedDirection(state, true);
+        return direction != null && isMaster(state) && direction == getRotatedDirection(state, false);
     }
 }
