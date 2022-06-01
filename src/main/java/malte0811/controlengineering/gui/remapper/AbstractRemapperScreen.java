@@ -30,7 +30,7 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
     protected static final int HEIGHT = 154;
     private static final int WIRE_COLOR = 0xffb66232;
     private static final int HIGHLIGHT_WIRE_COLOR = 0xffb68332;
-    private static final SubTexture BACKGROUND = new SubTexture(TEXTURE, 0, 0, WIDTH, HEIGHT);
+    private static final SubTexture BACKGROUND = new SubTexture(TEXTURE, 67, 0, 67 + WIDTH, HEIGHT);
     private final AbstractRemapperMenu menu;
     private final List<ConnectionPoint> sourceConnectionPoints;
     private final List<ConnectionPoint> targetConnectionPoints;

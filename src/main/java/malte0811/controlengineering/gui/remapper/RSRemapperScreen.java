@@ -14,9 +14,9 @@ public class RSRemapperScreen extends AbstractRemapperScreen {
     private static final int WRAP_X_GRAY = 142;
     private static final int FIRST_WRAP_Y = 15;
     private static final int COLOR_HEIGHT = 8;
-    public static final SubTexture WRAPPED_WIRE = new SubTexture(TEXTURE, 192, 128, 195, 132);
-    private static final SubTexture POINTS_LEFT = new SubTexture(TEXTURE, 192, 0, 204, 128);
-    private static final SubTexture POINTS_RIGHT = new SubTexture(TEXTURE, 204, 0, 216, 128);
+    public static final SubTexture WRAPPED_WIRE = new SubTexture(TEXTURE, 232, 128, 235, 132);
+    private static final SubTexture POINTS_LEFT = new SubTexture(TEXTURE, 232, 0, 244, 128);
+    private static final SubTexture POINTS_RIGHT = new SubTexture(TEXTURE, 244, 0, 256, 128);
 
     public RSRemapperScreen(AbstractRemapperMenu menu) {
         super(menu, makePoints(true), makePoints(false));

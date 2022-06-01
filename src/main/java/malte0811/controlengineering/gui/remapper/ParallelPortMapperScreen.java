@@ -16,19 +16,20 @@ public class ParallelPortMapperScreen extends AbstractRemapperScreen {
     private static final int LEFT_Y_MIN = 40;
     private static final int LEFT_X_MIN = 10;
     private static final int RIGHT_X_MIN = 110;
-    private static final int RIGHT_Y_MIN = 8;
-    private static final int SPACE_BETWEEN_LINES = 10;
+    private static final int RIGHT_Y_MIN = 13;
+    private static final int SPACE_BETWEEN_LINES = 7;
     private static final int SPACE_TO_LABEL = 6;
-    private static final SubTexture LEFT_TEXTURE = new SubTexture(TEXTURE, 216, 0, 228, 74);
-    private static final SubTexture LINE_COLORS = new SubTexture(TEXTURE, 228, 0, 254, 27);
+    private static final SubTexture LEFT_TEXTURE = new SubTexture(TEXTURE, 244, 128, 256, 202);
+    private static final SubTexture LINE_COLORS = new SubTexture(TEXTURE, 198, 229, 224, 256);
     private static final SubTexture BIG_WRAPPED_WIRE = RSRemapperScreen.WRAPPED_WIRE;
-    private static final SubTexture SMALL_WRAPPED_WIRE = new SubTexture(TEXTURE, 228, 55, 231, 57);
+    private static final SubTexture SMALL_WRAPPED_WIRE = new SubTexture(TEXTURE, 224, 254, 227, 256);
     private static final SubTexture[] LINE_LABELS = {
-            new SubTexture(TEXTURE, 228, 27, 242, 41),
-            new SubTexture(TEXTURE, 242, 27, 256, 41),
-            new SubTexture(TEXTURE, 228, 41, 242, 55),
-            new SubTexture(TEXTURE, 242, 41, 256, 55),
+            new SubTexture(TEXTURE, 228, 228, 242, 242),
+            new SubTexture(TEXTURE, 242, 228, 256, 242),
+            new SubTexture(TEXTURE, 228, 242, 242, 256),
+            new SubTexture(TEXTURE, 242, 242, 256, 256),
     };
+    private static final SubTexture OPEN_DOOR = new SubTexture(TEXTURE, 0, 0, 47, 185);
 
     public ParallelPortMapperScreen(AbstractRemapperMenu menu) {
         super(menu, makeSourcePoints(), makeTargetPoints());
@@ -39,6 +40,7 @@ public class ParallelPortMapperScreen extends AbstractRemapperScreen {
         super.renderBackground(transform, vOffset);
         transform.pushPose();
         transform.translate(leftPos, topPos, vOffset);
+        OPEN_DOOR.blit(transform, -38, -31);
         LEFT_TEXTURE.blit(transform, LEFT_X_MIN, LEFT_Y_MIN);
         for (int line = 0; line < BusWireType.NUM_LINES; ++line) {
             final var lineY = getLineY(line);
