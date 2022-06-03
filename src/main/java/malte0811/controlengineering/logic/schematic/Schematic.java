@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import malte0811.controlengineering.blockentity.logic.LogicCabinetBlockEntity;
 import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
@@ -188,6 +189,10 @@ public class Schematic {
 
     public int getSolderAmount() {
         return getTotalCost(CellCost::getSolderAmount);
+    }
+
+    public int getNumBoards() {
+        return LogicCabinetBlockEntity.getNumBoardsFor(getNumLogicTubes());
     }
 
     public void clear() {

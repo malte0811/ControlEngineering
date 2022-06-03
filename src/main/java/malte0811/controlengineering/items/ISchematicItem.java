@@ -21,7 +21,8 @@ public interface ISchematicItem {
         return Schematic.CODEC.fromNBT(tag.get(SCHEMATIC_KEY));
     }
 
-    static ItemStack create(Supplier<? extends Item> item, Schematic schematic) {
+    static <T extends Item & ISchematicItem>
+    ItemStack create(Supplier<T> item, Schematic schematic) {
         ItemStack result = item.get().getDefaultInstance();
         if (!schematic.isEmpty()) {
             result.getOrCreateTag().put(SCHEMATIC_KEY, Schematic.CODEC.toNBT(schematic));

@@ -1,5 +1,6 @@
 package malte0811.controlengineering.blockentity.logic;
 
+import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.IETags;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
@@ -44,6 +45,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -87,7 +89,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
                 VoxelShape baseShape = LogicWorkbenchBlock.SHAPE.apply(offset, facing);
                 if (offset == LogicWorkbenchBlock.Offset.TOP_RIGHT) {
                     Function<UseOnContext, InteractionResult> create = makeInteraction(
-                            state, LogicWorkbenchBlockEntity::handleCreationClick
+                            state, LogicWorkbenchBlockEntity::handleSolderingClick
                     );
                     SelectionShapes wireDrawer = makeDrawerShape(
                             state, LogicWorkbenchBlock.WIRE_DRAWER_TOP_RIGHT, be -> be.wireStorage
@@ -232,14 +234,23 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
         }
     }
 
-    private InteractionResult handleCreationClick(UseOnContext ctx) {
+    private InteractionResult handleSolderingClick(UseOnContext ctx) {
         if (ctx.getPlayer() == null) {
             return InteractionResult.PASS;
         }
-        if (!ctx.getItemInHand().is(IEItemRefs.CIRCUIT_BOARD.asItem()) || schematic == null) {
+        if (ctx.getItemInHand().is(IEItemRefs.CIRCUIT_BOARD.asItem())) {
+            return handleCreationClick(ctx.getPlayer(), ctx.getItemInHand());
+        } else if (ctx.getItemInHand().is(CEItems.PCB_STACK.get())) {
+            return handleDisassemblyClick(ctx.getPlayer(), ctx.getItemInHand());
+        }
+        return InteractionResult.PASS;
+    }
+
+    private InteractionResult handleCreationClick(Player player, ItemStack heldStack) {
+        if (schematic == null) {
             return InteractionResult.PASS;
         }
-        if (level.isClientSide) {
+        if (level == null || level.isClientSide) {
             return InteractionResult.SUCCESS;
         }
         Optional<BusConnectedCircuit> circuit = SchematicCircuitConverter.toCircuit(schematic);
@@ -247,15 +258,15 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
             return InteractionResult.FAIL;
         }
         final int numTubes = schematic.getNumLogicTubes();
-        final int numBoards = LogicCabinetBlockEntity.getNumBoardsFor(numTubes);
+        final int numBoards = schematic.getNumBoards();
         if (numBoards > LogicCabinetBlockEntity.MAX_NUM_BOARDS) {
-            ctx.getPlayer().displayClientMessage(
+            player.displayClientMessage(
                     new TranslatableComponent(MORE_BOARDS_THAN_MAX, numBoards, LogicCabinetBlockEntity.MAX_NUM_BOARDS),
                     true
             );
             return InteractionResult.FAIL;
-        } else if (numBoards > ctx.getItemInHand().getCount()) {
-            ctx.getPlayer().displayClientMessage(new TranslatableComponent(TOO_FEW_BOARDS_HELD, numBoards), true);
+        } else if (numBoards > heldStack.getCount()) {
+            player.displayClientMessage(new TranslatableComponent(TOO_FEW_BOARDS_HELD, numBoards), true);
             return InteractionResult.FAIL;
         }
         final int numWires = schematic.getWireLength();
@@ -265,18 +276,46 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
             if (enoughTubes && enoughWires) {
                 tubeStorage.consume(numTubes);
                 wireStorage.consume(numWires);
-                ctx.getItemInHand().shrink(numBoards);
+                heldStack.shrink(numBoards);
                 level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
-                ItemUtil.giveOrDrop(ctx.getPlayer(), PCBStackItem.forSchematic(schematic));
+                ItemUtil.giveOrDrop(player, PCBStackItem.forSchematic(schematic));
                 schematic = null;
                 setChanged();
             } else if (!enoughTubes) {
-                ctx.getPlayer().displayClientMessage(new TranslatableComponent(TOO_FEW_TUBES, numTubes), true);
+                player.displayClientMessage(new TranslatableComponent(TOO_FEW_TUBES, numTubes), true);
             } else {
-                ctx.getPlayer().displayClientMessage(new TranslatableComponent(TOO_FEW_WIRES, numWires), true);
+                player.displayClientMessage(new TranslatableComponent(TOO_FEW_WIRES, numWires), true);
             }
         }
         return InteractionResult.SUCCESS;
+    }
+
+    private InteractionResult handleDisassemblyClick(Player player, ItemStack heldStack) {
+        if (!player.isShiftKeyDown()) {
+            return InteractionResult.PASS;
+        }
+        final var heldSchematic = ISchematicItem.getSchematic(heldStack);
+        if (heldSchematic == null) {
+            return InteractionResult.PASS;
+        } else if (level == null || level.isClientSide) {
+            return InteractionResult.SUCCESS;
+        }
+        heldStack.shrink(1);
+        ItemUtil.giveOrDrop(player, ISchematicItem.create(CEItems.SCHEMATIC, heldSchematic));
+        ItemUtil.giveOrDrop(player, new ItemStack(IEItemRefs.CIRCUIT_BOARD, heldSchematic.getNumBoards()));
+        ItemUtil.giveOrDrop(player, getRecovered(IEItemRefs.TUBE, heldSchematic.getNumLogicTubes(), 50));
+        ItemUtil.giveOrDrop(player, getRecovered(IEItemRefs.WIRE, heldSchematic.getWireLength(), 5));
+        return InteractionResult.SUCCESS;
+    }
+
+    private static ItemStack getRecovered(ItemLike item, int numAvailable, int breakOneIn) {
+        int numRecovered = 0;
+        for (int i = 0; i < numAvailable; ++i) {
+            if (ApiUtils.RANDOM.nextInt(breakOneIn) != 0) {
+                ++numRecovered;
+            }
+        }
+        return new ItemStack(item, numRecovered);
     }
 
     public CircuitIngredientDrawer getTubeStorage() {

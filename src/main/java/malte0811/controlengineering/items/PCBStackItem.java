@@ -7,13 +7,16 @@ import malte0811.controlengineering.logic.circuit.BusConnectedCircuit;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
@@ -63,5 +66,11 @@ public class PCBStackItem extends Item implements ISchematicItem {
         } else {
             return ItemStack.EMPTY;
         }
+    }
+
+    @Override
+    public boolean doesSneakBypassUse(ItemStack stack, LevelReader level, BlockPos pos, Player player) {
+        // Used for disassembly (sneak-r-click on the soldering burner)
+        return true;
     }
 }
