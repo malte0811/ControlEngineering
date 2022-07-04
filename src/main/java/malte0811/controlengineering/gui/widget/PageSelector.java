@@ -3,7 +3,7 @@ package malte0811.controlengineering.gui.widget;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
 import javax.annotation.Nonnull;
@@ -20,11 +20,11 @@ public class PageSelector extends NestedWidget {
         if (numPages > 1) {
             addWidget(new Button(
                     x, y, width / 3, HEIGHT,
-                    new TextComponent("<-"), $ -> this.currentPage = Math.max(0, this.currentPage - 1)
+                    Component.literal("<-"), $ -> this.currentPage = Math.max(0, this.currentPage - 1)
             ));
             addWidget(new Button(
                     x + 2 * width / 3, y, width / 3, HEIGHT,
-                    new TextComponent("->"), $ -> this.currentPage = Math.min(numPages - 1, this.currentPage + 1)
+                    Component.literal("->"), $ -> this.currentPage = Math.min(numPages - 1, this.currentPage + 1)
             ));
         }
     }

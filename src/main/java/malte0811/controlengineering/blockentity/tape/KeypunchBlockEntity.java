@@ -29,7 +29,7 @@ import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -204,7 +204,7 @@ public class KeypunchBlockEntity extends CEBlockEntity
                 BEUtil.markDirtyAndSync(bEntity);
             }
             return InteractionResult.SUCCESS;
-        }).setTextGetter(() -> new TranslatableComponent(bEntity.isLoopback() ? LOOPBACK_KEY : REMOTE_KEY)));
+        }).setTextGetter(() -> Component.translatable(bEntity.isLoopback() ? LOOPBACK_KEY : REMOTE_KEY)));
         subshapes.add(new SingleShape(CONNECTOR_SHAPE, bEntity.getPort().makeRemapInteraction(bEntity)));
         return new ListShapes(
                 Shapes.block(),

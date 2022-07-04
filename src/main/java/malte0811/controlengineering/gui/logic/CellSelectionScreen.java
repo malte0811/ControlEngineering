@@ -9,7 +9,7 @@ import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbols;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
@@ -36,7 +36,7 @@ public class CellSelectionScreen extends StackedScreen {
     private SymbolInstance<?> selected;
 
     public CellSelectionScreen(Consumer<SymbolInstance<?>> select) {
-        super(new TextComponent("Cell selection"));
+        super(Component.literal("Cell selection"));
         this.select = select;
         this.symbols = new ArrayList<>(SchematicSymbols.REGISTRY.getValues());
     }

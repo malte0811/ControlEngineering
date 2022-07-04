@@ -16,7 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -26,7 +26,7 @@ import java.util.List;
 public class PanelComponentElement extends SpecialManualElement {
     private static final int ITEM_SIZE = 18;
     public static final String INGREDIENTS_KEY = ControlEngineering.MODID + ".gui.component_ingredients";
-    private static final Component INGREDIENTS_LABEL = new TranslatableComponent(INGREDIENTS_KEY);
+    private static final Component INGREDIENTS_LABEL = Component.translatable(INGREDIENTS_KEY);
 
     private final PanelComponentType<?, ?> type;
     private List<List<ItemStack>> ingredients = List.of();

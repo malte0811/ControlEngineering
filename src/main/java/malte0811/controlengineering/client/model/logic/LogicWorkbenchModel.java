@@ -18,6 +18,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.IModelConfiguration;
@@ -40,7 +41,7 @@ public record LogicWorkbenchModel(
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(
-            @Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData
+            @Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull IModelData extraData
     ) {
         var quads = workbench.getQuads(state, side, rand, extraData);
         var hasSchematic = extraData.getData(HAS_SCHEMATIC);

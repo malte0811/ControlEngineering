@@ -4,8 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
 import java.util.function.IntConsumer;
@@ -19,7 +19,7 @@ public class IntSelector extends StackedScreen {
     private final int initial;
 
     public IntSelector(IntConsumer select, String translationKey, int min, int max, int initial) {
-        super(new TextComponent("Signal selector"));
+        super(Component.literal("Signal selector"));
         this.select = select;
         this.translationKey = translationKey;
         this.min = min;
@@ -37,7 +37,7 @@ public class IntSelector extends StackedScreen {
         addRenderableWidget(selector);
         addRenderableWidget(new Button(
                 width / 2 - 64, height / 2 + ColorPicker16.SIZE / 2 + 20, 128, 20,
-                new TranslatableComponent(DataProviderScreen.DONE_KEY), $ -> onClose()
+                Component.translatable(DataProviderScreen.DONE_KEY), $ -> onClose()
         ));
     }
 

@@ -49,7 +49,7 @@ public class ServerFontData extends RecipeProvider {
     private void buildCraftingRecipesInner(@Nonnull Consumer<FinishedRecipe> out) throws IOException {
         final String asciiLoc = "minecraft:font/ascii.png";
         final JsonObject fontDef = JsonParser.parseReader(new InputStreamReader(
-                clientResources.getResource(new ResourceLocation("font/default.json")).getInputStream()
+                clientResources.getResource(new ResourceLocation("font/default.json")).orElseThrow().open()
         )).getAsJsonObject();
         final JsonObject asciiDef = fontDef.getAsJsonArray("providers").get(2).getAsJsonObject();
         Preconditions.checkState(asciiLoc.equals(asciiDef.get("file").getAsString()));

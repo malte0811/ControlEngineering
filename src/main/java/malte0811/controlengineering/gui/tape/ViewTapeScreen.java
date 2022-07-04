@@ -8,7 +8,7 @@ import malte0811.controlengineering.util.ScreenUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 
@@ -32,7 +32,7 @@ public class ViewTapeScreen extends Screen {
     private final InteractionHand tapeHand;
 
     public ViewTapeScreen(String titleIn, byte[] data, InteractionHand tapeHand) {
-        super(new TextComponent(titleIn));
+        super(Component.literal(titleIn));
         this.fullData = data;
         this.canCut = CutTapePacket.canCut(tapeHand, Objects.requireNonNull(Minecraft.getInstance().player));
         this.tapeHand = tapeHand;
@@ -47,12 +47,12 @@ public class ViewTapeScreen extends Screen {
         final int buttonY = FIRST_HOLE_Y + 3 + (this.height - HEIGHT) / 2;
         addRenderableWidget(new Button(
                 leftButtonX + 1, buttonY, buttonWidth, 20,
-                new TextComponent("<"),
+                Component.literal("<"),
                 btn -> incOffset()
         ));
         addRenderableWidget(new Button(
                 width - leftButtonX - buttonWidth + 1, buttonY, buttonWidth, 20,
-                new TextComponent(">"),
+                Component.literal(">"),
                 btn -> decOffset()
         ));
     }

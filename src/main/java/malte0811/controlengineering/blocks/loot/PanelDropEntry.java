@@ -2,11 +2,9 @@ package malte0811.controlengineering.blocks.loot;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.CEBlocks;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
@@ -18,7 +16,7 @@ import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class PanelDropEntry extends LootPoolSingletonContainer {
-    public static final ResourceLocation ID = new ResourceLocation(ControlEngineering.MODID, "panel");
+    public static final String ID = "panel";
 
     protected PanelDropEntry(int weightIn, int qualityIn, LootItemCondition[] conditionsIn, LootItemFunction[] functionsIn) {
         super(weightIn, qualityIn, conditionsIn, functionsIn);
@@ -37,7 +35,7 @@ public class PanelDropEntry extends LootPoolSingletonContainer {
     @Nonnull
     @Override
     public LootPoolEntryType getType() {
-        return CELootFunctions.controlPanel;
+        return CELootFunctions.CONTROL_PANEL.get();
     }
 
     public static LootPoolSingletonContainer.Builder<?> builder() {

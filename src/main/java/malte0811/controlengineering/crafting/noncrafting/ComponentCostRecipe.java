@@ -17,7 +17,7 @@ public class ComponentCostRecipe extends BaseRecipe {
     private final List<IngredientWithSize> cost;
 
     public ComponentCostRecipe(ResourceLocation id, List<IngredientWithSize> cost) {
-        super(id, CERecipeSerializers.COMPONENT_COST, CERecipeTypes.COMPONENT_COST);
+        super(id, CERecipeSerializers.COMPONENT_COST, CERecipeTypes.COMPONENT_COST.get());
         this.cost = cost;
     }
 

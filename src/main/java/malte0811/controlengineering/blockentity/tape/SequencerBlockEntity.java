@@ -18,7 +18,7 @@ import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -171,14 +171,14 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
                 BEUtil.markDirtyAndSync(this);
             }
             return InteractionResult.SUCCESS;
-        }).setTextGetter(() -> new TranslatableComponent(autoreset ? AUTORESET_KEY : MANUAL_RESET_KEY)));
+        }).setTextGetter(() -> Component.translatable(autoreset ? AUTORESET_KEY : MANUAL_RESET_KEY)));
         shapes.add(new SingleShape(createPixelRelative(10, 3, 0, 12, 6, 1), $ -> {
             if (level != null && !level.isClientSide()) {
                 compact = !compact;
                 BEUtil.markDirtyAndSync(this);
             }
             return InteractionResult.SUCCESS;
-        }).setTextGetter(() -> new TranslatableComponent(compact ? COMPACT_KEY : ANALOG_KEY)));
+        }).setTextGetter(() -> Component.translatable(compact ? COMPACT_KEY : ANALOG_KEY)));
         shapes.add(new SingleShape(
                 ShapeUtils.createPixelRelative(0, 6, 6, 5, 10, 10),
                 ctx -> clock.click(ctx, () -> BEUtil.markDirtyAndSync(this))

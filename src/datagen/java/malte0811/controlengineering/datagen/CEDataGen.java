@@ -9,13 +9,13 @@ import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 public class CEDataGen {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent ev) {
-        ev.getGenerator().addProvider(new BlockstateGenerator(ev.getGenerator(), ev.getExistingFileHelper()));
-        ev.getGenerator().addProvider(new ItemModels(ev));
-        ev.getGenerator().addProvider(new Recipes(ev.getGenerator()));
-        ev.getGenerator().addProvider(new LangGenerator(ev.getGenerator()));
-        ev.getGenerator().addProvider(new ServerFontData(ev.getGenerator(), ev.getExistingFileHelper()));
-        ev.getGenerator().addProvider(new LootGenerator(ev.getGenerator()));
-        ev.getGenerator().addProvider(new ComponentCostGenerator(ev.getGenerator()));
-        ev.getGenerator().addProvider(new BlockTagGenerator(ev.getGenerator(), ev.getExistingFileHelper()));
+        ev.getGenerator().addProvider(true, new BlockstateGenerator(ev.getGenerator(), ev.getExistingFileHelper()));
+        ev.getGenerator().addProvider(true, new ItemModels(ev));
+        ev.getGenerator().addProvider(true, new Recipes(ev.getGenerator()));
+        ev.getGenerator().addProvider(true, new LangGenerator(ev.getGenerator()));
+        ev.getGenerator().addProvider(true, new ServerFontData(ev.getGenerator(), ev.getExistingFileHelper()));
+        ev.getGenerator().addProvider(true, new LootGenerator(ev.getGenerator()));
+        ev.getGenerator().addProvider(true, new ComponentCostGenerator(ev.getGenerator()));
+        ev.getGenerator().addProvider(true, new BlockTagGenerator(ev.getGenerator(), ev.getExistingFileHelper()));
     }
 }

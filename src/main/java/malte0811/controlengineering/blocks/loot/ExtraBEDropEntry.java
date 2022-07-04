@@ -2,9 +2,7 @@ package malte0811.controlengineering.blocks.loot;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.base.IExtraDropBE;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
@@ -16,7 +14,7 @@ import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class ExtraBEDropEntry extends LootPoolSingletonContainer {
-    public static final ResourceLocation ID = new ResourceLocation(ControlEngineering.MODID, "extra_be_drop");
+    public static final String ID = "extra_be_drop";
 
     protected ExtraBEDropEntry(
             int weightIn, int qualityIn, LootItemCondition[] conditionsIn, LootItemFunction[] functionsIn
@@ -38,7 +36,7 @@ public class ExtraBEDropEntry extends LootPoolSingletonContainer {
     @Nonnull
     @Override
     public LootPoolEntryType getType() {
-        return CELootFunctions.bEntityDrop;
+        return CELootFunctions.B_ENTITY_DROP.get();
     }
 
     public static class Serializer extends LootPoolSingletonContainer.Serializer<ExtraBEDropEntry> {

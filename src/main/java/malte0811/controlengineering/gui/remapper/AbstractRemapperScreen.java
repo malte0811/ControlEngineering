@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import org.apache.commons.lang3.ArrayUtils;
@@ -44,7 +44,7 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
             List<ConnectionPoint> sourceConnectionPoints,
             List<ConnectionPoint> targetConnectionPoints
     ) {
-        super(TextComponent.EMPTY);
+        super(Component.empty());
         this.menu = menu;
         this.sourceConnectionPoints = sourceConnectionPoints;
         this.targetConnectionPoints = targetConnectionPoints;
@@ -217,8 +217,7 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
         bufferbuilder.vertex(matrix, x2, y2, 1.0F).color(color).endVertex();
         bufferbuilder.vertex(matrix, x3, y3, 1.0F).color(color).endVertex();
         bufferbuilder.vertex(matrix, x4, y4, 1.0F).color(color).endVertex();
-        bufferbuilder.end();
-        BufferUploader.end(bufferbuilder);
+        BufferUploader.draw(bufferbuilder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }

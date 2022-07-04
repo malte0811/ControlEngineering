@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
@@ -19,7 +20,7 @@ public interface CEBakedModel extends BakedModel {
     @Nonnull
     @Override
     default List<BakedQuad> getQuads(
-            @Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand
+            @Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand
     ) {
         return getQuads(state, side, rand, EmptyModelData.INSTANCE);
     }
@@ -27,7 +28,7 @@ public interface CEBakedModel extends BakedModel {
     @Nonnull
     @Override
     List<BakedQuad> getQuads(
-            @Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData
+            @Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull IModelData extraData
     );
 
     @Override
@@ -72,12 +73,12 @@ public interface CEBakedModel extends BakedModel {
         @Nullable
         @Override
         Key getKey(
-                @Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData beData
+                @Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull IModelData beData
         );
 
         @Nonnull
         @Override
-        default List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand) {
+        default List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand) {
             return CEBakedModel.super.getQuads(state, side, rand);
         }
 
@@ -86,7 +87,7 @@ public interface CEBakedModel extends BakedModel {
         default List<BakedQuad> getQuads(
                 @Nullable BlockState state,
                 @Nullable Direction side,
-                @Nonnull Random rand,
+                @Nonnull RandomSource rand,
                 @Nonnull IModelData extraData
         ) {
             return ICacheKeyProvider.super.getQuads(state, side, rand, extraData);

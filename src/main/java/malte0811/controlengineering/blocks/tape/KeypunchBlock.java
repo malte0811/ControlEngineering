@@ -12,7 +12,7 @@ import malte0811.controlengineering.gui.CEContainers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.level.Level;
@@ -66,7 +66,7 @@ public class KeypunchBlock extends CEBlock<Direction> implements IModelOffsetPro
         var keypunchBE = worldIn.getBlockEntity(masterPos);
         if (keypunchBE instanceof KeypunchBlockEntity keypunch) {
             return new SimpleMenuProvider(
-                    CEContainers.KEYPUNCH.argConstructor(keypunch), new TranslatableComponent(CONTAINER_NAME)
+                    CEContainers.KEYPUNCH.argConstructor(keypunch), Component.translatable(CONTAINER_NAME)
             );
         } else {
             return null;

@@ -8,7 +8,7 @@ import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.util.TextUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
 
 import javax.annotation.Nullable;
@@ -41,7 +41,7 @@ public class ClientIOSymbol extends ClientSymbol<BusSignalRef, IOSymbol> {
     @Override
     public void createInstanceWithUI(Consumer<? super SymbolInstance<BusSignalRef>> onDone, BusSignalRef initialState) {
         Minecraft.getInstance().setScreen(DataProviderScreen.makeFor(
-                TextComponent.EMPTY, initialState, BusSignalRef.CODEC,
+                Component.empty(), initialState, BusSignalRef.CODEC,
                 ref -> {
                     SymbolInstance<BusSignalRef> instance = new SymbolInstance<>(serverSymbol, ref);
                     onDone.accept(instance);

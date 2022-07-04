@@ -7,7 +7,6 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
@@ -63,6 +62,6 @@ public class BaseRecipe implements Recipe<Container> {
         return type;
     }
 
-    protected static abstract class BaseSerializer<R extends BaseRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>>
-            implements RecipeSerializer<R> {}
+    // TODO remove now that ForgeRegEntry is gone?
+    protected static abstract class BaseSerializer<R extends BaseRecipe> implements RecipeSerializer<R> {}
 }

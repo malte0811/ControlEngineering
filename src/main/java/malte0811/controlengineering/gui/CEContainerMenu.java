@@ -3,6 +3,7 @@ package malte0811.controlengineering.gui;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.network.SimplePacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -107,5 +108,12 @@ public abstract class CEContainerMenu<PacketType> extends AbstractContainerMenu 
 
     public static Predicate<Player> isValidFor(BlockEntity menuBE) {
         return p -> !menuBE.isRemoved() && p.distanceToSqr(Vec3.atCenterOf(menuBE.getBlockPos())) <= 64.0D;
+    }
+
+    @Override
+    @Nonnull
+    public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
+        // TODO broken? Is this even any screen where this is called in CE?
+        return ItemStack.EMPTY;
     }
 }

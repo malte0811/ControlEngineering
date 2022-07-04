@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 
 import java.util.*;
@@ -113,6 +113,6 @@ public record SchematicChecker(Schematic schematic, Level level) {
     }
 
     private static Optional<Component> error(String translationKey) {
-        return Optional.of(new TranslatableComponent(translationKey));
+        return Optional.of(Component.translatable(translationKey));
     }
 }

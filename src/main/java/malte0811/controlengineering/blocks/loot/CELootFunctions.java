@@ -3,39 +3,30 @@ package malte0811.controlengineering.blocks.loot;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.base.IHasMaster;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.Serializer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
-@Mod.EventBusSubscriber(modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CELootFunctions {
-    public static LootPoolEntryType bEntityDrop;
-    public static LootPoolEntryType controlPanel;
+    public static final DeferredRegister<LootPoolEntryType> REGISTER = DeferredRegister.create(
+            Registry.LOOT_POOL_ENTRY_TYPE.key(), ControlEngineering.MODID
+    );
 
-    @SubscribeEvent
-    public static void register(RegistryEvent.Register<Block> ev) {
-        bEntityDrop = registerEntry(ExtraBEDropEntry.ID, new ExtraBEDropEntry.Serializer());
-        controlPanel = registerEntry(PanelDropEntry.ID, new PanelDropEntry.Serializer());
-    }
-
-    private static LootPoolEntryType registerEntry(
-            ResourceLocation id,
-            Serializer<? extends LootPoolEntryContainer> serializer
-    ) {
-        return Registry.register(
-                Registry.LOOT_POOL_ENTRY_TYPE, id, new LootPoolEntryType(serializer)
-        );
-    }
+    public static final RegistryObject<LootPoolEntryType> B_ENTITY_DROP = registerEntry(
+            ExtraBEDropEntry.ID, ExtraBEDropEntry.Serializer::new
+    );
+    public static final RegistryObject<LootPoolEntryType> CONTROL_PANEL = registerEntry(
+            PanelDropEntry.ID, PanelDropEntry.Serializer::new
+    );
 
     @Nullable
     public static BlockEntity getMasterBE(LootContext ctx) {
@@ -47,5 +38,11 @@ public class CELootFunctions {
             return hasMaster.getOrComputeMasterBE(ctx.getParamOrNull(LootContextParams.BLOCK_STATE));
         else
             return be;
+    }
+
+    private static RegistryObject<LootPoolEntryType> registerEntry(
+            String id, Supplier<Serializer<? extends LootPoolEntryContainer>> serializer
+    ) {
+        return REGISTER.register(id, () -> new LootPoolEntryType(serializer.get()));
     }
 }

@@ -18,7 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -86,7 +86,7 @@ public class ClientEvents {
         var targetBE = mc.player.level.getBlockEntity(pos);
         if (held.is(IETags.screwdrivers)) {
             if (targetBE instanceof LineAccessBlockEntity access) {
-                lines.add(new TranslatableComponent(BusSignalSelector.BUS_LINE_INDEX_KEY, access.selectedLine));
+                lines.add(Component.translatable(BusSignalSelector.BUS_LINE_INDEX_KEY, access.selectedLine));
             } else if (targetBE instanceof RSRemapperBlockEntity remapper) {
                 remapper.addOverlay(lines, hitResult);
             }
@@ -102,7 +102,7 @@ public class ClientEvents {
         }
         for (int i = 0; i < lines.size(); ++i) {
             mc.font.draw(
-                    event.getMatrixStack(),
+                    event.getPoseStack(),
                     lines.get(i),
                     mc.getWindow().getGuiScaledWidth() / 2f + 8,
                     mc.getWindow().getGuiScaledHeight() / 2f + 8 + i * (mc.font.lineHeight + 2),

@@ -5,13 +5,11 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class OptionalKeyCopySerializer extends ForgeRegistryEntry<RecipeSerializer<?>>
-        implements RecipeSerializer<OptionalKeyCopyRecipe> {
+public class OptionalKeyCopySerializer implements RecipeSerializer<OptionalKeyCopyRecipe> {
     public static final String IS_ID_OPTIONAL = "isIdOptional";
 
     @Nonnull

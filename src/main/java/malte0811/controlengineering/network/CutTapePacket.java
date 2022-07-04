@@ -48,7 +48,7 @@ public class CutTapePacket extends SimplePacket {
         System.arraycopy(data, 0, startData, 0, offset);
         System.arraycopy(data, offset + 1, endData, 0, endData.length);
         player.setItemInHand(hand, ItemStack.EMPTY);
-        player.getItemInHand(otherHand(hand)).hurt(1, ApiUtils.RANDOM, player);
+        player.getItemInHand(otherHand(hand)).hurt(1, ApiUtils.RANDOM_SOURCE, player);
         giveTape(player, startData);
         giveTape(player, endData);
     }

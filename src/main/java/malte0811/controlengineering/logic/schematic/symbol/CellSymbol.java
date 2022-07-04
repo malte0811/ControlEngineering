@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
@@ -61,7 +61,7 @@ public class CellSymbol<Config> extends SchematicSymbol<Config> {
 
     @Override
     public Component getDefaultName() {
-        return new TranslatableComponent(getTranslationKey(type));
+        return Component.translatable(getTranslationKey(type));
     }
 
     public LeafcellType<?, Config> getCellType() {

@@ -3,7 +3,7 @@ package malte0811.controlengineering.gui.misc;
 import malte0811.controlengineering.gui.widget.ColorSelector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
@@ -25,7 +25,7 @@ public class TextProviderWidget extends DataProviderWidget<String> {
         addWidget(text = new EditBox(
                 Minecraft.getInstance().font,
                 x, y, ColorSelector.WIDTH, HEIGHT,
-                TextComponent.EMPTY
+                Component.empty()
         ));
         text.setValue(initialState != null ? initialState : "");
         text.setFilter(isValid);

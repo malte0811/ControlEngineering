@@ -28,6 +28,7 @@ import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.logic.schematic.SchematicChecker;
 import malte0811.controlengineering.logic.schematic.symbol.*;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
+import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -247,13 +248,13 @@ public class LangGenerator extends LanguageProvider {
     @Override
     public void addBlock(@Nonnull Supplier<? extends Block> key, @Nonnull String name) {
         super.addBlock(key, name);
-        localizedItems.add(key.get().getRegistryName());
+        localizedItems.add(Registry.BLOCK.getKey(key.get()));
     }
 
     @Override
     public void addItem(@Nonnull Supplier<? extends Item> key, @Nonnull String name) {
         super.addItem(key, name);
-        localizedItems.add(key.get().getRegistryName());
+        localizedItems.add(Registry.ITEM.getKey(key.get()));
     }
 
     private void assertAllLocalized(Set<ResourceLocation> localized, DeferredRegister<?> register) {

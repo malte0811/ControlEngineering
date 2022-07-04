@@ -99,7 +99,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         super.init();
         if (!container.readOnly) {
             addRenderableWidget(new Button(
-                    TOTAL_BORDER, TOTAL_BORDER, 40, 20, new TranslatableComponent(COMPONENTS_KEY),
+                    TOTAL_BORDER, TOTAL_BORDER, 40, 20, Component.translatable(COMPONENTS_KEY),
                     btn -> minecraft.setScreen(new CellSelectionScreen(s -> {
                         placingSymbol = new PlacingSymbol(s, Vec2d.ZERO);
                         resetAfterPlacingSymbol = false;
@@ -107,15 +107,15 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                     makeTooltip(COMPONENTS_TOOLTIP)
             ));
             addRenderableWidget(new Button(
-                    TOTAL_BORDER, TOTAL_BORDER + 20, 40, 20, new TranslatableComponent(SET_NAME_KEY),
+                    TOTAL_BORDER, TOTAL_BORDER + 20, 40, 20, Component.translatable(SET_NAME_KEY),
                     this::handleSetName, makeTooltip(SET_NAME_TOOLTIP)
             ));
             addRenderableWidget(new Button(
-                    TOTAL_BORDER, TOTAL_BORDER + 40, 40, 20, new TranslatableComponent(CLEAR_ALL_KEY),
+                    TOTAL_BORDER, TOTAL_BORDER + 40, 40, 20, Component.translatable(CLEAR_ALL_KEY),
                     this::handleClearAll, makeTooltip(CLEAR_ALL_TOOLTIP)
             ));
             addRenderableWidget(new SmallCheckbox(
-                    TOTAL_BORDER, TOTAL_BORDER + 60, 20, 20, new TextComponent("DRC"), errorsShown,
+                    TOTAL_BORDER, TOTAL_BORDER + 60, 20, 20, Component.literal("DRC"), errorsShown,
                     newState -> {
                         errorsShown = newState;
                         updateErrors();
@@ -131,7 +131,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
 
     private void handleSetName(Button $) {
         Minecraft.getInstance().setScreen(DataProviderScreen.makeFor(
-                new TranslatableComponent(SET_NAME_MESSAGE),
+                Component.translatable(SET_NAME_MESSAGE),
                 schematic.getName(),
                 MyCodecs.STRING,
                 s -> runAndSendToServer(new SetName(s))
@@ -140,12 +140,12 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
 
     private void handleClearAll(Button $) {
         Minecraft.getInstance().setScreen(new ConfirmScreen(
-                new TranslatableComponent(CLEAR_ALL_MESSAGE), () -> runAndSendToServer(new ClearAll())
+                Component.translatable(CLEAR_ALL_MESSAGE), () -> runAndSendToServer(new ClearAll())
         ));
     }
 
     private Button.OnTooltip makeTooltip(String key) {
-        return ($, transform, x, y) -> this.renderTooltip(transform, new TranslatableComponent(key), x, y);
+        return ($, transform, x, y) -> this.renderTooltip(transform, Component.translatable(key), x, y);
     }
 
     @Override
@@ -203,7 +203,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                 for (SymbolPin pin : getHoveredPins(hovered, schematicMouse)) {
                     var key = pin.type() == SignalType.DIGITAL ? DIGITAL_PIN_KEY : ANALOG_PIN_KEY;
                     tooltip.add(
-                            new TranslatableComponent(key, pin.pinName())
+                            Component.translatable(key, pin.pinName())
                                     .withStyle(ChatFormatting.GRAY)
                                     .getVisualOrderText()
                     );
@@ -242,12 +242,12 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     ) {
         MutableComponent info;
         if (available != null) {
-            info = new TextComponent(Math.min(available.count(), required) + " / " + required);
+            info = Component.literal(Math.min(available.count(), required) + " / " + required);
             if (available.count() < required) {
                 info.withStyle(ChatFormatting.RED);
             }
         } else {
-            info = new TextComponent(Integer.toString(required));
+            info = Component.literal(Integer.toString(required));
         }
         info.append(" x ");
         final Font font = Minecraft.getInstance().font;

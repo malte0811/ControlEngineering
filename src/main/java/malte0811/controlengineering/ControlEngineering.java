@@ -3,9 +3,11 @@ package malte0811.controlengineering;
 import blusunrize.immersiveengineering.api.wires.localhandlers.LocalNetworkHandler;
 import malte0811.controlengineering.blockentity.CEBlockEntities;
 import malte0811.controlengineering.blocks.CEBlocks;
+import malte0811.controlengineering.blocks.loot.CELootFunctions;
 import malte0811.controlengineering.bus.BusWireType;
 import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
+import malte0811.controlengineering.crafting.CERecipeTypes;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.IEItemRefs;
@@ -57,6 +59,8 @@ public class ControlEngineering {
         CEItems.REGISTER.register(modBus);
         CEContainers.REGISTER.register(modBus);
         CERecipeSerializers.REGISTER.register(modBus);
+        CELootFunctions.REGISTER.register(modBus);
+        CERecipeTypes.REGISTER.register(modBus);
         modBus.addListener(this::setup);
         IEItemRefs.init();
     }

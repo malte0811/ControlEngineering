@@ -7,7 +7,7 @@ import malte0811.controlengineering.util.ItemNBTUtil;
 import malte0811.controlengineering.util.TextUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -39,7 +39,7 @@ public class PunchedTapeItem extends Item {
 
     @Override
     public void fillItemCategory(@Nonnull CreativeModeTab group, @Nonnull NonNullList<ItemStack> items) {
-        if (allowdedIn(group)) {
+        if (allowedIn(group)) {
             //TODO remove? replace with more sensible values?
             items.add(setBytes(new ItemStack(this), BitUtils.toBytesWithParity("Test1")));
             items.add(setBytes(new ItemStack(this), BitUtils.toBytesWithParity("Another test")));
@@ -55,7 +55,7 @@ public class PunchedTapeItem extends Item {
     ) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         byte[] data = getBytes(stack);
-        TextUtil.addTooltipLine(tooltip, new TranslatableComponent(PUNCHED_TAPE_BYTES, data.length));
+        TextUtil.addTooltipLine(tooltip, Component.translatable(PUNCHED_TAPE_BYTES, data.length));
     }
 
     @Nonnull

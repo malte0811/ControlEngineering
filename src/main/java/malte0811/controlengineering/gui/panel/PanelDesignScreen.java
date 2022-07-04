@@ -9,7 +9,7 @@ import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
 import javax.annotation.Nonnull;
@@ -51,7 +51,7 @@ public class PanelDesignScreen extends StackedScreen implements MenuAccess<Panel
         final int color = required <= available ? -1 : 0xff_ff0000;
         Minecraft.getInstance().font.draw(
                 matrixStack,
-                new TranslatableComponent(REQUIRED_VS_AVAILABLE_TAPE, required, available),
+                Component.translatable(REQUIRED_VS_AVAILABLE_TAPE, required, available),
                 panelLayoutXMin, panelLayoutYMax + 5,
                 color
         );

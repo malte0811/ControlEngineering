@@ -87,7 +87,7 @@ afterEvaluate {
 }
 
 minecraft {
-    mappings channel: 'parchment', version: version_parchment
+    mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -153,10 +153,6 @@ repositories {
     maven {
         name = "BlameJared"
         url = "https://maven.blamejared.com/"
-    }
-    maven {
-        name = "CurseForge"
-        url = "https://minecraft.curseforge.com/api/maven/"
     }
 }
 

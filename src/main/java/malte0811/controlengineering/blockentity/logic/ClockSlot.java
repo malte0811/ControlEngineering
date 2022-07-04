@@ -4,6 +4,7 @@ import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.logic.clock.ClockGenerator;
 import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.util.ItemUtil;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionResult;
@@ -31,7 +32,7 @@ public class ClockSlot {
                 onSuccess.run();
             } else {
                 ItemStack item = ctx.getItemInHand();
-                ClockGenerator<?> newClock = ClockTypes.REGISTRY.get(item.getItem().getRegistryName());
+                ClockGenerator<?> newClock = ClockTypes.REGISTRY.get(Registry.ITEM.getKey(item.getItem()));
                 if (newClock != null) {
                     clock = newClock.newInstance();
                     item.shrink(1);

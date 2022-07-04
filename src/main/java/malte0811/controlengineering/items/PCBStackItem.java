@@ -9,7 +9,7 @@ import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -40,7 +40,7 @@ public class PCBStackItem extends Item implements ISchematicItem {
     }
 
     public static Component useIn(RegistryObject<? extends ItemLike> block) {
-        return new TranslatableComponent(FOR_USE_IN_KEY, block.get().asItem().getDescription())
+        return Component.translatable(FOR_USE_IN_KEY, block.get().asItem().getDescription())
                 .withStyle(ChatFormatting.GRAY);
     }
 

@@ -5,6 +5,7 @@ import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.datagen.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.items.CEItems;
+import net.minecraft.core.Registry;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
@@ -35,7 +36,7 @@ public class ItemModels extends ItemModelProvider {
     }
 
     public static String name(Supplier<? extends ItemLike> item) {
-        return item.get().asItem().getRegistryName().getPath();
+        return Registry.ITEM.getKey(item.get().asItem()).getPath();
     }
 
     private void addItemModel(String texture, Supplier<? extends ItemLike> item) {

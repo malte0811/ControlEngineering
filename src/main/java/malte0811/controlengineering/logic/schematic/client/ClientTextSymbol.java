@@ -6,7 +6,7 @@ import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.logic.schematic.symbol.TextSymbol;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 import java.util.function.Consumer;
 
@@ -27,7 +27,7 @@ public class ClientTextSymbol extends ClientSymbol<String, TextSymbol> {
     @Override
     public void createInstanceWithUI(Consumer<? super SymbolInstance<String>> onDone, String initialState) {
         Minecraft.getInstance().setScreen(DataProviderScreen.makeFor(
-                TextComponent.EMPTY,
+                Component.empty(),
                 initialState,
                 MyCodecs.STRING,
                 s -> onDone.accept(new SymbolInstance<>(serverSymbol, s))

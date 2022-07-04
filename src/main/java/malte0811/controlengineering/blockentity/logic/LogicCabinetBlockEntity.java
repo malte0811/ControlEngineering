@@ -29,7 +29,7 @@ import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
@@ -321,7 +321,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
             final Player player = ctx.getPlayer();
             if (player instanceof ServerPlayer serverPlayer && bEntity.circuit != null) {
                 NetworkHooks.openGui(serverPlayer, new SimpleMenuProvider(
-                        (id, $, $2) -> CEContainers.LOGIC_DESIGN_VIEW.makeNew(id, bEntity), TextComponent.EMPTY
+                        (id, $, $2) -> CEContainers.LOGIC_DESIGN_VIEW.makeNew(id, bEntity), Component.empty()
                 ));
             }
             return InteractionResult.SUCCESS;

@@ -25,7 +25,7 @@ public class ServerFontRecipe extends BaseRecipe {
     private final Int2FloatMap widths;
 
     public ServerFontRecipe(ResourceLocation id, Int2FloatMap widths) {
-        super(id, CERecipeSerializers.FONT_WIDTH, CERecipeTypes.SERVER_FONT);
+        super(id, CERecipeSerializers.FONT_WIDTH, CERecipeTypes.SERVER_FONT.get());
         this.widths = widths;
     }
 

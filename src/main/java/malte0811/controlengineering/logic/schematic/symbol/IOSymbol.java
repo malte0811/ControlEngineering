@@ -8,7 +8,7 @@ import malte0811.controlengineering.logic.cells.CellCost;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 
@@ -59,14 +59,14 @@ public class IOSymbol extends SchematicSymbol<BusSignalRef> {
 
     @Override
     public Component getDefaultName() {
-        return new TranslatableComponent(!isInput ? OUTPUT_KEY : (isDigitized ? DIGITAL_INPUT_KEY : ANALOG_INPUT_KEY));
+        return Component.translatable(!isInput ? OUTPUT_KEY : (isDigitized ? DIGITAL_INPUT_KEY : ANALOG_INPUT_KEY));
     }
 
     @Override
     public List<MutableComponent> getExtraDescription(BusSignalRef state) {
         final DyeColor color = DyeColor.byId(state.color());
         final String colorName = I18n.get(VANILLA_COLOR_PREFIX + color);
-        return ImmutableList.of(new TranslatableComponent(SIGNAL_KEY, colorName, state.line()));
+        return ImmutableList.of(Component.translatable(SIGNAL_KEY, colorName, state.line()));
     }
 
     @Override

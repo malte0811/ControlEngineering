@@ -5,7 +5,7 @@ import malte0811.controlengineering.util.ItemNBTUtil;
 import malte0811.controlengineering.util.TextUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +26,7 @@ public class EmptyTapeItem extends Item {
 
     @Override
     public void fillItemCategory(@Nonnull CreativeModeTab group, @Nonnull NonNullList<ItemStack> items) {
-        if (allowdedIn(group)) {
+        if (allowedIn(group)) {
             items.add(withLength(16));
             items.add(withLength(256));
         }
@@ -41,7 +41,7 @@ public class EmptyTapeItem extends Item {
     ) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         int length = getLength(stack);
-        TextUtil.addTooltipLine(tooltip, new TranslatableComponent(EMPTY_TAPE_BYTES, length));
+        TextUtil.addTooltipLine(tooltip, Component.translatable(EMPTY_TAPE_BYTES, length));
     }
 
     public static ItemStack withLength(int length) {

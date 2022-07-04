@@ -22,7 +22,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -35,7 +35,7 @@ public class PanelLayout extends AbstractWidget {
     private PlacingComponent placing;
 
     public PanelLayout(int x, int y, int size, List<PlacedComponent> components) {
-        super(x, y, size, size, TextComponent.EMPTY);
+        super(x, y, size, size, Component.empty());
         this.components = components;
     }
 
@@ -120,7 +120,7 @@ public class PanelLayout extends AbstractWidget {
 
     private <T> void configure(Vec2d pos, PanelComponentInstance<T, ?> instance) {
         DataProviderScreen<T> screen = DataProviderScreen.makeFor(
-                TextComponent.EMPTY,
+                Component.empty(),
                 instance.getConfig(),
                 instance.getType().getConfigCodec(),
                 config -> processAndSend(

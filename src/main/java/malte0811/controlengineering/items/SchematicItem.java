@@ -6,8 +6,8 @@ import malte0811.controlengineering.gui.logic.LogicDesignMenu;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
@@ -39,7 +39,7 @@ public class SchematicItem extends Item implements ISchematicItem {
             var schematic = Objects.requireNonNullElseGet(ISchematicItem.getSchematic(stack), Schematic::new);
             player.openMenu(new SimpleMenuProvider(
                     (id, inv, player1) -> new LogicDesignMenu(CEContainers.LOGIC_DESIGN_VIEW.get(), id, schematic),
-                    TextComponent.EMPTY
+                    Component.empty()
             ));
         }
         return InteractionResultHolder.success(stack);
@@ -54,14 +54,14 @@ public class SchematicItem extends Item implements ISchematicItem {
     ) {
         var schematic = ISchematicItem.getSchematic(stack);
         if (Schematic.isEmpty(schematic)) {
-            tooltipComponents.add(new TranslatableComponent(EMPTY_SCHEMATIC).withStyle(ChatFormatting.GRAY));
+            tooltipComponents.add(Component.translatable(EMPTY_SCHEMATIC).withStyle(ChatFormatting.GRAY));
         }
     }
 
     @Nonnull
     @Override
     public Component getName(@Nonnull ItemStack stack) {
-        var name = new TranslatableComponent(this.getDescriptionId(stack));
+        var name = Component.translatable(this.getDescriptionId(stack));
         var schematic = ISchematicItem.getSchematic(stack);
         if (!Schematic.isEmpty(schematic)) {
             name.append(": " + schematic.getName());

@@ -4,7 +4,7 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.crafting.noncrafting.ServerFontRecipe;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
@@ -37,6 +37,6 @@ public class TextSymbol extends SchematicSymbol<String> {
 
     @Override
     public Component getDefaultName() {
-        return new TranslatableComponent(NAME_KEY);
+        return Component.translatable(NAME_KEY);
     }
 }

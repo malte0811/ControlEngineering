@@ -15,7 +15,7 @@ import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbols;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class LeafcellWithStatesElement extends SpecialManualElement {
             List<Component> namesRow = new ArrayList<>();
             for (var pinList : List.of(inputNames, outputNames)) {
                 for (var pin : pinList) {
-                    namesRow.add(new TextComponent(pin.toUpperCase(Locale.ROOT)));
+                    namesRow.add(Component.literal(pin.toUpperCase(Locale.ROOT)));
                 }
             }
             table.add(namesRow);
@@ -53,11 +53,11 @@ public class LeafcellWithStatesElement extends SpecialManualElement {
             for (int i = 0; i < inputNames.size(); ++i) {
                 var value = (packedInputs >> i) & 1;
                 inputs.put(inputNames.get(i), value * BusLine.MAX_VALID_VALUE);
-                line.add(new TextComponent(Integer.toString(value)));
+                line.add(Component.literal(Integer.toString(value)));
             }
             var outputs = cell.getOutputSignals(new CircuitSignals(inputs), null, null);
             for (var output : outputNames) {
-                line.add(new TextComponent(outputs.bool(output) ? "1" : "0"));
+                line.add(Component.literal(outputs.bool(output) ? "1" : "0"));
             }
             table.add(line);
         }

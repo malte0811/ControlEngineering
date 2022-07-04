@@ -4,7 +4,7 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.cells.impl.ConfigSwitch;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class ConfigSwitchSymbol extends CellSymbol<Boolean> {
 
     @Override
     public Component getName(Boolean state) {
-        return getDefaultName().copy().append(": ").append(new TranslatableComponent(state ? ON_KEY : OFF_KEY));
+        return getDefaultName().copy().append(": ").append(Component.translatable(state ? ON_KEY : OFF_KEY));
     }
 
     @Override

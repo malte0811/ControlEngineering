@@ -6,7 +6,7 @@ import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
@@ -50,11 +50,11 @@ public class ConstantSymbol extends SchematicSymbol<Integer> {
 
     @Override
     public Component getDefaultName() {
-        return new TranslatableComponent(NAME);
+        return Component.translatable(NAME);
     }
 
     @Override
     public List<MutableComponent> getExtraDescription(Integer state) {
-        return ImmutableList.of(new TranslatableComponent(INPUT_KEY, state));
+        return ImmutableList.of(Component.translatable(INPUT_KEY, state));
     }
 }

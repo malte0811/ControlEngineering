@@ -1,5 +1,6 @@
 package malte0811.controlengineering.client.model.logic;
 
+import blusunrize.immersiveengineering.api.ApiUtils;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
@@ -16,6 +17,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -32,7 +34,6 @@ import java.util.*;
 import java.util.function.Function;
 
 public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<ModelData, RenderType>> {
-    private static final Random RANDOM = new Random(1234);
     private static final Vec2[] TUBE_OFFSETS;
     private static final float[] BOARD_HEIGHTS = {16.5f / 16f, 21.5f / 16f, 12.5f / 16f, 26.5f / 16f,};
     public static final ModelProperty<ModelData> DATA = new ModelProperty<>();
@@ -44,7 +45,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<ModelData,
                 .flatMap(i -> Arrays.stream(tubeAxisOffsets).mapToObj(i2 -> new int[]{i, i2}))
                 .map(a -> new Vec2(a[0] / 16f, a[1] / 16f))
                 .toArray(Vec2[]::new);
-        Collections.shuffle(Arrays.asList(TUBE_OFFSETS), RANDOM);
+        Collections.shuffle(Arrays.asList(TUBE_OFFSETS), ApiUtils.RANDOM);
     }
 
     private final UnbakedModel board;
@@ -72,7 +73,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<ModelData,
         this.modelTransform = modelTransform;
         particles = board.bake(
                 bakery, spriteGetter, modelTransform, new ResourceLocation(ControlEngineering.MODID, "temp")
-        ).getQuads(null, null, RANDOM, EmptyModelData.INSTANCE).get(0).getSprite();
+        ).getQuads(null, null, ApiUtils.RANDOM_SOURCE, EmptyModelData.INSTANCE).get(0).getSprite();
 
         PoseStack transform = new PoseStack();
         modelTransform.getRotation().blockCenterToCorner().push(transform);
@@ -116,7 +117,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<ModelData,
     @Nullable
     @Override
     public Pair<ModelData, RenderType> getKey(
-            @Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData
+            @Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull IModelData extraData
     ) {
         return Pair.of(
                 Objects.requireNonNullElseGet(extraData.getData(DATA), () -> new ModelData(-1, false)),
@@ -166,7 +167,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<ModelData,
             if (baked == null) {
                 return ImmutableList.of();
             } else {
-                return baked.getQuads(null, null, RANDOM, EmptyModelData.INSTANCE);
+                return baked.getQuads(null, null, ApiUtils.RANDOM_SOURCE, EmptyModelData.INSTANCE);
             }
         }
 

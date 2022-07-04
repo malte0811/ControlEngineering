@@ -166,6 +166,12 @@ public class TransformingVertexBuilder extends DelegatingVertexBuilder<Transform
         return this;
     }
 
+    @Nonnull
+    @Override
+    public VertexFormat getVertexFormat() {
+        return format;
+    }
+
     private record Vec2i(int x, int y) {
     }
 

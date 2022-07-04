@@ -6,7 +6,6 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryObject;
 
 public class IEItemRefs {
@@ -33,8 +32,7 @@ public class IEItemRefs {
         return regObject::get;
     }
 
-    private static <T extends IForgeRegistryEntry<T>>
-    RegistryObject<T> of(String name, IForgeRegistry<T> registry) {
+    private static <T> RegistryObject<T> of(String name, IForgeRegistry<T> registry) {
         return RegistryObject.create(new ResourceLocation(Lib.MODID, name), registry);
     }
 }

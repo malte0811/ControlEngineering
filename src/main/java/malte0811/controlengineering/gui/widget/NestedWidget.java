@@ -5,7 +5,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,7 +19,7 @@ public abstract class NestedWidget extends AbstractWidget implements ContainerEv
     private GuiEventListener listener;
 
     public NestedWidget(int x, int y, int width, int height) {
-        super(x, y, width, height, TextComponent.EMPTY);
+        super(x, y, width, height, Component.empty());
     }
 
     protected <T extends AbstractWidget> T addWidget(T newPart) {

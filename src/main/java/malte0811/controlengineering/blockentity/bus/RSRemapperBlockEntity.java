@@ -14,7 +14,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -202,6 +202,6 @@ public class RSRemapperBlockEntity extends DualConnectorBlockEntity implements I
                 new TargetingInfo(hitResult.getDirection(), (float) hitLoc.x, (float) hitLoc.y, (float) hitLoc.z),
                 Vec3i.ZERO
         );
-        lines.add(new TranslatableComponent(target.index() == COLOR_ID ? COLORED_KEY : GRAY_KEY));
+        lines.add(Component.translatable(target.index() == COLOR_ID ? COLORED_KEY : GRAY_KEY));
     }
 }

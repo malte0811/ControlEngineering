@@ -11,9 +11,10 @@ import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
@@ -71,7 +72,7 @@ public class RSRemapperBlock extends CEBlock<Direction> {
         if (held.is(IETags.screwdrivers) && worldIn.getBlockEntity(pos) instanceof RSRemapperBlockEntity remapper) {
             if (player instanceof ServerPlayer serverPlayer) {
                 NetworkHooks.openGui(serverPlayer, new SimpleMenuProvider(
-                        CEContainers.RS_REMAPPER.argConstructor(remapper), TextComponent.EMPTY
+                        CEContainers.RS_REMAPPER.argConstructor(remapper), Component.empty()
                 ));
             }
             return InteractionResult.SUCCESS;
@@ -81,7 +82,7 @@ public class RSRemapperBlock extends CEBlock<Direction> {
 
     @Override
     public void tick(
-            @Nonnull BlockState state, @Nonnull ServerLevel level, @Nonnull BlockPos pos, @Nonnull Random random
+            @Nonnull BlockState state, @Nonnull ServerLevel level, @Nonnull BlockPos pos, @Nonnull RandomSource random
     ) {
         super.tick(state, level, pos, random);
         if (!(level.getBlockEntity(pos) instanceof RSRemapperBlockEntity remapper))

@@ -32,8 +32,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -261,12 +261,12 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
         final int numBoards = schematic.getNumBoards();
         if (numBoards > LogicCabinetBlockEntity.MAX_NUM_BOARDS) {
             player.displayClientMessage(
-                    new TranslatableComponent(MORE_BOARDS_THAN_MAX, numBoards, LogicCabinetBlockEntity.MAX_NUM_BOARDS),
+                    Component.translatable(MORE_BOARDS_THAN_MAX, numBoards, LogicCabinetBlockEntity.MAX_NUM_BOARDS),
                     true
             );
             return InteractionResult.FAIL;
         } else if (numBoards > heldStack.getCount()) {
-            player.displayClientMessage(new TranslatableComponent(TOO_FEW_BOARDS_HELD, numBoards), true);
+            player.displayClientMessage(Component.translatable(TOO_FEW_BOARDS_HELD, numBoards), true);
             return InteractionResult.FAIL;
         }
         final int numWires = schematic.getWireLength();
@@ -282,9 +282,9 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
                 schematic = null;
                 setChanged();
             } else if (!enoughTubes) {
-                player.displayClientMessage(new TranslatableComponent(TOO_FEW_TUBES, numTubes), true);
+                player.displayClientMessage(Component.translatable(TOO_FEW_TUBES, numTubes), true);
             } else {
-                player.displayClientMessage(new TranslatableComponent(TOO_FEW_WIRES, numWires), true);
+                player.displayClientMessage(Component.translatable(TOO_FEW_WIRES, numWires), true);
             }
         }
         return InteractionResult.SUCCESS;
@@ -347,9 +347,9 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
             }
             final CircuitIngredientDrawer drawer = getDrawer.apply(main);
             if (drawer.getStored().count() == 0) {
-                return new TranslatableComponent(drawer.getEmptyKey());
+                return Component.translatable(drawer.getEmptyKey());
             } else {
-                return new TextComponent(drawer.getStored().count() + " x ")
+                return Component.literal(drawer.getStored().count() + " x ")
                         .append(drawer.getStored().type().getHoverName().getString());
             }
         });
@@ -373,7 +373,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
     @Nonnull
     @Override
     public Component getDisplayName() {
-        return TextComponent.EMPTY;
+        return Component.empty();
     }
 
     @Nullable

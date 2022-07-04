@@ -2,7 +2,7 @@ package malte0811.controlengineering.gui.widget;
 
 import malte0811.controlengineering.gui.misc.IDataProviderWidget;
 import net.minecraft.client.gui.components.AbstractSliderButton;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
 import javax.annotation.Nullable;
@@ -19,7 +19,7 @@ public class BasicSlider extends AbstractSliderButton implements IDataProviderWi
     public BasicSlider(
             int x, int y, int width, int height, int min, int max, String key, int defaultValue
     ) {
-        super(x, y, width, height, new TranslatableComponent(key, min), (defaultValue - min) / (double) (max - min));
+        super(x, y, width, height, Component.translatable(key, min), (defaultValue - min) / (double) (max - min));
         this.min = min;
         this.max = max;
         this.translationKey = key;
@@ -33,7 +33,7 @@ public class BasicSlider extends AbstractSliderButton implements IDataProviderWi
     @Override
     // Update message
     protected void updateMessage() {
-        setMessage(new TranslatableComponent(translationKey, getValue()));
+        setMessage(Component.translatable(translationKey, getValue()));
     }
 
     @Override

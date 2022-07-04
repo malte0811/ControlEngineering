@@ -6,7 +6,7 @@ import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -27,7 +27,7 @@ public class ClientCellSymbol<C> extends ClientSymbol<C, CellSymbol<C>> {
     @Override
     public void createInstanceWithUI(Consumer<? super SymbolInstance<C>> onDone, C initialState) {
         DataProviderScreen<C> screen = DataProviderScreen.makeFor(
-                TextComponent.EMPTY,
+                Component.empty(),
                 initialState, serverSymbol.getStateCodec(),
                 config -> onDone.accept(serverSymbol.newInstance(config))
 

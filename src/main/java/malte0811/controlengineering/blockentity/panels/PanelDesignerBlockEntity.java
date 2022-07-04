@@ -23,7 +23,7 @@ import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
@@ -142,7 +142,7 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
     private InteractionResult openUI(UseOnContext ctx) {
         if (ctx.getPlayer() instanceof ServerPlayer serverPlayer) {
             NetworkHooks.openGui(serverPlayer, new SimpleMenuProvider(
-                    CEContainers.PANEL_DESIGN.argConstructor(this), TextComponent.EMPTY
+                    CEContainers.PANEL_DESIGN.argConstructor(this), Component.empty()
             ));
         }
         return InteractionResult.SUCCESS;

@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
@@ -28,7 +28,7 @@ public class KeyboardButton extends Button {
     ) {
         super(
                 x, y, texture.getWidth(), texture.getHeight(),
-                TextComponent.EMPTY,
+                Component.empty(),
                 btn -> pressedAction.accept(((KeyboardButton) btn).getChar())
         );
         this.texture = texture;
@@ -54,7 +54,7 @@ public class KeyboardButton extends Button {
     @Nonnull
     @Override
     public Component getMessage() {
-        return new TextComponent("" + getChar());
+        return Component.literal("" + getChar());
     }
 
     public char getChar() {

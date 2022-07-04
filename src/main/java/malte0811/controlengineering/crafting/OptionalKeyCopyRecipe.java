@@ -96,6 +96,12 @@ public class OptionalKeyCopyRecipe extends ShapedRecipe {
             if (inv.getItem(i).getItem() instanceof ItemWithKeyID) {
                 CraftingContainer newContainer = new CraftingContainer(
                         new AbstractContainerMenu(null, 0) {
+                            @Nonnull
+                            @Override
+                            public ItemStack quickMoveStack(@Nonnull Player pPlayer, int pIndex) {
+                                return ItemStack.EMPTY;
+                            }
+
                             @Override
                             public boolean stillValid(@Nonnull Player player) {
                                 return false;

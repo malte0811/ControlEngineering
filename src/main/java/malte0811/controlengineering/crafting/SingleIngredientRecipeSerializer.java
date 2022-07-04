@@ -6,15 +6,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class SingleIngredientRecipeSerializer<R extends Recipe<?>> extends ForgeRegistryEntry<RecipeSerializer<?>>
-        implements RecipeSerializer<R> {
+public class SingleIngredientRecipeSerializer<R extends Recipe<?>> implements RecipeSerializer<R> {
     private final String key;
     private final BiFunction<ResourceLocation, Ingredient, R> makeRecipe;
     private final Function<R, Ingredient> getIngredient;

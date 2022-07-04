@@ -2,7 +2,7 @@ package malte0811.controlengineering.gui.remapper;
 
 import malte0811.controlengineering.blockentity.bus.IParallelPortOwner;
 import malte0811.controlengineering.blockentity.bus.ParallelPort;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.MenuType;
@@ -23,7 +23,7 @@ public class ParallelPortMapperMenu extends AbstractRemapperMenu {
         MenuProvider provider(BlockEntity blockEntity, ParallelPort port) {
             return new SimpleMenuProvider(
                     (id, inv, player) -> new ParallelPortMapperMenu(type.get(), id, blockEntity, port),
-                    TextComponent.EMPTY
+                    Component.empty()
             );
         }
 

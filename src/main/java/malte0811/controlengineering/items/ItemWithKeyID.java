@@ -2,7 +2,7 @@ package malte0811.controlengineering.items;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -30,7 +30,7 @@ public class ItemWithKeyID extends Item {
     ) {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
         if (isAdvanced.isAdvanced()) {
-            tooltipComponents.add(new TextComponent(getUUID(stack).toString()).withStyle(ChatFormatting.GRAY));
+            tooltipComponents.add(Component.literal(getUUID(stack).toString()).withStyle(ChatFormatting.GRAY));
         }
     }
 

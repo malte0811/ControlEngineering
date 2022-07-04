@@ -18,6 +18,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.IModelConfiguration;
@@ -58,7 +59,10 @@ public record CacheableCompositeModel(
 
     @Override
     public List<?> getKey(
-            @Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData
+            @Nullable BlockState state,
+            @Nullable Direction side,
+            @Nonnull RandomSource rand,
+            @Nonnull IModelData extraData
     ) {
         if (side != null) {
             return List.of();
@@ -119,9 +123,9 @@ public record CacheableCompositeModel(
             for (var model : subModels) {
                 var baked = model.bake(bakery, model, spriteGetter, modelTransform, modelLocation, true);
                 if (baked instanceof SimpleBakedModel simple) {
-                    quads.addAll(simple.getQuads(null, null, ApiUtils.RANDOM, EmptyModelData.INSTANCE));
+                    quads.addAll(simple.getQuads(null, null, ApiUtils.RANDOM_SOURCE, EmptyModelData.INSTANCE));
                     for (var side : DirectionUtils.VALUES) {
-                        quads.addAll(simple.getQuads(null, side, ApiUtils.RANDOM, EmptyModelData.INSTANCE));
+                        quads.addAll(simple.getQuads(null, side, ApiUtils.RANDOM_SOURCE, EmptyModelData.INSTANCE));
                     }
                 } else if (baked instanceof ICacheKeyProvider<?> cacheable) {
                     bakedSubModels.add(cacheable);
