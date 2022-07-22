@@ -3,11 +3,13 @@ package malte0811.controlengineering.client.model;
 import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.client.ICacheKeyProvider;
 import blusunrize.immersiveengineering.api.utils.DirectionUtils;
-import blusunrize.immersiveengineering.api.utils.client.SinglePropertyModelData;
+import blusunrize.immersiveengineering.api.utils.client.ModelDataUtils;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
+import malte0811.controlengineering.client.render.target.RenderUtils;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -21,13 +23,12 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.IModelConfiguration;
-import net.minecraftforge.client.model.IModelLoader;
-import net.minecraftforge.client.model.ModelLoaderRegistry.ExpandedBlockModelDeserializer;
-import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.ExtendedBlockModelDeserializer;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
-import net.minecraftforge.client.model.geometry.IModelGeometry;
+import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
+import net.minecraftforge.client.model.geometry.IGeometryLoader;
+import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,9 +36,9 @@ import java.util.*;
 import java.util.function.Function;
 
 public record CacheableCompositeModel(
-        List<ICacheKeyProvider<?>> cacheableSubModels, List<BakedQuad> simpleQuads, ModelState modelTransform
+        List<ICacheKeyProvider<?>> cacheableSubModels, List<BakedQuad> simpleQuads, ItemTransforms modelTransform
 ) implements CEBakedModel.Cacheable<List<?>> {
-    private static final ModelProperty<List<IModelData>> SUB_MODEL_DATA = new ModelProperty<>();
+    private static final ModelProperty<List<ModelData>> SUB_MODEL_DATA = new ModelProperty<>();
 
     @Override
     public List<BakedQuad> getQuads(List<?> key) {
@@ -62,17 +63,18 @@ public record CacheableCompositeModel(
             @Nullable BlockState state,
             @Nullable Direction side,
             @Nonnull RandomSource rand,
-            @Nonnull IModelData extraData
+            @Nonnull ModelData extraData,
+            @Nullable RenderType layer
     ) {
         if (side != null) {
             return List.of();
         }
-        var subProperties = extraData.getData(SUB_MODEL_DATA);
+        var subProperties = extraData.get(SUB_MODEL_DATA);
         List<Object> result = new ArrayList<>();
         for (int i = 0; i < cacheableSubModels.size(); i++) {
             ICacheKeyProvider<?> cacheable = cacheableSubModels.get(i);
             result.add(cacheable.getKey(
-                    state, null, rand, subProperties != null ? subProperties.get(i) : EmptyModelData.INSTANCE
+                    state, null, rand, subProperties != null ? subProperties.get(i) : ModelData.EMPTY, layer
             ));
         }
         return result;
@@ -80,21 +82,21 @@ public record CacheableCompositeModel(
 
     @Nonnull
     @Override
-    public IModelData getModelData(
+    public ModelData getModelData(
             @Nonnull BlockAndTintGetter level,
             @Nonnull BlockPos pos,
             @Nonnull BlockState state,
-            @Nonnull IModelData modelData
+            @Nonnull ModelData modelData
     ) {
-        List<IModelData> subData = new ArrayList<>(cacheableSubModels.size());
+        List<ModelData> subData = new ArrayList<>(cacheableSubModels.size());
         for (var cacheable : cacheableSubModels) {
             subData.add(cacheable.getModelData(level, pos, state, modelData));
         }
-        return new SinglePropertyModelData<>(subData, SUB_MODEL_DATA);
+        return ModelDataUtils.single(SUB_MODEL_DATA, subData);
     }
 
     @Override
-    public TextureAtlasSprite getParticleIcon(@Nonnull IModelData data) {
+    public TextureAtlasSprite getParticleIcon(@Nonnull ModelData data) {
         if (!simpleQuads.isEmpty()) {
             return simpleQuads.get(0).getSprite();
         } else {
@@ -102,16 +104,21 @@ public record CacheableCompositeModel(
         }
     }
 
+    @Nonnull
     @Override
-    public BakedModel handlePerspective(ItemTransforms.TransformType type, PoseStack transform) {
-        modelTransform.getPartTransformation(type).push(transform);
+    public BakedModel applyTransform(
+            @Nonnull ItemTransforms.TransformType transformType,
+            @Nonnull PoseStack transform,
+            boolean applyLeftHandTransform
+    ) {
+        modelTransform.getTransform(transformType).apply(applyLeftHandTransform, transform);
         return this;
     }
 
-    private record Geometry(List<BlockModel> subModels) implements IModelGeometry<Geometry> {
+    private record Geometry(List<BlockModel> subModels) implements IUnbakedGeometry<Geometry> {
         @Override
         public BakedModel bake(
-                IModelConfiguration owner,
+                IGeometryBakingContext owner,
                 ModelBakery bakery,
                 Function<Material, TextureAtlasSprite> spriteGetter,
                 ModelState modelTransform,
@@ -123,9 +130,9 @@ public record CacheableCompositeModel(
             for (var model : subModels) {
                 var baked = model.bake(bakery, model, spriteGetter, modelTransform, modelLocation, true);
                 if (baked instanceof SimpleBakedModel simple) {
-                    quads.addAll(simple.getQuads(null, null, ApiUtils.RANDOM_SOURCE, EmptyModelData.INSTANCE));
+                    quads.addAll(simple.getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null));
                     for (var side : DirectionUtils.VALUES) {
-                        quads.addAll(simple.getQuads(null, side, ApiUtils.RANDOM_SOURCE, EmptyModelData.INSTANCE));
+                        quads.addAll(simple.getQuads(null, side, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null));
                     }
                 } else if (baked instanceof ICacheKeyProvider<?> cacheable) {
                     bakedSubModels.add(cacheable);
@@ -133,12 +140,12 @@ public record CacheableCompositeModel(
                     throw new RuntimeException("Unexpected submodel " + baked);
                 }
             }
-            return new CacheableCompositeModel(bakedSubModels, quads, owner.getCombinedTransform());
+            return new CacheableCompositeModel(bakedSubModels, quads, owner.getTransforms());
         }
 
         @Override
-        public Collection<Material> getTextures(
-                IModelConfiguration owner,
+        public Collection<Material> getMaterials(
+                IGeometryBakingContext owner,
                 Function<ResourceLocation, UnbakedModel> modelGetter,
                 Set<Pair<String, String>> missingTextureErrors
         ) {
@@ -150,22 +157,19 @@ public record CacheableCompositeModel(
         }
     }
 
-    public static class Loader implements IModelLoader<Geometry> {
+    public static class Loader implements IGeometryLoader<Geometry> {
         public static final String SUBMOCELS = "submodels";
 
         @Nonnull
         @Override
         public Geometry read(
-                @Nonnull JsonDeserializationContext deserializationContext, @Nonnull JsonObject modelContents
+                @Nonnull JsonObject modelContents, @Nonnull JsonDeserializationContext deserializationContext
         ) {
             var submodels = new ArrayList<BlockModel>();
             for (var submodel : modelContents.getAsJsonArray(SUBMOCELS)) {
-                submodels.add(ExpandedBlockModelDeserializer.INSTANCE.fromJson(submodel, BlockModel.class));
+                submodels.add(ExtendedBlockModelDeserializer.INSTANCE.fromJson(submodel, BlockModel.class));
             }
             return new Geometry(submodels);
         }
-
-        @Override
-        public void onResourceManagerReload(@Nonnull ResourceManager modelpResourceManager) {}
     }
 }

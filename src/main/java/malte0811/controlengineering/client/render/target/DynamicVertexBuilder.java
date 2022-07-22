@@ -76,11 +76,4 @@ public class DynamicVertexBuilder implements VertexConsumer {
     public void unsetDefaultColor() {
         inVertex.add((out, $1, $2) -> out.unsetDefaultColor());
     }
-
-    @Nonnull
-    @Override
-    public VertexFormat getVertexFormat() {
-        // TODO
-        throw new UnsupportedOperationException();
-    }
 }

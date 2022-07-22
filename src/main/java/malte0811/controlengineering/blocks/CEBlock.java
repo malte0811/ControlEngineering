@@ -160,7 +160,7 @@ public abstract class CEBlock<PlacementData> extends Block implements EntityBloc
             if (container instanceof CustomDataContainerProvider customProvider) {
                 customProvider.open(serverPlayer);
             } else {
-                NetworkHooks.openGui(serverPlayer, container, pos);
+                NetworkHooks.openScreen(serverPlayer, container, pos);
             }
         }
     }

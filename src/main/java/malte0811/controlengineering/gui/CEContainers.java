@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 
 public class CEContainers {
     public static final DeferredRegister<MenuType<?>> REGISTER = DeferredRegister.create(
-            ForgeRegistries.CONTAINERS, ControlEngineering.MODID
+            ForgeRegistries.MENU_TYPES, ControlEngineering.MODID
     );
 
     public static final ArgMenuType<KeypunchMenu, KeypunchBlockEntity> KEYPUNCH = new ArgMenuType<>(

@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.IItemRenderProperties;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
@@ -25,13 +25,13 @@ public class ControlPanelItem extends CEBlockItem<PanelOrientation> implements I
     }
 
     @Override
-    public void initializeClient(@Nonnull Consumer<IItemRenderProperties> consumer) {
+    public void initializeClient(@Nonnull Consumer<IClientItemExtensions> consumer) {
         super.initializeClient(consumer);
-        consumer.accept(new IItemRenderProperties() {
+        consumer.accept(new IClientItemExtensions() {
             private final BlockEntityWithoutLevelRenderer itemRender = new PanelItemRenderer(is -> getPanelData(is));
 
             @Override
-            public BlockEntityWithoutLevelRenderer getItemStackRenderer() {
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 return itemRender;
             }
         });

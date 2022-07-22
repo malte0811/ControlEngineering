@@ -42,6 +42,6 @@ public class CustomDataContainerProvider implements MenuProvider {
     }
 
     public void open(ServerPlayer player) {
-        NetworkHooks.openGui(player, this, extraData());
+        NetworkHooks.openScreen(player, this, extraData());
     }
 }

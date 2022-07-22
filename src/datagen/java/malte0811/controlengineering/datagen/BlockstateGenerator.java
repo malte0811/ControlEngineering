@@ -31,7 +31,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraftforge.client.model.generators.*;
 import net.minecraftforge.client.model.generators.VariantBlockStateBuilder.PartialBlockstate;
 import net.minecraftforge.client.model.generators.loaders.CompositeModelBuilder;
-import net.minecraftforge.client.model.generators.loaders.OBJLoaderBuilder;
+import net.minecraftforge.client.model.generators.loaders.ObjModelBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -136,8 +136,8 @@ public class BlockstateGenerator extends BlockStateProvider {
         BlockModelBuilder staticModel = obj("sequencer.obj", mcLoc("block/block"));
         BlockModelBuilder combinedModel = models().getBuilder("combined_sequencer")
                 .customLoader(CompositeModelBuilder::begin)
-                .submodel("static", staticModel)
-                .submodel("dynamic", models().getBuilder("dynamic_sequencer")
+                .child("static", staticModel)
+                .child("dynamic", models().getBuilder("dynamic_sequencer")
                         .customLoader(SpecialModelBuilder.forLoader(ModelLoaders.SEQUENCER_SWITCH))
                         .end())
                 .end();
@@ -153,8 +153,8 @@ public class BlockstateGenerator extends BlockStateProvider {
         BlockModelBuilder staticModel = obj("keypunch.obj", modLoc("transform/block_half_size"));
         BlockModelBuilder combinedModel = models().getBuilder("combined_keypunch")
                 .customLoader(CompositeModelBuilder::begin)
-                .submodel("static", staticModel)
-                .submodel("dynamic", models().getBuilder("dynamic_keypunch")
+                .child("static", staticModel)
+                .child("dynamic", models().getBuilder("dynamic_keypunch")
                         .customLoader(SpecialModelBuilder.forLoader(ModelLoaders.KEYPUNCH_SWITCH))
                         .end()
                 )
@@ -211,10 +211,10 @@ public class BlockstateGenerator extends BlockStateProvider {
     private <T extends ModelBuilder<T>>
     T obj(String objFile, ResourceLocation parent, ModelProvider<T> modelProvider) {
         return modelProvider.withExistingParent(objFile.replace('.', '_'), parent)
-                .customLoader(OBJLoaderBuilder::begin)
+                .customLoader(ObjModelBuilder::begin)
                 .modelLocation(addModelsPrefix(modLoc(objFile)))
                 .flipV(true)
-                .detectCullableFaces(false)
+                .automaticCulling(false)
                 .end();
     }
 

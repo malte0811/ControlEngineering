@@ -1,6 +1,7 @@
 package malte0811.controlengineering.client.model;
 
 import blusunrize.immersiveengineering.api.client.ICacheKeyProvider;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -8,13 +9,11 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 
 public interface CEBakedModel extends BakedModel {
     @Nonnull
@@ -22,22 +21,26 @@ public interface CEBakedModel extends BakedModel {
     default List<BakedQuad> getQuads(
             @Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand
     ) {
-        return getQuads(state, side, rand, EmptyModelData.INSTANCE);
+        return getQuads(state, side, rand, ModelData.EMPTY, null);
     }
 
     @Nonnull
     @Override
     List<BakedQuad> getQuads(
-            @Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull IModelData extraData
+            @Nullable BlockState state,
+            @Nullable Direction side,
+            @Nonnull RandomSource rand,
+            @Nonnull ModelData extraData,
+            @Nullable RenderType layer
     );
 
     @Override
-    TextureAtlasSprite getParticleIcon(@Nonnull IModelData data);
+    TextureAtlasSprite getParticleIcon(@Nonnull ModelData data);
 
     @Nonnull
     @Override
     default TextureAtlasSprite getParticleIcon() {
-        return getParticleIcon(EmptyModelData.INSTANCE);
+        return getParticleIcon(ModelData.EMPTY);
     }
 
     @Override
@@ -73,7 +76,11 @@ public interface CEBakedModel extends BakedModel {
         @Nullable
         @Override
         Key getKey(
-                @Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull IModelData beData
+                @Nullable BlockState state,
+                @Nullable Direction side,
+                @Nonnull RandomSource rand,
+                @Nonnull ModelData beData,
+                @Nullable RenderType layer
         );
 
         @Nonnull
@@ -88,12 +95,13 @@ public interface CEBakedModel extends BakedModel {
                 @Nullable BlockState state,
                 @Nullable Direction side,
                 @Nonnull RandomSource rand,
-                @Nonnull IModelData extraData
+                @Nonnull ModelData extraData,
+                @Nullable RenderType layer
         ) {
-            return ICacheKeyProvider.super.getQuads(state, side, rand, extraData);
+            return ICacheKeyProvider.super.getQuads(state, side, rand, extraData, layer);
         }
 
         @Override
-        TextureAtlasSprite getParticleIcon(@Nonnull IModelData data);
+        TextureAtlasSprite getParticleIcon(@Nonnull ModelData data);
     }
 }

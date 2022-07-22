@@ -151,7 +151,7 @@ public class ParallelPort {
     public Function<UseOnContext, InteractionResult> makeRemapInteraction(BlockEntity be) {
         return ctx -> {
             if (ctx.getPlayer() instanceof ServerPlayer player) {
-                NetworkHooks.openGui(player, CEContainers.PORT_REMAPPER.provider(be, this));
+                NetworkHooks.openScreen(player, CEContainers.PORT_REMAPPER.provider(be, this));
             }
             return InteractionResult.SUCCESS;
         };

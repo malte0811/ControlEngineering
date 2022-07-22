@@ -71,7 +71,7 @@ public class RSRemapperBlock extends CEBlock<Direction> {
         var held = player.getItemInHand(handIn);
         if (held.is(IETags.screwdrivers) && worldIn.getBlockEntity(pos) instanceof RSRemapperBlockEntity remapper) {
             if (player instanceof ServerPlayer serverPlayer) {
-                NetworkHooks.openGui(serverPlayer, new SimpleMenuProvider(
+                NetworkHooks.openScreen(serverPlayer, new SimpleMenuProvider(
                         CEContainers.RS_REMAPPER.argConstructor(remapper), Component.empty()
                 ));
             }

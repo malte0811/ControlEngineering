@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 
 public class CEBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> REGISTER = DeferredRegister.create(
-            ForgeRegistries.BLOCK_ENTITIES, ControlEngineering.MODID
+            ForgeRegistries.BLOCK_ENTITY_TYPES, ControlEngineering.MODID
     );
 
     public static RegistryObject<BlockEntityType<BusRelayBlockEntity>> BUS_RELAY = REGISTER.register(

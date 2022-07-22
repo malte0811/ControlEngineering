@@ -18,7 +18,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -27,8 +26,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.DrawSelectionEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -41,7 +40,7 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = ControlEngineering.MODID, value = Dist.CLIENT, bus = Bus.FORGE)
 public class ClientEvents {
     @SubscribeEvent
-    public static void renderSelectionShape(DrawSelectionEvent.HighlightBlock ev) {
+    public static void renderSelectionShape(RenderHighlightEvent.Block ev) {
         BlockHitResult target = ev.getTarget();
         BlockPos highlighted = target.getBlockPos();
         List<? extends SelectionShapes> selectedStack = getSelectedStack();
@@ -72,7 +71,7 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
-    public static void onRenderOverlayPost(RenderGameOverlayEvent.Post event) {
+    public static void onRenderOverlayPost(RenderGuiOverlayEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) {
             return;

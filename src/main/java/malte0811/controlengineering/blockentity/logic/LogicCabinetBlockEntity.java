@@ -1,7 +1,7 @@
 package malte0811.controlengineering.blockentity.logic;
 
 import blusunrize.immersiveengineering.api.IETags;
-import blusunrize.immersiveengineering.api.utils.client.SinglePropertyModelData;
+import blusunrize.immersiveengineering.api.utils.client.ModelDataUtils;
 import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.base.IExtraDropBE;
@@ -43,7 +43,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -140,9 +140,9 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
 
     @Nonnull
     @Override
-    public IModelData getModelData() {
-        return new SinglePropertyModelData<>(
-                new DynamicLogicModel.ModelData(numRenderTubes, clock.isPresent()), DynamicLogicModel.DATA
+    public ModelData getModelData() {
+        return ModelDataUtils.single(
+                DynamicLogicModel.DATA, new DynamicLogicModel.LogicModelData(numRenderTubes, clock.isPresent())
         );
     }
 
@@ -320,7 +320,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
                 shape, ctx -> {
             final Player player = ctx.getPlayer();
             if (player instanceof ServerPlayer serverPlayer && bEntity.circuit != null) {
-                NetworkHooks.openGui(serverPlayer, new SimpleMenuProvider(
+                NetworkHooks.openScreen(serverPlayer, new SimpleMenuProvider(
                         (id, $, $2) -> CEContainers.LOGIC_DESIGN_VIEW.makeNew(id, bEntity), Component.empty()
                 ));
             }

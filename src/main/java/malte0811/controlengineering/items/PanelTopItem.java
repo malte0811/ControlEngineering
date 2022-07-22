@@ -13,7 +13,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.IItemRenderProperties;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -26,10 +26,10 @@ public class PanelTopItem extends Item {
     }
 
     @Override
-    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
-        consumer.accept(new IItemRenderProperties() {
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(new IClientItemExtensions() {
             @Override
-            public BlockEntityWithoutLevelRenderer getItemStackRenderer() {
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 return new PanelItemRenderer(is -> new PanelData(getComponentsOn(is), FLAT_PANEL));
             }
         });

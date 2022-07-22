@@ -1,6 +1,6 @@
 package malte0811.controlengineering.client.model.tape;
 
-import blusunrize.immersiveengineering.api.utils.client.SinglePropertyModelData;
+import blusunrize.immersiveengineering.api.utils.client.ModelDataUtils;
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
@@ -9,6 +9,8 @@ import malte0811.controlengineering.client.model.CEBakedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
 import malte0811.controlengineering.util.Bool2ObjectMap;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -22,15 +24,13 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.model.ForgeModelBakery;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Supplier;
 
 //TODO deduplicate with KeypunchSwitchModel and DynamicLogicModel
@@ -47,9 +47,9 @@ public class SequencerSwitchModel implements CEBakedModel {
     private final Supplier<BakedQuad> clockQuad;
 
     public SequencerSwitchModel(ItemTransforms transforms, ModelState modelTransform) {
-        texture = Suppliers.memoize(() -> ForgeModelBakery.defaultTextureGetter().apply(
-                new Material(InventoryMenu.BLOCK_ATLAS, TEXTURE_LOC)
-        ));
+        texture = Suppliers.memoize(
+                () -> Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(TEXTURE_LOC)
+        );
         PoseStack transform = new PoseStack();
         modelTransform.getRotation().blockCenterToCorner().push(transform);
         this.compactSwitch = makeSwitchQuads(4.5, transform);
@@ -95,16 +95,17 @@ public class SequencerSwitchModel implements CEBakedModel {
 
     @Nonnull
     @Override
-    public TextureAtlasSprite getParticleIcon(@Nonnull IModelData data) {
+    public TextureAtlasSprite getParticleIcon(@Nonnull ModelData data) {
         return texture.get();
     }
 
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(
-            @Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull IModelData extraData
+            @Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull ModelData extraData,
+            @Nullable RenderType layer
     ) {
-        var data = extraData.getData(DATA);
+        var data = extraData.get(DATA);
         if (data == null) {
             return List.of();
         }
@@ -119,15 +120,15 @@ public class SequencerSwitchModel implements CEBakedModel {
 
     @Nonnull
     @Override
-    public IModelData getModelData(
+    public ModelData getModelData(
             @Nonnull BlockAndTintGetter world,
             @Nonnull BlockPos pos,
             @Nonnull BlockState state,
-            @Nonnull IModelData tileData
+            @Nonnull ModelData tileData
     ) {
         if (world.getBlockEntity(pos) instanceof SequencerBlockEntity sequencer)
-            return new SinglePropertyModelData<>(
-                    new Data(sequencer.isCompact(), sequencer.isAutoreset(), sequencer.hasClock()), DATA
+            return ModelDataUtils.single(
+                    DATA, new Data(sequencer.isCompact(), sequencer.isAutoreset(), sequencer.hasClock())
             );
         return CEBakedModel.super.getModelData(world, pos, state, tileData);
     }

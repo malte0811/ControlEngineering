@@ -86,7 +86,7 @@ public abstract class CEContainerMenu<PacketType> extends AbstractContainerMenu 
         if (!(ev.getContainer() instanceof CEContainerMenu<?> ceContainer)) {
             return;
         }
-        if (!(ev.getPlayer() instanceof ServerPlayer serverPlayer)) {
+        if (!(ev.getEntity() instanceof ServerPlayer serverPlayer)) {
             return;
         }
         ceContainer.addListener(serverPlayer);
@@ -97,7 +97,7 @@ public abstract class CEContainerMenu<PacketType> extends AbstractContainerMenu 
         if (!(ev.getContainer() instanceof CEContainerMenu<?> ceContainer)) {
             return;
         }
-        if (!(ev.getPlayer() instanceof ServerPlayer serverPlayer)) {
+        if (!(ev.getEntity() instanceof ServerPlayer serverPlayer)) {
             return;
         }
         ceContainer.listeners.remove(serverPlayer);

@@ -141,7 +141,7 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
 
     private InteractionResult openUI(UseOnContext ctx) {
         if (ctx.getPlayer() instanceof ServerPlayer serverPlayer) {
-            NetworkHooks.openGui(serverPlayer, new SimpleMenuProvider(
+            NetworkHooks.openScreen(serverPlayer, new SimpleMenuProvider(
                     CEContainers.PANEL_DESIGN.argConstructor(this), Component.empty()
             ));
         }

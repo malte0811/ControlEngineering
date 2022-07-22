@@ -10,7 +10,6 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.model.CEBakedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
-import malte0811.controlengineering.client.model.logic.DynamicLogicModel.ModelData;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -21,11 +20,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.model.CompositeModelState;
 import net.minecraftforge.client.model.SimpleModelState;
-import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nonnull;
@@ -33,10 +29,10 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
-public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<ModelData, RenderType>> {
+public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLogicModel.LogicModelData, RenderType>> {
     private static final Vec2[] TUBE_OFFSETS;
     private static final float[] BOARD_HEIGHTS = {16.5f / 16f, 21.5f / 16f, 12.5f / 16f, 26.5f / 16f,};
-    public static final ModelProperty<ModelData> DATA = new ModelProperty<>();
+    public static final ModelProperty<LogicModelData> DATA = new ModelProperty<>();
 
     static {
         int[] tubeAxisOffsets = {0, 3, 7, 10};
@@ -73,7 +69,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<ModelData,
         this.modelTransform = modelTransform;
         particles = board.bake(
                 bakery, spriteGetter, modelTransform, new ResourceLocation(ControlEngineering.MODID, "temp")
-        ).getQuads(null, null, ApiUtils.RANDOM_SOURCE, EmptyModelData.INSTANCE).get(0).getSprite();
+        ).getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null).get(0).getSprite();
 
         PoseStack transform = new PoseStack();
         modelTransform.getRotation().blockCenterToCorner().push(transform);
@@ -91,7 +87,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<ModelData,
     }
 
     @Override
-    public List<BakedQuad> getQuads(Pair<ModelData, RenderType> dataPair) {
+    public List<BakedQuad> getQuads(Pair<LogicModelData, RenderType> dataPair) {
         var data = dataPair.getFirst();
         while (this.knownModels.size() <= data.numTubes) {
             this.knownModels.add(null);
@@ -116,18 +112,22 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<ModelData,
 
     @Nullable
     @Override
-    public Pair<ModelData, RenderType> getKey(
-            @Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull IModelData extraData
+    public Pair<LogicModelData, RenderType> getKey(
+            @Nullable BlockState state,
+            @Nullable Direction side,
+            @Nonnull RandomSource rand,
+            @Nonnull ModelData extraData,
+            @Nullable RenderType layer
     ) {
         return Pair.of(
-                Objects.requireNonNullElseGet(extraData.getData(DATA), () -> new ModelData(-1, false)),
-                MinecraftForgeClient.getRenderType()
+                Objects.requireNonNullElseGet(extraData.get(DATA), () -> new LogicModelData(-1, false)),
+                layer
         );
     }
 
     @Nonnull
     @Override
-    public TextureAtlasSprite getParticleIcon(@Nonnull IModelData data) {
+    public TextureAtlasSprite getParticleIcon(@Nonnull ModelData data) {
         return particles;
     }
 
@@ -157,17 +157,15 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<ModelData,
         }
 
         private List<BakedQuad> translated(UnbakedModel model, Vector3f offset) {
-            ModelState offsetTransform = new SimpleModelState(new Transformation(
+            ModelState offsetTransform = new SimpleModelState(modelTransform.getRotation().compose(new Transformation(
                     offset, null, null, null
-            ));
+            )));
             ResourceLocation dummy = new ResourceLocation(ControlEngineering.MODID, "dynamic");
-            BakedModel baked = model.bake(
-                    bakery, spriteGetter, new CompositeModelState(modelTransform, offsetTransform), dummy
-            );
+            BakedModel baked = model.bake(bakery, spriteGetter, offsetTransform, dummy);
             if (baked == null) {
                 return ImmutableList.of();
             } else {
-                return baked.getQuads(null, null, ApiUtils.RANDOM_SOURCE, EmptyModelData.INSTANCE);
+                return baked.getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null);
             }
         }
 
@@ -182,5 +180,5 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<ModelData,
         }
     }
 
-    public record ModelData(int numTubes, boolean hasClock) {}
+    public record LogicModelData(int numTubes, boolean hasClock) {}
 }

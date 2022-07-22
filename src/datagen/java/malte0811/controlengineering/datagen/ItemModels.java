@@ -8,7 +8,7 @@ import malte0811.controlengineering.items.CEItems;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.data.event.GatherDataEvent;
 
 import java.util.function.Supplier;
 
