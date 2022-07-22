@@ -1,18 +1,18 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "c": {
+      "item": "immersiveengineering:wirecoil_redstone"
+    },
+    "p": {
+      "tag": "forge:plates/aluminum"
+    }
+  },
   "pattern": [
     "pcp",
     "cpc",
     "pcp"
   ],
-  "key": {
-    "p": {
-      "tag": "forge:plates/aluminum"
-    },
-    "c": {
-      "item": "immersiveengineering:wirecoil_redstone"
-    }
-  },
   "result": {
     "item": "controlengineering:bus_wire_coil"
   }

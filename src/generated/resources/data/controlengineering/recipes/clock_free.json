@@ -1,21 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "p": {
+      "tag": "forge:plates/aluminum"
+    },
+    "r": {
+      "tag": "forge:dusts/redstone"
+    },
+    "t": {
+      "item": "minecraft:redstone_torch"
+    }
+  },
   "pattern": [
     "tpt",
     "rrr",
     "tpt"
   ],
-  "key": {
-    "t": {
-      "item": "minecraft:redstone_torch"
-    },
-    "r": {
-      "tag": "forge:dusts/redstone"
-    },
-    "p": {
-      "tag": "forge:plates/aluminum"
-    }
-  },
   "result": {
     "item": "controlengineering:clock_free"
   }

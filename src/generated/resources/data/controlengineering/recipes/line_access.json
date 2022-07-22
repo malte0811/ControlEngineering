@@ -1,26 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "r b",
-    "RcB"
-  ],
   "key": {
-    "r": {
-      "item": "immersiveengineering:connector_redstone"
+    "B": {
+      "item": "controlengineering:bus_wire_coil"
     },
     "R": {
       "item": "immersiveengineering:wirecoil_redstone"
     },
-    "c": {
-      "item": "minecraft:comparator"
-    },
     "b": {
       "item": "controlengineering:bus_relay"
     },
-    "B": {
-      "item": "controlengineering:bus_wire_coil"
+    "c": {
+      "item": "minecraft:comparator"
+    },
+    "r": {
+      "item": "immersiveengineering:connector_redstone"
     }
   },
+  "pattern": [
+    "r b",
+    "RcB"
+  ],
   "result": {
     "item": "controlengineering:line_access"
   }

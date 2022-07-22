@@ -3,9 +3,10 @@
     "facing=down": {
       "model": "controlengineering:block/bus_relay_obj"
     },
-    "facing=up": {
+    "facing=east": {
       "model": "controlengineering:block/bus_relay_obj",
-      "x": 180
+      "x": 90,
+      "y": 270
     },
     "facing=north": {
       "model": "controlengineering:block/bus_relay_obj",
@@ -16,15 +17,14 @@
       "model": "controlengineering:block/bus_relay_obj",
       "x": 90
     },
+    "facing=up": {
+      "model": "controlengineering:block/bus_relay_obj",
+      "x": 180
+    },
     "facing=west": {
       "model": "controlengineering:block/bus_relay_obj",
       "x": 90,
       "y": 90
-    },
-    "facing=east": {
-      "model": "controlengineering:block/bus_relay_obj",
-      "x": 90,
-      "y": 270
     }
   }
 }

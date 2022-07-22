@@ -1,9 +1,6 @@
 {
   "type": "controlengineering:key_copy",
-  "pattern": [
-    "haa",
-    " aa"
-  ],
+  "isIdOptional": false,
   "key": {
     "a": {
       "tag": "forge:plates/aluminum"
@@ -12,8 +9,11 @@
       "tag": "forge:treated_wood"
     }
   },
+  "pattern": [
+    "haa",
+    " aa"
+  ],
   "result": {
     "item": "controlengineering:key"
-  },
-  "isIdOptional": false
+  }
 }

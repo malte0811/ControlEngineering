@@ -1,24 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "sds",
-    "wSw",
-    "www"
-  ],
   "key": {
-    "s": {
-      "tag": "forge:rods/steel"
+    "S": {
+      "item": "controlengineering:sequencer"
     },
     "d": {
       "item": "immersiveengineering:drillhead_iron"
     },
-    "S": {
-      "item": "controlengineering:sequencer"
+    "s": {
+      "tag": "forge:rods/steel"
     },
     "w": {
       "tag": "forge:treated_wood"
     }
   },
+  "pattern": [
+    "sds",
+    "wSw",
+    "www"
+  ],
   "result": {
     "item": "controlengineering:panel_cnc"
   }

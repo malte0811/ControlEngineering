@@ -1,5 +1,9 @@
 {
   "variants": {
+    "facing=east": {
+      "model": "controlengineering:block/line_access_obj",
+      "y": 270
+    },
     "facing=north": {
       "model": "controlengineering:block/line_access_obj",
       "y": 180
@@ -10,10 +14,6 @@
     "facing=west": {
       "model": "controlengineering:block/line_access_obj",
       "y": 90
-    },
-    "facing=east": {
-      "model": "controlengineering:block/line_access_obj",
-      "y": 270
     }
   }
 }

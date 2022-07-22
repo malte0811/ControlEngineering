@@ -1,15 +1,19 @@
 {
-  "loader": "forge:composite",
-  "parts": {
-    "static": {
-      "parent": "minecraft:block/block",
-      "loader": "forge:obj",
-      "model": "controlengineering:models/sequencer.obj",
-      "detectCullableFaces": false,
-      "flip-v": true
-    },
+  "children": {
     "dynamic": {
       "loader": "controlengineering:sequencer_switch"
+    },
+    "static": {
+      "parent": "minecraft:block/block",
+      "automatic_culling": false,
+      "flip_v": true,
+      "loader": "forge:obj",
+      "model": "controlengineering:models/sequencer.obj"
     }
-  }
+  },
+  "item_render_order": [
+    "static",
+    "dynamic"
+  ],
+  "loader": "forge:composite"
 }

@@ -1,15 +1,16 @@
 {
   "variants": {
-    "facing=north,offset=origin": {
-      "model": "controlengineering:block/panel_designer_obj",
-      "y": 180
+    "facing=east,offset=back": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 270
     },
-    "facing=south,offset=origin": {
-      "model": "controlengineering:block/panel_designer_obj"
+    "facing=east,offset=back_top": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 270
     },
-    "facing=west,offset=origin": {
-      "model": "controlengineering:block/panel_designer_obj",
-      "y": 90
+    "facing=east,offset=front_top": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 270
     },
     "facing=east,offset=origin": {
       "model": "controlengineering:block/panel_designer_obj",
@@ -19,46 +20,45 @@
       "model": "immersiveengineering:block/ie_empty",
       "y": 180
     },
-    "facing=south,offset=back": {
-      "model": "immersiveengineering:block/ie_empty"
-    },
-    "facing=west,offset=back": {
+    "facing=north,offset=back_top": {
       "model": "immersiveengineering:block/ie_empty",
-      "y": 90
-    },
-    "facing=east,offset=back": {
-      "model": "immersiveengineering:block/ie_empty",
-      "y": 270
+      "y": 180
     },
     "facing=north,offset=front_top": {
       "model": "immersiveengineering:block/ie_empty",
       "y": 180
     },
-    "facing=south,offset=front_top": {
-      "model": "immersiveengineering:block/ie_empty"
-    },
-    "facing=west,offset=front_top": {
-      "model": "immersiveengineering:block/ie_empty",
-      "y": 90
-    },
-    "facing=east,offset=front_top": {
-      "model": "immersiveengineering:block/ie_empty",
-      "y": 270
-    },
-    "facing=north,offset=back_top": {
-      "model": "immersiveengineering:block/ie_empty",
+    "facing=north,offset=origin": {
+      "model": "controlengineering:block/panel_designer_obj",
       "y": 180
+    },
+    "facing=south,offset=back": {
+      "model": "immersiveengineering:block/ie_empty"
     },
     "facing=south,offset=back_top": {
       "model": "immersiveengineering:block/ie_empty"
+    },
+    "facing=south,offset=front_top": {
+      "model": "immersiveengineering:block/ie_empty"
+    },
+    "facing=south,offset=origin": {
+      "model": "controlengineering:block/panel_designer_obj"
+    },
+    "facing=west,offset=back": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 90
     },
     "facing=west,offset=back_top": {
       "model": "immersiveengineering:block/ie_empty",
       "y": 90
     },
-    "facing=east,offset=back_top": {
+    "facing=west,offset=front_top": {
       "model": "immersiveengineering:block/ie_empty",
-      "y": 270
+      "y": 90
+    },
+    "facing=west,offset=origin": {
+      "model": "controlengineering:block/panel_designer_obj",
+      "y": 90
     }
   }
 }

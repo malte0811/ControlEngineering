@@ -1,7 +1,7 @@
 {
   "parent": "controlengineering:transform/block_half_size",
+  "automatic_culling": false,
+  "flip_v": true,
   "loader": "forge:obj",
-  "model": "controlengineering:models/panel_designer.obj",
-  "detectCullableFaces": false,
-  "flip-v": true
+  "model": "controlengineering:models/panel_designer.obj"
 }

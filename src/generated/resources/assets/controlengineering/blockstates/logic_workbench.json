@@ -1,32 +1,26 @@
 {
   "variants": {
-    "facing=north,offset=origin": {
-      "model": "controlengineering:block/logic_workbench",
-      "y": 180
+    "facing=east,offset=back_left": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 270
     },
-    "facing=south,offset=origin": {
-      "model": "controlengineering:block/logic_workbench"
+    "facing=east,offset=back_right": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 270
     },
-    "facing=west,offset=origin": {
-      "model": "controlengineering:block/logic_workbench",
-      "y": 90
+    "facing=east,offset=front_right": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 270
     },
     "facing=east,offset=origin": {
       "model": "controlengineering:block/logic_workbench",
       "y": 270
     },
-    "facing=north,offset=front_right": {
+    "facing=east,offset=top_left": {
       "model": "immersiveengineering:block/ie_empty",
-      "y": 180
+      "y": 270
     },
-    "facing=south,offset=front_right": {
-      "model": "immersiveengineering:block/ie_empty"
-    },
-    "facing=west,offset=front_right": {
-      "model": "immersiveengineering:block/ie_empty",
-      "y": 90
-    },
-    "facing=east,offset=front_right": {
+    "facing=east,offset=top_right": {
       "model": "immersiveengineering:block/ie_empty",
       "y": 270
     },
@@ -34,61 +28,67 @@
       "model": "immersiveengineering:block/ie_empty",
       "y": 180
     },
+    "facing=north,offset=back_right": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 180
+    },
+    "facing=north,offset=front_right": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 180
+    },
+    "facing=north,offset=origin": {
+      "model": "controlengineering:block/logic_workbench",
+      "y": 180
+    },
+    "facing=north,offset=top_left": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 180
+    },
+    "facing=north,offset=top_right": {
+      "model": "immersiveengineering:block/ie_empty",
+      "y": 180
+    },
     "facing=south,offset=back_left": {
+      "model": "immersiveengineering:block/ie_empty"
+    },
+    "facing=south,offset=back_right": {
+      "model": "immersiveengineering:block/ie_empty"
+    },
+    "facing=south,offset=front_right": {
+      "model": "immersiveengineering:block/ie_empty"
+    },
+    "facing=south,offset=origin": {
+      "model": "controlengineering:block/logic_workbench"
+    },
+    "facing=south,offset=top_left": {
+      "model": "immersiveengineering:block/ie_empty"
+    },
+    "facing=south,offset=top_right": {
       "model": "immersiveengineering:block/ie_empty"
     },
     "facing=west,offset=back_left": {
       "model": "immersiveengineering:block/ie_empty",
       "y": 90
     },
-    "facing=east,offset=back_left": {
-      "model": "immersiveengineering:block/ie_empty",
-      "y": 270
-    },
-    "facing=north,offset=back_right": {
-      "model": "immersiveengineering:block/ie_empty",
-      "y": 180
-    },
-    "facing=south,offset=back_right": {
-      "model": "immersiveengineering:block/ie_empty"
-    },
     "facing=west,offset=back_right": {
       "model": "immersiveengineering:block/ie_empty",
       "y": 90
     },
-    "facing=east,offset=back_right": {
+    "facing=west,offset=front_right": {
       "model": "immersiveengineering:block/ie_empty",
-      "y": 270
+      "y": 90
     },
-    "facing=north,offset=top_left": {
-      "model": "immersiveengineering:block/ie_empty",
-      "y": 180
-    },
-    "facing=south,offset=top_left": {
-      "model": "immersiveengineering:block/ie_empty"
+    "facing=west,offset=origin": {
+      "model": "controlengineering:block/logic_workbench",
+      "y": 90
     },
     "facing=west,offset=top_left": {
       "model": "immersiveengineering:block/ie_empty",
       "y": 90
     },
-    "facing=east,offset=top_left": {
-      "model": "immersiveengineering:block/ie_empty",
-      "y": 270
-    },
-    "facing=north,offset=top_right": {
-      "model": "immersiveengineering:block/ie_empty",
-      "y": 180
-    },
-    "facing=south,offset=top_right": {
-      "model": "immersiveengineering:block/ie_empty"
-    },
     "facing=west,offset=top_right": {
       "model": "immersiveengineering:block/ie_empty",
       "y": 90
-    },
-    "facing=east,offset=top_right": {
-      "model": "immersiveengineering:block/ie_empty",
-      "y": 270
     }
   }
 }

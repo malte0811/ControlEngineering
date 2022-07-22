@@ -1,16 +1,11 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "www",
-    "cbr",
-    "www"
-  ],
   "key": {
-    "c": {
-      "item": "controlengineering:bus_relay"
-    },
     "b": {
       "item": "immersiveengineering:circuit_board"
+    },
+    "c": {
+      "item": "controlengineering:bus_relay"
     },
     "r": {
       "item": "minecraft:redstone"
@@ -19,6 +14,11 @@
       "tag": "forge:treated_wood"
     }
   },
+  "pattern": [
+    "www",
+    "cbr",
+    "www"
+  ],
   "result": {
     "item": "controlengineering:sequencer"
   }

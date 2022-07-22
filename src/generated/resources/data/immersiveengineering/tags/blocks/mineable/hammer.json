@@ -1,5 +1,4 @@
 {
-  "replace": false,
   "values": [
     "controlengineering:bus_interface",
     "controlengineering:bus_relay",

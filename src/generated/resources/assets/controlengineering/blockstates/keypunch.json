@@ -1,5 +1,9 @@
 {
   "variants": {
+    "facing=east,upper=false": {
+      "model": "controlengineering:block/combined_keypunch",
+      "y": 270
+    },
     "facing=north,upper=false": {
       "model": "controlengineering:block/combined_keypunch",
       "y": 180
@@ -10,10 +14,6 @@
     "facing=west,upper=false": {
       "model": "controlengineering:block/combined_keypunch",
       "y": 90
-    },
-    "facing=east,upper=false": {
-      "model": "controlengineering:block/combined_keypunch",
-      "y": 270
     },
     "upper=true": {
       "model": "immersiveengineering:block/ie_empty"

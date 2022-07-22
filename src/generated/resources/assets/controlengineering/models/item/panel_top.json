@@ -1,4 +1,4 @@
 {
-  "parent": "controlengineering:transform/panel_base",
+  "parent": "controlengineering:transform/panel_top_base",
   "loader": "controlengineering:panel"
 }

@@ -1,27 +1,27 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "B": {
+      "item": "minecraft:iron_bars"
+    },
+    "C": {
+      "item": "minecraft:chain"
+    },
+    "b": {
+      "item": "minecraft:stone_button"
+    },
+    "c": {
+      "item": "controlengineering:bus_relay"
+    },
+    "p": {
+      "tag": "forge:plates/steel"
+    }
+  },
   "pattern": [
     "BCb",
     "pcp",
     "ppp"
   ],
-  "key": {
-    "c": {
-      "item": "controlengineering:bus_relay"
-    },
-    "b": {
-      "item": "minecraft:stone_button"
-    },
-    "p": {
-      "tag": "forge:plates/steel"
-    },
-    "C": {
-      "item": "minecraft:chain"
-    },
-    "B": {
-      "item": "minecraft:iron_bars"
-    }
-  },
   "result": {
     "item": "controlengineering:keypunch"
   }

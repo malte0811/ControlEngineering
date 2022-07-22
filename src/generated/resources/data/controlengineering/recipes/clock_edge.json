@@ -1,24 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "ppp",
-    "dPr",
-    "ppp"
-  ],
   "key": {
-    "p": {
-      "tag": "forge:plates/aluminum"
-    },
-    "r": {
-      "item": "minecraft:repeater"
-    },
     "P": {
       "item": "minecraft:piston"
     },
     "d": {
       "tag": "forge:dusts/redstone"
+    },
+    "p": {
+      "tag": "forge:plates/aluminum"
+    },
+    "r": {
+      "item": "minecraft:repeater"
     }
   },
+  "pattern": [
+    "ppp",
+    "dPr",
+    "ppp"
+  ],
   "result": {
     "item": "controlengineering:clock_edge"
   }

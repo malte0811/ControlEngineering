@@ -1,26 +1,26 @@
 {
   "type": "controlengineering:key_copy",
-  "pattern": [
-    " cw",
-    "haa",
-    " cw"
-  ],
+  "isIdOptional": true,
   "key": {
     "a": {
       "tag": "forge:plates/aluminum"
+    },
+    "c": {
+      "item": "immersiveengineering:component_iron"
     },
     "h": {
       "tag": "forge:treated_wood"
     },
     "w": {
       "tag": "forge:wires/copper"
-    },
-    "c": {
-      "item": "immersiveengineering:component_iron"
     }
   },
+  "pattern": [
+    " cw",
+    "haa",
+    " cw"
+  ],
   "result": {
     "item": "controlengineering:lock"
-  },
-  "isIdOptional": true
+  }
 }

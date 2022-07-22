@@ -1,24 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "aaa",
-    "bLr",
-    "aaa"
-  ],
   "key": {
+    "L": {
+      "item": "immersiveengineering:logic_unit"
+    },
     "a": {
       "tag": "forge:sheetmetals/aluminum"
     },
     "b": {
       "item": "controlengineering:bus_relay"
     },
-    "L": {
-      "item": "immersiveengineering:logic_unit"
-    },
     "r": {
       "item": "immersiveengineering:radiator"
     }
   },
+  "pattern": [
+    "aaa",
+    "bLr",
+    "aaa"
+  ],
   "result": {
     "item": "controlengineering:logic_cabinet"
   }

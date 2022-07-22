@@ -1,6 +1,6 @@
 {
-  "loader": "immersiveengineering:mirror",
   "inner_model": {
     "parent": "controlengineering:block/combined_logic_cabinet"
-  }
+  },
+  "loader": "immersiveengineering:mirror"
 }
