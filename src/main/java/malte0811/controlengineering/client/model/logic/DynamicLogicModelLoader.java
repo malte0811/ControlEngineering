@@ -27,14 +27,15 @@ public class DynamicLogicModelLoader implements IGeometryLoader<DynamicLogicMode
     public DynamicLogicGeometry read(
             @Nonnull JsonObject modelContents, @Nonnull JsonDeserializationContext deserializationContext
     ) {
-        var bakery = Minecraft.getInstance().getModelManager().getModelBakery();
-        UnbakedModel boardModel = bakery.getModel(new ResourceLocation(modelContents.get(BOARD_KEY).getAsString()));
-        UnbakedModel tubeModel = bakery.getModel(new ResourceLocation(modelContents.get(TUBE_KEY).getAsString()));
-        return new DynamicLogicGeometry(boardModel, tubeModel);
+        return new DynamicLogicGeometry(getResLoc(modelContents, BOARD_KEY), getResLoc(modelContents, TUBE_KEY));
+    }
+
+    private static ResourceLocation getResLoc(JsonObject obj, String key) {
+        return new ResourceLocation(obj.get(key).getAsString());
     }
 
     public record DynamicLogicGeometry(
-            UnbakedModel board, UnbakedModel tube
+            ResourceLocation board, ResourceLocation tube
     ) implements IUnbakedGeometry<DynamicLogicGeometry> {
 
         @Override
@@ -56,8 +57,8 @@ public class DynamicLogicModelLoader implements IGeometryLoader<DynamicLogicMode
                 Set<Pair<String, String>> missingTextureErrors
         ) {
             Set<Material> textures = new HashSet<>();
-            textures.addAll(board.getMaterials(modelGetter, missingTextureErrors));
-            textures.addAll(tube.getMaterials(modelGetter, missingTextureErrors));
+            textures.addAll(modelGetter.apply(board).getMaterials(modelGetter, missingTextureErrors));
+            textures.addAll(modelGetter.apply(tube).getMaterials(modelGetter, missingTextureErrors));
             return textures;
         }
     }

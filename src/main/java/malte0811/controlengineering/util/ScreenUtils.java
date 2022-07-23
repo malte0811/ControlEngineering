@@ -17,7 +17,8 @@ public class ScreenUtils {
         float red = (float) (color >> 16 & 255) / 255.0F;
         float green = (float) (color >> 8 & 255) / 255.0F;
         float blue = (float) (color & 255) / 255.0F;
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferbuilder = tesselator.getBuilder();
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
@@ -27,7 +28,7 @@ public class ScreenUtils {
         bufferbuilder.vertex(matrix, (float) maxX, (float) maxY, 0.0F).color(red, green, blue, alpha).endVertex();
         bufferbuilder.vertex(matrix, (float) maxX, (float) minY, 0.0F).color(red, green, blue, alpha).endVertex();
         bufferbuilder.vertex(matrix, (float) minX, (float) minY, 0.0F).color(red, green, blue, alpha).endVertex();
-        BufferUploader.draw(bufferbuilder.end());
+        tesselator.end();
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }

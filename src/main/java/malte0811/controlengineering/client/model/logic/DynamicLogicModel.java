@@ -10,19 +10,23 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.model.CEBakedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
+import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.ChunkRenderTypeSet;
 import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,19 +59,19 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLog
     private final List<FixedTubeModel> knownModels = new ArrayList<>();
 
     public DynamicLogicModel(
-            UnbakedModel board,
-            UnbakedModel tube,
+            ResourceLocation board,
+            ResourceLocation tube,
             ModelBakery bakery,
             Function<Material, TextureAtlasSprite> spriteGetter,
             ModelState modelTransform
     ) {
 
-        this.board = board;
-        this.tube = tube;
+        this.board = bakery.getModel(board);
+        this.tube = bakery.getModel(tube);
         this.bakery = bakery;
         this.spriteGetter = spriteGetter;
         this.modelTransform = modelTransform;
-        particles = board.bake(
+        particles = this.board.bake(
                 bakery, spriteGetter, modelTransform, new ResourceLocation(ControlEngineering.MODID, "temp")
         ).getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null).get(0).getSprite();
 
@@ -125,6 +129,20 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLog
         );
     }
 
+    private static final ChunkRenderTypeSet RENDER_TYPES = ChunkRenderTypeSet.of(
+            RenderType.solid(), RenderType.translucent()
+    );
+
+    @Nonnull
+    @Override
+    public ChunkRenderTypeSet getRenderTypes(
+            @NotNull BlockState state,
+            @NotNull RandomSource rand,
+            @NotNull ModelData data
+    ) {
+        return RENDER_TYPES;
+    }
+
     @Nonnull
     @Override
     public TextureAtlasSprite getParticleIcon(@Nonnull ModelData data) {
@@ -145,7 +163,32 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLog
                     if (numAdded >= numTubes) {
                         break;
                     }
-                    translucent.addAll(translated(tube, new Vector3f(-xz.x, y, -xz.y)));
+                    for (var tubeQuad : translated(tube, new Vector3f(-xz.x, y, -xz.y))) {
+                        var sumOfCorners = Vec2d.ZERO;
+                        final var quadData = tubeQuad.getVertices();
+                        for (int i = 0; i < 4; ++i) {
+                            sumOfCorners = sumOfCorners.add(
+                                    Float.intBitsToFloat(quadData[i * (quadData.length / 4) + 4]),
+                                    Float.intBitsToFloat(quadData[i * (quadData.length / 4) + 5])
+                            );
+                        }
+                        final var centerUVAbs = sumOfCorners.scale(1 / 4.);
+                        final var quadSprite = tubeQuad.getSprite();
+                        final var centerUV = new Vec2d(
+                                Mth.inverseLerp(centerUVAbs.x(), quadSprite.getU0(), quadSprite.getU1()),
+                                Mth.inverseLerp(centerUVAbs.y(), quadSprite.getV0(), quadSprite.getV1())
+                        );
+                        final int centerRGBA = quadSprite.getPixelRGBA(
+                                0,
+                                (int)(centerUV.x() * quadSprite.getWidth()),
+                                (int) (centerUV.y() * quadSprite.getHeight())
+                        );
+                        if (centerRGBA >>> 24 == 255) {
+                            solid.add(tubeQuad);
+                        } else {
+                            translucent.add(tubeQuad);
+                        }
+                    }
                     ++numAdded;
                 }
                 if (numAdded >= numTubes) {

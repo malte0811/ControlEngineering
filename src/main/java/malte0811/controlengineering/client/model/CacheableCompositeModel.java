@@ -22,13 +22,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.ChunkRenderTypeSet;
 import net.minecraftforge.client.model.ExtendedBlockModelDeserializer;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,7 +39,10 @@ import java.util.*;
 import java.util.function.Function;
 
 public record CacheableCompositeModel(
-        List<ICacheKeyProvider<?>> cacheableSubModels, List<BakedQuad> simpleQuads, ItemTransforms modelTransform
+        List<ICacheKeyProvider<?>> cacheableSubModels,
+        List<BakedQuad> simpleQuads,
+        ChunkRenderTypeSet simpleRenderTypes,
+        ItemTransforms modelTransform
 ) implements CEBakedModel.Cacheable<List<?>> {
     private static final ModelProperty<List<ModelData>> SUB_MODEL_DATA = new ModelProperty<>();
 
@@ -115,6 +121,19 @@ public record CacheableCompositeModel(
         return this;
     }
 
+    @Nonnull
+    @Override
+    public ChunkRenderTypeSet getRenderTypes(
+            @NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data
+    ) {
+        List<ChunkRenderTypeSet> children = new ArrayList<>();
+        for (var child : cacheableSubModels) {
+            children.add(child.getRenderTypes(state, rand, data));
+        }
+        children.add(simpleRenderTypes);
+        return ChunkRenderTypeSet.union(children);
+    }
+
     private record Geometry(List<BlockModel> subModels) implements IUnbakedGeometry<Geometry> {
         @Override
         public BakedModel bake(
@@ -126,6 +145,7 @@ public record CacheableCompositeModel(
                 ResourceLocation modelLocation
         ) {
             var quads = new ArrayList<BakedQuad>();
+            var renderTypes = new ArrayList<ChunkRenderTypeSet>();
             var bakedSubModels = new ArrayList<ICacheKeyProvider<?>>();
             for (var model : subModels) {
                 var baked = model.bake(bakery, model, spriteGetter, modelTransform, modelLocation, true);
@@ -134,13 +154,18 @@ public record CacheableCompositeModel(
                     for (var side : DirectionUtils.VALUES) {
                         quads.addAll(simple.getQuads(null, side, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null));
                     }
+                    renderTypes.add(simple.getRenderTypes(
+                            Blocks.AIR.defaultBlockState(), ApiUtils.RANDOM_SOURCE, ModelData.EMPTY
+                    ));
                 } else if (baked instanceof ICacheKeyProvider<?> cacheable) {
                     bakedSubModels.add(cacheable);
                 } else {
                     throw new RuntimeException("Unexpected submodel " + baked);
                 }
             }
-            return new CacheableCompositeModel(bakedSubModels, quads, owner.getTransforms());
+            return new CacheableCompositeModel(
+                    bakedSubModels, quads, ChunkRenderTypeSet.union(renderTypes), owner.getTransforms()
+            );
         }
 
         @Override

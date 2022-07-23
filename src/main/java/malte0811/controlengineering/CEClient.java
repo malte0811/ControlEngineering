@@ -1,7 +1,6 @@
 package malte0811.controlengineering;
 
 import malte0811.controlengineering.blockentity.CEBlockEntities;
-import malte0811.controlengineering.blocks.BlockRenderLayers;
 import malte0811.controlengineering.client.manual.CEManual;
 import malte0811.controlengineering.client.render.panel.PanelCNCRenderer;
 import malte0811.controlengineering.client.render.panel.PanelRenderer;
@@ -21,7 +20,6 @@ public class CEClient {
     public static void clientInit(FMLClientSetupEvent ev) {
         ComponentRenderers.init();
         ContainerScreenManager.registerScreens();
-        BlockRenderLayers.init();
         CEManual.initManual();
         ClientSymbols.init();
     }

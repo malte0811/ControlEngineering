@@ -2,6 +2,7 @@ package malte0811.controlengineering.datagen;
 
 import blusunrize.immersiveengineering.api.Lib;
 import blusunrize.immersiveengineering.data.models.MirroredModelBuilder;
+import blusunrize.immersiveengineering.data.models.ModelProviderUtils;
 import blusunrize.immersiveengineering.data.models.NongeneratedModels;
 import blusunrize.immersiveengineering.data.models.SpecialModelBuilder;
 import com.google.common.collect.ImmutableMap;
@@ -23,6 +24,7 @@ import malte0811.controlengineering.datagen.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.datagen.modelbuilder.LogicCabinetBuilder;
 import malte0811.controlengineering.datagen.modelbuilder.LogicWorkbenchBuilder;
 import malte0811.controlengineering.util.DirectionUtils;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
@@ -52,8 +54,8 @@ public class BlockstateGenerator extends BlockStateProvider {
     @Override
     protected void registerStatesAndModels() {
         createRotatedBlock(CEBlocks.BUS_RELAY, obj("bus_relay.obj"), BusRelayBlock.FACING, 90);
-        createRotatedBlock(CEBlocks.LINE_ACCESS, obj("line_access.obj"), LineAccessBlock.FACING, 0);
-        createRotatedBlock(CEBlocks.RS_REMAPPER, obj("rs_remapper.obj"), LineAccessBlock.FACING, 0);
+        createRotatedBlock(CEBlocks.LINE_ACCESS, cutoutObj("line_access.obj"), LineAccessBlock.FACING, 0);
+        createRotatedBlock(CEBlocks.RS_REMAPPER, cutoutObj("rs_remapper.obj"), LineAccessBlock.FACING, 0);
         createRotatedBlock(CEBlocks.BUS_INTERFACE, obj("bus_interface.obj"), BusInterfaceBlock.FACING, 90);
 
         panelModel();
@@ -64,7 +66,8 @@ public class BlockstateGenerator extends BlockStateProvider {
         logicWorkbench();
         rotatedWithOffset(
                 CEBlocks.PANEL_DESIGNER,
-                obj("panel_designer.obj", modLoc("transform/block_half_size")),
+                obj("panel_designer.obj", modLoc("transform/block_half_size"))
+                        .renderType(ModelProviderUtils.getName(RenderType.cutout())),
                 PanelDesignerBlock.Offset.ORIGIN, PanelDesignerBlock.OFFSET,
                 PanelDesignerBlock.FACING
         );
@@ -102,7 +105,8 @@ public class BlockstateGenerator extends BlockStateProvider {
     }
 
     private void logicCabinetModel() {
-        var chassis = obj("logic_cabinet/chassis.obj", nongenerated);
+        var chassis = obj("logic_cabinet/chassis.obj", nongenerated)
+                .renderType(ModelProviderUtils.getName(RenderType.solid()));
         var logicModel = models().withExistingParent("combined_logic_cabinet", modLoc("transform/block_half_size"))
                 .customLoader(CacheableCompositeBuilder::begin)
                 .submodel(chassis)
@@ -110,7 +114,8 @@ public class BlockstateGenerator extends BlockStateProvider {
                         .customLoader(LogicCabinetBuilder::begin)
                         .board(obj("logic_cabinet/board.obj"))
                         .tube(obj("logic_cabinet/tube.obj"))
-                        .end())
+                        .end()
+                )
                 .end();
         horizontalRotated(
                 CEBlocks.LOGIC_CABINET,
@@ -150,13 +155,16 @@ public class BlockstateGenerator extends BlockStateProvider {
     }
 
     private void keypunchModel() {
-        BlockModelBuilder staticModel = obj("keypunch.obj", modLoc("transform/block_half_size"));
+        final var renderType = ModelProviderUtils.getName(RenderType.cutout());
+        BlockModelBuilder staticModel = obj("keypunch.obj", modLoc("transform/block_half_size"))
+                .renderType(renderType);
         BlockModelBuilder combinedModel = models().getBuilder("combined_keypunch")
                 .customLoader(CompositeModelBuilder::begin)
                 .child("static", staticModel)
                 .child("dynamic", models().getBuilder("dynamic_keypunch")
                         .customLoader(SpecialModelBuilder.forLoader(ModelLoaders.KEYPUNCH_SWITCH))
                         .end()
+                        .renderType(renderType)
                 )
                 .end();
         horizontalRotated(
@@ -194,6 +202,10 @@ public class BlockstateGenerator extends BlockStateProvider {
         }
         itemModels().getBuilder(ItemModels.name(b))
                 .parent(mainModel);
+    }
+
+    private BlockModelBuilder cutoutObj(String objFile) {
+        return obj(objFile).renderType(ModelProviderUtils.getName(RenderType.cutout()));
     }
 
     private BlockModelBuilder obj(String objFile) {
