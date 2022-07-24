@@ -138,6 +138,7 @@ public class LangGenerator extends LanguageProvider {
         add(PanelComponents.VARIAC, "Variac");
         add(PanelComponents.SLIDER_VERT, "Slider");
         add(PanelComponents.SLIDER_HOR, "Slider");
+        add(PanelComponents.KEY_SWITCH, "Key Switch");
     }
 
     private void addGuiStrings() {
