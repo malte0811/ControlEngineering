@@ -3,5 +3,6 @@
   "automatic_culling": false,
   "flip_v": true,
   "loader": "forge:obj",
-  "model": "controlengineering:models/rs_remapper.obj"
+  "model": "controlengineering:models/rs_remapper.obj",
+  "render_type": "minecraft:cutout"
 }

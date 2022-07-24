@@ -3,5 +3,6 @@
   "automatic_culling": false,
   "flip_v": true,
   "loader": "forge:obj",
-  "model": "controlengineering:models/line_access.obj"
+  "model": "controlengineering:models/line_access.obj",
+  "render_type": "minecraft:cutout"
 }

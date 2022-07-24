@@ -38,6 +38,7 @@
   "controlengineering.component.button": "Button",
   "controlengineering.component.covered_switch": "Covered Switch",
   "controlengineering.component.indicator": "Indicator",
+  "controlengineering.component.key_switch": "Key Switch",
   "controlengineering.component.label": "Label",
   "controlengineering.component.panel_meter": "Panel Meter",
   "controlengineering.component.slider_hor": "Slider",

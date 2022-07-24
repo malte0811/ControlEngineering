@@ -1,14 +1,16 @@
 {
   "children": {
     "dynamic": {
-      "loader": "controlengineering:keypunch_switch"
+      "loader": "controlengineering:keypunch_switch",
+      "render_type": "minecraft:cutout"
     },
     "static": {
       "parent": "controlengineering:transform/block_half_size",
       "automatic_culling": false,
       "flip_v": true,
       "loader": "forge:obj",
-      "model": "controlengineering:models/keypunch.obj"
+      "model": "controlengineering:models/keypunch.obj",
+      "render_type": "minecraft:cutout"
     }
   },
   "item_render_order": [

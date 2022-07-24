@@ -7,7 +7,8 @@
       "automatic_culling": false,
       "flip_v": true,
       "loader": "forge:obj",
-      "model": "controlengineering:models/logic_cabinet/chassis.obj"
+      "model": "controlengineering:models/logic_cabinet/chassis.obj",
+      "render_type": "minecraft:solid"
     },
     {
       "board": "controlengineering:logic_cabinet/board_obj",

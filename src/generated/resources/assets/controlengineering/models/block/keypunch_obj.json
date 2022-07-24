@@ -3,5 +3,6 @@
   "automatic_culling": false,
   "flip_v": true,
   "loader": "forge:obj",
-  "model": "controlengineering:models/keypunch.obj"
+  "model": "controlengineering:models/keypunch.obj",
+  "render_type": "minecraft:cutout"
 }

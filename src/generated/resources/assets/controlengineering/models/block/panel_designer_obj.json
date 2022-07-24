@@ -3,5 +3,6 @@
   "automatic_culling": false,
   "flip_v": true,
   "loader": "forge:obj",
-  "model": "controlengineering:models/panel_designer.obj"
+  "model": "controlengineering:models/panel_designer.obj",
+  "render_type": "minecraft:cutout"
 }
