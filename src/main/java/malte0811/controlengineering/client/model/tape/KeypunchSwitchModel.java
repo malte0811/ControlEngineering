@@ -60,7 +60,7 @@ public class KeypunchSwitchModel implements CEBakedModel {
         ).setSprite(texture.get())
                 .setUCoords(44 / 64f, 44 / 64f, 47 / 64f, 47 / 64f)
                 .setVCoords(16 / 32f, 15 / 32f, 15 / 32f, 16 / 32f)
-                .writeTo(new BakedQuadVertexBuilder(texture.get(), transform, quads).dontInterpolateUV());
+                .writeTo(BakedQuadVertexBuilder.makeNonInterpolating(texture.get(), transform, quads));
         return quads.get(0);
     }
 

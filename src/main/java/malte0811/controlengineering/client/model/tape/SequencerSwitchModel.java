@@ -64,7 +64,7 @@ public class SequencerSwitchModel implements CEBakedModel {
             ).setSprite(texture.get())
                     .setUCoords(24 / 64f, 28 / 64f, 28 / 64f, 24 / 64f)
                     .setVCoords(2 / 32f, 2 / 32f, 6 / 32f, 6 / 32f)
-                    .writeTo(new BakedQuadVertexBuilder(texture.get(), transform, quads).dontInterpolateUV());
+                    .writeTo(BakedQuadVertexBuilder.makeNonInterpolating(texture.get(), transform, quads));
             return quads.get(0);
         });
     }
@@ -89,7 +89,7 @@ public class SequencerSwitchModel implements CEBakedModel {
         ).setSprite(texture.get())
                 .setUCoords(uMin / 64f, (uMin + 1) / 64f, (uMin + 1) / 64f, uMin / 64f)
                 .setVCoords(2 / 32f, 2 / 32f, 4 / 32f, 4 / 32f)
-                .writeTo(new BakedQuadVertexBuilder(texture.get(), transform, quads).dontInterpolateUV());
+                .writeTo(BakedQuadVertexBuilder.makeNonInterpolating(texture.get(), transform, quads));
         return quads.get(0);
     }
 

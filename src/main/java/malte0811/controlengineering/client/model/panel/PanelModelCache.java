@@ -117,7 +117,8 @@ public class PanelModelCache {
             List<BakedQuad> quads = new ArrayList<>(mixed.getStaticQuads());
             PoseStack transform = new PoseStack();
             TextureAtlasSprite panelTexture = PanelRenderer.PANEL_TEXTURE.get();
-            renderPanel(cacheKey.getTransform(), new BakedQuadVertexBuilder(panelTexture, transform, quads));
+            renderPanel(cacheKey.getTransform(), BakedQuadVertexBuilder.makeInterpolating(panelTexture, transform, quads));
+            // TODO render type
             return new SimpleBakedModel(
                     quads, EMPTY_LISTS_ON_ALL_SIDES, true, true, true,
                     panelTexture, Transforms.PANEL_TRANSFORMS, ItemOverrides.EMPTY

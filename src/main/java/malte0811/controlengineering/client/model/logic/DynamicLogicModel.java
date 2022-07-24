@@ -86,7 +86,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLog
         ).setSprite(particles)
                 .setUCoords(15 / 16f, 15 / 16f, 1, 1)
                 .setVCoords(0, 1 / 16f, 1 / 16f, 0)
-                .writeTo(new BakedQuadVertexBuilder(particles, transform, quads).dontInterpolateUV());
+                .writeTo(BakedQuadVertexBuilder.makeNonInterpolating(particles, transform, quads));
         this.clockQuad = quads.get(0);
     }
 

@@ -41,7 +41,7 @@ public class MixedModel implements MultiBufferSource {
     @Override
     public VertexConsumer getBuffer(@Nonnull RenderType type) {
         if (staticTypes.contains(type)) {
-            return new BakedQuadVertexBuilder(staticSprite, new PoseStack(), staticQuads);
+            return BakedQuadVertexBuilder.makeInterpolating(staticSprite, new PoseStack(), staticQuads);
         } else {
             return new DynamicVertexBuilder(dynamicQuads.computeIfAbsent(type, $ -> new ArrayList<>()));
         }
