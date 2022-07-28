@@ -144,6 +144,10 @@ public class Schematic {
         return null;
     }
 
+    public List<PlacedSymbol> getSymbolsInRectangle(RectangleI rectangle) {
+        return symbols.stream().filter(symbol -> symbol.isInRectangle(rectangle)).toList();
+    }
+
     private void resetConnectedPins() {
         nets.forEach(SchematicNet::resetCachedPins);
     }
