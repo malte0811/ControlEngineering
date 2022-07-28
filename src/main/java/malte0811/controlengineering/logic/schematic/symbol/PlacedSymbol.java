@@ -27,6 +27,10 @@ public record PlacedSymbol(Vec2i position, SymbolInstance<?> symbol) {
         return getShape(level).containsClosed(p);
     }
 
+    public boolean isInRectangle(RectangleI rectangle) {
+        return rectangle.containsClosed(position);
+    }
+
     public Vec2i getMaxPoint(Level level) {
         return position.add(new Vec2i(symbol().getXSize(level), symbol().getYSize(level)));
     }

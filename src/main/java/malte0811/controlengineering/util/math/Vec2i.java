@@ -42,7 +42,15 @@ public record Vec2i(int x, int y) implements Comparable<Vec2i> {
         return COMPARATOR.compare(this, o);
     }
 
+    public Vec2i subtract(Vec2i rhs) {
+        return new Vec2i(x() - rhs.x(), y() - rhs.y());
+    }
     public Vec2d subtract(Vec2d rhs) {
         return new Vec2d(x() - rhs.x(), y() - rhs.y());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Vec2i [x=%d, y=%d]", x, y);
     }
 }

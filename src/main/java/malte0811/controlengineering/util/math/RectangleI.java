@@ -53,4 +53,8 @@ public record RectangleI(int minX, int minY, int maxX, int maxY) {
     public RectangleI offset(Vec2i by) {
         return new RectangleI(minX() + by.x(), minY() + by.y(), maxX() + by.x(), maxY + by.y());
     }
+
+    public Vec2i min() {
+        return new Vec2i(minX, minY);
+    }
 }

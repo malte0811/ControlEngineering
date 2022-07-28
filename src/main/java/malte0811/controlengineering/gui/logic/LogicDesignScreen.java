@@ -2,6 +2,7 @@ package malte0811.controlengineering.gui.logic;
 
 import blusunrize.lib.manual.ManualUtils;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Streams;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
@@ -40,6 +41,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.system.CallbackI;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -47,9 +49,97 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 import static net.minecraft.util.Mth.ceil;
 import static net.minecraft.util.Mth.floor;
+
+record CopiedRegion(List<PlacedSymbol> symbols, List<WireSegment> segments) {
+}
+
+class SelectionManager {
+
+    private double startX = -1;
+    private double startY = -1;
+    private double endX = -1;
+    private double endY = -1;
+
+    private Schematic schematic;
+
+    public SelectionManager(Schematic schematic) {
+        this.schematic = schematic;
+    }
+
+    public void renderSelection(PoseStack matrixStack) {
+        if (startX == -1 || startY == -1 || endX == -1 || endY == -1) {
+            return;
+        }
+
+        matrixStack.pushPose();
+
+        ScreenUtils.fill(
+                matrixStack,
+                startX, startY,
+                endX, endY,
+                0x20_ff_00_00
+        );
+
+        matrixStack.popPose();
+    }
+
+    public void startSelection(double mouseX, double mouseY) {
+        this.startX = mouseX;
+        this.startY = mouseY;
+    }
+
+    public void endSelection(double mouseX, double mouseY) {
+        this.endX = mouseX;
+        this.endY = mouseY;
+    }
+
+    public void clearSelection() {
+        this.startX = -1;
+        this.startY = -1;
+        this.endX = -1;
+        this.endY = -1;
+    }
+
+    public void setSchematic(Schematic schematic) {
+        this.schematic = schematic;
+    }
+
+    /**
+     * Takes two consumers first one runs on every symbol in selection, the second one runs on every wireSegment in selection
+     *
+     * @param runOnSymbols consumer to be run on every symbol
+     * @param runOnWires   consumer to be run on every segment
+     */
+    public void runOnComponentsInSelection(
+            BiConsumer<PlacedSymbol, RectangleI> runOnSymbols,
+            BiConsumer<WireSegment, RectangleI> runOnWires
+    ) {
+        if (startX == -1 || startY == -1 || endX == -1 || endY == -1) {
+            return;
+        }
+
+        var rectangle = getSelection();
+
+        schematic.getSymbolsInRectangle(rectangle)
+                .forEach(symbol -> runOnSymbols.accept(symbol, rectangle));
+
+        schematic.getNets().stream()
+                .flatMap(net -> Streams.stream(net.getAllSegments()))
+                .filter(wireSegment -> rectangle.containsClosed(wireSegment.start()) || rectangle.containsClosed(wireSegment.end()))
+                .forEach(segment -> runOnWires.accept(segment, rectangle));
+    }
+
+    public RectangleI getSelection() {
+        if (startX == -1 || startY == -1 || endX == -1 || endY == -1) {
+            return null;
+        }
+        return new RectangleI((int) startX, (int) startY, (int) endX, (int) endY);
+    }
+}
 
 public class LogicDesignScreen extends StackedScreen implements MenuAccess<LogicDesignMenu> {
     private static final String KEY_PREFIX = ControlEngineering.MODID + ".logicworkbench.";
@@ -88,10 +178,16 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     private double centerX = 0;
     private double centerY = 0;
 
+    private boolean isCtrlPressed = false;
+    private final SelectionManager selectionManager;
+
+    private CopiedRegion copiedRegion;
+
     public LogicDesignScreen(LogicDesignMenu container, Component title) {
         super(title);
         this.schematic = new Schematic();
         this.container = container;
+        this.selectionManager = new SelectionManager(schematic);
     }
 
     @Override
@@ -179,11 +275,24 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                 placedWire.renderWithoutBlobs(matrixStack, color);
             }
         }
+        selectionManager.renderSelection(matrixStack);
+
+        renderCopiedRegion(matrixStack, mousePos);
         RenderSystem.disableScissor();
 
         matrixStack.popPose();
         renderIngredients(matrixStack);
         renderTooltip(matrixStack, mouseX, mouseY, mousePos, currentError.orElse(null));
+    }
+
+    private void renderCopiedRegion(PoseStack matrixStack, Vec2d mousePos) {
+        if (copiedRegion == null) {
+            return;
+        }
+        copiedRegion.symbols().stream().map(symbol -> new PlacedSymbol(symbol.position().add((int) mousePos.x(), (int) mousePos.y()), symbol.symbol()))
+                .forEach(symbol -> ClientSymbols.render(symbol, matrixStack));
+        copiedRegion.segments().stream().map(segment -> new WireSegment(segment.start().add((int) mousePos.x(), (int) mousePos.y()), segment.length(), segment.axis()))
+                .forEach(wireSegment -> wireSegment.renderWithoutBlobs(matrixStack, 0xffff5515));
     }
 
     private void renderTooltip(
@@ -318,9 +427,16 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        mouseXDown = mouseX;
-        mouseYDown = mouseY;
-        clickWasConsumed = false;
+        selectionManager.clearSelection();
+        if (isCtrlPressed) {
+            double x = (mouseX - width / 2.) / currentScale + centerX;
+            double y = (mouseY - height / 2.) / currentScale + centerY;
+            selectionManager.startSelection(x, y);
+        } else {
+            mouseXDown = mouseX;
+            mouseYDown = mouseY;
+            clickWasConsumed = false;
+        }
         return false;
     }
 
@@ -329,10 +445,26 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         if (super.mouseReleased(mouseX, mouseY, button)) {
             return true;
         }
+        if (isCtrlPressed && copiedRegion == null) {
+            double x = (mouseX - width / 2.) / currentScale + centerX;
+            double y = (mouseY - height / 2.) / currentScale + centerY;
+            selectionManager.endSelection(x, y);
+            return true;
+        }
         if (clickWasConsumed) {
             return false;
         }
         clickWasConsumed = true;
+
+        if (copiedRegion != null) {
+            pasteCopiedRegion(copiedRegion);
+
+            if (!isCtrlPressed)
+                copiedRegion = null;
+
+            return true;
+        }
+
         final Vec2d mousePos = getMousePosition((int) mouseXDown, (int) mouseYDown);
         PlacedSymbol placed = getPlacingSymbol(mousePos);
         if (placed != null) {
@@ -365,6 +497,29 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         return true;
     }
 
+    private void pasteCopiedRegion(CopiedRegion region) {
+        final Vec2i mousePos = getMousePosition(ScreenUtils.getMousePosition()).floor();
+
+        region.symbols()
+                .stream()
+                .map(symbol -> new PlacedSymbol(
+                        symbol.position().add(mousePos),
+                        symbol.symbol())
+                )
+                .filter(symbol -> schematic.makeChecker(minecraft.level).canAdd(symbol))
+                .forEach(symbol -> runAndSendToServer(new AddSymbol(symbol)));
+
+        region.segments()
+                .stream()
+                .map(segment -> new WireSegment(
+                        segment.start().add(mousePos),
+                        segment.length(),
+                        segment.axis())
+                )
+                .filter(segment -> schematic.makeChecker(minecraft.level).canAdd(segment))
+                .forEach(segment -> runAndSendToServer(new AddWire(segment)));
+    }
+
     private <State>
     void handleSymbolClick(PlacedSymbol clicked, SymbolInstance<State> instance, Vec2d mousePos, int button) {
         if (!getHoveredPins(clicked, mousePos).isEmpty() && !container.readOnly) {
@@ -394,6 +549,9 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         }
         if (!clickWasConsumed && !(Math.abs(mouseX - mouseXDown) > 1) && !(Math.abs(mouseY - mouseYDown) > 1)) {
             return false;
+        }
+        if (isCtrlPressed) {
+            return true;
         }
         centerX -= dragX / currentScale;
         centerY -= dragY / currentScale;
@@ -435,9 +593,37 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                     sendToServer(new Delete(mousePos));
                     return true;
                 }
+            } else if (keyCode == GLFW.GLFW_KEY_LEFT_CONTROL) {
+                isCtrlPressed = true;
+            } else if (keyCode == GLFW.GLFW_KEY_C && modifiers == GLFW.GLFW_MOD_CONTROL) {
+                this.copiedRegion = copySelection();
+            } else if (keyCode == GLFW.GLFW_KEY_V && modifiers == GLFW.GLFW_MOD_CONTROL && copiedRegion != null) {
+                pasteCopiedRegion(copiedRegion);
             }
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    public CopiedRegion copySelection() {
+        List<PlacedSymbol> symbols = new ArrayList<>();
+        List<WireSegment> segments = new ArrayList<>();
+
+        selectionManager.runOnComponentsInSelection(
+                (symbol, rectangle) -> symbols.add(new PlacedSymbol(symbol.position().subtract(rectangle.min()), symbol.symbol())),
+                (segment, rectangle) -> segments.add(new WireSegment(segment.start().subtract(rectangle.min()), segment.length(), segment.axis()))
+        );
+
+        return new CopiedRegion(symbols, segments);
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        if (!container.readOnly) {
+            if (keyCode == GLFW.GLFW_KEY_LEFT_CONTROL) {
+                isCtrlPressed = false;
+            }
+        }
+        return super.keyReleased(keyCode, scanCode, modifiers);
     }
 
     @Override
@@ -518,6 +704,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
 
     public void setSchematic(Schematic schematic) {
         this.schematic = schematic;
+        selectionManager.setSchematic(schematic);
         var level = Objects.requireNonNull(Minecraft.getInstance().level);
         RectangleI totalArea = null;
         for (var symbol : schematic.getSymbols()) {
@@ -602,5 +789,6 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         return (size - 2 * TOTAL_BORDER - 5) / shownSize;
     }
 
-    private record PlacingSymbol(SymbolInstance<?> symbol, Vec2d offsetToMouse) {}
+    private record PlacingSymbol(SymbolInstance<?> symbol, Vec2d offsetToMouse) {
+    }
 }
