@@ -1,25 +1,19 @@
 package malte0811.controlengineering.network.logic;
 
 import malte0811.controlengineering.logic.schematic.Schematic;
-import net.minecraft.network.FriendlyByteBuf;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.world.level.Level;
 
 import java.util.function.Consumer;
 
 public class SetName extends LogicSubPacket {
+    public static final MyCodec<SetName> CODEC = MyCodecs.STRING.xmap(SetName::new, sn -> sn.newName);
+
     private final String newName;
 
     public SetName(String newName) {
         this.newName = newName;
-    }
-
-    public SetName(FriendlyByteBuf in) {
-        this.newName = in.readUtf();
-    }
-
-    @Override
-    public void write(FriendlyByteBuf out) {
-        out.writeUtf(newName);
     }
 
     @Override

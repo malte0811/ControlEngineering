@@ -2,25 +2,18 @@ package malte0811.controlengineering.network.logic;
 
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.util.math.Vec2d;
-import net.minecraft.network.FriendlyByteBuf;
+import malte0811.controlengineering.util.mycodec.MyCodec;
 import net.minecraft.world.level.Level;
 
 import java.util.function.Consumer;
 
 public class Delete extends LogicSubPacket {
+    public static final MyCodec<Delete> CODEC = Vec2d.CODEC.xmap(Delete::new, d -> d.pos);
+
     private final Vec2d pos;
 
     public Delete(Vec2d pos) {
         this.pos = pos;
-    }
-
-    public Delete(FriendlyByteBuf buffer) {
-        this(new Vec2d(buffer));
-    }
-
-    @Override
-    protected void write(FriendlyByteBuf out) {
-        pos.write(out);
     }
 
     @Override

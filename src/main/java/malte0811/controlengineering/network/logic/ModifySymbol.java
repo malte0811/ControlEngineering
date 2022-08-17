@@ -2,27 +2,19 @@ package malte0811.controlengineering.network.logic;
 
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
-import malte0811.controlengineering.util.mycodec.serial.PacketBufferStorage;
-import net.minecraft.network.FriendlyByteBuf;
+import malte0811.controlengineering.util.mycodec.MyCodec;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 public class ModifySymbol extends LogicSubPacket {
+    public static final MyCodec<ModifySymbol> CODEC = PlacedSymbol.CODEC.xmap(ModifySymbol::new, ms -> ms.newSymbol);
+
     private final PlacedSymbol newSymbol;
 
     public ModifySymbol(PlacedSymbol newSymbol) {
         this.newSymbol = newSymbol;
-    }
-
-    public ModifySymbol(FriendlyByteBuf in) {
-        this(PlacedSymbol.CODEC.from(in));
-    }
-
-    @Override
-    protected void write(FriendlyByteBuf out) {
-        PlacedSymbol.CODEC.toSerial(new PacketBufferStorage(out), newSymbol);
     }
 
     @Override

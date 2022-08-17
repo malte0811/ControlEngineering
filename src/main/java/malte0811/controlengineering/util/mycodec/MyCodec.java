@@ -23,6 +23,11 @@ public interface MyCodec<T> {
     // TODO split into network and string directly?
     void toSerial(SerialStorage out, T in);
 
+    @SuppressWarnings("unchecked")
+    default void toSerialUnchecked(SerialStorage out, Object in) {
+        toSerial(out, (T) in);
+    }
+
     FastDataResult<T> fromSerial(SerialStorage in);
 
     default <T2> MyCodec<T2> xmap(Function<T, T2> to, Function<T2, T> from) {

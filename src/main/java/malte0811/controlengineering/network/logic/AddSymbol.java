@@ -2,26 +2,18 @@ package malte0811.controlengineering.network.logic;
 
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
-import malte0811.controlengineering.util.mycodec.serial.PacketBufferStorage;
-import net.minecraft.network.FriendlyByteBuf;
+import malte0811.controlengineering.util.mycodec.MyCodec;
 import net.minecraft.world.level.Level;
 
 import java.util.function.Consumer;
 
 public class AddSymbol extends LogicSubPacket {
+    public static final MyCodec<AddSymbol> CODEC = PlacedSymbol.CODEC.xmap(AddSymbol::new, as -> as.symbol);
+
     private final PlacedSymbol symbol;
 
     public AddSymbol(PlacedSymbol symbol) {
         this.symbol = symbol;
-    }
-
-    public AddSymbol(FriendlyByteBuf in) {
-        this(PlacedSymbol.CODEC.fromSerial(new PacketBufferStorage(in)).get());
-    }
-
-    @Override
-    public void write(FriendlyByteBuf out) {
-        PlacedSymbol.CODEC.toSerial(new PacketBufferStorage(out), symbol);
     }
 
     @Override

@@ -3,16 +3,17 @@ package malte0811.controlengineering.network.logic;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.logic.schematic.Schematic;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.serial.PacketBufferStorage;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public abstract class LogicSubPacket {
-    static final List<Function<FriendlyByteBuf, ? extends LogicSubPacket>> FROM_BYTES = new ArrayList<>();
+    static final List<MyCodec<? extends LogicSubPacket>> CODECS = new ArrayList<>();
     static final Object2IntMap<Class<? extends LogicSubPacket>> BY_TYPE = new Object2IntOpenHashMap<>();
     private static boolean initialized = false;
 
@@ -21,33 +22,32 @@ public abstract class LogicSubPacket {
             return;
         }
         initialized = true;
-        register(FullSync.class, FullSync::new);
-        register(AddSymbol.class, AddSymbol::new);
-        register(AddWire.class, AddWire::new);
-        register(Delete.class, Delete::new);
-        register(ClearAll.class, ClearAll::new);
-        register(SetName.class, SetName::new);
-        register(ModifySymbol.class, ModifySymbol::new);
+        register(FullSync.class, FullSync.CODEC);
+        register(AddSymbol.class, AddSymbol.CODEC);
+        register(AddWire.class, AddWire.CODEC);
+        register(Delete.class, Delete.CODEC);
+        register(ClearAll.class, ClearAll.CODEC);
+        register(SetName.class, SetName.CODEC);
+        register(ModifySymbol.class, ModifySymbol.CODEC);
     }
 
     private static <T extends LogicSubPacket>
-    void register(Class<T> type, Function<FriendlyByteBuf, T> construct) {
-        BY_TYPE.put(type, FROM_BYTES.size());
-        FROM_BYTES.add(construct);
+    void register(Class<T> type, MyCodec<T> codec) {
+        BY_TYPE.put(type, CODECS.size());
+        CODECS.add(codec);
     }
 
     protected static LogicSubPacket read(FriendlyByteBuf buffer) {
         init();
-        return FROM_BYTES.get(buffer.readVarInt()).apply(buffer);
+        return CODECS.get(buffer.readVarInt()).from(buffer);
     }
 
     public final void writeFull(FriendlyByteBuf buffer) {
         init();
-        buffer.writeVarInt(BY_TYPE.getInt(getClass()));
-        write(buffer);
+        final var index = BY_TYPE.getInt(getClass());
+        buffer.writeVarInt(index);
+        CODECS.get(index).toSerialUnchecked(new PacketBufferStorage(buffer), this);
     }
-
-    protected abstract void write(FriendlyByteBuf out);
 
     public abstract boolean process(Schematic applyTo, Consumer<Schematic> replace, Level level);
 
