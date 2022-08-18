@@ -166,11 +166,10 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
             var absSymbols = placingSymbol.absoluteSymbols(mousePos);
             var absWires = placingSymbol.absoluteWires(mousePos);
             currentError = schematic.makeChecker(minecraft.level).getErrorForAddingAll(absSymbols, absWires);
-            // TODO render ghostly or something?
             for (PlacedSymbol s : absSymbols) {
-                ClientSymbols.render(s, matrixStack);
+                ClientSymbols.render(s, matrixStack, 0x80);
             }
-            new SchematicNet(absWires).render(matrixStack, mousePos, absSymbols);
+            new SchematicNet(absWires).render(matrixStack, SchematicNet.MOVING_WIRE_COLOR, absSymbols);
         } else {
             WireSegment placedWire = getPlacingSegment(mousePos);
             if (placedWire != null) {
@@ -452,6 +451,9 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         if (!container.readOnly) {
             if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
                 if (currentWireStart != null || placingSymbol != null) {
+                    if (placingSymbol != null && placingSymbol.movingExisting) {
+                        tryPlaceSymbol(placingSymbol.originalMousePos());
+                    }
                     currentWireStart = null;
                     placingSymbol = null;
                     return true;
@@ -621,8 +623,6 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
             List<PlacedSymbol> originalSymbols,
             List<WireSegment> originalWires,
             Vec2d originalMousePos,
-            // TODO put back on esc etc if true
-            // TODO don't close on esc if moving stuff, only drop/put back
             boolean movingExisting
     ) {
         public PlacingSymbols(PlacedSymbol symbol, Vec2d originalMousePos, boolean movingExisting) {

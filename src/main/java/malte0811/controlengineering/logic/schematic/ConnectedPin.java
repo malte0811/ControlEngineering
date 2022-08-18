@@ -19,7 +19,7 @@ public record ConnectedPin(PlacedSymbol symbol, SymbolPin pin) {
     }
 
     public void render(PoseStack stack, int wireColor) {
-        pin.render(stack, symbol.position().x(), symbol.position().y(), wireColor);
+        pin.render(stack, symbol.position().x(), symbol.position().y(), wireColor, 0xff);
     }
 
     public RectangleI getShape() {

@@ -60,9 +60,9 @@ public class LeafcellElement<State> extends SpecialManualElement {
         var offsetX = (manual.pageWidth * (2 / 3.) - type.getDefaultXSize(Minecraft.getInstance().level) * SCALE) / 2.;
         transform.translate(x + offsetX, y, 0);
         transform.scale(SCALE, SCALE, SCALE);
-        ClientSymbols.render(type, transform, 0, 0, type.getInitialState());
+        ClientSymbols.render(type, transform, 0, 0, type.getInitialState(), 0xff);
         transform.popPose();
-        if (type instanceof CellSymbol cell) {
+        if (type instanceof CellSymbol<?> cell) {
             var cost = cell.getCellType().getCost();
             var font = manual.fontRenderer();
             final var costStartY = y + font.lineHeight;

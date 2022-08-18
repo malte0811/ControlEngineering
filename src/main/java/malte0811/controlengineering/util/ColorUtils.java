@@ -1,6 +1,7 @@
 package malte0811.controlengineering.util;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
+import malte0811.controlengineering.logic.schematic.SchematicNet;
 
 public class ColorUtils {
     public static int halfColor(int inColor) {
@@ -9,6 +10,10 @@ public class ColorUtils {
 
     public static int fractionalColor(int colorIn, double factor) {
         return applyBytewise(colorIn, i -> (int) (factor * i)) | 0xff000000;
+    }
+
+    public static int withAlpha(int color, int alpha) {
+        return (color & 0xffffff) | (alpha << 24);
     }
 
     public static int inverseColor(int colorIn) {

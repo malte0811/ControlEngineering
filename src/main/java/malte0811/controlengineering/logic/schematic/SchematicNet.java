@@ -23,6 +23,7 @@ import static malte0811.controlengineering.logic.schematic.WireSegment.WireAxis.
 import static malte0811.controlengineering.logic.schematic.WireSegment.WireAxis.Y;
 
 public class SchematicNet {
+    public static final int MOVING_WIRE_COLOR = 0x80_f0_aa_2a;
     public static final int WIRE_COLOR = 0xff_f0_aa_2a;
     public static final int SELECTED_WIRE_COLOR = 0xff_f0_fa_2a;
     private static final MyCodec<List<WireSegment>> WIRE_LIST_CODEC = MyCodecs.list(WireSegment.CODEC);
@@ -75,8 +76,7 @@ public class SchematicNet {
         return false;
     }
 
-    public void render(PoseStack stack, Vec2d mouse, List<PlacedSymbol> symbols) {
-        final int color = contains(mouse.floor()) ? SELECTED_WIRE_COLOR : WIRE_COLOR;
+    public void render(PoseStack stack, int color, List<PlacedSymbol> symbols) {
         for (WireSegment segment : segments) {
             segment.renderWithoutBlobs(stack, color);
         }

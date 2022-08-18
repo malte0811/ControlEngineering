@@ -18,8 +18,8 @@ public class ClientConfigSwitch extends ClientSymbol<Boolean, CellSymbol<Boolean
     }
 
     @Override
-    protected void renderCustom(PoseStack transform, int x, int y, Boolean state) {
-        (state ? this.onTexture : this.offTexture).blit(transform, x, y);
+    protected void renderCustom(PoseStack transform, int x, int y, Boolean state, int alpha) {
+        (state ? this.onTexture : this.offTexture).blit(transform, x, y, alpha);
     }
 
     @Override

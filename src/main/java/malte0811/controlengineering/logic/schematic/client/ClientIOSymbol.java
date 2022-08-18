@@ -5,6 +5,7 @@ import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.logic.schematic.symbol.IOSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
+import malte0811.controlengineering.util.ColorUtils;
 import malte0811.controlengineering.util.TextUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -20,14 +21,14 @@ public class ClientIOSymbol extends ClientSymbol<BusSignalRef, IOSymbol> {
     }
 
     @Override
-    protected void renderCustom(PoseStack transform, int x, int y, @Nullable BusSignalRef state) {
+    protected void renderCustom(PoseStack transform, int x, int y, @Nullable BusSignalRef state, int alpha) {
         int color;
         if (state != null) {
             color = DyeColor.byId(state.color()).getTextColor();
         } else {
             color = 0;
         }
-        color |= 0xff000000;
+        color = ColorUtils.withAlpha(color, alpha);
         if (serverSymbol.isInput()) {
             GuiComponent.fill(transform, x + 3, y + 1, x + 4, y + 2, color);
         } else {

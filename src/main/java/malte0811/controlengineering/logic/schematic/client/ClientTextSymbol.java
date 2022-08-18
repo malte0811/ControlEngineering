@@ -16,11 +16,11 @@ public class ClientTextSymbol extends ClientSymbol<String, TextSymbol> {
     }
 
     @Override
-    protected void renderCustom(PoseStack transform, int x, int y, String s) {
+    protected void renderCustom(PoseStack transform, int x, int y, String s, int alpha) {
         transform.pushPose();
         transform.translate(x, y, 0);
         transform.scale((float) TextSymbol.SCALE, (float) TextSymbol.SCALE, 1);
-        Minecraft.getInstance().font.draw(transform, s, 0, 0, 0);
+        Minecraft.getInstance().font.draw(transform, s, 0, 0, alpha << 24);
         transform.popPose();
     }
 

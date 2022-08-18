@@ -20,8 +20,8 @@ public class ClientCellSymbol<C> extends ClientSymbol<C, CellSymbol<C>> {
     }
 
     @Override
-    public void renderCustom(PoseStack transform, int x, int y, @Nullable C state) {
-        texture.blit(transform, x, y);
+    public void renderCustom(PoseStack transform, int x, int y, @Nullable C state, int alpha) {
+        texture.blit(transform, x, y, alpha);
     }
 
     @Override

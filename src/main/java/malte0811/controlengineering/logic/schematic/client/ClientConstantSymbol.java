@@ -6,6 +6,7 @@ import malte0811.controlengineering.gui.widget.IntSelector;
 import malte0811.controlengineering.logic.cells.CircuitSignals;
 import malte0811.controlengineering.logic.schematic.symbol.ConstantSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
+import malte0811.controlengineering.util.ColorUtils;
 import malte0811.controlengineering.util.RedstoneTapeUtils;
 import malte0811.controlengineering.util.TextUtil;
 import net.minecraft.client.Minecraft;
@@ -23,10 +24,14 @@ public class ClientConstantSymbol extends ClientSymbol<Integer, ConstantSymbol> 
     }
 
     @Override
-    public void renderCustom(PoseStack transform, int x, int y, @Nullable Integer state) {
-        int color = RedstoneTapeUtils.getRSColor(state == null ? 0 : Math.abs(state / (float) BusLine.MAX_VALID_VALUE));
+    public void renderCustom(PoseStack transform, int x, int y, @Nullable Integer state, int alpha) {
+        final float renderStrength = state == null ? 0 : Math.abs(state / (float) BusLine.MAX_VALID_VALUE);
+        final int color = RedstoneTapeUtils.getRSColor(renderStrength);
+        final int colorWithAlpha = ColorUtils.withAlpha(color, alpha);
         GuiComponent.fill(
-                transform, x + BOX_SIZE, y + BOX_SIZE / 2, x + BOX_SIZE + 1, y + BOX_SIZE / 2 + 1, color
+                transform,
+                x + BOX_SIZE, y + BOX_SIZE / 2, x + BOX_SIZE + 1, y + BOX_SIZE / 2 + 1,
+                colorWithAlpha
         );
         final String text;
         if (state != null) {
@@ -34,7 +39,7 @@ public class ClientConstantSymbol extends ClientSymbol<Integer, ConstantSymbol> 
         } else {
             text = "";
         }
-        TextUtil.renderBoxWithText(transform, color, text, 5, x, y, BOX_SIZE, BOX_SIZE);
+        TextUtil.renderBoxWithText(transform, colorWithAlpha, text, 5, x, y, BOX_SIZE, BOX_SIZE);
     }
 
     @Override

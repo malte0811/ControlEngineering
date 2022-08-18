@@ -6,6 +6,7 @@ import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.WireSegment;
 import malte0811.controlengineering.client.render.utils.ScreenUtils;
+import malte0811.controlengineering.util.ColorUtils;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.util.Mth;
 
@@ -44,7 +45,7 @@ public record SymbolPin(
         return direction.isCombinatorialOutput();
     }
 
-    public void render(PoseStack stack, int x, int y, int wireColor) {
+    public void render(PoseStack stack, int x, int y, int wireColor, int alpha) {
         final Vec2i pinPos = position().add(x, y);
         if (vertical) {
             stack.pushPose();
@@ -57,8 +58,8 @@ public record SymbolPin(
         final float wireXMax = pinPos.x() + (isOutput() ? 1 - WireSegment.WIRE_SPACE : (1 + wirePixels));
         final float yMin = pinPos.y() + WireSegment.WIRE_SPACE;
         final float yMax = pinPos.y() + 1 - WireSegment.WIRE_SPACE;
-        ScreenUtils.fill(stack, wireXMin, yMin, wireXMax, yMax, wireColor);
-        final int color = isOutput() ? 0xffff0000 : 0xff00ff00;
+        ScreenUtils.fill(stack, wireXMin, yMin, wireXMax, yMax, ColorUtils.withAlpha(wireColor, alpha));
+        final int color = ColorUtils.withAlpha(isOutput() ? 0xff0000 : 0x00ff00, alpha);
         ScreenUtils.fill(
                 stack,
                 pinPos.x() + WireSegment.WIRE_SPACE, yMin,

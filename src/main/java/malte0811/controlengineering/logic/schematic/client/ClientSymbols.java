@@ -13,6 +13,9 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static malte0811.controlengineering.logic.schematic.SchematicNet.SELECTED_WIRE_COLOR;
+import static malte0811.controlengineering.logic.schematic.SchematicNet.WIRE_COLOR;
+
 public class ClientSymbols {
     private static final Map<SchematicSymbol<?>, ClientSymbol<?, ?>> CLIENT_SYMBOLS = new HashMap<>();
 
@@ -61,29 +64,30 @@ public class ClientSymbols {
         transform.translate(x + xSpace / 2., y + ySpace / 2., 0);
         transform.scale(scale, scale, 1);
         transform.translate(-width / 2., -height / 2., 0);
-        render(inst, transform, 0, 0);
+        render(inst, transform, 0, 0, 0xff);
         transform.popPose();
     }
 
-    public static <State> void render(SymbolInstance<State> inst, PoseStack transform, int x, int y) {
-        render(inst.getType(), transform, x, y, inst.getCurrentState());
+    public static <State> void render(SymbolInstance<State> inst, PoseStack transform, int x, int y, int alpha) {
+        render(inst.getType(), transform, x, y, inst.getCurrentState(), alpha);
     }
 
     public static <State>
-    void render(SchematicSymbol<State> serverSymbol, PoseStack transform, int x, int y, State state) {
-        getClientSymbol(serverSymbol).render(transform, x, y, state);
+    void render(SchematicSymbol<State> serverSymbol, PoseStack transform, int x, int y, State state, int alpha) {
+        getClientSymbol(serverSymbol).render(transform, x, y, state, alpha);
     }
 
-    public static void render(PlacedSymbol placed, PoseStack transform) {
-        render(placed.symbol(), transform, placed.position().x(), placed.position().y());
+    public static void render(PlacedSymbol placed, PoseStack transform, int alpha) {
+        render(placed.symbol(), transform, placed.position().x(), placed.position().y(), alpha);
     }
 
     public static void render(Schematic schematic, PoseStack stack, Vec2d mouse) {
         for (PlacedSymbol s : schematic.getSymbols()) {
-            render(s, stack);
+            render(s, stack, 0xff);
         }
         for (SchematicNet net : schematic.getNets()) {
-            net.render(stack, mouse, schematic.getSymbols());
+            final int color = net.contains(mouse.floor()) ? SELECTED_WIRE_COLOR : WIRE_COLOR;
+            net.render(stack, color, schematic.getSymbols());
         }
     }
 
@@ -106,12 +110,12 @@ public class ClientSymbols {
         return (ClientSymbol<State, Symbol>) CLIENT_SYMBOLS.get(server);
     }
 
-    private static void register(CellSymbol cell, int uMin, int vMin) {
-        register(cell, new ClientCellSymbol(cell, uMin, vMin));
+    private static <Cfg> void register(CellSymbol<Cfg> cell, int uMin, int vMin) {
+        register(cell, new ClientCellSymbol<>(cell, uMin, vMin));
     }
 
-    private static void registerMUX(CellSymbol cell, String overlay) {
-        register(cell, new ClientOverlaySymbol<>(new ClientCellSymbol(cell, 13, 56), overlay, 3, 3));
+    private static <Cfg> void registerMUX(CellSymbol<Cfg> cell, String overlay) {
+        register(cell, new ClientOverlaySymbol<>(new ClientCellSymbol<>(cell, 13, 56), overlay, 3, 3));
     }
 
     private static <State, Symbol extends SchematicSymbol<State>>

@@ -22,14 +22,14 @@ public class ClientOverlaySymbol<State, Symbol extends SchematicSymbol<State>> e
     }
 
     @Override
-    protected void renderCustom(PoseStack transform, int x, int y, State state) {
-        original.renderCustom(transform, x, y, state);
+    protected void renderCustom(PoseStack transform, int x, int y, State state, int alpha) {
+        original.renderCustom(transform, x, y, state, alpha);
         transform.pushPose();
         transform.translate(x + xOff + 0.5, y + yOff, 0);
         transform.scale(1 / 6f, 1 / 6f, 1);
         final var font = Minecraft.getInstance().font;
         final var width = font.width(overlay) - 1;
-        font.draw(transform, overlay, -width / 2f, 0, 0);
+        font.draw(transform, overlay, -width / 2f, 0, alpha << 24);
         transform.popPose();
     }
 

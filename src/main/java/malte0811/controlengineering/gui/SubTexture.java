@@ -1,10 +1,9 @@
 package malte0811.controlengineering.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 
@@ -67,12 +66,35 @@ public class SubTexture {
     }
 
     public void blit(PoseStack transform, int x, int y) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        blit(transform, x, y, 0xff);
+    }
+
+    public void blit(PoseStack transform, int x, int y, int alpha) {
+        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha / 255F);
         RenderSystem.setShaderTexture(0, getMainTexture());
-        Screen.blit(
-                transform, x, y, getWidth(), getHeight(), getMinU(), getMinV(), getWidth(), getHeight(),
-                mainSize, mainSize
-        );
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+        final var matrix = transform.last().pose();
+        bufferbuilder.vertex(matrix, x, y + getHeight(), 0)
+                .color(255, 255, 255, alpha)
+                .uv(getMinU() / (float) mainSize, getMaxV() / (float) mainSize)
+                .endVertex();
+        bufferbuilder.vertex(matrix, x + getWidth(), y + getHeight(), 0)
+                .color(255, 255, 255, alpha)
+                .uv(getMaxU() / (float) mainSize, getMaxV() / (float) mainSize)
+                .endVertex();
+        bufferbuilder.vertex(matrix, x + getWidth(), y, 0)
+                .color(255, 255, 255, alpha)
+                .uv(getMaxU() / (float) mainSize, getMinV() / (float) mainSize)
+                .endVertex();
+        bufferbuilder.vertex(matrix, x, y, 0)
+                .color(255, 255, 255, alpha)
+                .uv(getMinU() / (float) mainSize, getMinV() / (float) mainSize)
+                .endVertex();
+        BufferUploader.drawWithShader(bufferbuilder.end());
+        RenderSystem.disableBlend();
     }
 }

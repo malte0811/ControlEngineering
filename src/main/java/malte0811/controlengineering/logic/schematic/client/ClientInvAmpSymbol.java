@@ -14,10 +14,11 @@ public class ClientInvAmpSymbol extends ClientCellSymbol<Fraction> {
     }
 
     @Override
-    public void renderCustom(PoseStack transform, int x, int y, @Nullable Fraction state) {
-        super.renderCustom(transform, x, y, state);
+    public void renderCustom(PoseStack transform, int x, int y, @Nullable Fraction state, int alpha) {
+        super.renderCustom(transform, x, y, state, alpha);
         if (state != null) {
             var font = Minecraft.getInstance().font;
+            final int blackColor = alpha << 24;
             transform.pushPose();
             final var scale = 4f;
             transform.translate(x + 1, y + 1, 0);
@@ -30,12 +31,12 @@ public class ClientInvAmpSymbol extends ClientCellSymbol<Fraction> {
             // Fraction line
             transform.translate(-scale * 2.4, 6, 0);
             transform.scale(3.6f, 1, 1);
-            font.draw(transform, "-", 0, 0, 0);
+            font.draw(transform, "-", 0, 0, blackColor);
             transform.popPose();
 
             // Minus
             transform.translate(2 * scale + 1, 6, 0);
-            font.draw(transform, "-", 0, 0, 0);
+            font.draw(transform, "-", 0, 0, blackColor);
             transform.popPose();
         }
     }
