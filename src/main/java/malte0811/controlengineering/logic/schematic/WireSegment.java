@@ -3,7 +3,7 @@ package malte0811.controlengineering.logic.schematic;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
-import malte0811.controlengineering.util.ScreenUtils;
+import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.mycodec.MyCodec;

@@ -61,6 +61,10 @@ public record Vec2d(double x, double y) {
         return new Vec2i(Mth.floor(x), Mth.floor(y));
     }
 
+    public Vec2i round() {
+        return new Vec2i((int) Math.round(x()), (int) Math.round(y()));
+    }
+
     public Vec3 withHeight(double height) {
         return new Vec3(x(), height, y());
     }

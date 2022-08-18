@@ -1,6 +1,7 @@
 package malte0811.controlengineering.util.mycodec;
 
 import malte0811.controlengineering.util.FastDataResult;
+import malte0811.controlengineering.util.mycodec.record.CodecField;
 import malte0811.controlengineering.util.mycodec.serial.PacketBufferStorage;
 import malte0811.controlengineering.util.mycodec.serial.SerialStorage;
 import malte0811.controlengineering.util.mycodec.tree.TreeElement;
@@ -29,6 +30,10 @@ public interface MyCodec<T> {
     }
 
     FastDataResult<T> fromSerial(SerialStorage in);
+
+    default <Owner> CodecField<Owner, T> fieldOf(String name, Function<Owner, T> get) {
+        return new CodecField<>(name, get, this);
+    }
 
     default <T2> MyCodec<T2> xmap(Function<T, T2> to, Function<T2, T> from) {
         return new SimpleCodec<>(

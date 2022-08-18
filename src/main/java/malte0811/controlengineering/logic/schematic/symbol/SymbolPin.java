@@ -5,7 +5,7 @@ import com.mojang.math.Quaternion;
 import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.WireSegment;
-import malte0811.controlengineering.util.ScreenUtils;
+import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.util.Mth;
 

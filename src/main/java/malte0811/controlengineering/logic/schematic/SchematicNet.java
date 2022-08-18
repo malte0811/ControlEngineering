@@ -1,6 +1,9 @@
 package malte0811.controlengineering.logic.schematic;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
@@ -11,7 +14,6 @@ import malte0811.controlengineering.util.mycodec.MyCodecs;
 import malte0811.controlengineering.util.mycodec.record.CodecField;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -114,33 +116,29 @@ public class SchematicNet {
         pins = null;
     }
 
-    public Optional<Component> canMerge(SchematicNet other, List<PlacedSymbol> symbols) {
-        Set<ConnectedPin> totalPins = new HashSet<>(getOrComputePins(symbols));
-        totalPins.addAll(other.getOrComputePins(symbols));
-        return SchematicChecker.getConsistencyError(totalPins);
-    }
-
-    public boolean canAdd(WireSegment segment, List<PlacedSymbol> symbols) {
-        return !canMerge(new SchematicNet(segment), symbols).isPresent();
-    }
-
     private boolean containsPin(PlacedSymbol symbol, SymbolPin pin) {
         final Vec2i actualPinPos = pin.position().add(symbol.position());
         return contains(actualPinPos);
     }
 
     public boolean removeOneContaining(Vec2i point) {
-        for (Iterator<WireSegment> iterator = segments.iterator(); iterator.hasNext(); ) {
-            if (iterator.next().containsClosed(point)) {
-                iterator.remove();
+        for (int i = 0; i < segments.size(); i++) {
+            if (segments.get(i).containsClosed(point)) {
+                removeSegments(IntLists.singleton(i));
                 return true;
             }
         }
         return false;
     }
 
+    public void removeSegments(IntList sortedSegments) {
+        for (final int index : Lists.reverse(sortedSegments)) {
+            segments.remove(index);
+        }
+        simplify();
+    }
+
     public List<SchematicNet> splitComponents() {
-        // TODO improve using horizontal/vertical structure?
         Map<Vec2i, SchematicNet> indexForPoint = new HashMap<>();
         for (WireSegment segment : segments) {
             final SchematicNet first = indexForPoint.get(segment.start());
@@ -178,6 +176,10 @@ public class SchematicNet {
 
     public List<WireSegment> getAllSegments() {
         return segments;
+    }
+
+    public SchematicNet copy() {
+        return new SchematicNet(segments);
     }
 
     private void mergeIntervals() {
@@ -229,5 +231,13 @@ public class SchematicNet {
     private void splitSegmentAt(int segmentIdx, Vec2i split) {
         final var toSplit = segments.remove(segmentIdx);
         segments.addAll(toSplit.splitAt(split));
+    }
+
+    public List<WireSegment> getSegments(IntList segments) {
+        List<WireSegment> result = new ArrayList<>(segments.size());
+        for (final var index : segments) {
+            result.add(this.segments.get(index));
+        }
+        return result;
     }
 }

@@ -1,4 +1,4 @@
-package malte0811.controlengineering.util;
+package malte0811.controlengineering.client.render.utils;
 
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -49,5 +49,14 @@ public class ScreenUtils {
 
     public static boolean isInRect(int xMin, int yMin, int width, int height, int x, int y) {
         return xMin <= x && x < xMin + width && yMin <= y && y < yMin + height;
+    }
+
+    public static void drawBordersOutside(
+            PoseStack transform, int minX, int minY, int maxX, int maxY, float borderWidth, int color
+    ) {
+        fill(transform, minX - borderWidth, minY - borderWidth, maxX + borderWidth, minY, color);
+        fill(transform, minX - borderWidth, minY - borderWidth, minX, maxY + borderWidth, color);
+        fill(transform, maxX, minY - borderWidth, maxX + borderWidth, maxY + borderWidth, color);
+        fill(transform, minX - borderWidth, maxY, maxX + borderWidth, maxY + borderWidth, color);
     }
 }

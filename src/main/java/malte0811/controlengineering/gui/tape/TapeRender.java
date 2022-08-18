@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.RedstoneTapeUtils;
-import malte0811.controlengineering.util.ScreenUtils;
+import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.texture.TextureAtlas;

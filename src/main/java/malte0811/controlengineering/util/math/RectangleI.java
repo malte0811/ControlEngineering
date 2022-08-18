@@ -1,11 +1,35 @@
 package malte0811.controlengineering.util.math;
 
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.record.CodecField;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec4;
+import org.checkerframework.checker.units.qual.C;
+
 import javax.annotation.Nullable;
 
 public record RectangleI(int minX, int minY, int maxX, int maxY) {
+    public static final MyCodec<RectangleI> CODEC = new RecordCodec4<>(
+            MyCodecs.INTEGER.fieldOf("minX", RectangleI::minX),
+            MyCodecs.INTEGER.fieldOf("maxX", RectangleI::maxX),
+            MyCodecs.INTEGER.fieldOf("minY", RectangleI::minY),
+            MyCodecs.INTEGER.fieldOf("maxY", RectangleI::maxY),
+            RectangleI::new
+    );
 
     public RectangleI(Vec2i min, Vec2i max) {
         this(min.x(), min.y(), max.x(), max.y());
+    }
+
+    public RectangleI {
+        final var realMinX = Math.min(minX, maxX);
+        final var realMaxX = Math.max(minX, maxX);
+        final var realMinY = Math.min(minY, maxY);
+        final var realMaxY = Math.max(minY, maxY);
+        minX = realMinX;
+        maxX = realMaxX;
+        minY = realMinY;
+        maxY = realMaxY;
     }
 
     public boolean contains(RectangleI other) {

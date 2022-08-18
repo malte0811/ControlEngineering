@@ -30,4 +30,8 @@ public record PlacedSymbol(Vec2i position, SymbolInstance<?> symbol) {
     public Vec2i getMaxPoint(Level level) {
         return position.add(new Vec2i(symbol().getXSize(level), symbol().getYSize(level)));
     }
+
+    public PlacedSymbol copy() {
+        return new PlacedSymbol(position, symbol.copy());
+    }
 }

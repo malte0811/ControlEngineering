@@ -47,4 +47,8 @@ public class SymbolInstance<State> extends TypedInstance<State, SchematicSymbol<
         }
         return cell.getCellType().newInstanceFromConfig(getCurrentState());
     }
+
+    public SymbolInstance<State> copy() {
+        return new SymbolInstance<>(getType(), getCurrentState());
+    }
 }

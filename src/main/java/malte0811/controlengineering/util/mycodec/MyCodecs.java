@@ -3,6 +3,8 @@ package malte0811.controlengineering.util.mycodec;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.bytes.ByteList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import malte0811.controlengineering.util.FastDataResult;
 import malte0811.controlengineering.util.mycodec.record.CodecField;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
@@ -72,6 +74,7 @@ public class MyCodecs {
         }
     };
     public static final MyCodec<ByteList> BYTE_LIST = list(BYTE).xmap(ByteArrayList::new, l -> l);
+    public static final MyCodec<IntList> INT_LIST = list(INTEGER).xmap(IntArrayList::new, l -> l);
     public static final MyCodec<String> STRING = new SimpleCodec<>(
             TreePrimitive.class, TreePrimitive::asString,
             SerialStorage::writeString, SerialStorage::readString

@@ -1,5 +1,6 @@
 package malte0811.controlengineering.logic.schematic;
 
+import blusunrize.immersiveengineering.api.utils.FastEither;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
@@ -110,6 +111,25 @@ public record SchematicChecker(Schematic schematic, Level level) {
 
     public boolean canAdd(PlacedSymbol candidate) {
         return getErrorForAdding(candidate).isEmpty();
+    }
+
+    public Optional<Component> getErrorForAddingAll(List<PlacedSymbol> symbols, List<WireSegment> wires) {
+        var newChecker = new SchematicChecker(this.schematic.copy(), level);
+        for (var symbol : symbols) {
+            var error = newChecker.getErrorForAdding(symbol);
+            if (error.isPresent()) {
+                return error;
+            }
+            newChecker.schematic().addSymbol(symbol);
+        }
+        for (var wire : wires) {
+            var error = newChecker.getErrorForAdding(wire);
+            if (error.isPresent()) {
+                return error;
+            }
+            newChecker.schematic().addWire(wire);
+        }
+        return Optional.empty();
     }
 
     private static Optional<Component> error(String translationKey) {

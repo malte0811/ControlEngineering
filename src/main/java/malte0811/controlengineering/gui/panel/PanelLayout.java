@@ -12,7 +12,7 @@ import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.network.panellayout.*;
-import malte0811.controlengineering.util.ScreenUtils;
+import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.util.math.TransformUtil;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;

@@ -23,9 +23,9 @@ public abstract class LogicSubPacket {
         }
         initialized = true;
         register(FullSync.class, FullSync.CODEC);
-        register(AddSymbol.class, AddSymbol.CODEC);
-        register(AddWire.class, AddWire.CODEC);
+        register(Add.class, Add.CODEC);
         register(Delete.class, Delete.CODEC);
+        register(DeleteArea.class, DeleteArea.CODEC);
         register(ClearAll.class, ClearAll.CODEC);
         register(SetName.class, SetName.CODEC);
         register(ModifySymbol.class, ModifySymbol.CODEC);

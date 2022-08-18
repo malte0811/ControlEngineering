@@ -1,9 +1,7 @@
 package malte0811.controlengineering.logic.schematic;
 
 import com.google.common.collect.ImmutableList;
-import it.unimi.dsi.fastutil.ints.IntArraySet;
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.*;
 import malte0811.controlengineering.blockentity.logic.LogicCabinetBlockEntity;
 import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
@@ -15,13 +13,13 @@ import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import malte0811.controlengineering.util.mycodec.record.CodecField;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec3;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.ToDoubleFunction;
 
@@ -52,13 +50,9 @@ public class Schematic {
         this(ImmutableList.of(), ImmutableList.of(), "New schematic");
     }
 
-    public boolean addSymbol(PlacedSymbol newSymbol, Level level) {
-        if (!makeChecker(level).canAdd(newSymbol)) {
-            return false;
-        }
+    public void addSymbol(PlacedSymbol newSymbol) {
         symbols.add(newSymbol);
         resetConnectedPins();
-        return true;
     }
 
     public void addWire(WireSegment segment) {
@@ -81,23 +75,61 @@ public class Schematic {
     }
 
     public boolean removeOneContaining(Vec2d mouse, Level level) {
-        for (Iterator<SchematicNet> iterator = nets.iterator(); iterator.hasNext(); ) {
-            SchematicNet net = iterator.next();
+        for (int i = 0; i < nets.size(); ++i) {
+            SchematicNet net = nets.get(i);
             if (net.removeOneContaining(mouse.floor())) {
-                iterator.remove();
+                nets.remove(i);
                 nets.addAll(net.splitComponents());
                 resetConnectedPins();
                 return true;
             }
         }
-        for (Iterator<PlacedSymbol> iterator = symbols.iterator(); iterator.hasNext(); ) {
-            if (iterator.next().containsPoint(mouse, level)) {
-                iterator.remove();
-                resetConnectedPins();
+        for (int i = 0; i < symbols.size(); ++i) {
+            if (symbols.get(i).containsPoint(mouse, level)) {
+                removeSymbol(i);
                 return true;
             }
         }
         return false;
+    }
+
+    public List<SegmentsInNet> getWiresWithin(RectangleI area) {
+        List<SegmentsInNet> contained = new ArrayList<>();
+        for (int net = 0; net < nets.size(); net++) {
+            IntList containedNetSegments = new IntArrayList();
+            List<WireSegment> segments = nets.get(net).getAllSegments();
+            for (int segment = 0; segment < segments.size(); segment++) {
+                if (area.contains(segments.get(segment).getShape())) {
+                    containedNetSegments.add(segment);
+                }
+            }
+            if (!containedNetSegments.isEmpty()) {
+                contained.add(new SegmentsInNet(net, containedNetSegments));
+            }
+        }
+        return contained;
+    }
+
+    public IntList getSymbolIndicesWithin(RectangleI area, Level level) {
+        IntList contained = new IntArrayList();
+        for (int i = 0; i < symbols.size(); i++) {
+            if (area.contains(symbols.get(i).getShape(level))) {
+                contained.add(i);
+            }
+        }
+        return contained;
+    }
+
+    public void removeSymbol(int index) {
+        symbols.remove(index);
+        resetConnectedPins();
+    }
+
+    public void removeSegments(SegmentsInNet index) {
+        final var oldNet = nets.remove(index.netIdx());
+        oldNet.removeSegments(index.segments());
+        nets.addAll(oldNet.splitComponents());
+        resetConnectedPins();
     }
 
     private boolean isConnected(SchematicNet net, WireSegment wire) {
@@ -203,11 +235,12 @@ public class Schematic {
     public boolean replaceBy(int index, PlacedSymbol newSymbol, Level level) {
         final var oldSymbol = symbols.remove(index);
         resetConnectedPins();
-        if (addSymbol(newSymbol, level)) {
+        if (makeChecker(level).canAdd(newSymbol)) {
+            addSymbol(newSymbol);
             return true;
         } else {
             // Add back old symbol
-            addSymbol(oldSymbol, level);
+            addSymbol(oldSymbol);
             return false;
         }
     }
@@ -218,5 +251,23 @@ public class Schematic {
 
     public static boolean isEmpty(@Nullable Schematic schematic) {
         return schematic == null || schematic.isEmpty();
+    }
+
+    public Schematic copy() {
+        final var newSymbols = symbols.stream().map(PlacedSymbol::copy).toList();
+        final var newNets = nets.stream().map(SchematicNet::copy).toList();
+        return new Schematic(newSymbols, newNets, name);
+    }
+
+    public List<WireSegment> getWireSegments(SegmentsInNet segments) {
+        return nets.get(segments.netIdx).getSegments(segments.segments);
+    }
+
+    public record SegmentsInNet(int netIdx, IntList segments) {
+        public static final MyCodec<SegmentsInNet> CODEC = new RecordCodec2<>(
+                MyCodecs.INTEGER.fieldOf("netIdx", SegmentsInNet::netIdx),
+                MyCodecs.INT_LIST.fieldOf("segments", SegmentsInNet::segments),
+                SegmentsInNet::new
+        );
     }
 }
