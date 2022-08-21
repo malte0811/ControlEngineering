@@ -8,19 +8,21 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.logic.CircuitIngredientDrawer.BigItemStack;
 import malte0811.controlengineering.blockentity.logic.LogicCabinetBlockEntity;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity.AvailableIngredients;
+import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.misc.ConfirmScreen;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.gui.widget.SmallCheckbox;
 import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.logic.cells.SignalType;
-import malte0811.controlengineering.logic.schematic.*;
+import malte0811.controlengineering.logic.schematic.ConnectedPin;
+import malte0811.controlengineering.logic.schematic.Schematic;
+import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import malte0811.controlengineering.logic.schematic.client.ClientSymbols;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
 import malte0811.controlengineering.network.logic.*;
-import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.util.TextUtil;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2d;
@@ -31,9 +33,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import org.lwjgl.glfw.GLFW;
@@ -42,11 +45,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-import static net.minecraft.util.Mth.*;
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
 public class LogicDesignScreen extends StackedScreen implements MenuAccess<LogicDesignMenu> {
     private static final String KEY_PREFIX = ControlEngineering.MODID + ".logicworkbench.";
@@ -67,27 +69,26 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
 
     private static final int TRANSLUCENT_BORDER_SIZE = 20;
     private static final int WHITE_BORDER_SIZE = 1;
-    private static final int TOTAL_BORDER = TRANSLUCENT_BORDER_SIZE + WHITE_BORDER_SIZE;
-    public static final int BASE_SCALE = 3;
+    static final int TOTAL_BORDER = TRANSLUCENT_BORDER_SIZE + WHITE_BORDER_SIZE;
 
     private final LogicDesignMenu container;
     private Schematic schematic;
-    @Nullable
-    private Vec2i currentWireStart = null;
-    @Nullable
-    private PlacingSymbols placingSymbol = null;
+    private final PlacementHandler placementHandler;
+    private final SchematicViewArea visibleArea;
     private List<ConnectedPin> errors = ImmutableList.of();
     private boolean errorsShown = false;
-    private float minScale = 0.5F;
-    private float currentScale = BASE_SCALE;
-    // In schematic coordinates
-    private double centerX = 0;
-    private double centerY = 0;
+
+    private double mouseXDown;
+    private double mouseYDown;
+    // Start at true: We don't want to consider a release if there wasn't a click before it
+    private boolean clickWasConsumed = true;
 
     public LogicDesignScreen(LogicDesignMenu container, Component title) {
         super(title);
         this.schematic = new Schematic();
         this.container = container;
+        placementHandler = new PlacementHandler(minecraft);
+        visibleArea = new SchematicViewArea(minecraft);
     }
 
     @Override
@@ -96,9 +97,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         if (!container.readOnly) {
             addRenderableWidget(new Button(
                     TOTAL_BORDER, TOTAL_BORDER, 40, 20, Component.translatable(COMPONENTS_KEY),
-                    btn -> minecraft.setScreen(new CellSelectionScreen(
-                            s -> placingSymbol = new PlacingSymbols(new PlacedSymbol(Vec2i.ZERO, s), Vec2d.ZERO, false)
-                    )),
+                    btn -> minecraft.setScreen(new CellSelectionScreen(placementHandler::setPlacingSymbol)),
                     makeTooltip(COMPONENTS_TOOLTIP)
             ));
             addRenderableWidget(new Button(
@@ -118,10 +117,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                     makeTooltip(DRC_INFO_KEY)
             ));
         }
-        minScale = Math.max(
-                getScaleForShownSize(width, Schematic.BOUNDARY.getWidth()),
-                getScaleForShownSize(height, Schematic.BOUNDARY.getHeight())
-        );
+        visibleArea.onSizeChanged(width, height);
     }
 
     private void handleSetName(Button $) {
@@ -147,39 +143,17 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     protected void renderForeground(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         matrixStack.pushPose();
         drawCenteredString(matrixStack, minecraft.font, schematic.getName(), width / 2, TOTAL_BORDER - 11, -1);
-        matrixStack.translate(width / 2., height / 2., 0);
-        matrixStack.scale(currentScale, currentScale, 1);
-        matrixStack.translate(-centerX, -centerY, 0);
 
-        final double scale = minecraft.getWindow().getGuiScale();
-        RenderSystem.enableScissor(
-                (int) (TOTAL_BORDER * scale), (int) (TOTAL_BORDER * scale),
-                (int) ((width - 2 * TOTAL_BORDER) * scale), (int) ((height - 2 * TOTAL_BORDER) * scale)
-        );
+        visibleArea.setUpForDrawing(matrixStack);
         drawErrors(matrixStack);
         drawBoundary(matrixStack);
-        Vec2d mousePos = getMousePosition(mouseX, mouseY);
+        Vec2d mousePos = visibleArea.getMousePositionInSchematic(mouseX, mouseY);
         ClientSymbols.render(schematic, matrixStack, mousePos);
 
-        Optional<Component> currentError = Optional.empty();
-        if (placingSymbol != null) {
-            var absSymbols = placingSymbol.absoluteSymbols(mousePos);
-            var absWires = placingSymbol.absoluteWires(mousePos);
-            currentError = schematic.makeChecker(minecraft.level).getErrorForAddingAll(absSymbols, absWires);
-            for (PlacedSymbol s : absSymbols) {
-                ClientSymbols.render(s, matrixStack, 0x80);
-            }
-            new SchematicNet(absWires).render(matrixStack, SchematicNet.MOVING_WIRE_COLOR, absSymbols);
-        } else {
-            WireSegment placedWire = getPlacingSegment(mousePos);
-            if (placedWire != null) {
-                currentError = schematic.makeChecker(minecraft.level).getErrorForAdding(placedWire);
-                final int color = currentError.isPresent() ? 0xffff5515 : 0xff785515;
-                placedWire.renderWithoutBlobs(matrixStack, color);
-            }
-        }
-        final var leftMouseState = glfwGetMouseButton(minecraft.getWindow().getWindow(), GLFW_MOUSE_BUTTON_LEFT);
-        if (leftMouseState == GLFW_PRESS && clickWasConsumed) {
+        Optional<Component> currentError = placementHandler.renderFloatingAndGetError(
+                matrixStack, mousePos, schematic
+        );
+        if (placementHandler.isDragSelecting()) {
             renderSelectedArea(matrixStack, mousePos);
         }
         RenderSystem.disableScissor();
@@ -233,7 +207,6 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                 transform, stored != null ? stored.getAvailableTubes() : null, numTubes, IEItemRefs.TUBE
         );
         transform.translate(0, -16, 0);
-        //TODO fix default
         renderIngredient(
                 transform, stored != null ? stored.getAvailableWires() : null, numWires, IEItemRefs.WIRE
         );
@@ -266,11 +239,11 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     }
 
     private void renderSelectedArea(PoseStack transform, Vec2d mousePos) {
-        final var mouseDownPos = getMousePosition((int) mouseXDown, (int) mouseYDown);
+        final var mouseDownPos = visibleArea.getMousePositionInSchematic((int) mouseXDown, (int) mouseYDown);
         final var selectedRect = new RectangleI(mouseDownPos.floor(), mousePos.floor());
         ScreenUtils.drawBordersOutside(
                 transform, selectedRect.minX(), selectedRect.minY(), selectedRect.maxX(), selectedRect.maxY(),
-                1 / currentScale, -1
+                1 / visibleArea.getCurrentScale(), -1
         );
         ScreenUtils.fill(
                 transform,
@@ -298,18 +271,13 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
 
     private void drawBoundary(PoseStack transform) {
         final int color = 0xff_ff_dd_dd;
-        final float offset = 2 / currentScale;
+        final float offset = 2 / visibleArea.getCurrentScale();
         ScreenUtils.drawBordersOutside(
                 transform,
                 Schematic.GLOBAL_MIN, Schematic.GLOBAL_MIN, Schematic.GLOBAL_MAX, Schematic.GLOBAL_MAX,
                 offset, color
         );
     }
-
-    private double mouseXDown;
-    private double mouseYDown;
-    // Start at true: We don't want to consider a release if there wasn't a click before it
-    private boolean clickWasConsumed = true;
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -327,32 +295,21 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         if (super.mouseReleased(mouseX, mouseY, button)) {
             return true;
         }
-        final Vec2d mousePos = getMousePosition((int) mouseX, (int) mouseY);
+        final Vec2d mousePos = visibleArea.getMousePositionInSchematic((int) mouseX, (int) mouseY);
         if (clickWasConsumed) {
-            if (!isDragSelecting(button)) { return false; }
-            final Vec2d oldMousePos = getMousePosition((int) mouseXDown, (int) mouseYDown);
+            if (!placementHandler.isDragSelecting()) { return false; }
+            final Vec2d oldMousePos = visibleArea.getMousePositionInSchematic((int) mouseXDown, (int) mouseYDown);
             final var selectedArea = new RectangleI(mousePos.floor(), oldMousePos.floor());
-            List<WireSegment> movedSegments = new ArrayList<>();
-            final var schematic = getSchematic();
-            for (final var segmentIdx : schematic.getWiresWithin(selectedArea)) {
-                movedSegments.addAll(schematic.getWireSegments(segmentIdx));
-            }
-            List<PlacedSymbol> movedSymbols = new ArrayList<>();
-            for (final var symbolIdx : schematic.getSymbolIndicesWithin(selectedArea, minecraft.level)) {
-                movedSymbols.add(schematic.getSymbols().get(symbolIdx));
-            }
-            if (movedSegments.isEmpty() && movedSymbols.isEmpty()) { return false; }
-            this.placingSymbol = new PlacingSymbols(movedSymbols, movedSegments, mousePos, true);
+            if (!placementHandler.takePlacingFromArea(selectedArea, mousePos, getSchematic())) { return false; }
             runAndSendToServer(new DeleteArea(selectedArea));
-            return true;
         }
         clickWasConsumed = true;
-        if (!tryPlaceSymbol(mousePos) && !tryPlaceWire(mousePos)) {
+        if (!placementHandler.placeCurrentlyHeld(mousePos, schematic, this::runAndSendToServer)) {
             var clicked = schematic.getSymbolAt(mousePos, minecraft.level);
             if (clicked != null) {
                 handleSymbolClick(clicked, clicked.symbol(), mousePos, button);
             } else if (!container.readOnly) {
-                currentWireStart = mousePos.floor();
+                placementHandler.startWire(mousePos);
             }
         }
         return true;
@@ -361,14 +318,12 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     private <State>
     void handleSymbolClick(PlacedSymbol clicked, SymbolInstance<State> instance, Vec2d mousePos, int button) {
         if (!getHoveredPins(clicked, mousePos).isEmpty() && !container.readOnly) {
-            currentWireStart = mousePos.floor();
+            placementHandler.startWire(mousePos);
             return;
         }
         if (button == GLFW_MOUSE_BUTTON_LEFT) {
-            if (runAndSendToServer(new Delete(mousePos))) {
-                placingSymbol = new PlacingSymbols(clicked, mousePos, true);
-            }
-        } else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+            placementHandler.pickupComponent(clicked, mousePos, this::runAndSendToServer);
+        } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
             if (!container.readOnly || instance.getType().canConfigureOnReadOnly()) {
                 ClientSymbols.createInstanceWithUI(
                         instance.getType(),
@@ -377,33 +332,6 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                 );
             }
         }
-    }
-
-    private boolean tryPlaceSymbol(Vec2d mousePos) {
-        if (placingSymbol == null) { return false; }
-        final var symbols = placingSymbol.absoluteSymbols(mousePos);
-        final var wires = placingSymbol.absoluteWires(mousePos);
-        if (schematic.makeChecker(minecraft.level).getErrorForAddingAll(symbols, wires).isEmpty()) {
-            runAndSendToServer(new Add(wires, symbols));
-            if (placingSymbol.movingExisting) {
-                this.placingSymbol = null;
-            }
-        }
-        return true;
-    }
-
-    private boolean tryPlaceWire(Vec2d mousePos) {
-        WireSegment placedWire = getPlacingSegment(mousePos);
-        if (placedWire == null) { return false; }
-        if (schematic.makeChecker(minecraft.level).canAdd(placedWire)) {
-            runAndSendToServer(new Add(List.of(placedWire), List.of()));
-            if (placedWire.end().equals(currentWireStart)) {
-                currentWireStart = placedWire.start();
-            } else {
-                currentWireStart = placedWire.end();
-            }
-        }
-        return true;
     }
 
     @Override
@@ -416,50 +344,29 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         }
         clickWasConsumed = true;
         if (button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
-            centerX -= dragX / currentScale;
-            centerY -= dragY / currentScale;
-            clampView();
+            visibleArea.move(dragX, dragY);
             return true;
         }
-        return isDragSelecting(button);
-    }
-
-    private boolean isDragSelecting(int button) {
-        return button == GLFW_MOUSE_BUTTON_LEFT && placingSymbol == null;
+        return placementHandler.isDragSelecting();
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
         if (!super.mouseScrolled(mouseX, mouseY, delta)) {
-            final float zoomScale = 1.1f;
-            if (delta > 0) {
-                setScale(currentScale * zoomScale);
-            } else {
-                setScale(currentScale / zoomScale);
-            }
-            clampView();
+            visibleArea.onScroll(delta);
         }
         return true;
-    }
-
-    private void setScale(float newScale) {
-        currentScale = Mth.clamp(newScale, minScale, 10);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (!container.readOnly) {
             if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-                if (currentWireStart != null || placingSymbol != null) {
-                    if (placingSymbol != null && placingSymbol.movingExisting) {
-                        tryPlaceSymbol(placingSymbol.originalMousePos());
-                    }
-                    currentWireStart = null;
-                    placingSymbol = null;
+                if (placementHandler.putBackOnEsc(getSchematic(), this::runAndSendToServer)) {
                     return true;
                 }
             } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
-                final Vec2d mousePos = getMousePosition(ScreenUtils.getMousePosition());
+                final Vec2d mousePos = visibleArea.getMousePositionInSchematic(ScreenUtils.getMousePosition());
                 if (schematic.removeOneContaining(mousePos, minecraft.level)) {
                     sendToServer(new Delete(mousePos));
                     return true;
@@ -492,70 +399,9 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         );
     }
 
-    private Vec2d getMousePosition(Vec2d screenPos) {
-        return getMousePosition(screenPos.x(), screenPos.y());
-    }
-
-    private Vec2d getMousePosition(double mouseX, double mouseY) {
-        return new Vec2d(
-                (mouseX - width / 2.) / currentScale + centerX,
-                (mouseY - height / 2.) / currentScale + centerY
-        );
-    }
-
-    @Nullable
-    private WireSegment getPlacingSegment(Vec2d pos) {
-        if (currentWireStart != null) {
-            final double sizeX = Math.abs(pos.x() - currentWireStart.x() - .5);
-            final double sizeY = Math.abs(pos.y() - currentWireStart.y() - .5);
-            if (sizeX > sizeY) {
-                return new WireSegment(
-                        new Vec2i(getWireStart(currentWireStart.x(), pos.x()), currentWireStart.y()),
-                        getWireLength(currentWireStart.x(), pos.x()),
-                        WireSegment.WireAxis.X
-                );
-            } else {
-                return new WireSegment(
-                        new Vec2i(currentWireStart.x(), getWireStart(currentWireStart.y(), pos.y())),
-                        getWireLength(currentWireStart.y(), pos.y()),
-                        WireSegment.WireAxis.Y
-                );
-            }
-        }
-        return null;
-    }
-
-    private int getWireStart(int fixed, double mouse) {
-        return mouse < fixed ? floor(mouse) : fixed;
-    }
-
-    private int getWireLength(int fixed, double mouse) {
-        return mouse < fixed ? ceil(fixed - mouse) : floor(mouse - fixed);
-    }
-
     public void setSchematic(Schematic schematic) {
         this.schematic = schematic;
-        var level = Objects.requireNonNull(Minecraft.getInstance().level);
-        RectangleI totalArea = null;
-        for (var symbol : schematic.getSymbols()) {
-            totalArea = symbol.getShape(level).union(totalArea);
-        }
-        for (var net : schematic.getNets()) {
-            for (var wire : net.getAllSegments()) {
-                totalArea = wire.getShape().union(totalArea);
-            }
-        }
-        if (totalArea == null) {
-            totalArea = new RectangleI(-1, -1, 1, 1);
-        }
-        var center = totalArea.center();
-        centerX = center.x();
-        centerY = center.y();
-        // Subtract 3x border to get a bit of space between circuit and actual border
-        var scaleX = (width - 3 * TOTAL_BORDER) / (float) totalArea.getWidth();
-        var scaleY = (height - 3 * TOTAL_BORDER) / (float) totalArea.getHeight();
-        setScale(Math.min(Math.min(scaleX, scaleY), BASE_SCALE));
-        clampView();
+        visibleArea.autoRange(schematic);
     }
 
     public Schematic getSchematic() {
@@ -597,60 +443,6 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
             errors = SchematicCircuitConverter.getFloatingInputs(schematic);
         } else {
             errors = ImmutableList.of();
-        }
-    }
-
-    private void clampView() {
-        final double halfScreenWidth = getShownSizeForScale(width, currentScale) / 2;
-        final double halfScreenHeight = getShownSizeForScale(height, currentScale) / 2;
-        centerX = Mth.clamp(
-                centerX, Schematic.GLOBAL_MIN + halfScreenWidth, Schematic.GLOBAL_MAX - halfScreenWidth
-        );
-        centerY = Mth.clamp(
-                centerY, Schematic.GLOBAL_MIN + halfScreenHeight, Schematic.GLOBAL_MAX - halfScreenHeight
-        );
-    }
-
-    private static float getShownSizeForScale(float dimensionSize, float scale) {
-        return (dimensionSize - 2 * TOTAL_BORDER - 5) / scale;
-    }
-
-    private static float getScaleForShownSize(float size, float shownSize) {
-        return (size - 2 * TOTAL_BORDER - 5) / shownSize;
-    }
-
-    private record PlacingSymbols(
-            List<PlacedSymbol> originalSymbols,
-            List<WireSegment> originalWires,
-            Vec2d originalMousePos,
-            boolean movingExisting
-    ) {
-        public PlacingSymbols(PlacedSymbol symbol, Vec2d originalMousePos, boolean movingExisting) {
-            this(List.of(symbol), List.of(), originalMousePos, movingExisting);
-        }
-
-        public List<PlacedSymbol> absoluteSymbols(Vec2d mousePos) {
-            var offset = getTotalOffset(mousePos);
-            List<PlacedSymbol> absoluteSymbols = new ArrayList<>(originalSymbols.size());
-            for (var relative : originalSymbols) {
-                absoluteSymbols.add(new PlacedSymbol(
-                        relative.position().add(offset), relative.symbol()
-                ));
-            }
-            return absoluteSymbols;
-        }
-
-        public List<WireSegment> absoluteWires(Vec2d mousePos) {
-            var offset = getTotalOffset(mousePos);
-            List<WireSegment> absoluteWires = new ArrayList<>(originalWires.size());
-            for (var relative : originalWires) {
-                absoluteWires.add(new WireSegment(relative.start().add(offset), relative.length(), relative.axis()));
-            }
-            return absoluteWires;
-        }
-
-        private Vec2i getTotalOffset(Vec2d mousePos) {
-            return mousePos.subtract(originalMousePos).round();
         }
     }
 }

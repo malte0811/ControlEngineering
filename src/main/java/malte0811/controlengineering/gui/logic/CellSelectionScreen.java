@@ -44,8 +44,8 @@ public class CellSelectionScreen extends StackedScreen {
     @Override
     protected void init() {
         super.init();
-        xGrid = (width - 2 * BORDER_SIZE_X) / (numCols * LogicDesignScreen.BASE_SCALE);
-        yGrid = (height - 2 * BORDER_SIZE_Y - PageSelector.HEIGHT) / (numRowsPerPage * LogicDesignScreen.BASE_SCALE);
+        xGrid = (width - 2 * BORDER_SIZE_X) / (numCols * SchematicViewArea.BASE_SCALE);
+        yGrid = (height - 2 * BORDER_SIZE_Y - PageSelector.HEIGHT) / (numRowsPerPage * SchematicViewArea.BASE_SCALE);
         this.pageSelector = addRenderableWidget(new PageSelector(
                 BORDER_SIZE_X, height - BORDER_SIZE_Y - PageSelector.HEIGHT, width - 2 * BORDER_SIZE_X,
                 Mth.positiveCeilDiv(symbols.size(), numCols * numRowsPerPage),
@@ -59,7 +59,7 @@ public class CellSelectionScreen extends StackedScreen {
     ) {
         matrixStack.pushPose();
         matrixStack.translate(BORDER_SIZE_X, BORDER_SIZE_Y, 0);
-        matrixStack.scale(LogicDesignScreen.BASE_SCALE, LogicDesignScreen.BASE_SCALE, 1);
+        matrixStack.scale(SchematicViewArea.BASE_SCALE, SchematicViewArea.BASE_SCALE, 1);
         final var fontHeight = getTotalFontHeight();
         int index = getFirstIndexOnPage();
         for (int row = 0; index < symbols.size() && row < numRowsPerPage; ++row) {
@@ -99,7 +99,7 @@ public class CellSelectionScreen extends StackedScreen {
         );
         matrixStack.pushPose();
         matrixStack.translate(BORDER_SIZE_X, BORDER_SIZE_Y, 0);
-        matrixStack.scale(LogicDesignScreen.BASE_SCALE, LogicDesignScreen.BASE_SCALE, 1);
+        matrixStack.scale(SchematicViewArea.BASE_SCALE, SchematicViewArea.BASE_SCALE, 1);
         final int selected = getSelectedIndex(mouseX, mouseY) - getFirstIndexOnPage();
         if (selected >= 0) {
             final int row = selected / numCols;
@@ -140,8 +140,8 @@ public class CellSelectionScreen extends StackedScreen {
     }
 
     private int getSelectedIndex(double mouseX, double mouseY) {
-        final int col = (int) ((mouseX - BORDER_SIZE_X) / (xGrid * LogicDesignScreen.BASE_SCALE));
-        final int row = (int) ((mouseY - BORDER_SIZE_Y) / (yGrid * LogicDesignScreen.BASE_SCALE));
+        final int col = (int) ((mouseX - BORDER_SIZE_X) / (xGrid * SchematicViewArea.BASE_SCALE));
+        final int row = (int) ((mouseY - BORDER_SIZE_Y) / (yGrid * SchematicViewArea.BASE_SCALE));
         if (col < 0 || row < 0 || col >= numCols || row >= numRowsPerPage) {
             return -1;
         }
