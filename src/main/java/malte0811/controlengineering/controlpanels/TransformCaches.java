@@ -74,5 +74,5 @@ public class TransformCaches {
         });
     }
 
-    private static record PanelTopState(float borderHeight, float angle) {}
+    private record PanelTopState(float borderHeight, float angle) {}
 }

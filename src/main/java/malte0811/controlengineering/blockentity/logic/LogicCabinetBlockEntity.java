@@ -45,8 +45,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.RegistryObject;
@@ -175,7 +175,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     public <T> LazyOptional<T> getCapability(
             @Nonnull Capability<T> cap, @Nullable Direction side
     ) {
-        if (cap == CapabilityEnergy.ENERGY && side == getFacing(getBlockState())) {
+        if (cap == ForgeCapabilities.ENERGY && side == getFacing(getBlockState())) {
             return energyCap.cast();
         }
         return super.getCapability(cap, side);

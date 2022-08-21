@@ -36,11 +36,10 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.DeferredRegister;
 
@@ -78,7 +77,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
             new ArrayList<>(),
             list -> {
                 for (Direction d : DirectionUtils.BY_HORIZONTAL_INDEX) {
-                    list.add(CapabilityReference.forNeighbor(this, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d));
+                    list.add(CapabilityReference.forNeighbor(this, ForgeCapabilities.ITEM_HANDLER, d));
                 }
             }
     );
@@ -322,7 +321,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
         @Nonnull
         @Override
         public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-            if (cap == CapabilityEnergy.ENERGY && CapabilityUtils.isNullOr(Direction.UP, side)) {
+            if (cap == ForgeCapabilities.ENERGY && CapabilityUtils.isNullOr(Direction.UP, side)) {
                 if (energyRef == null) {
                     if (level.getBlockEntity(worldPosition.below()) instanceof PanelCNCBlockEntity paneCNC) {
                         energyRef = CapabilityUtils.constantOptional(paneCNC.energy);
