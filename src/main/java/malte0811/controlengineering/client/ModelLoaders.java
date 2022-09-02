@@ -7,6 +7,7 @@ import malte0811.controlengineering.client.model.SpecialModelLoader;
 import malte0811.controlengineering.client.model.logic.DynamicLogicModelLoader;
 import malte0811.controlengineering.client.model.logic.LogicWorkbenchModel;
 import malte0811.controlengineering.client.model.panel.PanelModel;
+import malte0811.controlengineering.client.model.scope.ScopeModelLoader;
 import malte0811.controlengineering.client.model.tape.KeypunchSwitchModel;
 import malte0811.controlengineering.client.model.tape.SequencerSwitchModel;
 import malte0811.controlengineering.client.render.panel.PanelRenderer;
@@ -34,6 +35,9 @@ public class ModelLoaders {
     public static final ResourceLocation CACHED_COMPOSITE = new ResourceLocation(
             ControlEngineering.MODID, "cacheable_composite"
     );
+    public static final ResourceLocation SCOPE = new ResourceLocation(
+            ControlEngineering.MODID, "scope"
+    );
 
     @SubscribeEvent
     public static void registerModelLoaders(ModelEvent.RegisterGeometryLoaders ev) {
@@ -49,5 +53,6 @@ public class ModelLoaders {
         ev.register(LOGIC_CABINET.getPath(), new DynamicLogicModelLoader());
         ev.register(LOGIC_WORKBENCH.getPath(), new LogicWorkbenchModel.Loader());
         ev.register(CACHED_COMPOSITE.getPath(), new CacheableCompositeModel.Loader());
+        ev.register(SCOPE.getPath(), new ScopeModelLoader());
     }
 }

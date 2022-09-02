@@ -6,6 +6,7 @@
   "block.controlengineering.line_access": "Line Access",
   "block.controlengineering.logic_cabinet": "Logic Cabinet",
   "block.controlengineering.logic_workbench": "Logic Workbench",
+  "block.controlengineering.oscilloscope": "Oscilloscope",
   "block.controlengineering.panel_cnc": "Control Panel CNC",
   "block.controlengineering.panel_designer": "Panel Designer",
   "block.controlengineering.rs_remapper": "Redstone Wire Remapper",

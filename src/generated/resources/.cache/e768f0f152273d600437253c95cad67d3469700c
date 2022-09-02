@@ -1,4 +1,4 @@
-// 1.19	2022-07-22T17:58:46.909984271	Panel component costs
+// 1.19.2	2022-09-02T12:29:23.49551981	Panel component costs
 bc5d479904dbb216e034b4cb5f869bb88badff95 data/controlengineering/recipes/component_cost/button.json
 45d70f5c4d6097ee0d29a759da56a2ae4ada4bb1 data/controlengineering/recipes/component_cost/covered_switch.json
 15901afc31c974bc9092e270fbcf09f3855a25fb data/controlengineering/recipes/component_cost/indicator.json

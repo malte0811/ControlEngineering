@@ -61,6 +61,7 @@ public class LangGenerator extends LanguageProvider {
         addBlock(CEBlocks.SEQUENCER, "Signal Sequencer");
         addBlock(CEBlocks.PANEL_DESIGNER, "Panel Designer");
         addBlock(CEBlocks.RS_REMAPPER, "Redstone Wire Remapper");
+        addBlock(CEBlocks.SCOPE, "Oscilloscope");
 
         addItem(CEItems.EMPTY_TAPE, "Empty Tape");
         addItem(CEItems.PUNCHED_TAPE, "Punched Tape");

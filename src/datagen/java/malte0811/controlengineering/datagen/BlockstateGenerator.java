@@ -11,6 +11,7 @@ import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.bus.BusInterfaceBlock;
 import malte0811.controlengineering.blocks.bus.BusRelayBlock;
 import malte0811.controlengineering.blocks.bus.LineAccessBlock;
+import malte0811.controlengineering.blocks.bus.ScopeBlock;
 import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
@@ -19,10 +20,8 @@ import malte0811.controlengineering.blocks.panels.PanelDesignerBlock;
 import malte0811.controlengineering.blocks.tape.KeypunchBlock;
 import malte0811.controlengineering.blocks.tape.SequencerBlock;
 import malte0811.controlengineering.client.ModelLoaders;
-import malte0811.controlengineering.datagen.modelbuilder.CacheableCompositeBuilder;
-import malte0811.controlengineering.datagen.modelbuilder.DynamicModelBuilder;
-import malte0811.controlengineering.datagen.modelbuilder.LogicCabinetBuilder;
-import malte0811.controlengineering.datagen.modelbuilder.LogicWorkbenchBuilder;
+import malte0811.controlengineering.controlpanels.scope.ScopeModules;
+import malte0811.controlengineering.datagen.modelbuilder.*;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
@@ -64,6 +63,7 @@ public class BlockstateGenerator extends BlockStateProvider {
         sequencerModel();
         logicCabinetModel();
         logicWorkbench();
+        scopeModel();
         rotatedWithOffset(
                 CEBlocks.PANEL_DESIGNER,
                 obj("panel_designer.obj", modLoc("transform/block_half_size"))
@@ -135,6 +135,21 @@ public class BlockstateGenerator extends BlockStateProvider {
         emptyModel(CEBlocks.LOGIC_CABINET, ImmutableMap.of(LogicCabinetBlock.HEIGHT, 1));
         itemModels().getBuilder(ItemModels.name(CEBlocks.LOGIC_CABINET))
                 .parent(logicModel);
+    }
+
+    private void scopeModel() {
+        final var mainModel = obj("scope/main.obj", nongenerated);
+        final var analogModel = obj("scope/analog.obj", nongenerated);
+        final var digitalModel = obj("scope/digital.obj", nongenerated);
+        final var empty = nongenerated.withExistingParent("empty", new ResourceLocation(Lib.MODID, "block/ie_empty"));
+        final var combined = models().withExistingParent("scope", mcLoc("block/block"))
+                .customLoader(ScopeModelBuilder::begin)
+                .main(mainModel)
+                //.module(ScopeModules.ANALOG, analogModel)
+                .module(ScopeModules.NONE, empty)
+                .end();
+        horizontalRotated(CEBlocks.SCOPE, ScopeBlock.FACING, combined);
+        itemModels().getBuilder(ItemModels.name(CEBlocks.SCOPE)).parent(combined);
     }
 
     private void sequencerModel() {

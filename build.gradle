@@ -133,7 +133,7 @@ minecraft {
             ideaModule project.name+".datagen"
 
             args '--mod', 'controlengineering', '--all', '--output', file('src/generated/resources/'), '--validate',
-                    '--existing', sourceSets.main.resources.srcDirs[0]
+                    '--existing', sourceSets.main.resources.srcDirs[0], '--existing-mod', 'immersiveengineering'
 
             mods {
                 controlengineering {

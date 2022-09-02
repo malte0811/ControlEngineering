@@ -1,0 +1,20 @@
+{
+  "parent": "minecraft:block/block",
+  "loader": "controlengineering:scope",
+  "main": {
+    "parent": "minecraft:block/block",
+    "automatic_culling": false,
+    "flip_v": true,
+    "loader": "forge:obj",
+    "model": "controlengineering:models/scope/main.obj"
+  },
+  "modules": {
+    "controlengineering:none": {
+      "parent": "minecraft:block/block",
+      "automatic_culling": false,
+      "flip_v": true,
+      "loader": "forge:obj",
+      "model": "controlengineering:models/scope/analog.obj"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-// 1.19	2022-07-22T17:58:46.905482013	LootTables
+// 1.19.2	2022-09-02T12:29:23.493898426	LootTables
 4373d07ab5491c52377544a201547c295c985522 data/controlengineering/loot_tables/blocks/bus_interface.json
 eb10bc82a4ddb09b7cc90a91455bfd96da6d1147 data/controlengineering/loot_tables/blocks/bus_relay.json
 aea77b18fdc4d69523b3bcb4fd00dcfb9ea3019c data/controlengineering/loot_tables/blocks/control_panel.json
@@ -6,6 +6,7 @@ aea77b18fdc4d69523b3bcb4fd00dcfb9ea3019c data/controlengineering/loot_tables/blo
 54edf6731330d2ec3e8af294e4343261a2a20496 data/controlengineering/loot_tables/blocks/line_access.json
 52a66d6d16642f8a48b02982646caa57fc3120ad data/controlengineering/loot_tables/blocks/logic_cabinet.json
 01e274602432289f70d0359443cb3e622fa20793 data/controlengineering/loot_tables/blocks/logic_workbench.json
+a3da32f2df65e8feb67144faa72607c9ac42bdbe data/controlengineering/loot_tables/blocks/oscilloscope.json
 f98db1e39d19ee2e6a588c0519e35f9ef810b0f2 data/controlengineering/loot_tables/blocks/panel_cnc.json
 ff7d03ffa28e978a9782abc0881e279e611b14f3 data/controlengineering/loot_tables/blocks/panel_designer.json
 32751da9cb0004308b7ee93cb705f0da264d443f data/controlengineering/loot_tables/blocks/rs_remapper.json

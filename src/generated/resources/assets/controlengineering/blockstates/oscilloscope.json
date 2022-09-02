@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "controlengineering:block/scope",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "controlengineering:block/scope",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "controlengineering:block/scope"
+    },
+    "facing=west": {
+      "model": "controlengineering:block/scope",
+      "y": 90
+    }
+  }
+}

@@ -24,6 +24,10 @@ public class TypedRegistry<T extends TypedRegistryEntry<?, ?>> {
         return entries.get(name);
     }
 
+    public T getOrDefault(ResourceLocation name, T fallback) {
+        return entries.getOrDefault(name, fallback);
+    }
+
     public Map<ResourceLocation, T> getEntries() {
         return Collections.unmodifiableMap(entries);
     }

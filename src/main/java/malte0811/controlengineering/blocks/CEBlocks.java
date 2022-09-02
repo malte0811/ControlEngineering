@@ -1,10 +1,7 @@
 package malte0811.controlengineering.blocks;
 
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.blocks.bus.BusInterfaceBlock;
-import malte0811.controlengineering.blocks.bus.BusRelayBlock;
-import malte0811.controlengineering.blocks.bus.LineAccessBlock;
-import malte0811.controlengineering.blocks.bus.RSRemapperBlock;
+import malte0811.controlengineering.blocks.bus.*;
 import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
@@ -54,5 +51,9 @@ public class CEBlocks {
 
     public static final RegistryObject<LogicWorkbenchBlock> LOGIC_WORKBENCH = REGISTER.register(
             "logic_workbench", LogicWorkbenchBlock::new
+    );
+
+    public static final RegistryObject<ScopeBlock> SCOPE = REGISTER.register(
+            "oscilloscope", ScopeBlock::new
     );
 }

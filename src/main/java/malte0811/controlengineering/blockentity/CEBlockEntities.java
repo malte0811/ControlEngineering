@@ -2,10 +2,7 @@ package malte0811.controlengineering.blockentity;
 
 import com.google.common.collect.ImmutableSet;
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.blockentity.bus.BusInterfaceBlockEntity;
-import malte0811.controlengineering.blockentity.bus.BusRelayBlockEntity;
-import malte0811.controlengineering.blockentity.bus.LineAccessBlockEntity;
-import malte0811.controlengineering.blockentity.bus.RSRemapperBlockEntity;
+import malte0811.controlengineering.blockentity.bus.*;
 import malte0811.controlengineering.blockentity.logic.LogicCabinetBlockEntity;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
@@ -75,6 +72,10 @@ public class CEBlockEntities {
 
     public static MultiblockBEType<LogicWorkbenchBlockEntity, ?> LOGIC_WORKBENCH = makeMBType(
             "logic_workbench", LogicWorkbenchBlockEntity::new, CEBlocks.LOGIC_WORKBENCH, LogicWorkbenchBlock::isMaster
+    );
+
+    public static RegistryObject<BlockEntityType<ScopeBlockEntity>> SCOPE = REGISTER.register(
+            "oscilloscope", createBEType(ScopeBlockEntity::new, CEBlocks.SCOPE)
     );
 
     public static <T extends BlockEntity> Supplier<BlockEntityType<T>> createBEType(
