@@ -4,8 +4,13 @@ import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 
 public abstract class ScopeModule<State> extends TypedRegistryEntry<State, ScopeModuleInstance<State>> {
-    public ScopeModule(State initialState, MyCodec<State> stateCodec) {
+    private final int width;
+    private final boolean empty;
+
+    public ScopeModule(State initialState, MyCodec<State> stateCodec, int width, boolean empty) {
         super(initialState, stateCodec);
+        this.width = width;
+        this.empty = empty;
     }
 
     @Override
@@ -13,5 +18,11 @@ public abstract class ScopeModule<State> extends TypedRegistryEntry<State, Scope
         return new ScopeModuleInstance<>(this, state);
     }
 
-    public abstract int getWidth();
+    public final int getWidth() {
+        return width;
+    }
+
+    public final boolean isEmpty() {
+        return empty;
+    }
 }

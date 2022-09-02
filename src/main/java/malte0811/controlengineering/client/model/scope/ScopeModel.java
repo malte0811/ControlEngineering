@@ -136,6 +136,7 @@ public class ScopeModel implements CEBakedModel {
             final var moduleQuads = modules.get(module.getRegistryName());
             if (moduleQuads == null) { continue; }
             quads.addAll(transformer.process(moduleQuads));
+            // TODO add side quad at start/end of filled/empty sequences
         }
         return quads;
     }

@@ -12,18 +12,19 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class ScopeBlock extends CEBlock<Direction> {
     public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    // TODO
-    private static final VoxelShape NORTH_SHAPE = ShapeUtils.createPixelRelative(0, 0, 0, 16, 16, 15);
+    public static final DirectionalShapeProvider SHAPE = new DirectionalShapeProvider(
+            FromBlockFunction.getProperty(FACING),
+            ShapeUtils.createPixelRelative(0, 0, 0, 16, 16, 15)
+    );
 
     public ScopeBlock() {
         super(
                 defaultPropertiesNotSolid(),
                 BlockPropertyPlacement.horizontal(FACING),
-                new DirectionalShapeProvider(FromBlockFunction.getProperty(FACING), NORTH_SHAPE),
+                SHAPE,
                 CEBlockEntities.SCOPE
         );
     }

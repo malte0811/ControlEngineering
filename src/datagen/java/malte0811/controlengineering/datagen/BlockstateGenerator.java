@@ -145,7 +145,8 @@ public class BlockstateGenerator extends BlockStateProvider {
         final var combined = models().withExistingParent("scope", mcLoc("block/block"))
                 .customLoader(ScopeModelBuilder::begin)
                 .main(mainModel)
-                //.module(ScopeModules.ANALOG, analogModel)
+                .module(ScopeModules.ANALOG, analogModel)
+                .module(ScopeModules.DIGITAL, digitalModel)
                 .module(ScopeModules.NONE, empty)
                 .end();
         horizontalRotated(CEBlocks.SCOPE, ScopeBlock.FACING, combined);

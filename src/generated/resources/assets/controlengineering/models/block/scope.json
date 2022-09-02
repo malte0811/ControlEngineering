@@ -9,12 +9,22 @@
     "model": "controlengineering:models/scope/main.obj"
   },
   "modules": {
-    "controlengineering:none": {
+    "controlengineering:analog": {
       "parent": "minecraft:block/block",
       "automatic_culling": false,
       "flip_v": true,
       "loader": "forge:obj",
       "model": "controlengineering:models/scope/analog.obj"
+    },
+    "controlengineering:digital": {
+      "parent": "minecraft:block/block",
+      "automatic_culling": false,
+      "flip_v": true,
+      "loader": "forge:obj",
+      "model": "controlengineering:models/scope/digital.obj"
+    },
+    "controlengineering:none": {
+      "parent": "immersiveengineering:block/ie_empty"
     }
   }
 }

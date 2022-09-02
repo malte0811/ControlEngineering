@@ -12,6 +12,8 @@ import malte0811.controlengineering.client.manual.LeafcellElement;
 import malte0811.controlengineering.client.manual.PanelComponentElement;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
+import malte0811.controlengineering.controlpanels.scope.ScopeModule;
+import malte0811.controlengineering.controlpanels.scope.ScopeModules;
 import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.gui.misc.BusSignalSelector;
 import malte0811.controlengineering.gui.misc.ConfirmScreen;
@@ -61,7 +63,6 @@ public class LangGenerator extends LanguageProvider {
         addBlock(CEBlocks.SEQUENCER, "Signal Sequencer");
         addBlock(CEBlocks.PANEL_DESIGNER, "Panel Designer");
         addBlock(CEBlocks.RS_REMAPPER, "Redstone Wire Remapper");
-        addBlock(CEBlocks.SCOPE, "Oscilloscope");
 
         addItem(CEItems.EMPTY_TAPE, "Empty Tape");
         addItem(CEItems.PUNCHED_TAPE, "Punched Tape");
@@ -80,6 +81,10 @@ public class LangGenerator extends LanguageProvider {
 
         add(PunchedTapeItem.PUNCHED_TAPE_BYTES, "Characters: %d");
         add(EmptyTapeItem.EMPTY_TAPE_BYTES, "Length: %d characters");
+
+        addBlock(CEBlocks.SCOPE, "Oscilloscope");
+        addScopeModule(ScopeModules.ANALOG, "Dual Trace Amplifier Module");
+        addScopeModule(ScopeModules.DIGITAL, "Logic Analyzer Module");
 
         add("itemGroup." + ControlEngineering.MODID, "Control Engineering");
 
@@ -241,6 +246,10 @@ public class LangGenerator extends LanguageProvider {
 
     private void addClock(ClockGenerator<?> type, String name) {
         addItem(CEItems.CLOCK_GENERATORS.get(type.getRegistryName()), name);
+    }
+
+    private void addScopeModule(ScopeModule<?> type, String name) {
+        addItem(CEItems.SCOPE_MODULES.get(type.getRegistryName()), name);
     }
 
     private void addManualSection(String id, String name) {

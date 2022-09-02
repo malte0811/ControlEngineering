@@ -5,6 +5,8 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
+import malte0811.controlengineering.controlpanels.scope.ScopeModule;
+import malte0811.controlengineering.controlpanels.scope.ScopeModules;
 import malte0811.controlengineering.logic.clock.ClockGenerator;
 import malte0811.controlengineering.logic.clock.ClockTypes;
 import net.minecraft.core.Direction;
@@ -15,6 +17,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class CEItems {
     public static final DeferredRegister<Item> REGISTER = DeferredRegister.create(
@@ -33,6 +36,7 @@ public class CEItems {
     public static final RegistryObject<ItemWithKeyID> LOCK = REGISTER.register("lock", ItemWithKeyID::new);
     public static final RegistryObject<ItemWithKeyID> KEY = REGISTER.register("key", ItemWithKeyID::new);
     public static final Map<ResourceLocation, RegistryObject<Item>> CLOCK_GENERATORS;
+    public static final Map<ResourceLocation, RegistryObject<Item>> SCOPE_MODULES;
     public static final RegistryObject<PCBStackItem> PCB_STACK = REGISTER.register("pcb_stack", PCBStackItem::new);
     public static final RegistryObject<SchematicItem> SCHEMATIC = REGISTER.register(
             "logic_schematic", SchematicItem::new
@@ -70,16 +74,20 @@ public class CEItems {
         return new Item.Properties().tab(ControlEngineering.ITEM_GROUP);
     }
 
-    static {
-        ImmutableMap.Builder<ResourceLocation, RegistryObject<Item>> clockSources = ImmutableMap.builder();
-        for (Map.Entry<ResourceLocation, ClockGenerator<?>> entry : ClockTypes.getGenerators().entrySet()) {
+    private static <T>
+    Map<ResourceLocation, RegistryObject<Item>> makeItemsFor(Map<ResourceLocation, T> owners, Predicate<T> shouldAdd) {
+        ImmutableMap.Builder<ResourceLocation, RegistryObject<Item>> items = ImmutableMap.builder();
+        for (Map.Entry<ResourceLocation, T> entry : owners.entrySet()) {
             ResourceLocation id = entry.getKey();
-            if (entry.getValue().isActiveClock()) {
-                clockSources.put(
-                        id, REGISTER.register(id.getPath(), () -> new Item(simpleItemProperties()))
-                );
+            if (shouldAdd.test(entry.getValue())) {
+                items.put(id, REGISTER.register(id.getPath(), () -> new Item(simpleItemProperties())));
             }
         }
-        CLOCK_GENERATORS = clockSources.build();
+        return items.build();
+    }
+
+    static {
+        CLOCK_GENERATORS = makeItemsFor(ClockTypes.getGenerators(), ClockGenerator::isActiveClock);
+        SCOPE_MODULES = makeItemsFor(ScopeModules.REGISTRY.getEntries(), Predicate.not(ScopeModule::isEmpty));
     }
 }
