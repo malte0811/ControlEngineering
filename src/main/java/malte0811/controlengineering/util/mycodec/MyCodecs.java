@@ -31,6 +31,14 @@ public class MyCodecs {
             return manager.makeInt(in);
         }
     };
+    public static final MyCodec<Short> SHORT = new SimpleCodec<>(
+            TreePrimitive.class, TreePrimitive::asShort, SerialStorage::writeShort, SerialStorage::readShort
+    ) {
+        @Override
+        public <B> TreeElement<B> toTree(Short in, TreeManager<B> manager) {
+            return manager.makeShort(in);
+        }
+    };
     public static final MyCodec<Long> LONG = new SimpleCodec<>(
             TreePrimitive.class, TreePrimitive::asLong, SerialStorage::writeLong, SerialStorage::readLong
     ) {

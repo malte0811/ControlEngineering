@@ -44,8 +44,13 @@ public class NBTPrimitive extends NBTElement<Tag> implements TreePrimitive<Tag> 
     }
 
     @Override
-    public Long asLong() {
+    public long asLong() {
         return getNumeric().getAsLong();
+    }
+
+    @Override
+    public short asShort() {
+        return getNumeric().getAsShort();
     }
 
     private NumericTag getNumeric() {

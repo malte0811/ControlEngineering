@@ -104,6 +104,16 @@ public class StringListStorage implements SerialStorage {
     }
 
     @Override
+    public FastDataResult<Short> readShort() {
+        return read(Short::parseShort, "short");
+    }
+
+    @Override
+    public void writeShort(short value) {
+        data.add(Short.toString(value));
+    }
+
+    @Override
     public void pushMark() {
         marks.push(nextReadIndex);
     }

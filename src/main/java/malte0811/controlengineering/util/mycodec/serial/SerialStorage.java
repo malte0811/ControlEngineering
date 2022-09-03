@@ -47,6 +47,10 @@ public interface SerialStorage {
 
     void writeLong(long value);
 
+    FastDataResult<Short> readShort();
+
+    void writeShort(short value);
+
     void pushMark();
 
     void resetToMark();

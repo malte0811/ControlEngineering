@@ -13,5 +13,7 @@ public interface TreePrimitive<Base> extends TreeElement<Base> {
 
     String asString();
 
-    Long asLong();
+    long asLong();
+
+    short asShort();
 }

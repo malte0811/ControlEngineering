@@ -49,8 +49,13 @@ public class NBTManager implements TreeManager<Tag> {
     }
 
     @Override
-    public TreeElement<Tag> makeLong(Long value) {
+    public TreeElement<Tag> makeLong(long value) {
         return new NBTPrimitive(LongTag.valueOf(value));
+    }
+
+    @Override
+    public TreeElement<Tag> makeShort(short value) {
+        return new NBTPrimitive(ShortTag.valueOf(value));
     }
 
     @Override
