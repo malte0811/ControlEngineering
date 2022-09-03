@@ -19,6 +19,8 @@ import malte0811.controlengineering.gui.misc.BusSignalSelector;
 import malte0811.controlengineering.gui.misc.ConfirmScreen;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignScreen;
+import malte0811.controlengineering.gui.scope.module.AnalogClientModule;
+import malte0811.controlengineering.gui.scope.module.DigitalClientModule;
 import malte0811.controlengineering.gui.widget.ColorSelector;
 import malte0811.controlengineering.items.*;
 import malte0811.controlengineering.logic.cells.LeafcellType;
@@ -218,6 +220,11 @@ public class LangGenerator extends LanguageProvider {
 
         add(ConfigSwitchSymbol.OFF_KEY, "Low output");
         add(ConfigSwitchSymbol.ON_KEY, "High output");
+
+        add(AnalogClientModule.TRIGGER_POLARITY_TOOLTIP, "Trigger slope polarity");
+        add(DigitalClientModule.TRIGGER_HIGH, "Trigger when high");
+        add(DigitalClientModule.TRIGGER_LOW, "Trigger when low");
+        add(DigitalClientModule.TRIGGER_IGNORE, "Ignore for triggering");
     }
 
     private void addManualStrings() {

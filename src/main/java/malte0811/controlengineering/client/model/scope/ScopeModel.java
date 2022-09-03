@@ -92,7 +92,7 @@ public class ScopeModel implements CEBakedModel {
             @NotNull ModelData modelData
     ) {
         if (level.getBlockEntity(pos) instanceof ScopeBlockEntity scope) {
-            return modelData.derive().with(KEY_PROP, new Key(scope.getModules().toList())).build();
+            return modelData.derive().with(KEY_PROP, new Key(scope.getModuleTypes().toList())).build();
         } else {
             return modelData;
         }

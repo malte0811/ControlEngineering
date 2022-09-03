@@ -8,12 +8,11 @@ import malte0811.controlengineering.gui.remapper.AbstractRemapperMenu;
 import malte0811.controlengineering.gui.remapper.AbstractRemapperScreen;
 import malte0811.controlengineering.gui.remapper.ParallelPortMapperScreen;
 import malte0811.controlengineering.gui.remapper.RSRemapperScreen;
+import malte0811.controlengineering.gui.scope.ScopeMenu;
+import malte0811.controlengineering.gui.scope.ScopeScreen;
 import malte0811.controlengineering.gui.tape.KeypunchMenu;
 import malte0811.controlengineering.gui.tape.KeypunchScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.function.Predicate;
 
 public class ContainerScreenManager {
     // IDEA considers the type arguments to be redundant, but the compiler disagrees, and that's the thing that
@@ -37,6 +36,9 @@ public class ContainerScreenManager {
         );
         MenuScreens.<AbstractRemapperMenu, AbstractRemapperScreen>register(
                 CEContainers.PORT_REMAPPER.get(), (container, inv, title) -> new ParallelPortMapperScreen(container)
+        );
+        MenuScreens.<ScopeMenu, ScopeScreen>register(
+                CEContainers.SCOPE.get(), (container, inv, title) -> new ScopeScreen(container)
         );
     }
 }

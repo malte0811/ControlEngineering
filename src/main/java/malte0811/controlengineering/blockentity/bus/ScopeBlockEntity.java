@@ -9,6 +9,7 @@ import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.controlpanels.scope.ScopeModule;
 import malte0811.controlengineering.controlpanels.scope.ScopeModuleInstance;
 import malte0811.controlengineering.controlpanels.scope.ScopeModules;
+import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.util.BEUtil;
 import malte0811.controlengineering.util.CachedValue;
@@ -20,11 +21,15 @@ import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
@@ -47,7 +52,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
             ScopeModules.NONE.newInstance()
     ));
     private final CachedValue<ShapeKey, SelectionShapes> shape = new CachedValue<>(
-            () -> new ShapeKey(getBlockState().getValue(ScopeBlock.FACING), getModules().toList()),
+            () -> new ShapeKey(getBlockState().getValue(ScopeBlock.FACING), getModuleTypes().toList()),
             key -> makeShapes(key, this)
     );
 
@@ -76,15 +81,19 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     @Override
     protected void readSyncedData(CompoundTag in) {
         super.readSyncedData(in);
-        final var oldModuleList = getModules().toList();
+        final var oldModuleList = getModuleTypes().toList();
         modules = SYNC_MODULES_CODEC.fromNBT(in.get("modules"), ArrayList::new);
-        if (level != null && !oldModuleList.equals(getModules().toList())) {
+        if (level != null && !oldModuleList.equals(getModuleTypes().toList())) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
         }
     }
 
-    public Stream<ScopeModule<?>> getModules() {
+    public Stream<ScopeModule<?>> getModuleTypes() {
         return modules.stream().map(ScopeModuleInstance::getType);
+    }
+
+    public List<ScopeModuleInstance<?>> getModules() {
+        return modules;
     }
 
     @Override
@@ -93,6 +102,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     }
 
     private InteractionResult interactWithModule(int moduleID, UseOnContext ctx) {
+        // TODO support for locking modules in place with a screwdriver?
         if (level == null) { return InteractionResult.PASS; }
         final var targetedModule = modules.get(moduleID).getType();
         if (!targetedModule.isEmpty()) {
@@ -145,8 +155,14 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
                 ScopeBlock.SHAPE.apply(key.facing()),
                 MatrixUtils.inverseFacing(key.facing()),
                 subShapes,
-                // TODO open UI here!
-                $ -> InteractionResult.PASS
+                ctx -> {
+                    if (ctx.getPlayer() instanceof ServerPlayer serverPlayer) {
+                        NetworkHooks.openScreen(serverPlayer, new SimpleMenuProvider(
+                                CEContainers.SCOPE.argConstructor(bEntity), Component.empty()
+                        ));
+                    }
+                    return InteractionResult.SUCCESS;
+                }
         );
     }
 

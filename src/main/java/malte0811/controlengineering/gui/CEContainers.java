@@ -2,6 +2,7 @@ package malte0811.controlengineering.gui;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.bus.RSRemapperBlockEntity;
+import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
 import malte0811.controlengineering.blockentity.panels.PanelDesignerBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.gui.logic.LogicDesignMenu;
@@ -9,6 +10,7 @@ import malte0811.controlengineering.gui.logic.LogicDesignMenu.LogicDesignMenuTyp
 import malte0811.controlengineering.gui.panel.PanelDesignMenu;
 import malte0811.controlengineering.gui.remapper.ParallelPortMapperMenu;
 import malte0811.controlengineering.gui.remapper.RSRemapperMenu;
+import malte0811.controlengineering.gui.scope.ScopeMenu;
 import malte0811.controlengineering.gui.tape.KeypunchMenu;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -48,6 +50,10 @@ public class CEContainers {
     );
     public static final ParallelPortMapperMenu.Type PORT_REMAPPER = new ParallelPortMapperMenu.Type(
             REGISTER.register("port_remapper", createNoInv(ParallelPortMapperMenu::new))
+    );
+
+    public static final ArgMenuType<ScopeMenu, ScopeBlockEntity> SCOPE = new ArgMenuType<>(
+            REGISTER.register("scope", createNoInv(ScopeMenu::new)), ScopeMenu::new
     );
 
     private static <T extends AbstractContainerMenu>
