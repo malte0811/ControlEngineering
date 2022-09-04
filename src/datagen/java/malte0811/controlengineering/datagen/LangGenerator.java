@@ -20,6 +20,7 @@ import malte0811.controlengineering.gui.misc.ConfirmScreen;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignScreen;
 import malte0811.controlengineering.gui.scope.module.AnalogClientModule;
+import malte0811.controlengineering.gui.scope.module.ClientModule;
 import malte0811.controlengineering.gui.scope.module.DigitalClientModule;
 import malte0811.controlengineering.gui.widget.ColorSelector;
 import malte0811.controlengineering.items.*;
@@ -225,6 +226,12 @@ public class LangGenerator extends LanguageProvider {
         add(DigitalClientModule.TRIGGER_HIGH, "Trigger when high");
         add(DigitalClientModule.TRIGGER_LOW, "Trigger when low");
         add(DigitalClientModule.TRIGGER_IGNORE, "Ignore for triggering");
+        add(ClientModule.TRIGGER_SOURCE_USED, "Used as trigger source");
+        add(ClientModule.TRIGGER_SOURCE_UNUSED, "Not used as trigger source");
+        add(ClientModule.CHANNEL_SHOWN, "Showing channel");
+        add(ClientModule.CHANNEL_HIDDEN, "Hiding channel");
+        add(ClientModule.MODULE_ACTIVE, "Module enabled");
+        add(ClientModule.MODULE_INACTIVE, "Module disabled");
     }
 
     private void addManualStrings() {

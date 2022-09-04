@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+// TODO power consumption (respecting disabled modules? UI on-switch?)
 public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwner {
     private static final MyCodec<List<ScopeModuleInstance<?>>> MODULES_CODEC = MyCodecs.list(ScopeModuleInstance.CODEC);
     private static final MyCodec<List<ScopeModuleInstance<?>>> SYNC_MODULES_CODEC = MyCodecs.list(
@@ -64,6 +65,8 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     public void load(@Nonnull CompoundTag tag) {
         super.load(tag);
         modules = MODULES_CODEC.fromNBT(tag.get("modules"), ArrayList::new);
+        int width = modules.stream().mapToInt(smi -> smi.getType().getWidth()).sum();
+        for (; width < 4; ++width) { modules.add(ScopeModules.NONE.newInstance()); }
     }
 
     @Override
@@ -116,7 +119,6 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
                 if (moduleItem != null && player != null) {
                     ItemUtil.giveOrDrop(player, moduleItem.get().getDefaultInstance());
                 }
-                BEUtil.markDirtyAndSync(this);
             }
             return InteractionResult.SUCCESS;
         }
@@ -135,7 +137,6 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
             for (int extraSlot = 1; extraSlot < newModule.getWidth(); ++extraSlot) {
                 modules.remove(moduleID + 1);
             }
-            BEUtil.markDirtyAndSync(this);
         }
         return InteractionResult.SUCCESS;
     }
@@ -148,7 +149,14 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
             final var nextOffset = offset + nextModule.getWidth() * 3;
             final var shape = ShapeUtils.createPixelRelative(2 + offset, 1, 8, 2 + nextOffset, 8, 15);
             final var finalI = i;
-            subShapes.add(new SingleShape(shape, ctx -> bEntity.interactWithModule(finalI, ctx)));
+            subShapes.add(new SingleShape(shape, ctx -> {
+                final var result = bEntity.interactWithModule(finalI, ctx);
+                if (!bEntity.level.isClientSide) {
+                    ScopeModuleInstance.ensureOneTriggerActive(bEntity.getModules());
+                    BEUtil.markDirtyAndSync(bEntity);
+                }
+                return result;
+            }));
             offset = nextOffset;
         }
         return new ListShapes(

@@ -36,6 +36,8 @@ public abstract class TypedInstance<State, Type extends TypedRegistryEntry<State
 
     private static <S, I extends TypedInstance<?, ?>>
     MyCodec<I> instanceCodec(TypedRegistryEntry<S, ? extends I> type) {
-        return type.getStateCodec().xmap(state -> type.newInstance(state), i -> (S) i.getCurrentState());
+        return type.getStateCodec()
+                .orElse(MyCodecs.unit(type.getInitialState()))
+                .xmap(state -> type.newInstance(state), i -> (S) i.getCurrentState());
     }
 }

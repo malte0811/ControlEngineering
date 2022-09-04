@@ -1,4 +1,4 @@
-package malte0811.controlengineering.gui.scope;
+package malte0811.controlengineering.gui.scope.components;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 import static malte0811.controlengineering.gui.scope.ScopeScreen.TEXTURE;
 
-public class ToggleSwitch {
+public class ToggleSwitch implements IScopeComponent {
     private static final SubTexture HIGH = new SubTexture(TEXTURE, 241, 245, 246, 256);
     private static final SubTexture LOW = new SubTexture(TEXTURE, 246, 245, 251, 256);
     private static final SubTexture NEUTRAL = new SubTexture(TEXTURE, 251, 245, 256, 256);
@@ -38,6 +38,7 @@ public class ToggleSwitch {
         this(tooltip, pos, false, state ? State.HIGH : State.LOW, newState -> setState.accept(newState == State.HIGH));
     }
 
+    @Override
     public void render(PoseStack transform) {
         final var texture = switch (this.state) {
             case HIGH -> HIGH;
@@ -47,6 +48,7 @@ public class ToggleSwitch {
         texture.blit(transform, pos.x(), pos.y());
     }
 
+    @Override
     public boolean click(double x, double y) {
         if (!getArea().containsClosed(x, y)) { return false; }
         final var yRel = y - pos.y();
@@ -63,10 +65,12 @@ public class ToggleSwitch {
         return true;
     }
 
+    @Override
     public RectangleI getArea() {
         return area;
     }
 
+    @Override
     public Component getTooltip() {
         return tooltip;
     }

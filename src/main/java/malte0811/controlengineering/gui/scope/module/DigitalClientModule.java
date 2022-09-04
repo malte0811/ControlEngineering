@@ -5,7 +5,9 @@ import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.controlpanels.scope.DigitalModule.State;
 import malte0811.controlengineering.controlpanels.scope.DigitalModule.TriggerState;
 import malte0811.controlengineering.controlpanels.scope.ScopeModules;
-import malte0811.controlengineering.gui.scope.ToggleSwitch;
+import malte0811.controlengineering.gui.scope.components.IScopeComponent;
+import malte0811.controlengineering.gui.scope.components.ScopeButton;
+import malte0811.controlengineering.gui.scope.components.ToggleSwitch;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.network.chat.Component;
 
@@ -23,19 +25,32 @@ public class DigitalClientModule extends ClientModule<State> {
     }
 
     @Override
-    public List<ToggleSwitch> makeSwitches(Vec2i offset, State state, Consumer<State> setState) {
-        List<ToggleSwitch> switches = new ArrayList<>();
+    public List<IScopeComponent> createComponents(Vec2i offset, State state, Consumer<State> setState) {
+        List<IScopeComponent> switches = new ArrayList<>();
+        switches.add(ScopeButton.makeModuleEnable(
+                offset.add(16, 3), state.moduleEnabled(), () -> setState.accept(state.toggleModule())
+        ));
+        switches.add(ScopeButton.makeTriggerEnable(
+                offset.add(22, 3), state.triggerEnabled(), () -> setState.accept(state.withTrigger(true))
+        ));
         for (int i = 0; i < BusLine.LINE_SIZE; ++i) {
             final var row = i / 4;
             final var col = i % 4;
             final var iFinal = i;
             final var triggerState = state.channelTriggers().get(iFinal);
+            final var channelBasePos = offset.add(21 * col, 16 * row);
             switches.add(new ToggleSwitch(
                     translate(triggerState),
-                    offset.add(16 + 21 * col, 18 + 16 * row),
+                    channelBasePos.add(16, 18),
                     true,
                     fromTriggerState(triggerState),
                     newState -> setState.accept(state.withTrigger(iFinal, toTriggerState(newState)))
+            ));
+            final var channelActive = state.isChannelVisible(i);
+            switches.add(ScopeButton.makeChannelEnable(
+                    channelBasePos.add(22, 22),
+                    channelActive,
+                    () -> setState.accept(state.toggleChannel(iFinal))
             ));
         }
         return switches;

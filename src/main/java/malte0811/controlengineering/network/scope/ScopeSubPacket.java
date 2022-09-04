@@ -35,6 +35,12 @@ public final class ScopeSubPacket {
         return CODECS.get(buffer.readVarInt()).from(buffer);
     }
 
+    public static boolean processFull(IScopeSubPacket packet, List<ScopeModuleInstance<?>> modules) {
+        if (!packet.process(modules)) { return false; }
+        ScopeModuleInstance.ensureOneTriggerActive(modules);
+        return true;
+    }
+
     public interface IScopeSubPacket {
         boolean process(List<ScopeModuleInstance<?>> modules);
 

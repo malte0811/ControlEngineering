@@ -5,9 +5,11 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.controlpanels.scope.ScopeModuleInstance;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.SubTexture;
+import malte0811.controlengineering.gui.scope.components.IScopeComponent;
 import malte0811.controlengineering.gui.scope.module.ClientModules;
 import malte0811.controlengineering.network.scope.ModuleConfig;
 import malte0811.controlengineering.network.scope.ScopePacket;
+import malte0811.controlengineering.network.scope.ScopeSubPacket;
 import malte0811.controlengineering.network.scope.ScopeSubPacket.IScopeSubPacket;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
@@ -50,10 +52,10 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
     @Override
     protected void renderForeground(@Nonnull PoseStack transform, int mouseX, int mouseY, float partialTicks) {
         Component tooltip = null;
-        for (final var toggle : getSwitches()) {
-            toggle.render(transform);
-            if (toggle.getArea().containsClosed(mouseX, mouseY)) {
-                tooltip = toggle.getTooltip();
+        for (final var component : getComponents()) {
+            component.render(transform);
+            if (component.getArea().containsClosed(mouseX, mouseY)) {
+                tooltip = component.getTooltip();
             }
         }
         if (tooltip != null) {
@@ -62,20 +64,22 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
     }
 
     // TODO cache result
-    private List<ToggleSwitch> getSwitches() {
-        List<ToggleSwitch> switches = new ArrayList<>();
+    private List<IScopeComponent> getComponents() {
+        List<IScopeComponent> components = new ArrayList<>();
         int offset = 0;
         for (int i = 0; i < menu.getModules().size(); ++i) {
             final var module = menu.getModules().get(i);
-            switches.addAll(makeSwitchesFor(module, i, offset));
+            components.addAll(gatherComponentsFor(module, i, offset));
             offset += module.getType().getWidth();
         }
-        return switches;
+        return components;
     }
 
-    private <T> List<ToggleSwitch> makeSwitchesFor(ScopeModuleInstance<T> module, int moduleIndex, int offsetSlots) {
+    private <T> List<IScopeComponent> gatherComponentsFor(
+            ScopeModuleInstance<T> module, int moduleIndex, int offsetSlots
+    ) {
         final var type = module.getType();
-        return ClientModules.getModule(type).makeSwitches(
+        return ClientModules.getModule(type).createComponents(
                 new Vec2i(this.leftPos + MODULE_U_OFFSET + offsetSlots * MODULE_SLOT_WIDTH, this.topPos + MODULE_V_MIN),
                 module.getCurrentState(),
                 newState -> runAndSendToServer(new ModuleConfig(moduleIndex, type.newInstance(newState)))
@@ -84,7 +88,7 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
 
     @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        for (final var toggle : getSwitches()) {
+        for (final var toggle : getComponents()) {
             if (toggle.click(pMouseX, pMouseY)) {
                 return true;
             }
@@ -114,7 +118,7 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
     }
 
     private void runAndSendToServer(IScopeSubPacket data) {
-        if (data.process(menu.getModules())) {
+        if (ScopeSubPacket.processFull(data, menu.getModules())) {
             ControlEngineering.NETWORK.sendToServer(new ScopePacket(data));
         }
     }

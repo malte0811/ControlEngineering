@@ -3,6 +3,8 @@ package malte0811.controlengineering.controlpanels.scope;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 
+import javax.annotation.Nullable;
+
 public abstract class ScopeModule<State> extends TypedRegistryEntry<State, ScopeModuleInstance<State>> {
     private final int width;
     private final boolean empty;
@@ -25,4 +27,11 @@ public abstract class ScopeModule<State> extends TypedRegistryEntry<State, Scope
     public final boolean isEmpty() {
         return empty;
     }
+
+    @Nullable
+    public abstract State enableSomeTrigger(State withoutTrigger);
+
+    public abstract State disableTrigger(State withTrigger);
+
+    public abstract boolean isSomeTriggerEnabled(State state);
 }

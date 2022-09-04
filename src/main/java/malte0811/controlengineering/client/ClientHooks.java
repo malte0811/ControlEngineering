@@ -36,7 +36,7 @@ public class ClientHooks {
     public static void processScopePacketOnClient(ScopeSubPacket.IScopeSubPacket packet) {
         ScopeScreen currentScreen = StackedScreen.findInstanceOf(ScopeScreen.class);
         if (currentScreen != null) {
-            packet.process(currentScreen.getMenu().getModules());
+            ScopeSubPacket.processFull(packet, currentScreen.getMenu().getModules());
         }
     }
 }

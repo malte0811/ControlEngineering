@@ -18,7 +18,19 @@ public record ModuleConfig(
 
     @Override
     public boolean process(List<ScopeModuleInstance<?>> modules) {
-        return processWithGenerics(instanceWithNewConfig, modules.get(index));
+        final var toModify = modules.get(index);
+        if (!processWithGenerics(instanceWithNewConfig, toModify)) {
+            return false;
+        }
+        if (toModify.triggerActive()) {
+            for (int i = 0; i < modules.size(); ++i) {
+                final var moduleAt = modules.get(i);
+                if (i != index && moduleAt.triggerActive()) {
+                    moduleAt.disableTrigger();
+                }
+            }
+        }
+        return true;
     }
 
     private <C1, C2> boolean processWithGenerics(ScopeModuleInstance<C1> newCfg, ScopeModuleInstance<C2> replaceIn) {
