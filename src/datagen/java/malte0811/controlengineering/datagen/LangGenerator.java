@@ -223,6 +223,8 @@ public class LangGenerator extends LanguageProvider {
         add(ConfigSwitchSymbol.ON_KEY, "High output");
 
         add(AnalogClientModule.TRIGGER_POLARITY_TOOLTIP, "Trigger slope polarity");
+        add(AnalogClientModule.PER_DIV_TOOLTIP, "Signal per vertical division");
+        add(AnalogClientModule.TRIGGER_LEVEL_TOOLTIP, "Trigger level");
         add(DigitalClientModule.TRIGGER_HIGH, "Trigger when high");
         add(DigitalClientModule.TRIGGER_LOW, "Trigger when low");
         add(DigitalClientModule.TRIGGER_IGNORE, "Ignore for triggering");
@@ -232,6 +234,7 @@ public class LangGenerator extends LanguageProvider {
         add(ClientModule.CHANNEL_HIDDEN, "Hiding channel");
         add(ClientModule.MODULE_ACTIVE, "Module enabled");
         add(ClientModule.MODULE_INACTIVE, "Module disabled");
+        add(ClientModule.VERT_OFFSET_TOOLTIP, "Vertical offset in pixels");
     }
 
     private void addManualStrings() {

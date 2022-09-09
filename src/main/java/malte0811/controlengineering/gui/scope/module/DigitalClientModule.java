@@ -6,6 +6,7 @@ import malte0811.controlengineering.controlpanels.scope.DigitalModule.State;
 import malte0811.controlengineering.controlpanels.scope.DigitalModule.TriggerState;
 import malte0811.controlengineering.controlpanels.scope.ScopeModules;
 import malte0811.controlengineering.gui.scope.components.IScopeComponent;
+import malte0811.controlengineering.gui.scope.components.Range;
 import malte0811.controlengineering.gui.scope.components.ScopeButton;
 import malte0811.controlengineering.gui.scope.components.ToggleSwitch;
 import malte0811.controlengineering.util.math.Vec2i;
@@ -32,6 +33,9 @@ public class DigitalClientModule extends ClientModule<State> {
         ));
         switches.add(ScopeButton.makeTriggerEnable(
                 offset.add(22, 3), state.triggerEnabled(), () -> setState.accept(state.withTrigger(true))
+        ));
+        switches.add(Range.makeVerticalOffset(
+                offset.add(40, 3), state.verticalOffset(), i -> setState.accept(state.withOffset(i))
         ));
         for (int i = 0; i < BusLine.LINE_SIZE; ++i) {
             final var row = i / 4;

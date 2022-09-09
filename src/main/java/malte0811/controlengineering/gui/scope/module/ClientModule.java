@@ -19,6 +19,7 @@ public abstract class ClientModule<T> {
     public static final String CHANNEL_HIDDEN = ControlEngineering.MODID + ".gui.scope.channelHidden";
     public static final String MODULE_ACTIVE = ControlEngineering.MODID + ".gui.scope.moduleActive";
     public static final String MODULE_INACTIVE = ControlEngineering.MODID + ".gui.scope.moduleInactive";
+    public static final String VERT_OFFSET_TOOLTIP = ControlEngineering.MODID + ".gui.scope.vertOffset";
 
     private final SubTexture texture;
     private final ScopeModule<T> serverModule;

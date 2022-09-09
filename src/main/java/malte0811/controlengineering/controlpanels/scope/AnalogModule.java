@@ -2,7 +2,7 @@ package malte0811.controlengineering.controlpanels.scope;
 
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
-import malte0811.controlengineering.util.mycodec.record.RecordCodec4;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec3;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -26,49 +26,113 @@ public class AnalogModule extends ScopeModule<AnalogModule.State> {
 
     @Override
     public boolean isSomeTriggerEnabled(State state) {
-        return state.trigger() != TriggerChannel.NONE;
+        return state.trigger().source() != TriggerChannel.NONE;
     }
 
-    public record State(
-            boolean risingTrigger, List<TriggerChannel> enabledChannels, boolean moduleEnabled, TriggerChannel trigger
-    ) {
-        public static final MyCodec<State> CODEC = new RecordCodec4<>(
-                MyCodecs.BOOL.fieldOf("rising", State::risingTrigger),
-                MyCodecs.list(TriggerChannel.CODEC).fieldOf("enabledChannels", State::enabledChannels),
+    public record State(List<ChannelState> channels, boolean moduleEnabled, TriggerState trigger) {
+        public static final MyCodec<State> CODEC = new RecordCodec3<>(
+                MyCodecs.list(ChannelState.CODEC).fieldOf("channels", State::channels),
                 MyCodecs.BOOL.fieldOf("enabled", State::moduleEnabled),
-                TriggerChannel.CODEC.fieldOf("triggerChannel", State::trigger),
+                TriggerState.CODEC.fieldOf("trigger", State::trigger),
                 State::new
         );
 
+        public State {
+            if (channels.size() != 2) {
+                channels = List.of(new ChannelState(), new ChannelState());
+            }
+        }
+
         public State() {
-            this(true, List.of(TriggerChannel.LEFT, TriggerChannel.RIGHT), true, TriggerChannel.NONE);
+            this(List.of(), true, new TriggerState());
         }
 
         public State withTriggerChannel(TriggerChannel newTrigger) {
-            return new State(risingTrigger, enabledChannels, moduleEnabled, newTrigger);
+            return new State(channels, moduleEnabled, trigger.withChannel(newTrigger));
         }
 
         public State withTriggerSlope(boolean positive) {
-            return new State(positive, enabledChannels, moduleEnabled, trigger);
+            return new State(channels, moduleEnabled, trigger.withSlope(positive));
+        }
+
+        public State withTriggerLevel(int level) {
+            return new State(channels, moduleEnabled, trigger.withLevel(level));
         }
 
         public State setEnabled(boolean enabled) {
-            return new State(risingTrigger, enabledChannels, enabled, trigger);
+            return new State(channels, enabled, trigger);
         }
 
         public State setChannelEnabled(TriggerChannel channel, boolean enabled) {
-            if (isEnabled(channel) == enabled) { return this; }
-            List<TriggerChannel> newEnabled = new ArrayList<>(enabledChannels);
-            if (enabled) {
-                newEnabled.add(channel);
-            } else {
-                newEnabled.remove(channel);
-            }
-            return new State(risingTrigger, newEnabled, moduleEnabled, trigger);
+            return withChannel(channel, getChannel(channel).withEnable(enabled));
         }
 
-        public boolean isEnabled(TriggerChannel channel) {
-            return enabledChannels.contains(channel);
+        public State setPerDiv(TriggerChannel channel, int perDiv) {
+            return withChannel(channel, getChannel(channel).withPerDiv(perDiv));
+        }
+
+        public State setOffset(TriggerChannel channel, int offset) {
+            return withChannel(channel, getChannel(channel).withOffset(offset));
+        }
+
+        public ChannelState getChannel(TriggerChannel channel) {
+            return channels.get(channel.ordinal());
+        }
+
+        public State withChannel(TriggerChannel channel, ChannelState state) {
+            List<ChannelState> newChannels = new ArrayList<>(channels());
+            newChannels.set(channel.ordinal(), state);
+            return new State(newChannels, moduleEnabled, trigger);
+        }
+    }
+
+    public record TriggerState(boolean risingSlope, TriggerChannel source, int level) {
+        public static final MyCodec<TriggerState> CODEC = new RecordCodec3<>(
+                MyCodecs.BOOL.fieldOf("rising", TriggerState::risingSlope),
+                TriggerChannel.CODEC.fieldOf("source", TriggerState::source),
+                MyCodecs.INTEGER.fieldOf("level", TriggerState::level),
+                TriggerState::new
+        );
+
+        public TriggerState() {
+            this(true, TriggerChannel.NONE, 10);
+        }
+
+        public TriggerState withChannel(TriggerChannel newSource) {
+            return new TriggerState(risingSlope, newSource, level);
+        }
+
+        public TriggerState withSlope(boolean positive) {
+            return new TriggerState(positive, source, level);
+        }
+
+        public TriggerState withLevel(int newLevel) {
+            return new TriggerState(risingSlope, source, newLevel);
+        }
+    }
+
+    public record ChannelState(boolean enabled, int perDiv, int zeroOffsetPixels) {
+        public static final MyCodec<ChannelState> CODEC = new RecordCodec3<>(
+                MyCodecs.BOOL.fieldOf("enabled", ChannelState::enabled),
+                MyCodecs.INTEGER.fieldOf("perDiv", ChannelState::perDiv),
+                MyCodecs.INTEGER.fieldOf("zeroOffsetPixels", ChannelState::zeroOffsetPixels),
+                ChannelState::new
+        );
+
+        public ChannelState() {
+            this(true, 128, 50);
+        }
+
+        public ChannelState withEnable(boolean newEnabled) {
+            return new ChannelState(newEnabled, perDiv, zeroOffsetPixels);
+        }
+
+        public ChannelState withPerDiv(int newPerDiv) {
+            return new ChannelState(enabled, newPerDiv, zeroOffsetPixels);
+        }
+
+        public ChannelState withOffset(int newOffset) {
+            return new ChannelState(enabled, perDiv, newOffset);
         }
     }
 
