@@ -147,7 +147,7 @@ public class MyCodecs {
 
     public static <T> MyCodec<@Nullable T> nullable(MyCodec<T> fullCodec) {
         return BOOL.dispatch(
-                Objects::isNull, present -> present ? unit(null) : fullCodec,
+                Objects::isNull, present -> present != Boolean.TRUE ? unit(null) : fullCodec,
                 "isNull", "value"
         );
     }
