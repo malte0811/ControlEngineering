@@ -4,21 +4,22 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.controlpanels.scope.AnalogModule;
 import malte0811.controlengineering.controlpanels.scope.AnalogModule.State;
 import malte0811.controlengineering.controlpanels.scope.ScopeModules;
-import malte0811.controlengineering.gui.scope.components.IScopeComponent;
-import malte0811.controlengineering.gui.scope.components.Range;
-import malte0811.controlengineering.gui.scope.components.ScopeButton;
-import malte0811.controlengineering.gui.scope.components.ToggleSwitch;
+import malte0811.controlengineering.gui.scope.components.*;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.DyeColor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class AnalogClientModule extends ClientModule<State> {
     public static final String TRIGGER_POLARITY_TOOLTIP = ControlEngineering.MODID + ".gui.scope.analogTriggerPolarity";
     public static final String PER_DIV_TOOLTIP = ControlEngineering.MODID + ".gui.scope.perDiv";
     public static final String TRIGGER_LEVEL_TOOLTIP = ControlEngineering.MODID + ".gui.scope.triggerLevel";
+    public static final String BNC_OPEN = ControlEngineering.MODID + ".gui.scope.bncOpen";
+    public static final String BNC_CONNECTED = ControlEngineering.MODID + ".gui.scope.bncConnected";
 
     public AnalogClientModule() {
         super(1, ScopeModules.ANALOG);
@@ -73,6 +74,20 @@ public class AnalogClientModule extends ClientModule<State> {
         ));
         out.add(Range.makeVerticalOffset(
                 baseOffset.add(2, 8), channelState.zeroOffsetPixels(), i -> setState.accept(state.setOffset(channel, i))
+        ));
+        final Component bncTooltip;
+        if (channelState.signal().isPresent()) {
+            final var signal = channelState.signal().get();
+            final var colorKey = "color.minecraft." + DyeColor.byId(signal.color()).getName();
+            bncTooltip = Component.translatable(BNC_CONNECTED, Component.translatable(colorKey), signal.line());
+        } else {
+            bncTooltip = Component.translatable(BNC_OPEN);
+        }
+        out.add(new BNCConnector(
+                baseOffset.add(5, 43),
+                channelState.signal().orElse(null),
+                bncTooltip,
+                bsr -> setState.accept(state.setSignalSource(channel, Optional.ofNullable(bsr)))
         ));
     }
 }

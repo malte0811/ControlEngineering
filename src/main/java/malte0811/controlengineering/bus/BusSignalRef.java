@@ -5,6 +5,8 @@ import malte0811.controlengineering.util.mycodec.record.CodecField;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
 import malte0811.controlengineering.util.mycodec.record.RecordCodecBase;
 
+import java.util.Optional;
+
 public record BusSignalRef(int line, int color) {
     public static final RecordCodecBase<BusSignalRef> CODEC = new RecordCodec2<>(
             new CodecField<>("line", BusSignalRef::line, MyCodecs.INTEGER),
@@ -21,11 +23,11 @@ public record BusSignalRef(int line, int color) {
         return line * BusLine.LINE_SIZE + color;
     }
 
-    public static BusSignalRef fromIndex(int index) {
+    public static Optional<BusSignalRef> fromIndex(int index) {
         if (index < 0 || index >= BusLine.LINE_SIZE * BusWireType.NUM_LINES) {
-            return null;
+            return Optional.empty();
         } else {
-            return new BusSignalRef(index / BusLine.LINE_SIZE, index % BusLine.LINE_SIZE);
+            return Optional.of(new BusSignalRef(index / BusLine.LINE_SIZE, index % BusLine.LINE_SIZE));
         }
     }
 }

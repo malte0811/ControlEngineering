@@ -74,7 +74,6 @@ public class Range implements IScopeComponent {
 
     @Override
     public boolean click(double x, double y) {
-        if (!getArea().containsClosed(x, y)) { return false; }
         if (x <= getArea().minX() + 5) {
             changeValue(false);
             return true;

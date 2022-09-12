@@ -16,7 +16,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkHooks;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,17 +23,16 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class ParallelPort {
-    private static final BusSignalRef DEFAULT_CLOCK_LINE = new BusSignalRef(0, Byte.SIZE);
-    private static final MyCodec<@Nullable BusSignalRef> NULLABLE_SIGNAL_CODEC = MyCodecs.nullable(BusSignalRef.CODEC);
+    private static final Optional<BusSignalRef> DEFAULT_CLOCK_LINE = Optional.of(new BusSignalRef(0, Byte.SIZE));
+    private static final MyCodec<Optional<BusSignalRef>> OPTIONAL_SIGNAL_CODEC = MyCodecs.optional(BusSignalRef.CODEC);
 
     private final ByteList transmitQueue;
     private boolean sendingFirst;
     private byte currentInput;
     private boolean lastTriggerHigh;
     private boolean triggerHigh;
-    private List<@Nullable BusSignalRef> dataLines = makeDefaultDataLines();
-    @Nullable
-    private BusSignalRef clockLine = DEFAULT_CLOCK_LINE;
+    private List<Optional<BusSignalRef>> dataLines = makeDefaultDataLines();
+    private Optional<BusSignalRef> clockLine = DEFAULT_CLOCK_LINE;
 
     public ParallelPort() {
         transmitQueue = new ByteArrayList();
@@ -78,20 +76,20 @@ public class ParallelPort {
         return totalState;
     }
 
-    private BusState set(BusState in, @Nullable BusSignalRef toSet) {
-        if (toSet != null) {
-            return in.with(toSet, BusLine.MAX_VALID_VALUE);
+    private BusState set(BusState in, Optional<BusSignalRef> toSet) {
+        if (toSet.isPresent()) {
+            return in.with(toSet.get(), BusLine.MAX_VALID_VALUE);
         } else {
             return in;
         }
     }
 
     public void onBusStateChange(BusState inputState) {
-        triggerHigh = clockLine != null && inputState.getSignal(clockLine) != 0;
+        triggerHigh = clockLine.isPresent() && inputState.getSignal(clockLine.get()) != 0;
         currentInput = 0;
         for (int i = 0; i < Byte.SIZE; ++i) {
             var line = dataLines.get(i);
-            if (line != null && inputState.getSignal(line) != 0) {
+            if (line.isPresent() && inputState.getSignal(line.get()) != 0) {
                 currentInput |= 1 << i;
             }
         }
@@ -103,11 +101,11 @@ public class ParallelPort {
         currentInput = nbt.getByte("currentInput");
         triggerHigh = nbt.getBoolean("triggerHigh");
         lastTriggerHigh = nbt.getBoolean("lastTriggerHigh");
-        dataLines = MyCodecs.list(NULLABLE_SIGNAL_CODEC).fromNBT(nbt.get("dataLines"));
+        dataLines = MyCodecs.list(OPTIONAL_SIGNAL_CODEC).fromNBT(nbt.get("dataLines"));
         if (dataLines == null || dataLines.size() != Byte.SIZE) {
             dataLines = makeDefaultDataLines();
         }
-        clockLine = NULLABLE_SIGNAL_CODEC.fromNBT(nbt.get("clockLine"), () -> DEFAULT_CLOCK_LINE);
+        clockLine = OPTIONAL_SIGNAL_CODEC.fromNBT(nbt.get("clockLine"), () -> DEFAULT_CLOCK_LINE);
     }
 
     public CompoundTag toNBT() {
@@ -117,8 +115,8 @@ public class ParallelPort {
         result.putByte("currentInput", currentInput);
         result.putBoolean("triggerHigh", triggerHigh);
         result.putBoolean("lastTriggerHigh", lastTriggerHigh);
-        result.put("dataLines", MyCodecs.list(NULLABLE_SIGNAL_CODEC).toNBT(dataLines));
-        result.put("clockLine", NULLABLE_SIGNAL_CODEC.toNBT(clockLine));
+        result.put("dataLines", MyCodecs.list(OPTIONAL_SIGNAL_CODEC).toNBT(dataLines));
+        result.put("clockLine", OPTIONAL_SIGNAL_CODEC.toNBT(clockLine));
         return result;
     }
 
@@ -157,14 +155,14 @@ public class ParallelPort {
         };
     }
 
-    private int indexFromNullable(@Nullable BusSignalRef ref) {
-        return ref != null ? ref.index() : AbstractRemapperMenu.NOT_MAPPED;
+    private int indexFromNullable(Optional<BusSignalRef> ref) {
+        return ref.map(BusSignalRef::index).orElse(AbstractRemapperMenu.NOT_MAPPED);
     }
 
-    private static List<BusSignalRef> makeDefaultDataLines() {
-        List<BusSignalRef> signals = new ArrayList<>();
+    private static List<Optional<BusSignalRef>> makeDefaultDataLines() {
+        List<Optional<BusSignalRef>> signals = new ArrayList<>();
         for (int i = 0; i < Byte.SIZE; ++i) {
-            signals.add(new BusSignalRef(0, i));
+            signals.add(Optional.of(new BusSignalRef(0, i)));
         }
         return signals;
     }

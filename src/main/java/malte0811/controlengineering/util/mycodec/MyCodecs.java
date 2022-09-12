@@ -13,11 +13,10 @@ import malte0811.controlengineering.util.mycodec.tree.TreeElement;
 import malte0811.controlengineering.util.mycodec.tree.TreeManager;
 import malte0811.controlengineering.util.mycodec.tree.TreePrimitive;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -145,9 +144,16 @@ public class MyCodecs {
         );
     }
 
-    public static <T> MyCodec<@Nullable T> nullable(MyCodec<T> fullCodec) {
+    public static <T> MyCodec<Optional<T>> optional(MyCodec<T> fullCodec) {
         return BOOL.dispatch(
-                Objects::isNull, present -> present != Boolean.TRUE ? unit(null) : fullCodec,
+                Optional::isPresent,
+                present -> {
+                    if (present != Boolean.TRUE) {
+                        return unit(Optional.empty());
+                    } else {
+                        return fullCodec.xmap(Optional::of, Optional::get);
+                    }
+                },
                 "isNull", "value"
         );
     }

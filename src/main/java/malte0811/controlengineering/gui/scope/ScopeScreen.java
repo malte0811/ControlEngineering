@@ -89,7 +89,7 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
     @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
         for (final var toggle : getComponents()) {
-            if (toggle.click(pMouseX, pMouseY)) {
+            if (toggle.getArea().containsClosed(pMouseX, pMouseY) && toggle.click(pMouseX, pMouseY)) {
                 return true;
             }
         }

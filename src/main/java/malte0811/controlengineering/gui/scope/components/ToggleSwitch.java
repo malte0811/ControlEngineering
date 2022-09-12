@@ -50,7 +50,6 @@ public class ToggleSwitch implements IScopeComponent {
 
     @Override
     public boolean click(double x, double y) {
-        if (!getArea().containsClosed(x, y)) { return false; }
         final var yRel = y - pos.y();
         final State newValue;
         if (allowTristate && yRel >= 3 && yRel <= 8) {

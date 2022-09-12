@@ -225,9 +225,13 @@ public class LangGenerator extends LanguageProvider {
         add(AnalogClientModule.TRIGGER_POLARITY_TOOLTIP, "Trigger slope polarity");
         add(AnalogClientModule.PER_DIV_TOOLTIP, "Signal per vertical division");
         add(AnalogClientModule.TRIGGER_LEVEL_TOOLTIP, "Trigger level");
+        add(AnalogClientModule.BNC_OPEN, "Signal input (not connected)");
+        add(AnalogClientModule.BNC_CONNECTED, "Signal input (%s on line %d)");
         add(DigitalClientModule.TRIGGER_HIGH, "Trigger when high");
         add(DigitalClientModule.TRIGGER_LOW, "Trigger when low");
         add(DigitalClientModule.TRIGGER_IGNORE, "Ignore for triggering");
+        add(DigitalClientModule.INPUT_OPEN, "Logic input (not connected)");
+        add(DigitalClientModule.INPUT_CONNECTED, "Logic input (line %d)");
         add(ClientModule.TRIGGER_SOURCE_USED, "Used as trigger source");
         add(ClientModule.TRIGGER_SOURCE_UNUSED, "Not used as trigger source");
         add(ClientModule.CHANNEL_SHOWN, "Showing channel");

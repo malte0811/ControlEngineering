@@ -48,7 +48,6 @@ public class ScopeButton implements IScopeComponent {
 
     @Override
     public boolean click(double x, double y) {
-        if (!area.containsClosed(x, y)) { return false; }
         click.run();
         return true;
     }

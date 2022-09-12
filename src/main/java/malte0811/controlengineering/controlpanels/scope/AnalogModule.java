@@ -1,12 +1,15 @@
 package malte0811.controlengineering.controlpanels.scope;
 
+import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec3;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec4;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class AnalogModule extends ScopeModule<AnalogModule.State> {
     public AnalogModule() {
@@ -75,6 +78,10 @@ public class AnalogModule extends ScopeModule<AnalogModule.State> {
             return withChannel(channel, getChannel(channel).withOffset(offset));
         }
 
+        public State setSignalSource(TriggerChannel channel, Optional<BusSignalRef> source) {
+            return withChannel(channel, getChannel(channel).withSignalSource(source));
+        }
+
         public ChannelState getChannel(TriggerChannel channel) {
             return channels.get(channel.ordinal());
         }
@@ -111,28 +118,35 @@ public class AnalogModule extends ScopeModule<AnalogModule.State> {
         }
     }
 
-    public record ChannelState(boolean enabled, int perDiv, int zeroOffsetPixels) {
-        public static final MyCodec<ChannelState> CODEC = new RecordCodec3<>(
+    public record ChannelState(
+            boolean enabled, int perDiv, int zeroOffsetPixels, Optional<BusSignalRef> signal
+    ) {
+        public static final MyCodec<ChannelState> CODEC = new RecordCodec4<>(
                 MyCodecs.BOOL.fieldOf("enabled", ChannelState::enabled),
                 MyCodecs.INTEGER.fieldOf("perDiv", ChannelState::perDiv),
                 MyCodecs.INTEGER.fieldOf("zeroOffsetPixels", ChannelState::zeroOffsetPixels),
+                MyCodecs.optional(BusSignalRef.CODEC).fieldOf("signal", ChannelState::signal),
                 ChannelState::new
         );
 
         public ChannelState() {
-            this(true, 128, 50);
+            this(true, 128, 50, Optional.empty());
         }
 
         public ChannelState withEnable(boolean newEnabled) {
-            return new ChannelState(newEnabled, perDiv, zeroOffsetPixels);
+            return new ChannelState(newEnabled, perDiv, zeroOffsetPixels, signal);
         }
 
         public ChannelState withPerDiv(int newPerDiv) {
-            return new ChannelState(enabled, newPerDiv, zeroOffsetPixels);
+            return new ChannelState(enabled, newPerDiv, zeroOffsetPixels, signal);
         }
 
         public ChannelState withOffset(int newOffset) {
-            return new ChannelState(enabled, perDiv, newOffset);
+            return new ChannelState(enabled, perDiv, newOffset, signal);
+        }
+
+        public ChannelState withSignalSource(Optional<BusSignalRef> newSignal) {
+            return new ChannelState(enabled, perDiv, zeroOffsetPixels, newSignal);
         }
     }
 
