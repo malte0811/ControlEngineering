@@ -2,7 +2,7 @@ package malte0811.controlengineering.network.scope;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import malte0811.controlengineering.controlpanels.scope.ScopeModuleInstance;
+import malte0811.controlengineering.scope.ScopeModuleInstance;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.serial.PacketBufferStorage;
 import net.minecraft.network.FriendlyByteBuf;

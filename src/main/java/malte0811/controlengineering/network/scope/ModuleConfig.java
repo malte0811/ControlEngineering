@@ -1,6 +1,6 @@
 package malte0811.controlengineering.network.scope;
 
-import malte0811.controlengineering.controlpanels.scope.ScopeModuleInstance;
+import malte0811.controlengineering.scope.ScopeModuleInstance;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec2;

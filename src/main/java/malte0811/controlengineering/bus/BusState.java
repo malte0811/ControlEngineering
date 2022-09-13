@@ -1,11 +1,15 @@
 package malte0811.controlengineering.bus;
 
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class BusState {
     public static final BusState EMPTY = new BusState();
+    public static final MyCodec<BusState> CODEC = MyCodecs.list(BusLine.CODEC).xmap(BusState::new, bs -> bs.lines);
 
     private final List<BusLine> lines;
 

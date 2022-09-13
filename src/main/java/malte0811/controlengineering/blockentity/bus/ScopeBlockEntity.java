@@ -6,15 +6,14 @@ import malte0811.controlengineering.blocks.shapes.ListShapes;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.blocks.shapes.SingleShape;
-import malte0811.controlengineering.controlpanels.scope.ScopeModule;
-import malte0811.controlengineering.controlpanels.scope.ScopeModuleInstance;
-import malte0811.controlengineering.controlpanels.scope.ScopeModules;
+import malte0811.controlengineering.bus.BusState;
+import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.items.CEItems;
-import malte0811.controlengineering.util.BEUtil;
-import malte0811.controlengineering.util.CachedValue;
-import malte0811.controlengineering.util.ItemUtil;
-import malte0811.controlengineering.util.ShapeUtils;
+import malte0811.controlengineering.scope.ScopeModule;
+import malte0811.controlengineering.scope.ScopeModuleInstance;
+import malte0811.controlengineering.scope.ScopeModules;
+import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
@@ -38,7 +37,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 // TODO power consumption (respecting disabled modules? UI on-switch?)
-public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwner {
+public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IBusInterface {
     private static final MyCodec<List<ScopeModuleInstance<?>>> MODULES_CODEC = MyCodecs.list(ScopeModuleInstance.CODEC);
     private static final MyCodec<List<ScopeModuleInstance<?>>> SYNC_MODULES_CODEC = MyCodecs.list(
             MyCodecs.RESOURCE_LOCATION.xmap(
@@ -53,9 +52,10 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
             ScopeModules.NONE.newInstance()
     ));
     private final CachedValue<ShapeKey, SelectionShapes> shape = new CachedValue<>(
-            () -> new ShapeKey(getBlockState().getValue(ScopeBlock.FACING), getModuleTypes().toList()),
+            () -> new ShapeKey(getFacing(), getModuleTypes().toList()),
             key -> makeShapes(key, this)
     );
+    private BusState currentBusState = BusState.EMPTY;
 
     public ScopeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -67,12 +67,14 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         modules = MODULES_CODEC.fromNBT(tag.get("modules"), ArrayList::new);
         int width = modules.stream().mapToInt(smi -> smi.getType().getWidth()).sum();
         for (; width < 4; ++width) { modules.add(ScopeModules.NONE.newInstance()); }
+        currentBusState = BusState.CODEC.fromNBT(tag.get("busInput"), () -> BusState.EMPTY);
     }
 
     @Override
     protected void saveAdditional(@Nonnull CompoundTag tag) {
         super.saveAdditional(tag);
         tag.put("modules", MODULES_CODEC.toNBT(this.modules));
+        tag.put("busInput", BusState.CODEC.toNBT(this.currentBusState));
     }
 
     @Override
@@ -174,5 +176,27 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         );
     }
 
-    private record ShapeKey(Direction facing, List<ScopeModule<?>> modules) {}
+    @Override
+    public void onBusUpdated(BusState totalState, BusState otherState) {
+        currentBusState = totalState;
+    }
+
+    @Override
+    public BusState getEmittedState() {
+        return BusState.EMPTY;
+    }
+
+    @Override
+    public boolean canConnect(Direction fromSide) {
+        return fromSide == getFacing().getClockWise();
+    }
+
+    @Override
+    public void addMarkDirtyCallback(Clearable<Runnable> markDirty) { }
+
+    public Direction getFacing() {
+        return getBlockState().getValue(ScopeBlock.FACING);
+    }
+
+    private record ShapeKey(Direction facing, List<ScopeModule<?>> modules) { }
 }

@@ -2,7 +2,6 @@ package malte0811.controlengineering.gui.scope;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.controlpanels.scope.ScopeModuleInstance;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.gui.scope.components.IScopeComponent;
@@ -11,6 +10,7 @@ import malte0811.controlengineering.network.scope.ModuleConfig;
 import malte0811.controlengineering.network.scope.ScopePacket;
 import malte0811.controlengineering.network.scope.ScopeSubPacket;
 import malte0811.controlengineering.network.scope.ScopeSubPacket.IScopeSubPacket;
+import malte0811.controlengineering.scope.ScopeModuleInstance;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;

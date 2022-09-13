@@ -1,12 +1,12 @@
 package malte0811.controlengineering.gui.scope;
 
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
-import malte0811.controlengineering.controlpanels.scope.ScopeModuleInstance;
 import malte0811.controlengineering.gui.CEContainerMenu;
 import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.scope.ScopePacket;
 import malte0811.controlengineering.network.scope.ScopeSubPacket.IScopeSubPacket;
 import malte0811.controlengineering.network.scope.SyncModules;
+import malte0811.controlengineering.scope.ScopeModuleInstance;
 import net.minecraft.world.inventory.MenuType;
 
 import javax.annotation.Nullable;

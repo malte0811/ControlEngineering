@@ -3,10 +3,10 @@ package malte0811.controlengineering.gui.scope.components;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.bus.BusWireType;
 import malte0811.controlengineering.client.render.utils.ScreenUtils;
-import malte0811.controlengineering.controlpanels.scope.DigitalModule;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.gui.misc.IDataProviderWidget;
 import malte0811.controlengineering.gui.widget.BasicSlider;
+import malte0811.controlengineering.scope.DigitalModule;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.TransformUtil;
 import malte0811.controlengineering.util.math.Vec2i;
@@ -15,8 +15,8 @@ import net.minecraft.network.chat.Component;
 
 import java.util.function.IntConsumer;
 
-import static malte0811.controlengineering.controlpanels.scope.DigitalModule.NO_LINE;
 import static malte0811.controlengineering.gui.misc.BusSignalSelector.BUS_LINE_INDEX_KEY;
+import static malte0811.controlengineering.scope.DigitalModule.NO_LINE;
 
 public class LogicConnector implements IScopeComponent {
     private static final int WIRE_COLOR_DARK = 0xff202020;

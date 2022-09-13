@@ -1,4 +1,4 @@
-package malte0811.controlengineering.controlpanels.scope;
+package malte0811.controlengineering.scope;
 
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.util.mycodec.MyCodec;

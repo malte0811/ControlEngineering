@@ -2,6 +2,9 @@ package malte0811.controlengineering.bus;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
+import it.unimi.dsi.fastutil.ints.IntList;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
 
 import java.util.Arrays;
 
@@ -11,6 +14,10 @@ public class BusLine {
     public static final int MIN_VALID_VALUE = 0;
     public static final int RS_SCALE_FACTOR = 17;
     public static final BusLine EMPTY = new BusLine();
+
+    public static final MyCodec<BusLine> CODEC = MyCodecs.INT_LIST.xmap(
+            il -> new BusLine(il.toIntArray()), bl -> IntList.of(bl.values)
+    );
 
     private final int[] values;
 

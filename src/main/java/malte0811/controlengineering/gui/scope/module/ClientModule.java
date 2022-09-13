@@ -1,10 +1,10 @@
 package malte0811.controlengineering.gui.scope.module;
 
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.controlpanels.scope.ScopeModule;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.gui.scope.ScopeScreen;
 import malte0811.controlengineering.gui.scope.components.IScopeComponent;
+import malte0811.controlengineering.scope.ScopeModule;
 import malte0811.controlengineering.util.math.Vec2i;
 
 import java.util.List;

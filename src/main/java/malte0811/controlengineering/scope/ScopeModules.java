@@ -1,4 +1,4 @@
-package malte0811.controlengineering.controlpanels.scope;
+package malte0811.controlengineering.scope;
 
 import com.mojang.datafixers.util.Unit;
 import malte0811.controlengineering.ControlEngineering;

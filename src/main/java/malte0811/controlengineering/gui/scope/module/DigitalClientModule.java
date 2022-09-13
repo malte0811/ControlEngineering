@@ -2,11 +2,11 @@ package malte0811.controlengineering.gui.scope.module;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusLine;
-import malte0811.controlengineering.controlpanels.scope.DigitalModule;
-import malte0811.controlengineering.controlpanels.scope.DigitalModule.State;
-import malte0811.controlengineering.controlpanels.scope.DigitalModule.TriggerState;
-import malte0811.controlengineering.controlpanels.scope.ScopeModules;
 import malte0811.controlengineering.gui.scope.components.*;
+import malte0811.controlengineering.scope.DigitalModule;
+import malte0811.controlengineering.scope.DigitalModule.State;
+import malte0811.controlengineering.scope.DigitalModule.TriggerState;
+import malte0811.controlengineering.scope.ScopeModules;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.network.chat.Component;
 
