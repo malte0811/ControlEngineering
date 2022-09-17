@@ -69,8 +69,8 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
         int offset = 0;
         for (int i = 0; i < menu.getModules().size(); ++i) {
             final var module = menu.getModules().get(i);
-            components.addAll(gatherComponentsFor(module, i, offset));
-            offset += module.getType().getWidth();
+            components.addAll(gatherComponentsFor(module.module(), i, offset));
+            offset += module.type().getWidth();
         }
         return components;
     }
@@ -104,9 +104,9 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
         MAIN_TEXTURE.blit(transform, 0, 0);
         transform.translate(MODULE_U_OFFSET, MODULE_V_MIN, 0);
         for (final var module : menu.getModules()) {
-            final var texture = ClientModules.getModule(module.getType()).getTexture();
+            final var texture = ClientModules.getModule(module.type()).getTexture();
             texture.blit(transform, 0, 0);
-            transform.translate(MODULE_SLOT_WIDTH * module.getType().getWidth(), 0, 0);
+            transform.translate(MODULE_SLOT_WIDTH * module.type().getWidth(), 0, 0);
         }
         transform.popPose();
     }

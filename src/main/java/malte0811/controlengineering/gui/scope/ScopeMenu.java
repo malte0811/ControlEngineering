@@ -1,12 +1,12 @@
 package malte0811.controlengineering.gui.scope;
 
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
+import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity.ModuleInScope;
 import malte0811.controlengineering.gui.CEContainerMenu;
 import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.scope.ScopePacket;
 import malte0811.controlengineering.network.scope.ScopeSubPacket.IScopeSubPacket;
 import malte0811.controlengineering.network.scope.SyncModules;
-import malte0811.controlengineering.scope.ScopeModuleInstance;
 import net.minecraft.world.inventory.MenuType;
 
 import javax.annotation.Nullable;
@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ScopeMenu extends CEContainerMenu<IScopeSubPacket> {
     // TODO handle another player replacing a module
-    private final List<ScopeModuleInstance<?>> modules;
+    private final List<ModuleInScope> modules;
 
     public ScopeMenu(@Nullable MenuType<?> type, int id, ScopeBlockEntity scope) {
         super(type, id, isValidFor(scope), scope::setChanged);
@@ -27,7 +27,7 @@ public class ScopeMenu extends CEContainerMenu<IScopeSubPacket> {
         this.modules = new ArrayList<>();
     }
 
-    public List<ScopeModuleInstance<?>> getModules() {
+    public List<ModuleInScope> getModules() {
         return modules;
     }
 

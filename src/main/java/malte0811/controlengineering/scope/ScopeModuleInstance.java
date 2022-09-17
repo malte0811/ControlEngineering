@@ -1,5 +1,8 @@
 package malte0811.controlengineering.scope;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 
@@ -35,11 +38,26 @@ public class ScopeModuleInstance<State> extends TypedInstance<State, ScopeModule
         currentState = getType().disableTrigger(getCurrentState());
     }
 
-    public static void ensureOneTriggerActive(List<ScopeModuleInstance<?>> modules) {
-        if (modules.stream().noneMatch(ScopeModuleInstance::triggerActive)) {
+    public static void ensureOneTriggerActive(List<ScopeBlockEntity.ModuleInScope> modules, int preferredTrigger) {
+        final IntList triggerIndices = new IntArrayList();
+        boolean isPreferredTrigger = false;
+        for (int i = 0; i < modules.size(); ++i) {
+            if (modules.get(i).module().triggerActive()) {
+                triggerIndices.add(i);
+                isPreferredTrigger |= i == preferredTrigger;
+            }
+        }
+        if (triggerIndices.isEmpty()) {
             for (final var module : modules) {
-                if (module.enableSomeTrigger()) {
+                if (module.module().enableSomeTrigger()) {
                     return;
+                }
+            }
+        } else if (triggerIndices.size() > 1) {
+            final int chosenTrigger = isPreferredTrigger ? preferredTrigger : triggerIndices.getInt(0);
+            for (int i : triggerIndices) {
+                if (i != chosenTrigger) {
+                    modules.get(i).module().disableTrigger();
                 }
             }
         }

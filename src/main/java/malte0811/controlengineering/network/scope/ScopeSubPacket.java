@@ -2,6 +2,7 @@ package malte0811.controlengineering.network.scope;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity.ModuleInScope;
 import malte0811.controlengineering.scope.ScopeModuleInstance;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.serial.PacketBufferStorage;
@@ -35,14 +36,14 @@ public final class ScopeSubPacket {
         return CODECS.get(buffer.readVarInt()).from(buffer);
     }
 
-    public static boolean processFull(IScopeSubPacket packet, List<ScopeModuleInstance<?>> modules) {
+    public static boolean processFull(IScopeSubPacket packet, List<ModuleInScope> modules) {
         if (!packet.process(modules)) { return false; }
-        ScopeModuleInstance.ensureOneTriggerActive(modules);
+        ScopeModuleInstance.ensureOneTriggerActive(modules, -1);
         return true;
     }
 
     public interface IScopeSubPacket {
-        boolean process(List<ScopeModuleInstance<?>> modules);
+        boolean process(List<ModuleInScope> modules);
 
         default void writeFull(FriendlyByteBuf buffer) {
             init();

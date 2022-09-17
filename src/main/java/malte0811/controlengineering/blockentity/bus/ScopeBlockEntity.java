@@ -17,6 +17,7 @@ import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -24,6 +25,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -33,24 +35,18 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
 // TODO power consumption (respecting disabled modules? UI on-switch?)
+// TODO once the main on-switch is in, only allow modules to be swapped when the scope is off. This saves a bunch of
+//  headaches.
 public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IBusInterface {
-    private static final MyCodec<List<ScopeModuleInstance<?>>> MODULES_CODEC = MyCodecs.list(ScopeModuleInstance.CODEC);
-    private static final MyCodec<List<ScopeModuleInstance<?>>> SYNC_MODULES_CODEC = MyCodecs.list(
-            MyCodecs.RESOURCE_LOCATION.xmap(
-                    rl -> ScopeModules.REGISTRY.getOrDefault(rl, ScopeModules.NONE).newInstance(),
-                    i -> i.getType().getRegistryName()
-            )
-    );
-    private List<ScopeModuleInstance<?>> modules = new ArrayList<>(List.of(
-            ScopeModules.NONE.newInstance(),
-            ScopeModules.NONE.newInstance(),
-            ScopeModules.NONE.newInstance(),
-            ScopeModules.NONE.newInstance()
-    ));
+    private static final int NUM_SLOTS = 4;
+    private static final MyCodec<List<ModuleInScope>> MODULES_CODEC = MyCodecs.list(ModuleInScope.CODEC);
+    private static final MyCodec<List<ModuleInScope>> SYNC_MODULES_CODEC = MyCodecs.list(ModuleInScope.SYNC_CODEC);
+    private List<ModuleInScope> modules = fixModuleList(List.of());
     private final CachedValue<ShapeKey, SelectionShapes> shape = new CachedValue<>(
             () -> new ShapeKey(getFacing(), getModuleTypes().toList()),
             key -> makeShapes(key, this)
@@ -64,9 +60,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     @Override
     public void load(@Nonnull CompoundTag tag) {
         super.load(tag);
-        modules = MODULES_CODEC.fromNBT(tag.get("modules"), ArrayList::new);
-        int width = modules.stream().mapToInt(smi -> smi.getType().getWidth()).sum();
-        for (; width < 4; ++width) { modules.add(ScopeModules.NONE.newInstance()); }
+        modules = fixModuleList(MODULES_CODEC.fromNBT(tag.get("modules"), ArrayList::new));
         currentBusState = BusState.CODEC.fromNBT(tag.get("busInput"), () -> BusState.EMPTY);
     }
 
@@ -87,17 +81,19 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     protected void readSyncedData(CompoundTag in) {
         super.readSyncedData(in);
         final var oldModuleList = getModuleTypes().toList();
-        modules = SYNC_MODULES_CODEC.fromNBT(in.get("modules"), ArrayList::new);
+        modules = fixModuleList(SYNC_MODULES_CODEC.fromNBT(in.get("modules"), ArrayList::new));
         if (level != null && !oldModuleList.equals(getModuleTypes().toList())) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
         }
     }
 
     public Stream<ScopeModule<?>> getModuleTypes() {
-        return modules.stream().map(ScopeModuleInstance::getType);
+        return modules.stream()
+                .map(ModuleInScope::module)
+                .map(ScopeModuleInstance::getType);
     }
 
-    public List<ScopeModuleInstance<?>> getModules() {
+    public List<ModuleInScope> getModules() {
         return modules;
     }
 
@@ -106,20 +102,17 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         return shape.get();
     }
 
-    private InteractionResult interactWithModule(int moduleID, UseOnContext ctx) {
+    private InteractionResult interactWithModule(int indexOfTarget, UseOnContext ctx) {
         // TODO support for locking modules in place with a screwdriver?
         if (level == null) { return InteractionResult.PASS; }
-        final var targetedModule = modules.get(moduleID).getType();
+        final var targetedModule = modules.get(indexOfTarget).type();
+        final var targetSlot = modules.get(indexOfTarget).firstSlot();
         if (!targetedModule.isEmpty()) {
             if (!level.isClientSide()) {
-                modules.remove(moduleID);
-                for (int i = 0; i < targetedModule.getWidth(); ++i) {
-                    modules.add(moduleID, ScopeModules.NONE.newInstance());
-                }
-                final var moduleItem = CEItems.SCOPE_MODULES.get(targetedModule.getRegistryName());
+                final var dropped = removeModule(indexOfTarget);
                 final var player = ctx.getPlayer();
-                if (moduleItem != null && player != null) {
-                    ItemUtil.giveOrDrop(player, moduleItem.get().getDefaultInstance());
+                if (!dropped.isEmpty() && player != null) {
+                    ItemUtil.giveOrDrop(player, dropped);
                 }
             }
             return InteractionResult.SUCCESS;
@@ -127,20 +120,42 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         final var held = ctx.getItemInHand();
         final var newModule = ScopeModules.REGISTRY.get(ForgeRegistries.ITEMS.getKey(held.getItem()));
         if (newModule == null) { return InteractionResult.PASS; }
-        for (int offset = 1; offset < newModule.getWidth(); ++offset) {
-            final var offsetId = moduleID + offset;
-            if (offsetId >= modules.size() || !modules.get(offsetId).getType().isEmpty()) {
+        final var firstSlotAfter = targetSlot + newModule.getWidth();
+        if (firstSlotAfter > NUM_SLOTS) { return InteractionResult.FAIL; }
+        for (int i = indexOfTarget; i < modules.size(); ++i) {
+            final var existingModule = modules.get(i);
+            if (firstSlotAfter <= existingModule.firstSlot()) { break; }
+            if (!existingModule.type().isEmpty()) {
                 return InteractionResult.FAIL;
             }
         }
         if (!level.isClientSide()) {
-            modules.set(moduleID, newModule.newInstance());
+            insertModule(new ModuleInScope(targetSlot, newModule.newInstance()), indexOfTarget);
             held.shrink(1);
-            for (int extraSlot = 1; extraSlot < newModule.getWidth(); ++extraSlot) {
-                modules.remove(moduleID + 1);
-            }
         }
         return InteractionResult.SUCCESS;
+    }
+
+    private ItemStack removeModule(int indexToRemove) {
+        final var removed = modules.remove(indexToRemove).type();
+        for (int i = 0; i < removed.getWidth(); ++i) {
+            modules.add(indexToRemove + i, new ModuleInScope(indexToRemove + i, ScopeModules.NONE.newInstance()));
+        }
+        modules = fixModuleList(modules);
+        final var moduleItem = CEItems.SCOPE_MODULES.get(removed.getRegistryName());
+        if (moduleItem != null) {
+            return moduleItem.get().getDefaultInstance();
+        } else {
+            return ItemStack.EMPTY;
+        }
+    }
+
+    private void insertModule(ModuleInScope module, int indexInList) {
+        modules.set(indexInList, module);
+        final int indexToErase = indexInList + 1;
+        while (indexToErase < modules.size() && modules.get(indexToErase).firstSlot < module.firstSlotAfter()) {
+            modules.remove(indexToErase);
+        }
     }
 
     private static SelectionShapes makeShapes(ShapeKey key, ScopeBlockEntity bEntity) {
@@ -154,7 +169,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
             subShapes.add(new SingleShape(shape, ctx -> {
                 final var result = bEntity.interactWithModule(finalI, ctx);
                 if (!bEntity.level.isClientSide) {
-                    ScopeModuleInstance.ensureOneTriggerActive(bEntity.getModules());
+                    ScopeModuleInstance.ensureOneTriggerActive(bEntity.getModules(), -1);
                     BEUtil.markDirtyAndSync(bEntity);
                 }
                 return result;
@@ -198,5 +213,54 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         return getBlockState().getValue(ScopeBlock.FACING);
     }
 
+    private static List<ModuleInScope> fixModuleList(List<ModuleInScope> untrusted) {
+        List<ModuleInScope> fixed = new ArrayList<>(untrusted);
+        fixed.sort(Comparator.comparingInt(ModuleInScope::firstSlot));
+        int nextFreeSlot = 0;
+        for (int i = 0; i < fixed.size(); ++i) {
+            final var next = fixed.get(i);
+            if (next.firstSlot() < nextFreeSlot || next.firstSlotAfter() > NUM_SLOTS) {
+                // Overlapping modules or modules going beyond the scope
+                fixed.remove(i);
+                --i;
+            } else if (next.firstSlot() > nextFreeSlot) {
+                // Fill gaps with empty modules
+                fixed.add(i, new ModuleInScope(nextFreeSlot, ScopeModules.NONE.newInstance()));
+                ++nextFreeSlot;
+            } else {
+                nextFreeSlot += next.type().getWidth();
+            }
+        }
+        for (int i = nextFreeSlot; i < NUM_SLOTS; ++i) {
+            // If modules add up to <4 slots, fill on the right with empty modules
+            fixed.add(new ModuleInScope(i, ScopeModules.NONE.newInstance()));
+        }
+        return fixed;
+    }
+
     private record ShapeKey(Direction facing, List<ScopeModule<?>> modules) { }
+
+    public record ModuleInScope(int firstSlot, ScopeModuleInstance<?> module) {
+        public static final MyCodec<ModuleInScope> CODEC = new RecordCodec2<>(
+                MyCodecs.INTEGER.fieldOf("firstSlot", ModuleInScope::firstSlot),
+                ScopeModuleInstance.CODEC.fieldOf("module", ModuleInScope::module),
+                ModuleInScope::new
+        );
+        public static final MyCodec<ModuleInScope> SYNC_CODEC = new RecordCodec2<>(
+                MyCodecs.INTEGER.fieldOf("firstSlot", ModuleInScope::firstSlot),
+                MyCodecs.RESOURCE_LOCATION.<ScopeModuleInstance<?>>xmap(
+                        rl -> ScopeModules.REGISTRY.getOrDefault(rl, ScopeModules.NONE).newInstance(),
+                        smi -> smi.getType().getRegistryName()
+                ).fieldOf("moduleType", ModuleInScope::module),
+                ModuleInScope::new
+        );
+
+        public int firstSlotAfter() {
+            return firstSlot + type().getWidth();
+        }
+
+        public ScopeModule<?> type() {
+            return module().getType();
+        }
+    }
 }

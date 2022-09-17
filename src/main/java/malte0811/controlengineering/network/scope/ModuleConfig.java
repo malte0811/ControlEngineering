@@ -1,5 +1,6 @@
 package malte0811.controlengineering.network.scope;
 
+import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
 import malte0811.controlengineering.scope.ScopeModuleInstance;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
@@ -17,20 +18,12 @@ public record ModuleConfig(
     );
 
     @Override
-    public boolean process(List<ScopeModuleInstance<?>> modules) {
-        final var toModify = modules.get(index);
-        if (!processWithGenerics(instanceWithNewConfig, toModify)) {
-            return false;
+    public boolean process(List<ScopeBlockEntity.ModuleInScope> modules) {
+        if (processWithGenerics(instanceWithNewConfig, modules.get(index).module())) {
+            ScopeModuleInstance.ensureOneTriggerActive(modules, index);
+            return true;
         }
-        if (toModify.triggerActive()) {
-            for (int i = 0; i < modules.size(); ++i) {
-                final var moduleAt = modules.get(i);
-                if (i != index && moduleAt.triggerActive()) {
-                    moduleAt.disableTrigger();
-                }
-            }
-        }
-        return true;
+        return false;
     }
 
     private <C1, C2> boolean processWithGenerics(ScopeModuleInstance<C1> newCfg, ScopeModuleInstance<C2> replaceIn) {
