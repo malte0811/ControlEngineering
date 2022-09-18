@@ -1,7 +1,7 @@
 package malte0811.controlengineering.gui.logic;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2d;
@@ -51,11 +51,8 @@ public class SchematicViewArea {
         matrixStack.translate(width / 2., height / 2., 0);
         matrixStack.scale(currentScale, currentScale, 1);
         matrixStack.translate(-centerX, -centerY, 0);
-
-        final double scale = minecraft.getWindow().getGuiScale();
-        RenderSystem.enableScissor(
-                (int) (TOTAL_BORDER * scale), (int) (TOTAL_BORDER * scale),
-                (int) ((width - 2 * TOTAL_BORDER) * scale), (int) ((height - 2 * TOTAL_BORDER) * scale)
+        ScreenUtils.setupScissorMCScaled(
+                TOTAL_BORDER, TOTAL_BORDER, width - 2 * TOTAL_BORDER, height - 2 * TOTAL_BORDER
         );
     }
 

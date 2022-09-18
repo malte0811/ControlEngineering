@@ -1,11 +1,16 @@
-package malte0811.controlengineering.scope;
+package malte0811.controlengineering.scope.module;
 
+import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.ints.IntList;
+import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 
 import javax.annotation.Nullable;
 
 public abstract class ScopeModule<State> extends TypedRegistryEntry<State, ScopeModuleInstance<State>> {
+    public static final int VERTICAL_DIV_PIXELS = 10;
+
     private final int width;
     private final boolean empty;
 
@@ -34,4 +39,14 @@ public abstract class ScopeModule<State> extends TypedRegistryEntry<State, Scope
     public abstract State disableTrigger(State withTrigger);
 
     public abstract boolean isSomeTriggerEnabled(State state);
+
+    // First entry of return value is ignored when isSomeTriggerEnabled is false
+    public abstract Pair<Boolean, State> isTriggered(State oldState, BusState input);
+
+    public abstract IntList getActiveTraces(State state);
+
+    public abstract int getNumTraces();
+
+    // Relative to bottom of scope screen
+    public abstract double getTraceValueInDivs(int traceId, BusState input, State currentState);
 }

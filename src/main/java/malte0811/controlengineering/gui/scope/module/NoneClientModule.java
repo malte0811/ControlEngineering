@@ -2,7 +2,7 @@ package malte0811.controlengineering.gui.scope.module;
 
 import com.mojang.datafixers.util.Unit;
 import malte0811.controlengineering.gui.scope.components.IScopeComponent;
-import malte0811.controlengineering.scope.ScopeModules;
+import malte0811.controlengineering.scope.module.ScopeModules;
 import malte0811.controlengineering.util.math.Vec2i;
 
 import java.util.List;

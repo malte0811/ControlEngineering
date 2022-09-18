@@ -1,6 +1,6 @@
 package malte0811.controlengineering.gui.scope.module;
 
-import malte0811.controlengineering.scope.ScopeModule;
+import malte0811.controlengineering.scope.module.ScopeModule;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;

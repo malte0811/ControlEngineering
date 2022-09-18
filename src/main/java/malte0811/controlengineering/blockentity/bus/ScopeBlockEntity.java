@@ -1,5 +1,7 @@
 package malte0811.controlengineering.blockentity.bus;
 
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blocks.bus.ScopeBlock;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
@@ -9,10 +11,14 @@ import malte0811.controlengineering.blocks.shapes.SingleShape;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.gui.CEContainers;
+import malte0811.controlengineering.gui.scope.ScopeMenu;
 import malte0811.controlengineering.items.CEItems;
-import malte0811.controlengineering.scope.ScopeModule;
-import malte0811.controlengineering.scope.ScopeModuleInstance;
-import malte0811.controlengineering.scope.ScopeModules;
+import malte0811.controlengineering.network.scope.SyncTraces;
+import malte0811.controlengineering.scope.module.ScopeModule;
+import malte0811.controlengineering.scope.module.ScopeModuleInstance;
+import malte0811.controlengineering.scope.module.ScopeModules;
+import malte0811.controlengineering.scope.trace.Trace;
+import malte0811.controlengineering.scope.trace.TraceId;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import malte0811.controlengineering.util.mycodec.MyCodec;
@@ -37,6 +43,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 // TODO power consumption (respecting disabled modules? UI on-switch?)
@@ -44,17 +51,73 @@ import java.util.stream.Stream;
 //  headaches.
 public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IBusInterface {
     private static final int NUM_SLOTS = 4;
+    private static final int NUM_HORIZONTAL_DIVS = 8;
     private static final MyCodec<List<ModuleInScope>> MODULES_CODEC = MyCodecs.list(ModuleInScope.CODEC);
     private static final MyCodec<List<ModuleInScope>> SYNC_MODULES_CODEC = MyCodecs.list(ModuleInScope.SYNC_CODEC);
+    private static final MyCodec<List<Trace>> TRACES_CODEC = MyCodecs.list(Trace.CODEC);
+
     private List<ModuleInScope> modules = fixModuleList(List.of());
     private final CachedValue<ShapeKey, SelectionShapes> shape = new CachedValue<>(
             () -> new ShapeKey(getFacing(), getModuleTypes().toList()),
             key -> makeShapes(key, this)
     );
     private BusState currentBusState = BusState.EMPTY;
+    // TODO make UI configurable
+    private int ticksPerDiv = 20;
+    private List<Trace> traces = List.of();
+    private int numCollectedSamples = -1;
+    private final Set<ScopeMenu> openMenus = new ReferenceOpenHashSet<>();
 
     public ScopeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+    }
+
+    public void tickServer() {
+        tryStartSweep();
+        if (numCollectedSamples >= 0) {
+            collectSample();
+        }
+    }
+
+    private void tryStartSweep() {
+        boolean shouldStart = false;
+        for (final var module : getModules()) {
+            if (module.module().checkTriggered(currentBusState)) {
+                shouldStart = true;
+            }
+        }
+        if (numCollectedSamples >= 0 || !shouldStart) { return; }
+        numCollectedSamples = 0;
+        traces = new ArrayList<>();
+        for (final var module : getModules()) {
+            for (final var traceId : module.module().getActiveTraces()) {
+                traces.add(new Trace(new TraceId(module.firstSlot(), traceId)));
+            }
+        }
+    }
+
+    private void collectSample() {
+        final var it = traces.iterator();
+        while (it.hasNext()) {
+            final var next = it.next();
+            if (!next.isValid(modules)) {
+                it.remove();
+            } else {
+                next.addSample(modules, currentBusState);
+            }
+        }
+        ++numCollectedSamples;
+        ControlEngineering.LOGGER.info("Collected sample {}", numCollectedSamples);
+        if (numCollectedSamples >= ticksPerDiv * NUM_HORIZONTAL_DIVS) {
+            numCollectedSamples = -1;
+            ControlEngineering.LOGGER.info("Traces:");
+            for (final var trace : traces) {
+                ControlEngineering.LOGGER.info("ID {}, data {}", trace.getTraceId(), trace.getSamples());
+            }
+        }
+        for (final var menu : getOpenMenus()) {
+            menu.sendToListeningPlayers(new SyncTraces(this.traces));
+        }
     }
 
     @Override
@@ -62,6 +125,9 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         super.load(tag);
         modules = fixModuleList(MODULES_CODEC.fromNBT(tag.get("modules"), ArrayList::new));
         currentBusState = BusState.CODEC.fromNBT(tag.get("busInput"), () -> BusState.EMPTY);
+        ticksPerDiv = tag.getInt("ticksPerDiv");
+        traces = TRACES_CODEC.fromNBT(tag.get("traces"), ArrayList::new);
+        numCollectedSamples = tag.getInt("numCollectedSamples");
     }
 
     @Override
@@ -69,6 +135,9 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         super.saveAdditional(tag);
         tag.put("modules", MODULES_CODEC.toNBT(this.modules));
         tag.put("busInput", BusState.CODEC.toNBT(this.currentBusState));
+        tag.putInt("ticksPerDiv", ticksPerDiv);
+        tag.put("traces", TRACES_CODEC.toNBT(traces));
+        tag.putInt("numCollectedSamples", numCollectedSamples);
     }
 
     @Override
@@ -203,7 +272,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
 
     @Override
     public boolean canConnect(Direction fromSide) {
-        return fromSide == getFacing().getClockWise();
+        return fromSide == getFacing().getCounterClockWise();
     }
 
     @Override
@@ -211,6 +280,14 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
 
     public Direction getFacing() {
         return getBlockState().getValue(ScopeBlock.FACING);
+    }
+
+    public Set<ScopeMenu> getOpenMenus() {
+        return openMenus;
+    }
+
+    public List<Trace> getTraces() {
+        return traces;
     }
 
     private static List<ModuleInScope> fixModuleList(List<ModuleInScope> untrusted) {

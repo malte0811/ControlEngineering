@@ -1,8 +1,9 @@
-package malte0811.controlengineering.scope;
+package malte0811.controlengineering.scope.module;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
+import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 
@@ -36,6 +37,21 @@ public class ScopeModuleInstance<State> extends TypedInstance<State, ScopeModule
 
     public void disableTrigger() {
         currentState = getType().disableTrigger(getCurrentState());
+    }
+
+    public boolean checkTriggered(BusState input) {
+        final var result = getType().isTriggered(getCurrentState(), input);
+        final var triggerEnabled = getType().isSomeTriggerEnabled(getCurrentState());
+        currentState = result.getSecond();
+        return triggerEnabled && result.getFirst();
+    }
+
+    public double getDivRelativeSample(int trace, BusState input) {
+        return getType().getTraceValueInDivs(trace, input, getCurrentState());
+    }
+
+    public IntList getActiveTraces() {
+        return getType().getActiveTraces(currentState);
     }
 
     public static void ensureOneTriggerActive(List<ScopeBlockEntity.ModuleInScope> modules, int preferredTrigger) {

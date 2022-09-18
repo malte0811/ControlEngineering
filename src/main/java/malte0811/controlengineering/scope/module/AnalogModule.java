@@ -1,10 +1,14 @@
-package malte0811.controlengineering.scope;
+package malte0811.controlengineering.scope.module;
 
+import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import malte0811.controlengineering.bus.BusSignalRef;
+import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec3;
-import malte0811.controlengineering.util.mycodec.record.RecordCodec4;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec5;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -30,6 +34,51 @@ public class AnalogModule extends ScopeModule<AnalogModule.State> {
     @Override
     public boolean isSomeTriggerEnabled(State state) {
         return state.trigger().source() != TriggerChannel.NONE;
+    }
+
+    @Override
+    public Pair<Boolean, State> isTriggered(State oldState, BusState input) {
+        List<ChannelState> newChannels = new ArrayList<>(2);
+        for (int i = 0; i < 2; ++i) {
+            final var currentInput = getInputBusSignal(input, oldState, i);
+            newChannels.add(oldState.channels.get(i).withLastInput(currentInput));
+        }
+        State newState = new State(newChannels, oldState.moduleEnabled(), oldState.trigger());
+        final int sourceIndex = oldState.trigger().source() == TriggerChannel.RIGHT ? 1 : 0;
+        final var threshold = oldState.trigger.level;
+        final var oldAbove = oldState.channels.get(sourceIndex).lastSignal > threshold;
+        final var newAbove = newState.channels.get(sourceIndex).lastSignal > threshold;
+        final var triggered = newAbove == oldState.trigger.risingSlope && oldAbove != newAbove;
+        return Pair.of(triggered, newState);
+    }
+
+    @Override
+    public IntList getActiveTraces(State state) {
+        final var active = new IntArrayList();
+        for (int i = 0; i < getNumTraces(); ++i) {
+            if (state.channels.get(i).enabled) {
+                active.add(i);
+            }
+        }
+        return active;
+    }
+
+    @Override
+    public int getNumTraces() {
+        return 2;
+    }
+
+    @Override
+    public double getTraceValueInDivs(int traceId, BusState input, State currentState) {
+        final var channelCfg = currentState.channels.get(traceId);
+        final var baseOffset = channelCfg.zeroOffsetPixels / (double) VERTICAL_DIV_PIXELS;
+        final var signalHeight = getInputBusSignal(input, currentState, traceId) / (double) channelCfg.perDiv;
+        return baseOffset + signalHeight;
+    }
+
+    private int getInputBusSignal(BusState input, State state, int channel) {
+        final var channelConfig = state.channels.get(channel);
+        return channelConfig.signal.map(input::getSignal).orElse(0);
     }
 
     public record State(List<ChannelState> channels, boolean moduleEnabled, TriggerState trigger) {
@@ -119,34 +168,39 @@ public class AnalogModule extends ScopeModule<AnalogModule.State> {
     }
 
     public record ChannelState(
-            boolean enabled, int perDiv, int zeroOffsetPixels, Optional<BusSignalRef> signal
+            boolean enabled, int perDiv, int zeroOffsetPixels, Optional<BusSignalRef> signal, int lastSignal
     ) {
-        public static final MyCodec<ChannelState> CODEC = new RecordCodec4<>(
+        public static final MyCodec<ChannelState> CODEC = new RecordCodec5<>(
                 MyCodecs.BOOL.fieldOf("enabled", ChannelState::enabled),
                 MyCodecs.INTEGER.fieldOf("perDiv", ChannelState::perDiv),
                 MyCodecs.INTEGER.fieldOf("zeroOffsetPixels", ChannelState::zeroOffsetPixels),
                 MyCodecs.optional(BusSignalRef.CODEC).fieldOf("signal", ChannelState::signal),
+                MyCodecs.INTEGER.fieldOf("lastSignal", ChannelState::lastSignal),
                 ChannelState::new
         );
 
         public ChannelState() {
-            this(true, 128, 50, Optional.empty());
+            this(true, 128, 50, Optional.empty(), 0);
         }
 
         public ChannelState withEnable(boolean newEnabled) {
-            return new ChannelState(newEnabled, perDiv, zeroOffsetPixels, signal);
+            return new ChannelState(newEnabled, perDiv, zeroOffsetPixels, signal, lastSignal);
         }
 
         public ChannelState withPerDiv(int newPerDiv) {
-            return new ChannelState(enabled, newPerDiv, zeroOffsetPixels, signal);
+            return new ChannelState(enabled, newPerDiv, zeroOffsetPixels, signal, lastSignal);
         }
 
         public ChannelState withOffset(int newOffset) {
-            return new ChannelState(enabled, perDiv, newOffset, signal);
+            return new ChannelState(enabled, perDiv, newOffset, signal, lastSignal);
         }
 
         public ChannelState withSignalSource(Optional<BusSignalRef> newSignal) {
-            return new ChannelState(enabled, perDiv, zeroOffsetPixels, newSignal);
+            return new ChannelState(enabled, perDiv, zeroOffsetPixels, newSignal, lastSignal);
+        }
+
+        public ChannelState withLastInput(int strength) {
+            return new ChannelState(enabled, perDiv, zeroOffsetPixels, signal, strength);
         }
     }
 

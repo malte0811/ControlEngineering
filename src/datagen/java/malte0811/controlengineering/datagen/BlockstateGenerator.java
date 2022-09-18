@@ -21,7 +21,7 @@ import malte0811.controlengineering.blocks.tape.KeypunchBlock;
 import malte0811.controlengineering.blocks.tape.SequencerBlock;
 import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.datagen.modelbuilder.*;
-import malte0811.controlengineering.scope.ScopeModules;
+import malte0811.controlengineering.scope.module.ScopeModules;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;

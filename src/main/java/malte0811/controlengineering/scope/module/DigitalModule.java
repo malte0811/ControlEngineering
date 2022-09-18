@@ -1,6 +1,10 @@
-package malte0811.controlengineering.scope;
+package malte0811.controlengineering.scope.module;
 
+import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import malte0811.controlengineering.bus.BusLine;
+import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec3;
@@ -11,6 +15,8 @@ import java.util.List;
 
 public class DigitalModule extends ScopeModule<DigitalModule.State> {
     public static final int NO_LINE = -1;
+    private static final double SIGNAL_HEIGHT_DIVS = 0.5;
+    private static final double TRACE_SEP_DIVS = 1;
 
     public DigitalModule() {
         super(new State(), State.CODEC, 2, false);
@@ -36,6 +42,49 @@ public class DigitalModule extends ScopeModule<DigitalModule.State> {
     @Override
     public boolean isSomeTriggerEnabled(State state) {
         return state.inputState.triggerEnabled();
+    }
+
+    @Override
+    public Pair<Boolean, State> isTriggered(State oldState, BusState input) {
+        boolean triggered = true;
+        for (int i = 0; i < BusLine.LINE_SIZE; ++i) {
+            switch (oldState.inputState.channelTriggers().get(i)) {
+                case LOW -> triggered &= !getSignal(input, oldState, i);
+                case IGNORED -> { }
+                case HIGH -> triggered &= getSignal(input, oldState, i);
+            }
+        }
+        return Pair.of(triggered, oldState);
+    }
+
+    @Override
+    public IntList getActiveTraces(State state) {
+        final var result = new IntArrayList();
+        for (int i = 0; i < BusLine.LINE_SIZE; ++i) {
+            if (state.inputState.isChannelVisible(i)) {
+                result.add(i);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public int getNumTraces() {
+        return 16;
+    }
+
+    @Override
+    public double getTraceValueInDivs(int traceId, BusState input, State currentState) {
+        final var baseOffset = currentState.verticalOffset / (double) VERTICAL_DIV_PIXELS + TRACE_SEP_DIVS * traceId;
+        return baseOffset + (getSignal(input, currentState, traceId) ? SIGNAL_HEIGHT_DIVS : 0);
+    }
+
+    private boolean getSignal(BusState input, State state, int traceId) {
+        if (state.inputState.inputLine == NO_LINE) {
+            return false;
+        } else {
+            return input.getLine(state.inputState.inputLine).getValue(traceId) > 0;
+        }
     }
 
     public record State(InputState inputState, boolean moduleEnabled, int verticalOffset) {

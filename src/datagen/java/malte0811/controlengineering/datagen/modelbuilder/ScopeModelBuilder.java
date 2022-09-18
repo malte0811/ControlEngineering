@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
 import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.client.model.scope.ScopeModelLoader;
-import malte0811.controlengineering.scope.ScopeModule;
+import malte0811.controlengineering.scope.module.ScopeModule;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.generators.CustomLoaderBuilder;
 import net.minecraftforge.client.model.generators.ModelBuilder;

@@ -3,11 +3,13 @@ package malte0811.controlengineering.network.scope;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity.ModuleInScope;
-import malte0811.controlengineering.scope.ScopeModuleInstance;
+import malte0811.controlengineering.scope.module.ScopeModuleInstance;
+import malte0811.controlengineering.scope.trace.Trace;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.serial.PacketBufferStorage;
 import net.minecraft.network.FriendlyByteBuf;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +25,7 @@ public final class ScopeSubPacket {
         initialized = true;
         register(SyncModules.class, SyncModules.CODEC);
         register(ModuleConfig.class, ModuleConfig.CODEC);
+        register(SyncTraces.class, SyncTraces.CODEC);
     }
 
     private static <T extends IScopeSubPacket>
@@ -36,14 +39,16 @@ public final class ScopeSubPacket {
         return CODECS.get(buffer.readVarInt()).from(buffer);
     }
 
-    public static boolean processFull(IScopeSubPacket packet, List<ModuleInScope> modules) {
-        if (!packet.process(modules)) { return false; }
+    public static boolean processFull(
+            IScopeSubPacket packet, List<ModuleInScope> modules, @Nullable List<Trace> traces
+    ) {
+        if (!packet.process(modules, traces)) { return false; }
         ScopeModuleInstance.ensureOneTriggerActive(modules, -1);
         return true;
     }
 
     public interface IScopeSubPacket {
-        boolean process(List<ModuleInScope> modules);
+        boolean process(List<ModuleInScope> modules, @Nullable List<Trace> traces);
 
         default void writeFull(FriendlyByteBuf buffer) {
             init();

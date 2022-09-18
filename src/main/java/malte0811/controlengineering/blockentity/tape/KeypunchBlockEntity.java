@@ -59,7 +59,7 @@ public class KeypunchBlockEntity extends CEBlockEntity
     public static final String REMOTE_KEY = ControlEngineering.MODID + ".gui.no_loopback";
 
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
-    private final Set<KeypunchMenu> onTapeChanged = new ReferenceOpenHashSet<>();
+    private final Set<KeypunchMenu> openMenus = new ReferenceOpenHashSet<>();
     private KeypunchState state = new KeypunchState(this::setChanged);
     private boolean loopback = true;
     private final ParallelPort busInterface = new ParallelPort();
@@ -82,7 +82,7 @@ public class KeypunchBlockEntity extends CEBlockEntity
         }
         busInterface.tickRX().ifPresent(read -> {
             state.tryTypeChar(read, false);
-            for (KeypunchMenu c : onTapeChanged) {
+            for (KeypunchMenu c : openMenus) {
                 c.onTypedOnServer(read);
             }
             setChanged();
@@ -94,7 +94,7 @@ public class KeypunchBlockEntity extends CEBlockEntity
         super.load(nbt);
         readSyncedData(nbt);
         state = new KeypunchState(this::setChanged, nbt.get("state"));
-        onTapeChanged.forEach(KeypunchMenu::resyncFullTape);
+        openMenus.forEach(KeypunchMenu::resyncFullTape);
         busInterface.readNBT(nbt.getCompound("busInterface"));
     }
 
@@ -188,7 +188,7 @@ public class KeypunchBlockEntity extends CEBlockEntity
     }
 
     public Set<KeypunchMenu> getOpenContainers() {
-        return onTapeChanged;
+        return openMenus;
     }
 
     @Override
@@ -244,7 +244,7 @@ public class KeypunchBlockEntity extends CEBlockEntity
             // Punched tape output
             subshapes.add(new SingleShape(OUTPUT_SHAPE, ctx -> {
                 var result = bEntity.getState().removeWrittenTape(ctx.getPlayer());
-                bEntity.onTapeChanged.forEach(KeypunchMenu::resyncFullTape);
+                bEntity.openMenus.forEach(KeypunchMenu::resyncFullTape);
                 return result;
             }));
             // Add clear tape to input/take it from input

@@ -8,7 +8,7 @@ import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
 import malte0811.controlengineering.client.model.CEBakedModel;
-import malte0811.controlengineering.scope.ScopeModule;
+import malte0811.controlengineering.scope.module.ScopeModule;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
