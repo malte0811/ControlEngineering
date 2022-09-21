@@ -23,9 +23,10 @@ public final class ScopeSubPacket {
             return;
         }
         initialized = true;
-        register(SyncModules.class, SyncModules.CODEC);
+        register(FullSync.class, FullSync.CODEC);
         register(ModuleConfig.class, ModuleConfig.CODEC);
-        register(SyncTraces.class, SyncTraces.CODEC);
+        register(AddTraceSamples.class, AddTraceSamples.CODEC);
+        register(InitTraces.class, InitTraces.CODEC);
     }
 
     private static <T extends IScopeSubPacket>

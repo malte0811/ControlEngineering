@@ -14,10 +14,12 @@ import malte0811.controlengineering.network.scope.ScopeSubPacket;
 import malte0811.controlengineering.network.scope.ScopeSubPacket.IScopeSubPacket;
 import malte0811.controlengineering.scope.module.ScopeModuleInstance;
 import malte0811.controlengineering.scope.trace.Trace;
+import malte0811.controlengineering.util.ColorUtils;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -28,9 +30,7 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
             ControlEngineering.MODID, "textures/gui/scope.png"
     );
     private static final SubTexture MAIN_TEXTURE = new SubTexture(TEXTURE, 0, 0, 218, 225);
-    private static final SubTexture BNC_COVER = new SubTexture(TEXTURE, 227, 242, 241, 256);
-    private static final SubTexture SIGNAL_ENABLED = new SubTexture(TEXTURE, 241, 242, 244, 245);
-    private static final SubTexture TRIGGER_ENABLED = new SubTexture(TEXTURE, 244, 242, 247, 245);
+    private static final int TRACE_COLOR = 0xff1be6ea;
     public static final int MODULE_SLOT_WIDTH = 49;
     public static final int MODULE_V_MIN = 124;
     public static final int MODULE_V_MAX = 213;
@@ -78,17 +78,27 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
     // TODO give this a nice shader!
     private void drawTrace(PoseStack transform, Trace trace) {
         // TODO get from BE!
-        // TODO somehow make sharp edges look more natural
         final double samplesPerDiv = 20;
         ScreenUtils.startPositionColorDraw();
         final var samples = trace.getSamples();
         for (int i = 0; i < samples.size() - 1; ++i) {
-            ScreenUtils.fillWithYOffsetDuringColorDraw(
-                    // TODO nicer color!
+            final var yHere = 10 - samples.getDouble(i);
+            final var traceRadius = 0.05;
+            ScreenUtils.fillDuringColorDraw(
                     transform,
-                    i / samplesPerDiv,
-                    10 - samples.getDouble(i), 10 - samples.getDouble(i + 1),
-                    (i + 1) / samplesPerDiv, 0.1, -1
+                    i / samplesPerDiv, yHere - traceRadius, (i + 1) / samplesPerDiv, yHere + traceRadius,
+                    TRACE_COLOR
+            );
+            final var yNext = 10 - samples.getDouble(i + 1);
+            final var minY = Math.min(yNext, yHere);
+            final var maxY = Math.max(yNext, yHere);
+            final var height = maxY - minY;
+            final var alpha = (int) (255 * Mth.clamp(0.75 - height / 5, 0, 1));
+            ScreenUtils.fillDuringColorDraw(
+                    transform,
+                    (i + 1 - 0.2) / samplesPerDiv, minY - traceRadius,
+                    (i + 1 + 0.2) / samplesPerDiv, maxY + traceRadius,
+                    ColorUtils.withAlpha(TRACE_COLOR, alpha)
             );
         }
         ScreenUtils.endPositionColorDraw();

@@ -1,7 +1,6 @@
 package malte0811.controlengineering.blockentity.bus;
 
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blocks.bus.ScopeBlock;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
@@ -13,7 +12,9 @@ import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.gui.scope.ScopeMenu;
 import malte0811.controlengineering.items.CEItems;
-import malte0811.controlengineering.network.scope.SyncTraces;
+import malte0811.controlengineering.network.scope.AddTraceSamples;
+import malte0811.controlengineering.network.scope.InitTraces;
+import malte0811.controlengineering.network.scope.ScopeSubPacket;
 import malte0811.controlengineering.scope.module.ScopeModule;
 import malte0811.controlengineering.scope.module.ScopeModuleInstance;
 import malte0811.controlengineering.scope.module.ScopeModules;
@@ -88,35 +89,32 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         }
         if (numCollectedSamples >= 0 || !shouldStart) { return; }
         numCollectedSamples = 0;
-        traces = new ArrayList<>();
+        final List<TraceId> traceIds = new ArrayList<>();
         for (final var module : getModules()) {
             for (final var traceId : module.module().getActiveTraces()) {
-                traces.add(new Trace(new TraceId(module.firstSlot(), traceId)));
+                traceIds.add(new TraceId(module.firstSlot(), traceId));
             }
         }
+        final var packet = new InitTraces(traceIds);
+        packet.process(modules, traces);
+        sendToListening(packet);
     }
 
     private void collectSample() {
-        final var it = traces.iterator();
-        while (it.hasNext()) {
-            final var next = it.next();
-            if (!next.isValid(modules)) {
-                it.remove();
-            } else {
-                next.addSample(modules, currentBusState);
-            }
+        List<Double> addedSamples = new ArrayList<>(traces.size());
+        for (Trace next : traces) {
+            addedSamples.add(next.addSample(modules, currentBusState));
         }
         ++numCollectedSamples;
-        ControlEngineering.LOGGER.info("Collected sample {}", numCollectedSamples);
         if (numCollectedSamples >= ticksPerDiv * NUM_HORIZONTAL_DIVS) {
             numCollectedSamples = -1;
-            ControlEngineering.LOGGER.info("Traces:");
-            for (final var trace : traces) {
-                ControlEngineering.LOGGER.info("ID {}, data {}", trace.getTraceId(), trace.getSamples());
-            }
         }
+        sendToListening(new AddTraceSamples(addedSamples));
+    }
+
+    private void sendToListening(ScopeSubPacket.IScopeSubPacket packet) {
         for (final var menu : getOpenMenus()) {
-            menu.sendToListeningPlayers(new SyncTraces(this.traces));
+            menu.sendToListeningPlayers(packet);
         }
     }
 

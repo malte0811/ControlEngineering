@@ -4,9 +4,9 @@ import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity.ModuleInScope;
 import malte0811.controlengineering.gui.CEContainerMenu;
 import malte0811.controlengineering.network.SimplePacket;
+import malte0811.controlengineering.network.scope.FullSync;
 import malte0811.controlengineering.network.scope.ScopePacket;
 import malte0811.controlengineering.network.scope.ScopeSubPacket.IScopeSubPacket;
-import malte0811.controlengineering.network.scope.SyncModules;
 import malte0811.controlengineering.scope.trace.Trace;
 import net.minecraft.world.inventory.MenuType;
 
@@ -49,7 +49,7 @@ public class ScopeMenu extends CEContainerMenu<IScopeSubPacket> {
 
     @Override
     protected IScopeSubPacket getInitialSync() {
-        return new SyncModules(getModules());
+        return new FullSync(getModules(), getTraces());
     }
 
     @Override

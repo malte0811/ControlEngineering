@@ -15,8 +15,8 @@ import java.util.List;
 
 public class DigitalModule extends ScopeModule<DigitalModule.State> {
     public static final int NO_LINE = -1;
-    private static final double SIGNAL_HEIGHT_DIVS = 0.5;
-    private static final double TRACE_SEP_DIVS = 1;
+    private static final double SIGNAL_HEIGHT_DIVS = 0.25;
+    private static final double TRACE_SEP_DIVS = 0.4;
 
     public DigitalModule() {
         super(new State(), State.CODEC, 2, false);
@@ -25,8 +25,7 @@ public class DigitalModule extends ScopeModule<DigitalModule.State> {
     public enum TriggerState {
         LOW, IGNORED, HIGH;
 
-        public static final MyCodec<TriggerState> CODEC = MyCodecs.INTEGER
-                .xmap(i -> TriggerState.values()[i], TriggerState::ordinal);
+        public static final MyCodec<TriggerState> CODEC = MyCodecs.forEnum(values(), TriggerState::ordinal);
     }
 
     @Override
@@ -75,6 +74,7 @@ public class DigitalModule extends ScopeModule<DigitalModule.State> {
 
     @Override
     public double getTraceValueInDivs(int traceId, BusState input, State currentState) {
+        // TODO: Tightly pack the traces present in a given sweep?
         final var baseOffset = currentState.verticalOffset / (double) VERTICAL_DIV_PIXELS + TRACE_SEP_DIVS * traceId;
         return baseOffset + (getSignal(input, currentState, traceId) ? SIGNAL_HEIGHT_DIVS : 0);
     }

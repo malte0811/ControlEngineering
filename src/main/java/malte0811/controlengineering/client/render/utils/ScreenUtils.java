@@ -13,12 +13,12 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 public class ScreenUtils {
     public static void fill(PoseStack transform, double minX, double minY, double maxX, double maxY, int color) {
         startPositionColorDraw();
-        fillWithYOffsetDuringColorDraw(transform, minX, minY, minY, maxX, maxY - minY, color);
+        fillDuringColorDraw(transform, minX, minY, maxX, maxY, color);
         endPositionColorDraw();
     }
 
-    public static void fillWithYOffsetDuringColorDraw(
-            PoseStack transform, double minX, double leftMinY, double rightMinY, double maxX, double height, int color
+    public static void fillDuringColorDraw(
+            PoseStack transform, double minX, double minY, double maxX, double maxY, int color
     ) {
         Matrix4f matrix = transform.last().pose();
         float alpha = (float) (color >> 24 & 255) / 255.0F;
@@ -26,18 +26,10 @@ public class ScreenUtils {
         float green = (float) (color >> 8 & 255) / 255.0F;
         float blue = (float) (color & 255) / 255.0F;
         final var bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.vertex(matrix, (float) minX, (float) (leftMinY + height), 0.0F)
-                .color(red, green, blue, alpha)
-                .endVertex();
-        bufferbuilder.vertex(matrix, (float) maxX, (float) (rightMinY + height), 0.0F)
-                .color(red, green, blue, alpha)
-                .endVertex();
-        bufferbuilder.vertex(matrix, (float) maxX, (float) rightMinY, 0.0F)
-                .color(red, green, blue, alpha)
-                .endVertex();
-        bufferbuilder.vertex(matrix, (float) minX, (float) leftMinY, 0.0F)
-                .color(red, green, blue, alpha)
-                .endVertex();
+        bufferbuilder.vertex(matrix, (float) minX, (float) maxY, 0.0F).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.vertex(matrix, (float) maxX, (float) maxY, 0.0F).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.vertex(matrix, (float) maxX, (float) minY, 0.0F).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.vertex(matrix, (float) minX, (float) minY, 0.0F).color(red, green, blue, alpha).endVertex();
     }
 
     public static void endPositionColorDraw() {

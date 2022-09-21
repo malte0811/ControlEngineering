@@ -40,8 +40,21 @@ public class Trace {
         return getMaybeOwner(modules) != null;
     }
 
-    public void addSample(List<ModuleInScope> modules, BusState input) {
-        this.samples.add(getOwner(modules).module().getDivRelativeSample(traceId.traceIdWithinModule(), input));
+    public double addSample(List<ModuleInScope> modules, BusState input) {
+        final var owner = getMaybeOwner(modules);
+        if (owner != null) {
+            final var sample = owner.module().getDivRelativeSample(traceId.traceIdWithinModule(), input);
+            addSample(sample);
+            return sample;
+        } else {
+            // TODO stop people from taking modules from a running scope
+            addSample(0);
+            return 0;
+        }
+    }
+
+    public void addSample(double sample) {
+        this.samples.add(sample);
     }
 
     public DoubleList getDivRelativeSamples() {
