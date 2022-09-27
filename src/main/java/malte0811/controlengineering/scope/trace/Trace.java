@@ -3,6 +3,8 @@ package malte0811.controlengineering.scope.trace;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.doubles.DoubleLists;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity.ModuleInScope;
 import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.util.mycodec.MyCodec;
@@ -21,6 +23,8 @@ public class Trace {
     );
 
     private final DoubleList samples;
+    // Not synced/saved, only used for rendering on the client
+    private final LongList sampleTimestamps;
     private final TraceId traceId;
 
     public Trace(TraceId traceId) {
@@ -30,6 +34,7 @@ public class Trace {
     private Trace(List<Double> samples, TraceId traceId) {
         this.samples = new DoubleArrayList(samples);
         this.traceId = traceId;
+        this.sampleTimestamps = new LongArrayList(new long[this.samples.size()]);
     }
 
     public Trace(Trace oldTrace) {
@@ -55,6 +60,7 @@ public class Trace {
 
     public void addSample(double sample) {
         this.samples.add(sample);
+        this.sampleTimestamps.add(System.currentTimeMillis());
     }
 
     public DoubleList getDivRelativeSamples() {
@@ -85,5 +91,9 @@ public class Trace {
             }
         }
         return null;
+    }
+
+    public LongList getSampleTimestamps() {
+        return sampleTimestamps;
     }
 }
