@@ -20,6 +20,16 @@ public record InitTraces(List<TraceId> ids, int ticksPerDiv) implements ScopeSub
             InitTraces::new
     );
 
+    public static InitTraces createForModules(List<ModuleInScope> modules, int ticksPerDiv) {
+        final List<TraceId> traceIds = new ArrayList<>();
+        for (final var module : modules) {
+            for (final var traceId : module.module().getActiveTraces()) {
+                traceIds.add(new TraceId(module.firstSlot(), traceId));
+            }
+        }
+        return new InitTraces(traceIds, ticksPerDiv);
+    }
+
     @Override
     public boolean process(
             List<ModuleInScope> modules, Mutable<Traces> traces, Mutable<GlobalConfig> globalConfig
@@ -32,11 +42,7 @@ public record InitTraces(List<TraceId> ids, int ticksPerDiv) implements ScopeSub
             traceList.add(new Trace(id));
         }
         traces.setValue(new Traces(traceList, ticksPerDiv));
+        globalConfig.setValue(globalConfig.getValue().withTriggerArmed(false));
         return true;
-    }
-
-    @Override
-    public boolean allowSendingToServer() {
-        return false;
     }
 }

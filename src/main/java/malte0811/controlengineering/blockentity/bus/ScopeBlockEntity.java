@@ -18,7 +18,6 @@ import malte0811.controlengineering.scope.GlobalConfig;
 import malte0811.controlengineering.scope.module.ScopeModule;
 import malte0811.controlengineering.scope.module.ScopeModuleInstance;
 import malte0811.controlengineering.scope.module.ScopeModules;
-import malte0811.controlengineering.scope.trace.TraceId;
 import malte0811.controlengineering.scope.trace.Traces;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.math.MatrixUtils;
@@ -85,14 +84,8 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
                 shouldStart = true;
             }
         }
-        if (traces.isSweeping() || !shouldStart) { return; }
-        final List<TraceId> traceIds = new ArrayList<>();
-        for (final var module : getModules()) {
-            for (final var traceId : module.module().getActiveTraces()) {
-                traceIds.add(new TraceId(module.firstSlot(), traceId));
-            }
-        }
-        final var packet = new InitTraces(traceIds, globalConfig.ticksPerDiv());
+        if (traces.isSweeping() || !shouldStart || !globalConfig.triggerArmed()) { return; }
+        final var packet = InitTraces.createForModules(getModules(), globalConfig.ticksPerDiv());
         packet.process(
                 modules,
                 new LambdaMutable<>(this::getTraces, t -> this.traces = t),
@@ -273,6 +266,11 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
 
     public Traces getTraces() {
         return traces;
+    }
+
+    public void setTraces(Traces traces) {
+        this.traces = traces;
+        setChanged();
     }
 
     public GlobalConfig getGlobalConfig() {

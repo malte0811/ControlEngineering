@@ -30,6 +30,7 @@ public final class ScopeSubPacket {
         register(AddTraceSamples.class, AddTraceSamples.CODEC);
         register(InitTraces.class, InitTraces.CODEC);
         register(SetGlobalCfg.class, SetGlobalCfg.CODEC);
+        register(ResetSweep.class, ResetSweep.CODEC);
     }
 
     private static <T extends IScopeSubPacket>

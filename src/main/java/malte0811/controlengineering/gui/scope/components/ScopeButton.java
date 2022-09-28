@@ -18,7 +18,7 @@ public class ScopeButton implements IScopeComponent {
             Vec2i pos, boolean enabled, String onTooltip, String offTooltip, Runnable toggle
     ) {
         final var tooltip = Component.translatable(enabled ? onTooltip : offTooltip);
-        return new ScopeButton(enabled ? 0x26bd18 : 0x657163, tooltip, pos, toggle);
+        return makeGreen(pos, enabled, tooltip, toggle);
     }
 
     public static ScopeButton makeChannelEnable(Vec2i pos, boolean currentlyShown, Runnable toggle) {
@@ -31,6 +31,14 @@ public class ScopeButton implements IScopeComponent {
 
     public static ScopeButton makeTriggerEnable(Vec2i pos, boolean enabled, Runnable toggle) {
         final var tooltip = Component.translatable(enabled ? TRIGGER_SOURCE_USED : TRIGGER_SOURCE_UNUSED);
+        return makeOrange(pos, enabled, tooltip, toggle);
+    }
+
+    public static ScopeButton makeGreen(Vec2i pos, boolean enabled, Component tooltip, Runnable toggle) {
+        return new ScopeButton(enabled ? 0x26bd18 : 0x657163, tooltip, pos, toggle);
+    }
+
+    public static ScopeButton makeOrange(Vec2i pos, boolean enabled, Component tooltip, Runnable toggle) {
         return new ScopeButton(enabled ? 0xf2be22 : 0x796c45, tooltip, pos, toggle);
     }
 

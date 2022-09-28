@@ -12,12 +12,11 @@ import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.gui.scope.components.IScopeComponent;
 import malte0811.controlengineering.gui.scope.components.Range;
+import malte0811.controlengineering.gui.scope.components.ScopeButton;
 import malte0811.controlengineering.gui.scope.module.ClientModules;
-import malte0811.controlengineering.network.scope.ModuleConfig;
-import malte0811.controlengineering.network.scope.ScopePacket;
-import malte0811.controlengineering.network.scope.ScopeSubPacket;
+import malte0811.controlengineering.network.scope.*;
 import malte0811.controlengineering.network.scope.ScopeSubPacket.IScopeSubPacket;
-import malte0811.controlengineering.network.scope.SetGlobalCfg;
+import malte0811.controlengineering.scope.GlobalConfig;
 import malte0811.controlengineering.scope.module.ScopeModuleInstance;
 import malte0811.controlengineering.scope.trace.Trace;
 import malte0811.controlengineering.util.math.Vec2i;
@@ -29,9 +28,13 @@ import net.minecraft.util.Mth;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> {
     public static final String TICKS_PER_DIV_KEY = ControlEngineering.MODID + ".gui.scope.ticksPerDiv";
+    public static final String ARM_TRIGGER_KEY = ControlEngineering.MODID + ".gui.scope.armTrigger";
+    public static final String FORCE_TRIGGER_KEY = ControlEngineering.MODID + ".gui.scope.forceTrigger";
+    public static final String RESET_KEY = ControlEngineering.MODID + ".gui.scope.reset";
 
     public static final ResourceLocation TEXTURE = new ResourceLocation(
             ControlEngineering.MODID, "textures/gui/scope.png"
@@ -154,13 +157,32 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
     private List<IScopeComponent> makeTopLevelComponents() {
         List<IScopeComponent> components = new ArrayList<>();
         final var globalCfg = menu.getGlobalConfig();
+        final var origin = new Vec2i(this.leftPos, this.topPos);
+        final Consumer<GlobalConfig> setCfg = cfg -> runAndSendToServer(new SetGlobalCfg(cfg));
         components.add(Range.makeExponential(
                 Component.translatable(TICKS_PER_DIV_KEY),
-                new Vec2i(this.leftPos + 177, this.topPos + 38),
+                origin.add(177, 43),
                 2, 64, 1, globalCfg.ticksPerDiv(),
-                i -> runAndSendToServer(new SetGlobalCfg(globalCfg.withTicksPerDiv(i)))
+                i -> setCfg.accept(globalCfg.withTicksPerDiv(i))
         ));
-        // TODO
+        components.add(ScopeButton.makeOrange(
+                origin.add(174, 73), globalCfg.triggerArmed(), Component.translatable(ARM_TRIGGER_KEY),
+                () -> setCfg.accept(globalCfg.withTriggerArmed(true))
+        ));
+        components.add(ScopeButton.makeGreen(
+                origin.add(174, 82), menu.getTraces().isSweeping(), Component.translatable(FORCE_TRIGGER_KEY),
+                () -> {
+                    if (!menu.getTraces().isSweeping()) {
+                        runAndSendToServer(InitTraces.createForModules(menu.getModules(), globalCfg.ticksPerDiv()));
+                    }
+                }
+        ));
+        components.add(new ScopeButton(
+                0xff5e29,
+                Component.translatable(RESET_KEY),
+                origin.add(174, 91),
+                () -> runAndSendToServer(new ResetSweep())
+        ));
         return components;
     }
 

@@ -241,6 +241,9 @@ public class LangGenerator extends LanguageProvider {
         add(ClientModule.MODULE_INACTIVE, "Module disabled");
         add(ClientModule.VERT_OFFSET_TOOLTIP, "Vertical offset in pixels");
         add(ScopeScreen.TICKS_PER_DIV_KEY, "Ticks per horizontal division");
+        add(ScopeScreen.ARM_TRIGGER_KEY, "Arm trigger");
+        add(ScopeScreen.FORCE_TRIGGER_KEY, "Force sweep");
+        add(ScopeScreen.RESET_KEY, "Reset sweep");
     }
 
     private void addManualStrings() {

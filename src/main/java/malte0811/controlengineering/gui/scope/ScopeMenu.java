@@ -32,9 +32,7 @@ public class ScopeMenu extends CEContainerMenu<IScopeSubPacket> {
         super(type, id, isValidFor(scope), scope::setChanged);
         this.modules = scope.getModules();
         this.openMenusOnBE = scope.getOpenMenus();
-        this.traces = new LambdaMutable<>(
-                scope::getTraces, $ -> { throw new RuntimeException("Cannot set traces on server"); }
-        );
+        this.traces = new LambdaMutable<>(scope::getTraces, scope::setTraces);
         this.globalConfig = new LambdaMutable<>(scope::getGlobalConfig, scope::setGlobalConfig);
     }
 
