@@ -17,6 +17,7 @@ import malte0811.controlengineering.gui.misc.BusSignalSelector;
 import malte0811.controlengineering.gui.misc.ConfirmScreen;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignScreen;
+import malte0811.controlengineering.gui.scope.ScopeScreen;
 import malte0811.controlengineering.gui.scope.module.AnalogClientModule;
 import malte0811.controlengineering.gui.scope.module.ClientModule;
 import malte0811.controlengineering.gui.scope.module.DigitalClientModule;
@@ -239,6 +240,7 @@ public class LangGenerator extends LanguageProvider {
         add(ClientModule.MODULE_ACTIVE, "Module enabled");
         add(ClientModule.MODULE_INACTIVE, "Module disabled");
         add(ClientModule.VERT_OFFSET_TOOLTIP, "Vertical offset in pixels");
+        add(ScopeScreen.TICKS_PER_DIV_KEY, "Ticks per horizontal division");
     }
 
     private void addManualStrings() {

@@ -11,11 +11,13 @@ import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.gui.scope.components.IScopeComponent;
+import malte0811.controlengineering.gui.scope.components.Range;
 import malte0811.controlengineering.gui.scope.module.ClientModules;
 import malte0811.controlengineering.network.scope.ModuleConfig;
 import malte0811.controlengineering.network.scope.ScopePacket;
 import malte0811.controlengineering.network.scope.ScopeSubPacket;
 import malte0811.controlengineering.network.scope.ScopeSubPacket.IScopeSubPacket;
+import malte0811.controlengineering.network.scope.SetGlobalCfg;
 import malte0811.controlengineering.scope.module.ScopeModuleInstance;
 import malte0811.controlengineering.scope.trace.Trace;
 import malte0811.controlengineering.util.math.Vec2i;
@@ -29,6 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> {
+    public static final String TICKS_PER_DIV_KEY = ControlEngineering.MODID + ".gui.scope.ticksPerDiv";
+
     public static final ResourceLocation TEXTURE = new ResourceLocation(
             ControlEngineering.MODID, "textures/gui/scope.png"
     );
@@ -67,7 +71,7 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
         transform.pushPose();
         transform.translate(leftPos + 5, topPos + 16, 0);
         transform.scale(20f, 10f, 1);
-        for (final var trace : menu.getTraces()) {
+        for (final var trace : menu.getTraces().traces()) {
             drawTrace(transform, trace);
         }
         RenderSystem.disableScissor();
@@ -105,8 +109,7 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
     }
 
     private void drawTrace(PoseStack transform, Trace trace) {
-        // TODO get from BE!
-        final double samplesPerDiv = 20;
+        final double samplesPerDiv = menu.getTraces().ticksPerDiv();
         ScreenUtils.startPositionColorDraw();
         RenderSystem.setShader(CEShaders::getScopeTrace);
         final var samples = trace.getSamples();
@@ -128,8 +131,8 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
             final var alpha = (int) (255 * Mth.clamp(0.75 - height / 5, 0, 1));
             fillTrace(
                     transform,
-                    (i + 0.5) / samplesPerDiv, minY,
-                    (i + 1.5) / samplesPerDiv, maxY,
+                    (i + 1) / samplesPerDiv - traceRadius / 2, minY,
+                    (i + 1) / samplesPerDiv + traceRadius / 2, maxY,
                     alpha, delayHere, delayHere, true
             );
         }
@@ -138,13 +141,26 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
 
     // TODO cache result
     private List<IScopeComponent> getComponents() {
-        List<IScopeComponent> components = new ArrayList<>();
+        List<IScopeComponent> components = makeTopLevelComponents();
         int offset = 0;
         for (int i = 0; i < menu.getModules().size(); ++i) {
             final var module = menu.getModules().get(i);
             components.addAll(gatherComponentsFor(module.module(), i, offset));
             offset += module.type().getWidth();
         }
+        return components;
+    }
+
+    private List<IScopeComponent> makeTopLevelComponents() {
+        List<IScopeComponent> components = new ArrayList<>();
+        final var globalCfg = menu.getGlobalConfig();
+        components.add(Range.makeExponential(
+                Component.translatable(TICKS_PER_DIV_KEY),
+                new Vec2i(this.leftPos + 177, this.topPos + 38),
+                2, 64, 1, globalCfg.ticksPerDiv(),
+                i -> runAndSendToServer(new SetGlobalCfg(globalCfg.withTicksPerDiv(i)))
+        ));
+        // TODO
         return components;
     }
 
@@ -191,7 +207,7 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
     }
 
     private void runAndSendToServer(IScopeSubPacket data) {
-        if (ScopeSubPacket.processFull(data, menu.getModules(), menu.getTraces())) {
+        if (ScopeSubPacket.processFull(data, menu)) {
             ControlEngineering.NETWORK.sendToServer(new ScopePacket(data));
         }
     }

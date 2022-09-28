@@ -34,7 +34,7 @@ public class ScopePacket extends SimplePacket {
             if (!(activeContainer instanceof ScopeMenu scopeMenu)) {
                 return;
             }
-            ScopeSubPacket.processFull(packet, scopeMenu.getModules(), null);
+            ScopeSubPacket.processFull(packet, scopeMenu);
             scopeMenu.sendToListeningPlayersExcept(ctx.getSender(), packet);
             scopeMenu.markDirty();
         } else {

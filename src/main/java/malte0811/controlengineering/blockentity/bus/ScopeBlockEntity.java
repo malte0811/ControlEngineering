@@ -12,14 +12,14 @@ import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.gui.scope.ScopeMenu;
 import malte0811.controlengineering.items.CEItems;
-import malte0811.controlengineering.network.scope.AddTraceSamples;
 import malte0811.controlengineering.network.scope.InitTraces;
 import malte0811.controlengineering.network.scope.ScopeSubPacket;
+import malte0811.controlengineering.scope.GlobalConfig;
 import malte0811.controlengineering.scope.module.ScopeModule;
 import malte0811.controlengineering.scope.module.ScopeModuleInstance;
 import malte0811.controlengineering.scope.module.ScopeModules;
-import malte0811.controlengineering.scope.trace.Trace;
 import malte0811.controlengineering.scope.trace.TraceId;
+import malte0811.controlengineering.scope.trace.Traces;
 import malte0811.controlengineering.util.*;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import malte0811.controlengineering.util.mycodec.MyCodec;
@@ -52,10 +52,9 @@ import java.util.stream.Stream;
 //  headaches.
 public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IBusInterface {
     private static final int NUM_SLOTS = 4;
-    private static final int NUM_HORIZONTAL_DIVS = 8;
+    public static final int NUM_HORIZONTAL_DIVS = 8;
     private static final MyCodec<List<ModuleInScope>> MODULES_CODEC = MyCodecs.list(ModuleInScope.CODEC);
     private static final MyCodec<List<ModuleInScope>> SYNC_MODULES_CODEC = MyCodecs.list(ModuleInScope.SYNC_CODEC);
-    private static final MyCodec<List<Trace>> TRACES_CODEC = MyCodecs.list(Trace.CODEC);
 
     private List<ModuleInScope> modules = fixModuleList(List.of());
     private final CachedValue<ShapeKey, SelectionShapes> shape = new CachedValue<>(
@@ -63,10 +62,8 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
             key -> makeShapes(key, this)
     );
     private BusState currentBusState = BusState.EMPTY;
-    // TODO make UI configurable
-    private int ticksPerDiv = 20;
-    private List<Trace> traces = List.of();
-    private int numCollectedSamples = -1;
+    private GlobalConfig globalConfig = new GlobalConfig();
+    private Traces traces = new Traces();
     private final Set<ScopeMenu> openMenus = new ReferenceOpenHashSet<>();
 
     public ScopeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -75,8 +72,9 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
 
     public void tickServer() {
         tryStartSweep();
-        if (numCollectedSamples >= 0) {
-            collectSample();
+        final var toSend = traces.collectSample(modules, currentBusState);
+        if (toSend != null) {
+            sendToListening(toSend);
         }
     }
 
@@ -87,29 +85,20 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
                 shouldStart = true;
             }
         }
-        if (numCollectedSamples >= 0 || !shouldStart) { return; }
-        numCollectedSamples = 0;
+        if (traces.isSweeping() || !shouldStart) { return; }
         final List<TraceId> traceIds = new ArrayList<>();
         for (final var module : getModules()) {
             for (final var traceId : module.module().getActiveTraces()) {
                 traceIds.add(new TraceId(module.firstSlot(), traceId));
             }
         }
-        final var packet = new InitTraces(traceIds);
-        packet.process(modules, traces);
+        final var packet = new InitTraces(traceIds, globalConfig.ticksPerDiv());
+        packet.process(
+                modules,
+                new LambdaMutable<>(this::getTraces, t -> this.traces = t),
+                new LambdaMutable<>(this::getGlobalConfig, this::setGlobalConfig)
+        );
         sendToListening(packet);
-    }
-
-    private void collectSample() {
-        List<Double> addedSamples = new ArrayList<>(traces.size());
-        for (Trace next : traces) {
-            addedSamples.add(next.addSample(modules, currentBusState));
-        }
-        ++numCollectedSamples;
-        if (numCollectedSamples >= ticksPerDiv * NUM_HORIZONTAL_DIVS) {
-            numCollectedSamples = -1;
-        }
-        sendToListening(new AddTraceSamples(addedSamples));
     }
 
     private void sendToListening(ScopeSubPacket.IScopeSubPacket packet) {
@@ -123,9 +112,8 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         super.load(tag);
         modules = fixModuleList(MODULES_CODEC.fromNBT(tag.get("modules"), ArrayList::new));
         currentBusState = BusState.CODEC.fromNBT(tag.get("busInput"), () -> BusState.EMPTY);
-        ticksPerDiv = tag.getInt("ticksPerDiv");
-        traces = TRACES_CODEC.fromNBT(tag.get("traces"), ArrayList::new);
-        numCollectedSamples = tag.getInt("numCollectedSamples");
+        globalConfig = GlobalConfig.CODEC.fromNBT(tag.get("globalConfig"), GlobalConfig::new);
+        traces = Traces.CODEC.fromNBT(tag.get("traces"), Traces::new);
     }
 
     @Override
@@ -133,9 +121,8 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         super.saveAdditional(tag);
         tag.put("modules", MODULES_CODEC.toNBT(this.modules));
         tag.put("busInput", BusState.CODEC.toNBT(this.currentBusState));
-        tag.putInt("ticksPerDiv", ticksPerDiv);
-        tag.put("traces", TRACES_CODEC.toNBT(traces));
-        tag.putInt("numCollectedSamples", numCollectedSamples);
+        tag.put("globalConfig", GlobalConfig.CODEC.toNBT(this.globalConfig));
+        tag.put("traces", Traces.CODEC.toNBT(traces));
     }
 
     @Override
@@ -284,8 +271,17 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         return openMenus;
     }
 
-    public List<Trace> getTraces() {
+    public Traces getTraces() {
         return traces;
+    }
+
+    public GlobalConfig getGlobalConfig() {
+        return globalConfig;
+    }
+
+    public void setGlobalConfig(GlobalConfig globalConfig) {
+        this.globalConfig = globalConfig;
+        setChanged();
     }
 
     private static List<ModuleInScope> fixModuleList(List<ModuleInScope> untrusted) {

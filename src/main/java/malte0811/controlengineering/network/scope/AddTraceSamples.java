@@ -1,11 +1,12 @@
 package malte0811.controlengineering.network.scope;
 
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
-import malte0811.controlengineering.scope.trace.Trace;
+import malte0811.controlengineering.scope.GlobalConfig;
+import malte0811.controlengineering.scope.trace.Traces;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
+import org.apache.commons.lang3.mutable.Mutable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public record AddTraceSamples(List<Double> samples) implements ScopeSubPacket.IScopeSubPacket {
@@ -14,7 +15,10 @@ public record AddTraceSamples(List<Double> samples) implements ScopeSubPacket.IS
     );
 
     @Override
-    public boolean process(List<ScopeBlockEntity.ModuleInScope> modules, @Nullable List<Trace> traces) {
+    public boolean process(
+            List<ScopeBlockEntity.ModuleInScope> modules, Mutable<Traces> tracesM, Mutable<GlobalConfig> globalConfig
+    ) {
+        final var traces = tracesM.getValue().traces();
         if (traces == null || samples.size() != traces.size()) {
             return false;
         }

@@ -37,7 +37,7 @@ public class ClientHooks {
         ScopeScreen currentScreen = StackedScreen.findInstanceOf(ScopeScreen.class);
         if (currentScreen != null) {
             final var menu = currentScreen.getMenu();
-            ScopeSubPacket.processFull(packet, menu.getModules(), menu.getTraces());
+            ScopeSubPacket.processFull(packet, menu);
         }
     }
 }

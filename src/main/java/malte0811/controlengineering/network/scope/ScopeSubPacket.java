@@ -3,13 +3,15 @@ package malte0811.controlengineering.network.scope;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity.ModuleInScope;
+import malte0811.controlengineering.gui.scope.ScopeMenu;
+import malte0811.controlengineering.scope.GlobalConfig;
 import malte0811.controlengineering.scope.module.ScopeModuleInstance;
-import malte0811.controlengineering.scope.trace.Trace;
+import malte0811.controlengineering.scope.trace.Traces;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.serial.PacketBufferStorage;
 import net.minecraft.network.FriendlyByteBuf;
+import org.apache.commons.lang3.mutable.Mutable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,7 @@ public final class ScopeSubPacket {
         register(ModuleConfig.class, ModuleConfig.CODEC);
         register(AddTraceSamples.class, AddTraceSamples.CODEC);
         register(InitTraces.class, InitTraces.CODEC);
+        register(SetGlobalCfg.class, SetGlobalCfg.CODEC);
     }
 
     private static <T extends IScopeSubPacket>
@@ -40,16 +43,16 @@ public final class ScopeSubPacket {
         return CODECS.get(buffer.readVarInt()).from(buffer);
     }
 
-    public static boolean processFull(
-            IScopeSubPacket packet, List<ModuleInScope> modules, @Nullable List<Trace> traces
-    ) {
-        if (!packet.process(modules, traces)) { return false; }
-        ScopeModuleInstance.ensureOneTriggerActive(modules, -1);
+    public static boolean processFull(IScopeSubPacket packet, ScopeMenu menu) {
+        if (!packet.process(menu.getModules(), menu.getTracesMutable(), menu.getGlobalConfigMutable())) {
+            return false;
+        }
+        ScopeModuleInstance.ensureOneTriggerActive(menu.getModules(), -1);
         return true;
     }
 
     public interface IScopeSubPacket {
-        boolean process(List<ModuleInScope> modules, @Nullable List<Trace> traces);
+        boolean process(List<ModuleInScope> modules, Mutable<Traces> traces, Mutable<GlobalConfig> globalConfig);
 
         default void writeFull(FriendlyByteBuf buffer) {
             init();
