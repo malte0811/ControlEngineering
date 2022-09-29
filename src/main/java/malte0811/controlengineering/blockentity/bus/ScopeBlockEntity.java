@@ -151,7 +151,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
 
     private InteractionResult interactWithModule(int indexOfTarget, UseOnContext ctx) {
         // TODO support for locking modules in place with a screwdriver?
-        if (level == null) { return InteractionResult.PASS; }
+        if (level == null || globalConfig.powered()) { return InteractionResult.PASS; }
         final var targetedModule = modules.get(indexOfTarget).type();
         final var targetSlot = modules.get(indexOfTarget).firstSlot();
         if (!targetedModule.isEmpty()) {

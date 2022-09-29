@@ -91,6 +91,8 @@
   "controlengineering.gui.scope.moduleActive": "Module enabled",
   "controlengineering.gui.scope.moduleInactive": "Module disabled",
   "controlengineering.gui.scope.perDiv": "Signal per vertical division",
+  "controlengineering.gui.scope.powerButtonOff": "Switch oscilloscope on",
+  "controlengineering.gui.scope.powerButtonOn": "Switch oscilloscope off",
   "controlengineering.gui.scope.reset": "Reset sweep",
   "controlengineering.gui.scope.ticksPerDiv": "Ticks per horizontal division",
   "controlengineering.gui.scope.triggerDisabled": "Not used as trigger source",

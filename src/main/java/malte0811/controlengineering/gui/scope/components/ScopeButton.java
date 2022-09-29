@@ -69,4 +69,9 @@ public class ScopeButton implements IScopeComponent {
     public Component getTooltip() {
         return tooltip;
     }
+
+    @Override
+    public boolean requiresPower() {
+        return true;
+    }
 }

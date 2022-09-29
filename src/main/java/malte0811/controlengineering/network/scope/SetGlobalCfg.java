@@ -6,7 +6,6 @@ import malte0811.controlengineering.scope.trace.Traces;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import org.apache.commons.lang3.mutable.Mutable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public record SetGlobalCfg(GlobalConfig newCfg) implements ScopeSubPacket.IScopeSubPacket {
@@ -16,9 +15,12 @@ public record SetGlobalCfg(GlobalConfig newCfg) implements ScopeSubPacket.IScope
 
     @Override
     public boolean process(
-            List<ModuleInScope> modules, @Nullable Mutable<Traces> traces, Mutable<GlobalConfig> globalConfig
+            List<ModuleInScope> modules, Mutable<Traces> traces, Mutable<GlobalConfig> globalConfig
     ) {
         globalConfig.setValue(newCfg);
+        if (!newCfg.powered() && !traces.getValue().traces().isEmpty()) {
+            traces.setValue(new Traces());
+        }
         return true;
     }
 }

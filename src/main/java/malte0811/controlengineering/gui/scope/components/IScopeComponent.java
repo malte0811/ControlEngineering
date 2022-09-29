@@ -12,4 +12,6 @@ public interface IScopeComponent {
     RectangleI getArea();
 
     Component getTooltip();
+
+    boolean requiresPower();
 }

@@ -18,6 +18,7 @@ import malte0811.controlengineering.gui.misc.ConfirmScreen;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignScreen;
 import malte0811.controlengineering.gui.scope.ScopeScreen;
+import malte0811.controlengineering.gui.scope.components.PowerButton;
 import malte0811.controlengineering.gui.scope.module.AnalogClientModule;
 import malte0811.controlengineering.gui.scope.module.ClientModule;
 import malte0811.controlengineering.gui.scope.module.DigitalClientModule;
@@ -244,6 +245,8 @@ public class LangGenerator extends LanguageProvider {
         add(ScopeScreen.ARM_TRIGGER_KEY, "Arm trigger");
         add(ScopeScreen.FORCE_TRIGGER_KEY, "Force sweep");
         add(ScopeScreen.RESET_KEY, "Reset sweep");
+        add(PowerButton.OFF_TOOLTIP_KEY, "Switch oscilloscope on");
+        add(PowerButton.ON_TOOLTIP_KEY, "Switch oscilloscope off");
     }
 
     private void addManualStrings() {

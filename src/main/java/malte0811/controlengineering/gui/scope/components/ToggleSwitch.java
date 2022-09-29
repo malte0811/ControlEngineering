@@ -74,6 +74,11 @@ public class ToggleSwitch implements IScopeComponent {
         return tooltip;
     }
 
+    @Override
+    public boolean requiresPower() {
+        return false;
+    }
+
     public enum State {
         HIGH, NEUTRAL, LOW;
     }

@@ -73,4 +73,9 @@ public class BNCConnector implements IScopeComponent {
     public Component getTooltip() {
         return tooltip;
     }
+
+    @Override
+    public boolean requiresPower() {
+        return false;
+    }
 }

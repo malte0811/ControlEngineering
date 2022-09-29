@@ -11,6 +11,7 @@ import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.gui.scope.components.IScopeComponent;
+import malte0811.controlengineering.gui.scope.components.PowerButton;
 import malte0811.controlengineering.gui.scope.components.Range;
 import malte0811.controlengineering.gui.scope.components.ScopeButton;
 import malte0811.controlengineering.gui.scope.module.ClientModules;
@@ -64,8 +65,11 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
     @Override
     protected void renderForeground(@Nonnull PoseStack transform, int mouseX, int mouseY, float partialTicks) {
         Component tooltip = null;
+        final var scopePowered = menu.getGlobalConfig().powered();
         for (final var component : getComponents()) {
-            component.render(transform);
+            if (scopePowered || !component.requiresPower()) {
+                component.render(transform);
+            }
             if (component.getArea().containsClosed(mouseX, mouseY)) {
                 tooltip = component.getTooltip();
             }
@@ -159,9 +163,15 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
         final var globalCfg = menu.getGlobalConfig();
         final var origin = new Vec2i(this.leftPos, this.topPos);
         final Consumer<GlobalConfig> setCfg = cfg -> runAndSendToServer(new SetGlobalCfg(cfg));
+        components.add(new PowerButton(
+                globalCfg.powered(), origin.add(175, 32), b -> setCfg.accept(globalCfg.withPowered(b))
+        ));
+        if (!globalCfg.powered()) {
+            return components;
+        }
         components.add(Range.makeExponential(
                 Component.translatable(TICKS_PER_DIV_KEY),
-                origin.add(177, 43),
+                origin.add(177, 49),
                 2, 64, 1, globalCfg.ticksPerDiv(),
                 i -> setCfg.accept(globalCfg.withTicksPerDiv(i))
         ));
@@ -199,8 +209,11 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
 
     @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        for (final var toggle : getComponents()) {
-            if (toggle.getArea().containsClosed(pMouseX, pMouseY) && toggle.click(pMouseX, pMouseY)) {
+        final var scopePowered = menu.getGlobalConfig().powered();
+        for (final var component : getComponents()) {
+            if (!component.getArea().containsClosed(pMouseX, pMouseY)) { continue; }
+            if (!scopePowered && component.requiresPower()) { continue; }
+            if (component.click(pMouseX, pMouseY)) {
                 return true;
             }
         }
