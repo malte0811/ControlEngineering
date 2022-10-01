@@ -4,10 +4,13 @@ import blusunrize.immersiveengineering.api.ApiUtils;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
 import malte0811.controlengineering.client.model.CEBakedModel;
+import malte0811.controlengineering.client.render.target.QuadBuilder;
+import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
 import malte0811.controlengineering.scope.module.ScopeModule;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -21,6 +24,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.ChunkRenderTypeSet;
 import net.minecraftforge.client.model.QuadTransformers;
 import net.minecraftforge.client.model.data.ModelData;
@@ -39,12 +43,20 @@ public class ScopeModel implements CEBakedModel {
     private static final ModelProperty<Key> KEY_PROP = new ModelProperty<>();
     private final ChunkRenderTypeSet SOLID_CHUNK = ChunkRenderTypeSet.of(RenderType.solid());
     private final List<RenderType> SOLID_ITEM = List.of(RenderType.solid());
+    private final Vec3[] END_QUAD_VERTICES = {
+            new Vec3(14 / 16., 1 / 16., 1 / 16.),
+            new Vec3(14 / 16., 1 / 16., 9 / 16.),
+            new Vec3(14 / 16., 8 / 16., 9 / 16.),
+            new Vec3(14 / 16., 8 / 16., 1 / 16.),
+    };
 
     private final List<BakedQuad> mainModel;
     private final TextureAtlasSprite particleIcon;
     private final Transformation modelTransform;
     private final ItemTransforms transforms;
     private final Map<ResourceLocation, List<BakedQuad>> modules;
+    private final BakedQuad leftEndQuad;
+    private final BakedQuad rightEndQuad;
     private final LoadingCache<Key, List<BakedQuad>> cache = CacheBuilder.newBuilder()
             .maximumSize(100)
             .expireAfterAccess(60, TimeUnit.SECONDS)
@@ -64,6 +76,27 @@ public class ScopeModel implements CEBakedModel {
         for (final var moduleModel : modules.entrySet()) {
             this.modules.put(moduleModel.getKey(), getDefaultQuads(moduleModel.getValue()));
         }
+        this.rightEndQuad = makeEndQuad(true);
+        this.leftEndQuad = makeEndQuad(false);
+    }
+
+    private BakedQuad makeEndQuad(boolean right) {
+        List<BakedQuad> quads = new ArrayList<>();
+        final var texture = this.mainModel.get(0).getSprite();
+        int offset = right ? 0 : 3;
+        int step = right ? 1 : -1;
+        PoseStack transform = new PoseStack();
+        this.modelTransform.blockCenterToCorner().push(transform);
+        new QuadBuilder(
+                END_QUAD_VERTICES[offset],
+                END_QUAD_VERTICES[offset + step],
+                END_QUAD_VERTICES[offset + 2 * step],
+                END_QUAD_VERTICES[offset + 3 * step]
+        ).setSprite(texture)
+                .setUCoords(53 / 64f, 53 / 64f, 46 / 64f, 46 / 64f)
+                .setVCoords(40 / 64f, 48 / 64f, 48 / 64f, 40 / 64f)
+                .writeTo(BakedQuadVertexBuilder.makeNonInterpolating(texture, transform, quads));
+        return quads.get(0);
     }
 
     private static List<BakedQuad> getDefaultQuads(BakedModel model) {
@@ -126,6 +159,8 @@ public class ScopeModel implements CEBakedModel {
     private List<BakedQuad> computeQuads(Key key) {
         List<BakedQuad> quads = new ArrayList<>(mainModel);
         int offsetSlots = 0;
+        enum LastSlotState {FILLED, EMPTY, BORDER}
+        LastSlotState lastState = LastSlotState.BORDER;
         for (final var module : key.orderedModules()) {
             final var translation = new Vector3f(offsetSlots * (-3 / 16f), 0, 0);
             translation.transform(modelTransform.getNormalMatrix());
@@ -134,9 +169,18 @@ public class ScopeModel implements CEBakedModel {
             );
             offsetSlots += module.getWidth();
             final var moduleQuads = modules.get(module.getRegistryName());
-            if (moduleQuads == null) { continue; }
+            if (moduleQuads == null || moduleQuads.isEmpty()) {
+                if (lastState == LastSlotState.FILLED) {
+                    quads.add(transformer.process(rightEndQuad));
+                }
+                lastState = LastSlotState.EMPTY;
+                continue;
+            }
+            if (lastState == LastSlotState.EMPTY) {
+                quads.add(transformer.process(leftEndQuad));
+            }
+            lastState = LastSlotState.FILLED;
             quads.addAll(transformer.process(moduleQuads));
-            // TODO add side quad at start/end of filled/empty sequences
         }
         return quads;
     }
