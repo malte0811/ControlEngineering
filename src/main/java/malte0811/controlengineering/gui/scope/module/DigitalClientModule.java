@@ -7,6 +7,7 @@ import malte0811.controlengineering.scope.module.DigitalModule;
 import malte0811.controlengineering.scope.module.DigitalModule.State;
 import malte0811.controlengineering.scope.module.DigitalModule.TriggerState;
 import malte0811.controlengineering.scope.module.ScopeModules;
+import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.network.chat.Component;
 
@@ -48,11 +49,9 @@ public class DigitalClientModule extends ClientModule<State> {
                 offset.add(40, 80), inputState.inputLine(), connectorTooltip, i -> setState.accept(state.withInput(i))
         ));
         for (int i = 0; i < BusLine.LINE_SIZE; ++i) {
-            final var row = i / 4;
-            final var col = i % 4;
             final var iFinal = i;
             final var triggerState = inputState.channelTriggers().get(iFinal);
-            final var channelBasePos = offset.add(21 * col, 16 * row);
+            final var channelBasePos = offset.add(getChannelOffset(i));
             switches.add(new ToggleSwitch(
                     translate(triggerState),
                     channelBasePos.add(16, 18),
@@ -68,6 +67,22 @@ public class DigitalClientModule extends ClientModule<State> {
             ));
         }
         return switches;
+    }
+
+    @Override
+    protected List<RectangleI> computeRelativeChannelAreas() {
+        List<RectangleI> areas = new ArrayList<>(BusLine.LINE_SIZE);
+        final var baseRect = new RectangleI(11, 18, 25, 29);
+        for (int i = 0; i < BusLine.LINE_SIZE; ++i) {
+            areas.add(baseRect.offset(getChannelOffset(i)));
+        }
+        return areas;
+    }
+
+    private static Vec2i getChannelOffset(int channelId) {
+        final var row = channelId / 4;
+        final var col = channelId % 4;
+        return new Vec2i(21 * col, 16 * row);
     }
 
     private static Component translate(TriggerState triggerState) {

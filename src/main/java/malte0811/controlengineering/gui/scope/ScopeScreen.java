@@ -20,6 +20,8 @@ import malte0811.controlengineering.network.scope.ScopeSubPacket.IScopeSubPacket
 import malte0811.controlengineering.scope.GlobalConfig;
 import malte0811.controlengineering.scope.module.ScopeModuleInstance;
 import malte0811.controlengineering.scope.trace.Trace;
+import malte0811.controlengineering.scope.trace.TraceId;
+import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
@@ -64,13 +66,14 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
 
     @Override
     protected void renderForeground(@Nonnull PoseStack transform, int mouseX, int mouseY, float partialTicks) {
+        final var mousePos = new Vec2d(mouseX, mouseY);
         Component tooltip = null;
         final var scopePowered = menu.getGlobalConfig().powered();
         for (final var component : getComponents()) {
             if (scopePowered || !component.requiresPower()) {
                 component.render(transform);
             }
-            if (component.getArea().containsClosed(mouseX, mouseY)) {
+            if (component.getArea().containsClosed(mousePos)) {
                 tooltip = component.getTooltip();
             }
         }
@@ -78,8 +81,17 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
         transform.pushPose();
         transform.translate(leftPos + 5, topPos + 16, 0);
         transform.scale(20f, 10f, 1);
+        TraceId hovered = null;
+        for (final var module : menu.getModules()) {
+            final var clientModule = ClientModules.getModule(module.module().getType());
+            final int hoveredTrace = clientModule.getHoveredChannel(getModuleOffset(module.firstSlot()), mousePos);
+            if (hoveredTrace >= 0) {
+                hovered = new TraceId(module.firstSlot(), hoveredTrace);
+                break;
+            }
+        }
         for (final var trace : menu.getTraces().traces()) {
-            drawTrace(transform, trace);
+            drawTrace(transform, trace, trace.getTraceId().equals(hovered));
         }
         RenderSystem.disableScissor();
         transform.popPose();
@@ -115,7 +127,7 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
         putTraceVertex(bufferbuilder, matrix, minX, minY, indexOff + 3, scaledDLeft, alpha);
     }
 
-    private void drawTrace(PoseStack transform, Trace trace) {
+    private void drawTrace(PoseStack transform, Trace trace, boolean highlight) {
         final double samplesPerDiv = menu.getTraces().ticksPerDiv();
         ScreenUtils.startPositionColorDraw();
         RenderSystem.setShader(CEShaders::getScopeTrace);
@@ -123,8 +135,14 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
         final long now = System.currentTimeMillis();
         for (int i = 0; i < samples.size() - 1; ++i) {
             final var yHere = 10 - samples.getDouble(i);
-            final var delayHere = (float) (now - trace.getSampleTimestamps().getLong(i));
-            final var delayNext = (float) (now - trace.getSampleTimestamps().getLong(i + 1));
+            final float delayHere;
+            final float delayNext;
+            if (highlight) {
+                delayHere = delayNext = 0;
+            } else {
+                delayHere = (float) (now - trace.getSampleTimestamps().getLong(i));
+                delayNext = (float) (now - trace.getSampleTimestamps().getLong(i + 1));
+            }
             final var traceRadius = 0.1;
             fillTrace(
                     transform,
@@ -149,11 +167,9 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
     // TODO cache result
     private List<IScopeComponent> getComponents() {
         List<IScopeComponent> components = makeTopLevelComponents();
-        int offset = 0;
         for (int i = 0; i < menu.getModules().size(); ++i) {
             final var module = menu.getModules().get(i);
-            components.addAll(gatherComponentsFor(module.module(), i, offset));
-            offset += module.type().getWidth();
+            components.addAll(gatherComponentsFor(module.module(), i, module.firstSlot()));
         }
         return components;
     }
@@ -196,15 +212,17 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
         return components;
     }
 
-    private <T> List<IScopeComponent> gatherComponentsFor(
-            ScopeModuleInstance<T> module, int moduleIndex, int offsetSlots
-    ) {
+    private <T> List<IScopeComponent> gatherComponentsFor(ScopeModuleInstance<T> module, int moduleIndex, int slot) {
         final var type = module.getType();
         return ClientModules.getModule(type).createComponents(
-                new Vec2i(this.leftPos + MODULE_U_OFFSET + offsetSlots * MODULE_SLOT_WIDTH, this.topPos + MODULE_V_MIN),
+                getModuleOffset(slot),
                 module.getCurrentState(),
                 newState -> runAndSendToServer(new ModuleConfig(moduleIndex, type.newInstance(newState)))
         );
+    }
+
+    private Vec2i getModuleOffset(int slot) {
+        return new Vec2i(this.leftPos + MODULE_U_OFFSET + slot * MODULE_SLOT_WIDTH, this.topPos + MODULE_V_MIN);
     }
 
     @Override

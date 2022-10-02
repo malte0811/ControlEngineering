@@ -5,6 +5,8 @@ import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.gui.scope.ScopeScreen;
 import malte0811.controlengineering.gui.scope.components.IScopeComponent;
 import malte0811.controlengineering.scope.module.ScopeModule;
+import malte0811.controlengineering.util.math.RectangleI;
+import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
 
 import java.util.List;
@@ -23,6 +25,7 @@ public abstract class ClientModule<T> {
 
     private final SubTexture texture;
     private final ScopeModule<T> serverModule;
+    private final List<RectangleI> relativeChannelAreas;
 
     protected ClientModule(int slotOffsetInTexture, ScopeModule<T> serverModule) {
         final var minU = MODULE_U_OFFSET + slotOffsetInTexture * MODULE_SLOT_WIDTH;
@@ -32,15 +35,28 @@ public abstract class ClientModule<T> {
                 minU + serverModule.getWidth() * MODULE_SLOT_WIDTH, MODULE_V_MAX
         );
         this.serverModule = serverModule;
+        this.relativeChannelAreas = computeRelativeChannelAreas();
     }
 
     public abstract List<IScopeComponent> createComponents(Vec2i offset, T state, Consumer<T> setState);
 
-    public SubTexture getTexture() {
+    protected abstract List<RectangleI> computeRelativeChannelAreas();
+
+    public final SubTexture getTexture() {
         return texture;
     }
 
-    public ScopeModule<T> getServerModule() {
+    public final ScopeModule<T> getServerModule() {
         return serverModule;
+    }
+
+    public final int getHoveredChannel(Vec2i moduleOffset, Vec2d mousePos) {
+        final var relativeMousePos = mousePos.subtract(moduleOffset.x(), moduleOffset.y());
+        for (int i = 0; i < relativeChannelAreas.size(); ++i) {
+            if (relativeChannelAreas.get(i).containsClosed(relativeMousePos)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

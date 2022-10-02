@@ -5,6 +5,7 @@ import malte0811.controlengineering.gui.scope.components.*;
 import malte0811.controlengineering.scope.module.AnalogModule;
 import malte0811.controlengineering.scope.module.AnalogModule.State;
 import malte0811.controlengineering.scope.module.ScopeModules;
+import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
@@ -89,5 +90,10 @@ public class AnalogClientModule extends ClientModule<State> {
                 bncTooltip,
                 bsr -> setState.accept(state.setSignalSource(channel, Optional.ofNullable(bsr)))
         ));
+    }
+
+    @Override
+    protected List<RectangleI> computeRelativeChannelAreas() {
+        return List.of(new RectangleI(1, 29, 24, 88), new RectangleI(25, 29, 48, 88));
     }
 }
