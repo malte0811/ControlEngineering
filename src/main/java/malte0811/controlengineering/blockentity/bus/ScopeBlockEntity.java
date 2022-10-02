@@ -52,6 +52,7 @@ import java.util.stream.Stream;
 public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IBusInterface {
     private static final int NUM_SLOTS = 4;
     public static final int NUM_HORIZONTAL_DIVS = 8;
+    public static final int NUM_VERTICAL_DIVS = 10;
     private static final MyCodec<List<ModuleInScope>> MODULES_CODEC = MyCodecs.list(ModuleInScope.CODEC);
     private static final MyCodec<List<ModuleInScope>> SYNC_MODULES_CODEC = MyCodecs.list(ModuleInScope.SYNC_CODEC);
 
