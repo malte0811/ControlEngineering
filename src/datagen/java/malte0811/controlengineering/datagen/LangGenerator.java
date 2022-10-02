@@ -3,6 +3,7 @@ package malte0811.controlengineering.datagen;
 import com.google.common.collect.Sets;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.bus.RSRemapperBlockEntity;
+import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.blockentity.tape.SequencerBlockEntity;
@@ -247,6 +248,10 @@ public class LangGenerator extends LanguageProvider {
         add(ScopeScreen.RESET_KEY, "Reset sweep");
         add(PowerButton.OFF_TOOLTIP_KEY, "Switch oscilloscope on");
         add(PowerButton.ON_TOOLTIP_KEY, "Switch oscilloscope off");
+        add(ScopeBlockEntity.MODULE_LOCKED_KEY, "Locked module");
+        add(ScopeBlockEntity.MODULE_UNLOCKED_KEY, "Unlocked module");
+        add(ScopeBlockEntity.WARN_MODULE_LOCKED_KEY, "Unlock this module with a screwdriver before removing it");
+        add(ScopeBlockEntity.WARN_SCOPE_POWERED_KEY, "Power off the scope before removing modules from it");
     }
 
     private void addManualStrings() {
