@@ -23,7 +23,7 @@ public class RecordCodec2<T, E1, E2> extends RecordCodecBase<T> {
     @Nullable
     @Override
     public T fromTree(TreeElement<?> data) {
-        if (!(data instanceof TreeStorage tree)) {
+        if (!(data instanceof TreeStorage<?> tree)) {
             return null;
         }
         var firstVal = first.fromNBT(tree);

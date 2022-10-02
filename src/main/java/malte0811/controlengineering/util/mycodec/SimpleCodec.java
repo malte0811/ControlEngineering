@@ -8,20 +8,17 @@ import javax.annotation.Nullable;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public abstract class SimpleCodec<Tree extends TreeElement<?>, Type> implements MyCodec<Type> {
-    private final Class<Tree> nbtType;
-    private final Function<Tree, Type> fromNBT;
+public abstract class SimpleCodec<Type> implements MyCodec<Type> {
+    private final Function<TreeElement<?>, Type> fromTree;
     private final BiConsumer<SerialStorage, Type> toSerial;
     private final Function<SerialStorage, FastDataResult<Type>> fromSerial;
 
     protected SimpleCodec(
-            Class<Tree> nbtType,
-            Function<Tree, Type> fromNBT,
+            Function<TreeElement<?>, Type> fromNBT,
             BiConsumer<SerialStorage, Type> toSerial,
             Function<SerialStorage, FastDataResult<Type>> fromSerial
     ) {
-        this.nbtType = nbtType;
-        this.fromNBT = fromNBT;
+        this.fromTree = fromNBT;
         this.toSerial = toSerial;
         this.fromSerial = fromSerial;
     }
@@ -29,10 +26,7 @@ public abstract class SimpleCodec<Tree extends TreeElement<?>, Type> implements 
     @Nullable
     @Override
     public Type fromTree(TreeElement<?> data) {
-        if (data != null && nbtType.isAssignableFrom(data.getClass())) {
-            return fromNBT.apply(nbtType.cast(data));
-        }
-        return null;
+        return fromTree.apply(data);
     }
 
     @Override
