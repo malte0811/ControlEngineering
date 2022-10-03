@@ -4,6 +4,7 @@ import blusunrize.immersiveengineering.api.IETags;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
+import malte0811.controlengineering.blockentity.base.IExtraDropBE;
 import malte0811.controlengineering.blocks.bus.ScopeBlock;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
@@ -13,7 +14,6 @@ import malte0811.controlengineering.bus.BusState;
 import malte0811.controlengineering.bus.IBusInterface;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.gui.scope.ScopeMenu;
-import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.network.scope.InitTraces;
 import malte0811.controlengineering.network.scope.ScopeSubPacket;
 import malte0811.controlengineering.network.scope.SetGlobalCfg;
@@ -55,10 +55,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 // TODO power consumption (respecting disabled modules? UI on-switch?)
-public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IBusInterface {
+public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IBusInterface, IExtraDropBE {
     private static final int NUM_SLOTS = 4;
     public static final int NUM_HORIZONTAL_DIVS = 8;
     public static final int NUM_VERTICAL_DIVS = 10;
@@ -263,12 +264,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         }
         modules = fixModuleList(modules);
         sendGlobalStateUpdate();
-        final var moduleItem = CEItems.SCOPE_MODULES.get(removed.getRegistryName());
-        if (moduleItem != null) {
-            return moduleItem.get().getDefaultInstance();
-        } else {
-            return ItemStack.EMPTY;
-        }
+        return removed.getDroppedStack();
     }
 
     private void insertModule(ModuleInScope module, int indexInList) {
@@ -416,6 +412,15 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
 
     public GlobalState getGlobalSyncState() {
         return new GlobalState(hasPower(), getPowerConsumption());
+    }
+
+    @Override
+    public void getExtraDrops(Consumer<ItemStack> dropper) {
+        for (final var module : modules) {
+            if (!module.type().isEmpty()) {
+                dropper.accept(module.type().getDroppedStack());
+            }
+        }
     }
 
     private record ShapeKey(Direction facing, List<ScopeModule<?>> modules) { }

@@ -6,6 +6,7 @@
     "controlengineering:rs_remapper",
     "controlengineering:control_panel",
     "controlengineering:panel_cnc",
+    "controlengineering:oscilloscope",
     "controlengineering:keypunch",
     "controlengineering:logic_cabinet"
   ]

@@ -26,6 +26,7 @@ public class BlockTagGenerator extends BlockTagsProvider {
         hammerAndPickHarvestable(CEBlocks.RS_REMAPPER);
         pickHarvestable(CEBlocks.CONTROL_PANEL);
         pickHarvestable(CEBlocks.PANEL_CNC);
+        pickHarvestable(CEBlocks.SCOPE);
         axeHarvestable(CEBlocks.PANEL_DESIGNER);
         pickHarvestable(CEBlocks.KEYPUNCH);
         axeHarvestable(CEBlocks.SEQUENCER);

@@ -10,6 +10,20 @@
       ],
       "entries": [
         {
+          "type": "controlengineering:extra_be_drop"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
           "type": "minecraft:item",
           "name": "controlengineering:oscilloscope"
         }

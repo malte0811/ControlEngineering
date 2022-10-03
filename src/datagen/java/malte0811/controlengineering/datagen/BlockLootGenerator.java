@@ -30,6 +30,7 @@ public class BlockLootGenerator implements Consumer<BiConsumer<ResourceLocation,
         registerSelfDropping(CEBlocks.KEYPUNCH, bEntityDrops());
         register(CEBlocks.CONTROL_PANEL, createPoolBuilder().add(PanelDropEntry.builder()));
         registerSelfDropping(CEBlocks.LOGIC_WORKBENCH, bEntityDrops());
+        registerSelfDropping(CEBlocks.SCOPE, bEntityDrops());
         registerAllRemainingAsDefault();
         tables.forEach(out);
     }

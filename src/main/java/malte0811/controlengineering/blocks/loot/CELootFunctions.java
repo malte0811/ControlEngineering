@@ -9,7 +9,6 @@ import net.minecraft.world.level.storage.loot.Serializer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -34,10 +33,9 @@ public class CELootFunctions {
             return null;
         }
         BlockEntity be = ctx.getParamOrNull(LootContextParams.BLOCK_ENTITY);
-        if (be instanceof IHasMaster hasMaster)
+        if (be instanceof IHasMaster<?> hasMaster) {
             return hasMaster.getOrComputeMasterBE(ctx.getParamOrNull(LootContextParams.BLOCK_STATE));
-        else
-            return be;
+        } else { return be; }
     }
 
     private static RegistryObject<LootPoolEntryType> registerEntry(

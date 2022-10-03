@@ -3,8 +3,10 @@ package malte0811.controlengineering.scope.module;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.IntList;
 import malte0811.controlengineering.bus.BusState;
+import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 
@@ -49,4 +51,13 @@ public abstract class ScopeModule<State> extends TypedRegistryEntry<State, Scope
 
     // Relative to bottom of scope screen
     public abstract double getTraceValueInDivs(int traceId, BusState input, State currentState);
+
+    public final ItemStack getDroppedStack() {
+        final var moduleItem = CEItems.SCOPE_MODULES.get(getRegistryName());
+        if (moduleItem != null) {
+            return moduleItem.get().getDefaultInstance();
+        } else {
+            return ItemStack.EMPTY;
+        }
+    }
 }
