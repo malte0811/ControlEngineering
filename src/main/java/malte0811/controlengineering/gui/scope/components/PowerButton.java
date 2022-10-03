@@ -6,18 +6,27 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2i;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+
+import java.util.List;
 
 public class PowerButton implements IScopeComponent {
     public static final String ON_TOOLTIP_KEY = ControlEngineering.MODID + ".gui.scope.powerButtonOn";
     public static final String OFF_TOOLTIP_KEY = ControlEngineering.MODID + ".gui.scope.powerButtonOff";
+    public static final String BLACKOUT_TOOLTIP_KEY = ControlEngineering.MODID + ".gui.scope.noPower";
+    public static final String POWER_TOOLTIP_KEY = ControlEngineering.MODID + ".gui.scope.powerUsage";
 
     private final boolean active;
+    private final boolean canPower;
+    private final int powerPerTick;
     private final RectangleI area;
     private final BooleanConsumer setActive;
 
-    public PowerButton(boolean active, Vec2i pos, BooleanConsumer setActive) {
+    public PowerButton(boolean active, boolean canPower, int powerPerTick, Vec2i pos, BooleanConsumer setActive) {
         this.active = active;
+        this.canPower = canPower;
+        this.powerPerTick = powerPerTick;
         this.area = new RectangleI(pos, pos.add(24, 7));
         this.setActive = setActive;
     }
@@ -30,7 +39,7 @@ public class PowerButton implements IScopeComponent {
 
     @Override
     public boolean click(double x, double y) {
-        if (x <= area.minX() + 16) {
+        if (canPower && x <= area.minX() + 16) {
             setActive.accept(!this.active);
             return true;
         } else {
@@ -44,8 +53,14 @@ public class PowerButton implements IScopeComponent {
     }
 
     @Override
-    public Component getTooltip() {
-        return Component.translatable(active ? ON_TOOLTIP_KEY : OFF_TOOLTIP_KEY);
+    public List<Component> getTooltip() {
+        final Component firstLine;
+        if (!canPower) {
+            firstLine = Component.translatable(BLACKOUT_TOOLTIP_KEY).withStyle(ChatFormatting.RED);
+        } else {
+            firstLine = Component.translatable(active ? ON_TOOLTIP_KEY : OFF_TOOLTIP_KEY);
+        }
+        return List.of(firstLine, Component.translatable(POWER_TOOLTIP_KEY, powerPerTick));
     }
 
     @Override

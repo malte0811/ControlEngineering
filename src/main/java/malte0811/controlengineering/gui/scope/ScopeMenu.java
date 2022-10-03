@@ -8,6 +8,7 @@ import malte0811.controlengineering.network.scope.FullSync;
 import malte0811.controlengineering.network.scope.ScopePacket;
 import malte0811.controlengineering.network.scope.ScopeSubPacket.IScopeSubPacket;
 import malte0811.controlengineering.scope.GlobalConfig;
+import malte0811.controlengineering.scope.GlobalState;
 import malte0811.controlengineering.scope.trace.Traces;
 import malte0811.controlengineering.util.LambdaMutable;
 import net.minecraft.world.inventory.MenuType;
@@ -27,6 +28,7 @@ public class ScopeMenu extends CEContainerMenu<IScopeSubPacket> {
     // TODO deduplicate with keypunch?
     private final Set<ScopeMenu> openMenusOnBE;
     private final Mutable<GlobalConfig> globalConfig;
+    private final Mutable<GlobalState> globalState;
 
     public ScopeMenu(@Nullable MenuType<?> type, int id, ScopeBlockEntity scope) {
         super(type, id, isValidFor(scope), scope::setChanged);
@@ -34,6 +36,7 @@ public class ScopeMenu extends CEContainerMenu<IScopeSubPacket> {
         this.openMenusOnBE = scope.getOpenMenus();
         this.traces = new LambdaMutable<>(scope::getTraces, scope::setTraces);
         this.globalConfig = new LambdaMutable<>(scope::getGlobalConfig, scope::setGlobalConfig);
+        this.globalState = LambdaMutable.getterOnly(scope::getGlobalSyncState);
     }
 
     public ScopeMenu(MenuType<?> type, int id) {
@@ -42,6 +45,7 @@ public class ScopeMenu extends CEContainerMenu<IScopeSubPacket> {
         this.openMenusOnBE = new HashSet<>();
         this.traces = new MutableObject<>(new Traces());
         this.globalConfig = new MutableObject<>(new GlobalConfig());
+        this.globalState = new MutableObject<>(new GlobalState());
     }
 
     public List<ModuleInScope> getModules() {
@@ -63,7 +67,7 @@ public class ScopeMenu extends CEContainerMenu<IScopeSubPacket> {
 
     @Override
     protected IScopeSubPacket getInitialSync() {
-        return new FullSync(getModules(), getTraces(), getGlobalConfig());
+        return new FullSync(getModules(), getTraces(), getGlobalConfig(), getGlobalState());
     }
 
     @Override
@@ -84,5 +88,13 @@ public class ScopeMenu extends CEContainerMenu<IScopeSubPacket> {
 
     public Mutable<GlobalConfig> getGlobalConfigMutable() {
         return globalConfig;
+    }
+
+    public GlobalState getGlobalState() {
+        return getGlobalStateMutable().getValue();
+    }
+
+    public Mutable<GlobalState> getGlobalStateMutable() {
+        return globalState;
     }
 }

@@ -3,6 +3,7 @@ package malte0811.controlengineering.network.scope;
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity.ModuleInScope;
 import malte0811.controlengineering.network.scope.ScopeSubPacket.IScopeSubPacket;
 import malte0811.controlengineering.scope.GlobalConfig;
+import malte0811.controlengineering.scope.GlobalState;
 import malte0811.controlengineering.scope.trace.Traces;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
@@ -15,7 +16,10 @@ public class ResetSweep implements IScopeSubPacket {
 
     @Override
     public boolean process(
-            List<ModuleInScope> modules, Mutable<Traces> traces, Mutable<GlobalConfig> globalConfig
+            List<ModuleInScope> modules,
+            Mutable<Traces> traces,
+            Mutable<GlobalConfig> globalConfig,
+            Mutable<GlobalState> globalState
     ) {
         globalConfig.setValue(globalConfig.getValue().withTriggerArmed(false));
         traces.setValue(new Traces());

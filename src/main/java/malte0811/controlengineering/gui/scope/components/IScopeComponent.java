@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.util.math.RectangleI;
 import net.minecraft.network.chat.Component;
 
+import java.util.List;
+
 public interface IScopeComponent {
     void render(PoseStack transform);
 
@@ -11,7 +13,7 @@ public interface IScopeComponent {
 
     RectangleI getArea();
 
-    Component getTooltip();
+    List<Component> getTooltip();
 
     boolean requiresPower();
 }

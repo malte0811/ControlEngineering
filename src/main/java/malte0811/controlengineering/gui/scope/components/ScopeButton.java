@@ -6,6 +6,8 @@ import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
+import java.util.List;
+
 import static malte0811.controlengineering.gui.scope.module.ClientModule.*;
 
 public class ScopeButton implements IScopeComponent {
@@ -66,8 +68,8 @@ public class ScopeButton implements IScopeComponent {
     }
 
     @Override
-    public Component getTooltip() {
-        return tooltip;
+    public List<Component> getTooltip() {
+        return List.of(tooltip);
     }
 
     @Override

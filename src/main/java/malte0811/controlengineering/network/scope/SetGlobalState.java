@@ -9,9 +9,9 @@ import org.apache.commons.lang3.mutable.Mutable;
 
 import java.util.List;
 
-public record SetGlobalCfg(GlobalConfig newCfg) implements ScopeSubPacket.IScopeSubPacket {
-    public static final MyCodec<SetGlobalCfg> CODEC = GlobalConfig.CODEC.xmap(
-            SetGlobalCfg::new, SetGlobalCfg::newCfg
+public record SetGlobalState(GlobalState newState) implements ScopeSubPacket.IScopeSubPacket {
+    public static final MyCodec<SetGlobalState> CODEC = GlobalState.CODEC.xmap(
+            SetGlobalState::new, SetGlobalState::newState
     );
 
     @Override
@@ -21,11 +21,12 @@ public record SetGlobalCfg(GlobalConfig newCfg) implements ScopeSubPacket.IScope
             Mutable<GlobalConfig> globalConfig,
             Mutable<GlobalState> globalState
     ) {
-        if (!globalState.getValue().hasPower() && newCfg.powered()) { return false; }
-        globalConfig.setValue(newCfg);
-        if (!newCfg.powered() && !traces.getValue().traces().isEmpty()) {
-            traces.setValue(new Traces());
-        }
+        globalState.setValue(newState);
         return true;
+    }
+
+    @Override
+    public boolean allowSendingToServer() {
+        return false;
     }
 }

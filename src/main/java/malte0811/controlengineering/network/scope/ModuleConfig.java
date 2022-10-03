@@ -2,6 +2,7 @@ package malte0811.controlengineering.network.scope;
 
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
 import malte0811.controlengineering.scope.GlobalConfig;
+import malte0811.controlengineering.scope.GlobalState;
 import malte0811.controlengineering.scope.module.ScopeModuleInstance;
 import malte0811.controlengineering.scope.trace.Traces;
 import malte0811.controlengineering.util.mycodec.MyCodec;
@@ -23,8 +24,10 @@ public record ModuleConfig(
 
     @Override
     public boolean process(
-            List<ScopeBlockEntity.ModuleInScope> modules, @Nullable Mutable<Traces> traces,
-            Mutable<GlobalConfig> globalConfig
+            List<ScopeBlockEntity.ModuleInScope> modules,
+            @Nullable Mutable<Traces> traces,
+            Mutable<GlobalConfig> globalConfig,
+            Mutable<GlobalState> globalState
     ) {
         if (processWithGenerics(instanceWithNewConfig, modules.get(index).module())) {
             ScopeModuleInstance.ensureOneTriggerActive(modules, index);

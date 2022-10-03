@@ -248,6 +248,8 @@ public class LangGenerator extends LanguageProvider {
         add(ScopeScreen.RESET_KEY, "Reset sweep");
         add(PowerButton.OFF_TOOLTIP_KEY, "Switch oscilloscope on");
         add(PowerButton.ON_TOOLTIP_KEY, "Switch oscilloscope off");
+        add(PowerButton.BLACKOUT_TOOLTIP_KEY, "Oscilloscope is not powered");
+        add(PowerButton.POWER_TOOLTIP_KEY, "Power requirement: %d flux/tick");
         add(ScopeBlockEntity.MODULE_LOCKED_KEY, "Locked module");
         add(ScopeBlockEntity.MODULE_UNLOCKED_KEY, "Unlocked module");
         add(ScopeBlockEntity.WARN_MODULE_LOCKED_KEY, "Unlock this module with a screwdriver before removing it");

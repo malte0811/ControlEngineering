@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity.ModuleInScope;
 import malte0811.controlengineering.gui.scope.ScopeMenu;
 import malte0811.controlengineering.scope.GlobalConfig;
+import malte0811.controlengineering.scope.GlobalState;
 import malte0811.controlengineering.scope.module.ScopeModuleInstance;
 import malte0811.controlengineering.scope.trace.Traces;
 import malte0811.controlengineering.util.mycodec.MyCodec;
@@ -31,6 +32,7 @@ public final class ScopeSubPacket {
         register(InitTraces.class, InitTraces.CODEC);
         register(SetGlobalCfg.class, SetGlobalCfg.CODEC);
         register(ResetSweep.class, ResetSweep.CODEC);
+        register(SetGlobalState.class, SetGlobalState.CODEC);
     }
 
     private static <T extends IScopeSubPacket>
@@ -45,7 +47,9 @@ public final class ScopeSubPacket {
     }
 
     public static boolean processFull(IScopeSubPacket packet, ScopeMenu menu) {
-        if (!packet.process(menu.getModules(), menu.getTracesMutable(), menu.getGlobalConfigMutable())) {
+        if (!packet.process(
+                menu.getModules(), menu.getTracesMutable(), menu.getGlobalConfigMutable(), menu.getGlobalStateMutable()
+        )) {
             return false;
         }
         ScopeModuleInstance.ensureOneTriggerActive(menu.getModules(), -1);
@@ -53,7 +57,12 @@ public final class ScopeSubPacket {
     }
 
     public interface IScopeSubPacket {
-        boolean process(List<ModuleInScope> modules, Mutable<Traces> traces, Mutable<GlobalConfig> globalConfig);
+        boolean process(
+                List<ModuleInScope> modules,
+                Mutable<Traces> traces,
+                Mutable<GlobalConfig> globalConfig,
+                Mutable<GlobalState> globalState
+        );
 
         default void writeFull(FriendlyByteBuf buffer) {
             init();

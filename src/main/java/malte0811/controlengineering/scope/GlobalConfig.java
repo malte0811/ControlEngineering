@@ -4,9 +4,7 @@ import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec3;
 
-public record GlobalConfig(
-        int ticksPerDiv, boolean triggerArmed, boolean powered
-) {
+public record GlobalConfig(int ticksPerDiv, boolean triggerArmed, boolean powered) {
     public static final MyCodec<GlobalConfig> CODEC = new RecordCodec3<>(
             MyCodecs.INTEGER.fieldOf("ticksPerDiv", GlobalConfig::ticksPerDiv),
             MyCodecs.BOOL.fieldOf("triggerArmed", GlobalConfig::triggerArmed),

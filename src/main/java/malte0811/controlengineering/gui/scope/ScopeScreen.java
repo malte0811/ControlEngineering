@@ -25,6 +25,7 @@ import net.minecraft.resources.ResourceLocation;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> {
@@ -64,7 +65,7 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
     @Override
     protected void renderForeground(@Nonnull PoseStack transform, int mouseX, int mouseY, float partialTicks) {
         final var mousePos = new Vec2d(mouseX, mouseY);
-        Component tooltip = null;
+        List<Component> tooltip = null;
         final var scopePowered = menu.getGlobalConfig().powered();
         for (final var component : getComponents()) {
             if (scopePowered || !component.requiresPower()) {
@@ -85,7 +86,7 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
         }
         crt.draw(transform, hovered);
         if (tooltip != null) {
-            renderTooltip(transform, tooltip, mouseX, mouseY);
+            renderTooltip(transform, tooltip, Optional.empty(), mouseX, mouseY);
         }
     }
 
@@ -102,10 +103,13 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
     private List<IScopeComponent> makeTopLevelComponents() {
         List<IScopeComponent> components = new ArrayList<>();
         final var globalCfg = menu.getGlobalConfig();
+        final var globalState = menu.getGlobalState();
         final var origin = new Vec2i(this.leftPos, this.topPos);
         final Consumer<GlobalConfig> setCfg = cfg -> runAndSendToServer(new SetGlobalCfg(cfg));
         components.add(new PowerButton(
-                globalCfg.powered(), origin.add(175, 32), b -> setCfg.accept(globalCfg.withPowered(b))
+                globalCfg.powered(), globalState.hasPower(), globalState.consumption(),
+                origin.add(175, 32),
+                b -> setCfg.accept(globalCfg.withPowered(b))
         ));
         if (!globalCfg.powered()) {
             return components;

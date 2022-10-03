@@ -16,7 +16,10 @@ import malte0811.controlengineering.gui.scope.ScopeMenu;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.network.scope.InitTraces;
 import malte0811.controlengineering.network.scope.ScopeSubPacket;
+import malte0811.controlengineering.network.scope.SetGlobalCfg;
+import malte0811.controlengineering.network.scope.SetGlobalState;
 import malte0811.controlengineering.scope.GlobalConfig;
+import malte0811.controlengineering.scope.GlobalState;
 import malte0811.controlengineering.scope.module.ScopeModule;
 import malte0811.controlengineering.scope.module.ScopeModuleInstance;
 import malte0811.controlengineering.scope.module.ScopeModules;
@@ -38,10 +41,16 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.EnergyStorage;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -59,6 +68,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     public static final String WARN_MODULE_LOCKED_KEY = ControlEngineering.MODID + ".gui.scope.warnModuleLocked";
     public static final String MODULE_UNLOCKED_KEY = ControlEngineering.MODID + ".gui.scope.moduleUnlocked";
     public static final String WARN_SCOPE_POWERED_KEY = ControlEngineering.MODID + ".gui.scope.warnScopePowered";
+    private static final int BASE_POWER_PER_TICK = 64;
 
     private List<ModuleInScope> modules = fixModuleList(List.of());
     private final CachedValue<ShapeKey, SelectionShapes> shape = new CachedValue<>(
@@ -69,12 +79,38 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     private GlobalConfig globalConfig = new GlobalConfig();
     private Traces traces = new Traces();
     private final Set<ScopeMenu> openMenus = new ReferenceOpenHashSet<>();
+    private final EnergyStorage energy = new EnergyStorage(BASE_POWER_PER_TICK * 60, 2 * BASE_POWER_PER_TICK) {
+        @Override
+        public int receiveEnergy(int maxReceive, boolean simulate) {
+            final var hadPower = hasPower();
+            final var result = super.receiveEnergy(maxReceive, simulate);
+            if (hadPower != hasPower()) { sendGlobalStateUpdate(); }
+            return result;
+        }
+
+        @Override
+        public int extractEnergy(int maxExtract, boolean simulate) {
+            final var hadPower = hasPower();
+            final var result = super.extractEnergy(maxExtract, simulate);
+            if (hadPower != hasPower()) { sendGlobalStateUpdate(); }
+            return result;
+        }
+    };
+    private final LazyOptional<IEnergyStorage> energyCap = CapabilityUtils.constantOptional(energy);
 
     public ScopeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
     public void tickServer() {
+        if (!globalConfig.powered()) { return; }
+        final int requiredPower = getPowerConsumption();
+        final int consumed = energy.extractEnergy(requiredPower, false);
+        if (consumed < requiredPower) {
+            processAndSend(new SetGlobalCfg(globalConfig.withPowered(false)));
+            sendGlobalStateUpdate();
+            return;
+        }
         tryStartSweep();
         final var toSend = traces.collectSample(modules, currentBusState);
         if (toSend != null) {
@@ -90,11 +126,15 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
             }
         }
         if (traces.isSweeping() || !shouldStart || !globalConfig.triggerArmed()) { return; }
-        final var packet = InitTraces.createForModules(getModules(), globalConfig.ticksPerDiv());
+        processAndSend(InitTraces.createForModules(getModules(), globalConfig.ticksPerDiv()));
+    }
+
+    private void processAndSend(ScopeSubPacket.IScopeSubPacket packet) {
         packet.process(
                 modules,
                 new LambdaMutable<>(this::getTraces, t -> this.traces = t),
-                new LambdaMutable<>(this::getGlobalConfig, this::setGlobalConfig)
+                new LambdaMutable<>(this::getGlobalConfig, this::setGlobalConfig),
+                LambdaMutable.getterOnly(this::getGlobalSyncState)
         );
         sendToListening(packet);
     }
@@ -112,6 +152,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         currentBusState = BusState.CODEC.fromNBT(tag.get("busInput"), () -> BusState.EMPTY);
         globalConfig = GlobalConfig.CODEC.fromNBT(tag.get("globalConfig"), GlobalConfig::new);
         traces = Traces.CODEC.fromNBT(tag.get("traces"), Traces::new);
+        energy.deserializeNBT(tag.get("energy"));
     }
 
     @Override
@@ -121,6 +162,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         tag.put("busInput", BusState.CODEC.toNBT(this.currentBusState));
         tag.put("globalConfig", GlobalConfig.CODEC.toNBT(this.globalConfig));
         tag.put("traces", Traces.CODEC.toNBT(traces));
+        tag.put("energy", energy.serializeNBT());
     }
 
     @Override
@@ -220,6 +262,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
             );
         }
         modules = fixModuleList(modules);
+        sendGlobalStateUpdate();
         final var moduleItem = CEItems.SCOPE_MODULES.get(removed.getRegistryName());
         if (moduleItem != null) {
             return moduleItem.get().getDefaultInstance();
@@ -234,6 +277,11 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         while (indexToErase < modules.size() && modules.get(indexToErase).firstSlot < module.firstSlotAfter()) {
             modules.remove(indexToErase);
         }
+        sendGlobalStateUpdate();
+    }
+
+    private void sendGlobalStateUpdate() {
+        sendToListening(new SetGlobalState(getGlobalSyncState()));
     }
 
     private static SelectionShapes makeShapes(ShapeKey key, ScopeBlockEntity bEntity) {
@@ -242,7 +290,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         for (int i = 0; i < key.modules().size(); ++i) {
             final var nextModule = key.modules().get(i);
             final var nextOffset = offset + nextModule.getWidth() * 3;
-            final var shape = ShapeUtils.createPixelRelative(2 + offset, 1, 8, 2 + nextOffset, 8, 15);
+            final var shape = ShapeUtils.createPixelRelative(2 + offset, 1, 7, 2 + nextOffset, 8, 15);
             final var finalI = i;
             subShapes.add(new SingleShape(shape, ctx -> {
                 final var result = bEntity.interactWithModule(finalI, ctx);
@@ -286,6 +334,21 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
 
     @Override
     public void addMarkDirtyCallback(Clearable<Runnable> markDirty) { }
+
+    @Override
+    @Nonnull
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (side == getFacing() || side == null) {
+            return ForgeCapabilities.ENERGY.orEmpty(cap, energyCap);
+        }
+        return super.getCapability(cap, side);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        energyCap.invalidate();
+    }
 
     public Direction getFacing() {
         return getBlockState().getValue(ScopeBlock.FACING);
@@ -336,6 +399,23 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
             fixed.add(new ModuleInScope(i, ScopeModules.NONE.newInstance(), false));
         }
         return fixed;
+    }
+
+    public boolean hasPower() {
+        if (globalConfig.powered()) {
+            return energy.getEnergyStored() > 0;
+        } else {
+            return energy.getEnergyStored() > getPowerConsumption() * 10;
+        }
+    }
+
+    public int getPowerConsumption() {
+        // TODO module consumption
+        return BASE_POWER_PER_TICK;
+    }
+
+    public GlobalState getGlobalSyncState() {
+        return new GlobalState(hasPower(), getPowerConsumption());
     }
 
     private record ShapeKey(Direction facing, List<ScopeModule<?>> modules) { }

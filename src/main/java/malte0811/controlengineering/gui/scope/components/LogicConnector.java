@@ -13,6 +13,7 @@ import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
+import java.util.List;
 import java.util.function.IntConsumer;
 
 import static malte0811.controlengineering.gui.misc.BusSignalSelector.BUS_LINE_INDEX_KEY;
@@ -73,8 +74,8 @@ public class LogicConnector implements IScopeComponent {
     }
 
     @Override
-    public Component getTooltip() {
-        return tooltip;
+    public List<Component> getTooltip() {
+        return List.of(tooltip);
     }
 
     @Override

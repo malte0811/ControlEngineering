@@ -2,6 +2,7 @@ package malte0811.controlengineering.network.scope;
 
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity.ModuleInScope;
 import malte0811.controlengineering.scope.GlobalConfig;
+import malte0811.controlengineering.scope.GlobalState;
 import malte0811.controlengineering.scope.trace.Trace;
 import malte0811.controlengineering.scope.trace.TraceId;
 import malte0811.controlengineering.scope.trace.Traces;
@@ -32,7 +33,10 @@ public record InitTraces(List<TraceId> ids, int ticksPerDiv) implements ScopeSub
 
     @Override
     public boolean process(
-            List<ModuleInScope> modules, Mutable<Traces> traces, Mutable<GlobalConfig> globalConfig
+            List<ModuleInScope> modules,
+            Mutable<Traces> traces,
+            Mutable<GlobalConfig> globalConfig,
+            Mutable<GlobalState> globalState
     ) {
         if (traces == null) {
             return false;

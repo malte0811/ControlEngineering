@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class BNCConnector implements IScopeComponent {
@@ -70,8 +71,8 @@ public class BNCConnector implements IScopeComponent {
     }
 
     @Override
-    public Component getTooltip() {
-        return tooltip;
+    public List<Component> getTooltip() {
+        return List.of(tooltip);
     }
 
     @Override
