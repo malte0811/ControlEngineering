@@ -8,6 +8,7 @@ import malte0811.controlengineering.gui.scope.components.IScopeComponent;
 import malte0811.controlengineering.gui.scope.components.PowerButton;
 import malte0811.controlengineering.gui.scope.components.Range;
 import malte0811.controlengineering.gui.scope.components.ScopeButton;
+import malte0811.controlengineering.gui.scope.module.ClientModule.PoweredComponent;
 import malte0811.controlengineering.gui.scope.module.ClientModules;
 import malte0811.controlengineering.network.scope.*;
 import malte0811.controlengineering.network.scope.ScopeSubPacket.IScopeSubPacket;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> {
     public static final String TICKS_PER_DIV_KEY = ControlEngineering.MODID + ".gui.scope.ticksPerDiv";
@@ -66,11 +68,9 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
     protected void renderForeground(@Nonnull PoseStack transform, int mouseX, int mouseY, float partialTicks) {
         final var mousePos = new Vec2d(mouseX, mouseY);
         List<Component> tooltip = null;
-        final var scopePowered = menu.getGlobalConfig().powered();
-        for (final var component : getComponents()) {
-            if (scopePowered || !component.requiresPower()) {
-                component.render(transform);
-            }
+        for (final var powered : getComponents()) {
+            final var component = powered.component();
+            if (powered.canWork()) { component.render(transform); }
             if (component.getArea().containsClosed(mousePos)) {
                 tooltip = component.getTooltip();
             }
@@ -91,8 +91,11 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
     }
 
     // TODO cache result
-    private List<IScopeComponent> getComponents() {
-        List<IScopeComponent> components = makeTopLevelComponents();
+    private List<PoweredComponent> getComponents() {
+        final boolean globalPowered = getMenu().getGlobalConfig().powered();
+        final var components = makeTopLevelComponents().stream()
+                .map(isc -> new PoweredComponent(isc, globalPowered))
+                .collect(Collectors.toList());
         for (int i = 0; i < menu.getModules().size(); ++i) {
             final var module = menu.getModules().get(i);
             components.addAll(gatherComponentsFor(module.module(), i, module.firstSlot()));
@@ -141,12 +144,13 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
         return components;
     }
 
-    private <T> List<IScopeComponent> gatherComponentsFor(ScopeModuleInstance<T> module, int moduleIndex, int slot) {
+    private <T> List<PoweredComponent> gatherComponentsFor(ScopeModuleInstance<T> module, int moduleIndex, int slot) {
         final var type = module.getType();
         return ClientModules.getModule(type).createComponents(
                 getModuleOffset(slot),
                 module.getCurrentState(),
-                newState -> runAndSendToServer(new ModuleConfig(moduleIndex, type.newInstance(newState)))
+                newState -> runAndSendToServer(new ModuleConfig(moduleIndex, type.newInstance(newState))),
+                getMenu().getGlobalConfig().powered()
         );
     }
 
@@ -160,10 +164,10 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
             Minecraft.getInstance().setScreen(new ZoomedCRTScreen(menu));
             return true;
         }
-        final var scopePowered = menu.getGlobalConfig().powered();
-        for (final var component : getComponents()) {
+        for (final var powered : getComponents()) {
+            final var component = powered.component();
             if (!component.getArea().containsClosed(mouseX, mouseY)) { continue; }
-            if (!scopePowered && component.requiresPower()) { continue; }
+            if (!powered.canWork()) { continue; }
             if (component.click(mouseX, mouseY)) {
                 return true;
             }

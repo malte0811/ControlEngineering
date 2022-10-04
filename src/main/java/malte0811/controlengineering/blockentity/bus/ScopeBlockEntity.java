@@ -126,7 +126,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     private void tryStartSweep() {
         boolean shouldStart = false;
         for (final var module : getModules()) {
-            if (module.module().checkTriggered(currentBusState)) {
+            if (module.module().isEnabled() && module.module().checkTriggered(currentBusState)) {
                 shouldStart = true;
             }
         }
@@ -412,7 +412,9 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     public int getPowerConsumption() {
         int power = BASE_POWER_PER_TICK;
         for (final var module : modules) {
-            power += module.module().getPowerConsumption();
+            if (module.module().isEnabled()) {
+                power += module.module().getPowerConsumption();
+            }
         }
         return power;
     }

@@ -2,7 +2,10 @@ package malte0811.controlengineering.gui.scope.module;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusLine;
-import malte0811.controlengineering.gui.scope.components.*;
+import malte0811.controlengineering.gui.scope.components.LogicConnector;
+import malte0811.controlengineering.gui.scope.components.Range;
+import malte0811.controlengineering.gui.scope.components.ScopeButton;
+import malte0811.controlengineering.gui.scope.components.ToggleSwitch;
 import malte0811.controlengineering.scope.module.DigitalModule;
 import malte0811.controlengineering.scope.module.DigitalModule.State;
 import malte0811.controlengineering.scope.module.DigitalModule.TriggerState;
@@ -27,18 +30,21 @@ public class DigitalClientModule extends ClientModule<State> {
     }
 
     @Override
-    public List<IScopeComponent> createComponents(Vec2i offset, State state, Consumer<State> setState) {
+    public List<PoweredComponent> createComponents(
+            Vec2i offset, State state, Consumer<State> setState, boolean scopePowered
+    ) {
         final var inputState = state.inputState();
-        List<IScopeComponent> switches = new ArrayList<>();
+        List<PoweredComponent> switches = new ArrayList<>();
         switches.add(ScopeButton.makeModuleEnable(
                 offset.add(16, 3), state.moduleEnabled(), () -> setState.accept(state.toggleModule())
-        ));
+        ).powered(scopePowered));
+        final var modulePowered = scopePowered && state.moduleEnabled();
         switches.add(ScopeButton.makeTriggerEnable(
                 offset.add(22, 3), inputState.triggerEnabled(), () -> setState.accept(state.withTrigger(true))
-        ));
+        ).powered(modulePowered));
         switches.add(Range.makeVerticalOffset(
                 offset.add(40, 3), state.verticalOffset(), i -> setState.accept(state.withOffset(i))
-        ));
+        ).powered(modulePowered));
         final Component connectorTooltip;
         if (inputState.inputLine() == DigitalModule.NO_LINE) {
             connectorTooltip = Component.translatable(INPUT_OPEN);
@@ -47,7 +53,7 @@ public class DigitalClientModule extends ClientModule<State> {
         }
         switches.add(new LogicConnector(
                 offset.add(40, 80), inputState.inputLine(), connectorTooltip, i -> setState.accept(state.withInput(i))
-        ));
+        ).powered(modulePowered));
         for (int i = 0; i < BusLine.LINE_SIZE; ++i) {
             final var iFinal = i;
             final var triggerState = inputState.channelTriggers().get(iFinal);
@@ -58,13 +64,13 @@ public class DigitalClientModule extends ClientModule<State> {
                     true,
                     fromTriggerState(triggerState),
                     newState -> setState.accept(state.withTrigger(iFinal, toTriggerState(newState)))
-            ));
+            ).powered(modulePowered));
             final var channelActive = inputState.isChannelVisible(i);
             switches.add(ScopeButton.makeChannelEnable(
                     channelBasePos.add(22, 22),
                     channelActive,
                     () -> setState.accept(state.toggleChannel(iFinal))
-            ));
+            ).powered(modulePowered));
         }
         return switches;
     }

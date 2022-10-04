@@ -73,9 +73,6 @@ public class AnalogModule extends ScopeModule<AnalogModule.State> {
 
     @Override
     public int getModulePowerConsumption(State state) {
-        if (!state.moduleEnabled()) {
-            return 0;
-        }
         int consumption = BASE_POWER;
         for (final var channel : state.channels()) {
             if (channel.enabled()) {
@@ -83,6 +80,11 @@ public class AnalogModule extends ScopeModule<AnalogModule.State> {
             }
         }
         return consumption;
+    }
+
+    @Override
+    public boolean isEnabled(State state) {
+        return state.moduleEnabled();
     }
 
     @Override

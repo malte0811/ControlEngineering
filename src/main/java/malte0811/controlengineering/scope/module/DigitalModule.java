@@ -76,9 +76,6 @@ public class DigitalModule extends ScopeModule<DigitalModule.State> {
 
     @Override
     public int getModulePowerConsumption(State state) {
-        if (!state.moduleEnabled()) {
-            return 0;
-        }
         final int intMask = state.inputState().enabledChannelsMask() & 0xffff;
         return BASE_POWER + Integer.bitCount(intMask) * CHANNEL_POWER;
     }
@@ -88,6 +85,11 @@ public class DigitalModule extends ScopeModule<DigitalModule.State> {
         // TODO: Tightly pack the traces present in a given sweep?
         final var baseOffset = currentState.verticalOffset / (double) VERTICAL_DIV_PIXELS + TRACE_SEP_DIVS * traceId;
         return baseOffset + (getSignal(input, currentState, traceId) ? SIGNAL_HEIGHT_DIVS : 0);
+    }
+
+    @Override
+    public boolean isEnabled(State state) {
+        return state.moduleEnabled();
     }
 
     private boolean getSignal(BusState input, State state, int traceId) {

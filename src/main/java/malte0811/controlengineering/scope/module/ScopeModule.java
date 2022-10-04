@@ -51,6 +51,8 @@ public abstract class ScopeModule<State> extends TypedRegistryEntry<State, Scope
 
     public abstract int getModulePowerConsumption(State state);
 
+    public abstract boolean isEnabled(State state);
+
     // Relative to bottom of scope screen
     public abstract double getTraceValueInDivs(int traceId, BusState input, State currentState);
 

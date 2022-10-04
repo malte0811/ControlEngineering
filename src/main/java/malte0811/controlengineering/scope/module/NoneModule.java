@@ -54,4 +54,9 @@ public class NoneModule extends ScopeModule<Unit> {
     public double getTraceValueInDivs(int traceId, BusState input, Unit currentState) {
         return 0;
     }
+
+    @Override
+    public boolean isEnabled(Unit unit) {
+        return false;
+    }
 }

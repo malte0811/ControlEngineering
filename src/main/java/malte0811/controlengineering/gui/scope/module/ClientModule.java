@@ -38,7 +38,9 @@ public abstract class ClientModule<T> {
         this.relativeChannelAreas = computeRelativeChannelAreas();
     }
 
-    public abstract List<IScopeComponent> createComponents(Vec2i offset, T state, Consumer<T> setState);
+    public abstract List<PoweredComponent> createComponents(
+            Vec2i offset, T state, Consumer<T> setState, boolean scopePowered
+    );
 
     protected abstract List<RectangleI> computeRelativeChannelAreas();
 
@@ -58,5 +60,11 @@ public abstract class ClientModule<T> {
             }
         }
         return -1;
+    }
+
+    public record PoweredComponent(IScopeComponent component, boolean canWork) {
+        public PoweredComponent {
+            canWork |= !component.requiresPower();
+        }
     }
 }

@@ -24,6 +24,7 @@ public record InitTraces(List<TraceId> ids, int ticksPerDiv) implements ScopeSub
     public static InitTraces createForModules(List<ModuleInScope> modules, int ticksPerDiv) {
         final List<TraceId> traceIds = new ArrayList<>();
         for (final var module : modules) {
+            if (!module.module().isEnabled()) { continue; }
             for (final var traceId : module.module().getActiveTraces()) {
                 traceIds.add(new TraceId(module.firstSlot(), traceId));
             }

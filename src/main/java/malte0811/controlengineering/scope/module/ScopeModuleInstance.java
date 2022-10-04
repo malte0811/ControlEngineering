@@ -58,14 +58,17 @@ public class ScopeModuleInstance<State> extends TypedInstance<State, ScopeModule
         final IntList triggerIndices = new IntArrayList();
         boolean isPreferredTrigger = false;
         for (int i = 0; i < modules.size(); ++i) {
-            if (modules.get(i).module().triggerActive()) {
+            final var module = modules.get(i).module();
+            if (module.isEnabled() && module.triggerActive()) {
                 triggerIndices.add(i);
                 isPreferredTrigger |= i == preferredTrigger;
+            } else if (!module.isEnabled()) {
+                module.disableTrigger();
             }
         }
         if (triggerIndices.isEmpty()) {
             for (final var module : modules) {
-                if (module.module().enableSomeTrigger()) {
+                if (module.module().isEnabled() && module.module().enableSomeTrigger()) {
                     return;
                 }
             }
@@ -81,5 +84,9 @@ public class ScopeModuleInstance<State> extends TypedInstance<State, ScopeModule
 
     public int getPowerConsumption() {
         return getType().getModulePowerConsumption(getCurrentState());
+    }
+
+    public boolean isEnabled() {
+        return getType().isEnabled(getCurrentState());
     }
 }
