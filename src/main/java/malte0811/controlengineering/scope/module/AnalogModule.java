@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class AnalogModule extends ScopeModule<AnalogModule.State> {
+    private static final int CHANNEL_POWER = 24;
+    private static final int BASE_POWER = 16;
+
     public AnalogModule() {
         super(new State(), State.CODEC, 1, false);
     }
@@ -66,6 +69,20 @@ public class AnalogModule extends ScopeModule<AnalogModule.State> {
     @Override
     public int getNumTraces() {
         return 2;
+    }
+
+    @Override
+    public int getModulePowerConsumption(State state) {
+        if (!state.moduleEnabled()) {
+            return 0;
+        }
+        int consumption = BASE_POWER;
+        for (final var channel : state.channels()) {
+            if (channel.enabled()) {
+                consumption += CHANNEL_POWER;
+            }
+        }
+        return consumption;
     }
 
     @Override

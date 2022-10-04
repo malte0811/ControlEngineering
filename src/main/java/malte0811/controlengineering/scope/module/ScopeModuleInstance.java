@@ -78,4 +78,8 @@ public class ScopeModuleInstance<State> extends TypedInstance<State, ScopeModule
             }
         }
     }
+
+    public int getPowerConsumption() {
+        return getType().getModulePowerConsumption(getCurrentState());
+    }
 }

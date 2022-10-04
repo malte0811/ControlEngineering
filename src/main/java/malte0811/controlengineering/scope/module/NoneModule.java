@@ -46,6 +46,11 @@ public class NoneModule extends ScopeModule<Unit> {
     }
 
     @Override
+    public int getModulePowerConsumption(Unit unit) {
+        return 0;
+    }
+
+    @Override
     public double getTraceValueInDivs(int traceId, BusState input, Unit currentState) {
         return 0;
     }

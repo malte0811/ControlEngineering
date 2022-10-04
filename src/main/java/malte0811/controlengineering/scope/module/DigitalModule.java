@@ -16,7 +16,9 @@ import java.util.List;
 public class DigitalModule extends ScopeModule<DigitalModule.State> {
     public static final int NO_LINE = -1;
     private static final double SIGNAL_HEIGHT_DIVS = 0.25;
-    private static final double TRACE_SEP_DIVS = 0.4;
+    private static final double TRACE_SEP_DIVS = 0.35;
+    private static final int BASE_POWER = 16;
+    private static final int CHANNEL_POWER = (128 - BASE_POWER) / BusLine.LINE_SIZE;
 
     public DigitalModule() {
         super(new State(), State.CODEC, 2, false);
@@ -70,6 +72,15 @@ public class DigitalModule extends ScopeModule<DigitalModule.State> {
     @Override
     public int getNumTraces() {
         return 16;
+    }
+
+    @Override
+    public int getModulePowerConsumption(State state) {
+        if (!state.moduleEnabled()) {
+            return 0;
+        }
+        final int intMask = state.inputState().enabledChannelsMask() & 0xffff;
+        return BASE_POWER + Integer.bitCount(intMask) * CHANNEL_POWER;
     }
 
     @Override

@@ -80,7 +80,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     private GlobalConfig globalConfig = new GlobalConfig();
     private Traces traces = new Traces();
     private final Set<ScopeMenu> openMenus = new ReferenceOpenHashSet<>();
-    private final EnergyStorage energy = new EnergyStorage(BASE_POWER_PER_TICK * 60, 2 * BASE_POWER_PER_TICK) {
+    private final EnergyStorage energy = new EnergyStorage(BASE_POWER_PER_TICK * 200, 256 + BASE_POWER_PER_TICK) {
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
             final var hadPower = hasPower();
@@ -98,14 +98,18 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         }
     };
     private final LazyOptional<IEnergyStorage> energyCap = CapabilityUtils.constantOptional(energy);
+    private int syncedPowerRequirement;
 
     public ScopeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
     public void tickServer() {
-        if (!globalConfig.powered()) { return; }
         final int requiredPower = getPowerConsumption();
+        if (requiredPower != syncedPowerRequirement) {
+            sendGlobalStateUpdate();
+        }
+        if (!globalConfig.powered()) { return; }
         final int consumed = energy.extractEnergy(requiredPower, false);
         if (consumed < requiredPower) {
             processAndSend(new SetGlobalCfg(globalConfig.withPowered(false)));
@@ -263,7 +267,6 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
             );
         }
         modules = fixModuleList(modules);
-        sendGlobalStateUpdate();
         return removed.getDroppedStack();
     }
 
@@ -273,11 +276,12 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         while (indexToErase < modules.size() && modules.get(indexToErase).firstSlot < module.firstSlotAfter()) {
             modules.remove(indexToErase);
         }
-        sendGlobalStateUpdate();
     }
 
     private void sendGlobalStateUpdate() {
-        sendToListening(new SetGlobalState(getGlobalSyncState()));
+        final var state = getGlobalSyncState();
+        sendToListening(new SetGlobalState(state));
+        syncedPowerRequirement = state.consumption();
     }
 
     private static SelectionShapes makeShapes(ShapeKey key, ScopeBlockEntity bEntity) {
@@ -406,8 +410,11 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     }
 
     public int getPowerConsumption() {
-        // TODO module consumption
-        return BASE_POWER_PER_TICK;
+        int power = BASE_POWER_PER_TICK;
+        for (final var module : modules) {
+            power += module.module().getPowerConsumption();
+        }
+        return power;
     }
 
     public GlobalState getGlobalSyncState() {
