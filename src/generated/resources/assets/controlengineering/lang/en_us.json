@@ -99,6 +99,8 @@
   "controlengineering.gui.scope.powerUsage": "Power requirement: %d flux/tick",
   "controlengineering.gui.scope.reset": "Reset sweep",
   "controlengineering.gui.scope.ticksPerDiv": "Ticks per horizontal division",
+  "controlengineering.gui.scope.traceHeight": "Trace height",
+  "controlengineering.gui.scope.traceSep": "Trace separation",
   "controlengineering.gui.scope.triggerDisabled": "Not used as trigger source",
   "controlengineering.gui.scope.triggerEnabled": "Used as trigger source",
   "controlengineering.gui.scope.triggerLevel": "Trigger level",

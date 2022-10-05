@@ -8,6 +8,10 @@ public class BitUtils {
         return (value >>> offset) & mask;
     }
 
+    public static int lowestNBits(int value, int numBits) {
+        return value & ((1 << numBits) - 1);
+    }
+
     public static boolean getBit(int value, int bit) {
         return getBits(value, bit, 1) != 0;
     }
@@ -25,13 +29,7 @@ public class BitUtils {
     }
 
     public static int getSetBits(int v) {
-        // https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetKernighan
-        int count = 0;
-        while (v != 0) {
-            v &= v - 1; // clear the least significant bit set
-            ++count;
-        }
-        return count;
+        return Integer.bitCount(v);
     }
 
     public static byte[] toBytesWithParity(String in) {

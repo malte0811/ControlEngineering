@@ -5,18 +5,17 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusState;
+import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
-import malte0811.controlengineering.util.mycodec.record.RecordCodec3;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec4;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec5;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DigitalModule extends ScopeModule<DigitalModule.State> {
     public static final int NO_LINE = -1;
-    private static final double SIGNAL_HEIGHT_DIVS = 0.25;
-    private static final double TRACE_SEP_DIVS = 0.35;
     private static final int BASE_POWER = 16;
     private static final int CHANNEL_POWER = (128 - BASE_POWER) / BusLine.LINE_SIZE;
 
@@ -82,9 +81,13 @@ public class DigitalModule extends ScopeModule<DigitalModule.State> {
 
     @Override
     public double getTraceValueInDivs(int traceId, BusState input, State currentState) {
-        // TODO: Tightly pack the traces present in a given sweep?
-        final var baseOffset = currentState.verticalOffset / (double) VERTICAL_DIV_PIXELS + TRACE_SEP_DIVS * traceId;
-        return baseOffset + (getSignal(input, currentState, traceId) ? SIGNAL_HEIGHT_DIVS : 0);
+        final var enableMask = currentState.inputState().enabledChannelsMask();
+        // Use this value rather than trace ID to avoid gaps if some signals "in the middle" are hidden
+        final var numTracesBefore = Integer.bitCount(BitUtils.lowestNBits(enableMask, traceId));
+        final var totalSeparation = currentState.traceSeparation + currentState.traceHeight;
+        final var baseOffsetPx = currentState.verticalOffset + totalSeparation * numTracesBefore;
+        final var offsetPx = getSignal(input, currentState, traceId) ? currentState.traceHeight : 0;
+        return (baseOffsetPx + offsetPx) / (double) VERTICAL_DIV_PIXELS;
     }
 
     @Override
@@ -100,16 +103,20 @@ public class DigitalModule extends ScopeModule<DigitalModule.State> {
         }
     }
 
-    public record State(InputState inputState, boolean moduleEnabled, int verticalOffset) {
-        public static final MyCodec<State> CODEC = new RecordCodec3<>(
+    public record State(
+            InputState inputState, boolean moduleEnabled, int verticalOffset, int traceSeparation, int traceHeight
+    ) {
+        public static final MyCodec<State> CODEC = new RecordCodec5<>(
                 InputState.CODEC.fieldOf("inputState", State::inputState),
                 MyCodecs.BOOL.fieldOf("moduleEnabled", State::moduleEnabled),
                 MyCodecs.INTEGER.fieldOf("verticalOffset", State::verticalOffset),
+                MyCodecs.INTEGER.fieldOf("traceSeparation", State::traceSeparation),
+                MyCodecs.INTEGER.fieldOf("traceHeight", State::traceHeight),
                 State::new
         );
 
         public State() {
-            this(new InputState(), true, 50);
+            this(new InputState(), true, 50, 1, 3);
         }
 
         public State withTrigger(int channel, TriggerState newState) {
@@ -121,7 +128,7 @@ public class DigitalModule extends ScopeModule<DigitalModule.State> {
         }
 
         public State toggleModule() {
-            return new State(inputState, !moduleEnabled, verticalOffset);
+            return new State(inputState, !moduleEnabled, verticalOffset, traceSeparation, traceHeight);
         }
 
         public State withTrigger(boolean enable) {
@@ -129,11 +136,19 @@ public class DigitalModule extends ScopeModule<DigitalModule.State> {
         }
 
         public State withOffset(int offset) {
-            return new State(inputState, moduleEnabled, offset);
+            return new State(inputState, moduleEnabled, offset, traceSeparation, traceHeight);
+        }
+
+        public State withTraceSeparation(int separation) {
+            return new State(inputState, moduleEnabled, verticalOffset, separation, traceHeight);
+        }
+
+        public State withTraceHeight(int height) {
+            return new State(inputState, moduleEnabled, verticalOffset, traceSeparation, height);
         }
 
         private State withInputState(InputState newInputState) {
-            return new State(newInputState, moduleEnabled, verticalOffset);
+            return new State(newInputState, moduleEnabled, verticalOffset, traceSeparation, traceHeight);
         }
 
         public State withInput(int line) {

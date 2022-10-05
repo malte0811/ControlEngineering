@@ -235,6 +235,8 @@ public class LangGenerator extends LanguageProvider {
         add(DigitalClientModule.TRIGGER_IGNORE, "Ignore for triggering");
         add(DigitalClientModule.INPUT_OPEN, "Logic input (not connected)");
         add(DigitalClientModule.INPUT_CONNECTED, "Logic input (line %d)");
+        add(DigitalClientModule.TRACE_HEIGHT, "Trace height");
+        add(DigitalClientModule.TRACE_SEPARATION, "Trace separation");
         add(ClientModule.TRIGGER_SOURCE_USED, "Used as trigger source");
         add(ClientModule.TRIGGER_SOURCE_UNUSED, "Not used as trigger source");
         add(ClientModule.CHANNEL_SHOWN, "Showing channel");

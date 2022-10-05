@@ -24,6 +24,8 @@ public class DigitalClientModule extends ClientModule<State> {
     public static final String TRIGGER_HIGH = ControlEngineering.MODID + ".gui.scope.digitalTriggerHigh";
     public static final String INPUT_OPEN = ControlEngineering.MODID + ".gui.scope.logicInputOpen";
     public static final String INPUT_CONNECTED = ControlEngineering.MODID + ".gui.scope.logicConnected";
+    public static final String TRACE_HEIGHT = ControlEngineering.MODID + ".gui.scope.traceHeight";
+    public static final String TRACE_SEPARATION = ControlEngineering.MODID + ".gui.scope.traceSep";
 
     public DigitalClientModule() {
         super(2, ScopeModules.DIGITAL);
@@ -43,7 +45,17 @@ public class DigitalClientModule extends ClientModule<State> {
                 offset.add(22, 3), inputState.triggerEnabled(), () -> setState.accept(state.withTrigger(true))
         ).powered(modulePowered));
         switches.add(Range.makeVerticalOffset(
-                offset.add(40, 3), state.verticalOffset(), i -> setState.accept(state.withOffset(i))
+                offset.add(28, 3), state.verticalOffset(), i -> setState.accept(state.withOffset(i))
+        ).powered(modulePowered));
+        switches.add(Range.makeLinear(
+                Component.translatable(TRACE_SEPARATION), offset.add(51, 3),
+                0, 20, 1, 5,
+                state.traceSeparation(), i -> setState.accept(state.withTraceSeparation(i))
+        ).powered(modulePowered));
+        switches.add(Range.makeLinear(
+                Component.translatable(TRACE_HEIGHT), offset.add(74, 3),
+                1, 20, 1, 5,
+                state.traceHeight(), i -> setState.accept(state.withTraceHeight(i))
         ).powered(modulePowered));
         final Component connectorTooltip;
         if (inputState.inputLine() == DigitalModule.NO_LINE) {
