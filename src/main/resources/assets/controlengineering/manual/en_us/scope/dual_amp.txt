@@ -1,0 +1,3 @@
+Dual Trace Amplifier
+
+The dual trace amplifier can be used to view two analog signals on an <link;controlengineering:scope/scope;oscilloscope>. These signals have to be connected to the BNC connectors at the bottom of the module. The vertical position and scaling of each trace is set by the controls in its corresponding area, the traces can also be disabled to avoid cluttering the screen. If one of the channels is selected as the trigger source, a trigger event is generated when the signal level passes the selected threshold in the specified direction. For example, if the trigger level is the to 128 and the polarity selection switch is its upper position, a trigger event will be generated when the signal changes from 128 or below to 129 or above.

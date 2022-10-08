@@ -262,6 +262,7 @@ public class LangGenerator extends LanguageProvider {
         addManualSection("main", "Control Engineering");
         addManualSection("logic", "Logic Cabinets");
         addManualSection("panels", "Control Panels");
+        addManualSection("scope", "Oscilloscope");
 
         add(CEManual.EXAMPLE_KEY, "Example");
         add(CEManual.OPTIONS_KEY, "Options");

@@ -17,6 +17,13 @@
         "controlengineering:panels/panel_cnc"
       ]
     },
+    "controlengineering:scope": {
+      "entry_list": [
+        "controlengineering:scope/scope",
+        "controlengineering:scope/dual_amp",
+        "controlengineering:scope/logic_analyzer"
+      ]
+    },
     "controlengineering:logic": {
       "entry_list": [
         "controlengineering:logic/logic_cabinet",

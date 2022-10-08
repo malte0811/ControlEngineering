@@ -1,0 +1,10 @@
+Oscilloscope
+
+To understand the behavior of complex redstone circuits it is frequently helpful to view the behavior of multiple signals over time. The CE7811 oscilloscope serves as a simple tool for this task, showing up to 8 analog or 32 digital signals at once.
+TODO: Recipes
+By itself the CE7811 only provides the horizontal sweep circuits, modules like the <link;controlengineering:scope/dual_amp;Dual Trace Amplifier> or the <link;controlengineering:scope/logic_analyzer;Logic Analyzer> have to be installed to view signals. To install a module simply use it on an empty space in the module bay of the oscilloscope; removing them is done the same way. To avoid electrical issues modules can only be installed or removed while the oscilloscope is unpowered. To prevent accidental removal, modules can be locked in place using a screwdriver.
+The input signals are connected to the oscilloscope using the bus connector on its left.
+<np> The user interface is divided into three main sections: the CRT screen, the main controls and the modules. The interface of the modules is described in their corresponding entries.
+The CRT screen shows the traces selected in the modules. It can be enlarged by clicking on it.
+PWR marks the main power button. The t/div control, also known as the timebase, sets the number of ticks per horizontal division on the CRT screen.
+The remaining three buttons in the main control area control sweep triggering. Before a sweep the trigger circuitry has to be enabled using the ARM button. Once the trigger is armed a sweep will start once the module used as the trigger source detects a trigger event (refer to module documentation for more details). If the signals do not provide a usable trigger condition the FORCE button can be used to start a sweep manually. The RESET button can be used to abort an accidentally triggered sweep and clear the screen, this is particularly useful at slow timebases.

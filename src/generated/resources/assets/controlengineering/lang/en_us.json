@@ -158,5 +158,6 @@
   "itemGroup.controlengineering": "Control Engineering",
   "manual.controlengineering.logic": "Logic Cabinets",
   "manual.controlengineering.main": "Control Engineering",
-  "manual.controlengineering.panels": "Control Panels"
+  "manual.controlengineering.panels": "Control Panels",
+  "manual.controlengineering.scope": "Oscilloscope"
 }
