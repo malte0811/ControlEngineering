@@ -1,4 +1,4 @@
-package malte0811.controlengineering.blocks.loot;
+package malte0811.controlengineering.loot;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;

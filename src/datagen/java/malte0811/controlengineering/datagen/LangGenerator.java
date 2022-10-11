@@ -1,5 +1,6 @@
 package malte0811.controlengineering.datagen;
 
+import blusunrize.immersiveengineering.api.Lib;
 import com.google.common.collect.Sets;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.bus.RSRemapperBlockEntity;
@@ -33,6 +34,7 @@ import malte0811.controlengineering.logic.clock.ClockGenerator;
 import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.logic.schematic.SchematicChecker;
 import malte0811.controlengineering.logic.schematic.symbol.*;
+import malte0811.controlengineering.loot.BlueprintChestModifier;
 import malte0811.controlengineering.scope.module.ScopeModule;
 import malte0811.controlengineering.scope.module.ScopeModules;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
@@ -91,6 +93,12 @@ public class LangGenerator extends LanguageProvider {
         addBlock(CEBlocks.SCOPE, "Oscilloscope");
         addScopeModule(ScopeModules.ANALOG, "Dual Trace Amplifier Module");
         addScopeModule(ScopeModules.DIGITAL, "Logic Analyzer Module");
+        addItem(CEItems.CRT_TUBE, "Cathode-ray tube");
+        addItem(CEItems.SCOPE_MODULE_CASE, "Oscilloscope module casing");
+        add(
+                Lib.DESC_INFO + "blueprint." + BlueprintChestModifier.SCOPE_COMPONENTS_BLUEPRINT,
+                "Control Engineering: Oscilloscope components"
+        );
 
         add("itemGroup." + ControlEngineering.MODID, "Control Engineering");
 

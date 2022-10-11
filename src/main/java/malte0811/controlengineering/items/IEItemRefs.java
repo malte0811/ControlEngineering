@@ -2,6 +2,7 @@ package malte0811.controlengineering.items;
 
 import blusunrize.immersiveengineering.api.Lib;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -19,13 +20,18 @@ public class IEItemRefs {
     public static final ItemLike LOGIC_CIRCUIT = of("logic_circuit");
     public static final ItemLike BLUEPRINT = of("blueprint");
     public static final ItemLike COMPONENT_IRON = of("component_iron");
+    public static final ItemLike COMPONENT_ADVANCED = of("component_electronic_adv");
+    public static final ItemLike COMPONENT_BASIC = of("component_electronic");
     public static final RegistryObject<Block> LOGIC_UNIT = of("logic_unit", ForgeRegistries.BLOCKS);
     public static final RegistryObject<Block> RADIATOR = of("radiator", ForgeRegistries.BLOCKS);
     public static final RegistryObject<Block> CRATE = of("crate", ForgeRegistries.BLOCKS);
     public static final RegistryObject<Block> LIGHT_ENGINEERING = of("light_engineering", ForgeRegistries.BLOCKS);
+    public static final RegistryObject<Block> LIGHT_BLUE_SHEETMETAL = of(
+            "sheetmetal_colored_" + DyeColor.LIGHT_BLUE.getName(), ForgeRegistries.BLOCKS
+    );
 
     // Classload early
-    public static void init() {}
+    public static void init() { }
 
     private static ItemLike of(String path) {
         var regObject = of(path, ForgeRegistries.ITEMS);

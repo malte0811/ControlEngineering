@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "B": {
+      "item": "immersiveengineering:sheetmetal_colored_light_blue"
+    },
+    "T": {
+      "item": "controlengineering:crt_tube"
+    },
+    "a": {
+      "item": "immersiveengineering:component_electronic_adv"
+    },
+    "c": {
+      "item": "controlengineering:bus_relay"
+    },
+    "l": {
+      "tag": "forge:leather"
+    }
+  },
+  "pattern": [
+    "BlB",
+    "Tac",
+    "BBB"
+  ],
+  "result": {
+    "item": "controlengineering:oscilloscope"
+  }
+}

@@ -1,8 +1,8 @@
 package malte0811.controlengineering.datagen;
 
 import malte0811.controlengineering.blocks.CEBlocks;
-import malte0811.controlengineering.blocks.loot.ExtraBEDropEntry;
-import malte0811.controlengineering.blocks.loot.PanelDropEntry;
+import malte0811.controlengineering.loot.ExtraBEDropEntry;
+import malte0811.controlengineering.loot.PanelDropEntry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;

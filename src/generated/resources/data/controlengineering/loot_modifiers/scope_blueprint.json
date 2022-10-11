@@ -1,0 +1,13 @@
+{
+  "type": "controlengineering:hemp_seed_drops",
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "immersiveengineering:chests/engineers_house"
+    },
+    {
+      "chance": 0.11111111,
+      "condition": "minecraft:random_chance"
+    }
+  ]
+}

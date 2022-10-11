@@ -1,0 +1,27 @@
+{
+  "type": "immersiveengineering:blueprint",
+  "category": "controlengineering:scope_components",
+  "inputs": [
+    {
+      "tag": "forge:dusts/glowstone"
+    },
+    {
+      "tag": "forge:dusts/redstone"
+    },
+    {
+      "tag": "forge:glass"
+    },
+    {
+      "base_ingredient": {
+        "tag": "forge:plates/copper"
+      },
+      "count": 4
+    },
+    {
+      "tag": "forge:plates/nickel"
+    }
+  ],
+  "result": {
+    "item": "controlengineering:crt_tube"
+  }
+}

@@ -2,6 +2,9 @@ package malte0811.controlengineering.datagen;
 
 import blusunrize.immersiveengineering.api.EnumMetals;
 import blusunrize.immersiveengineering.api.IETags;
+import blusunrize.immersiveengineering.api.crafting.BlueprintCraftingRecipe;
+import blusunrize.immersiveengineering.api.crafting.IngredientWithSize;
+import blusunrize.immersiveengineering.api.crafting.builders.BlueprintCraftingRecipeBuilder;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
@@ -13,10 +16,12 @@ import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.EmptyTapeItem;
 import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.logic.clock.ClockTypes;
+import malte0811.controlengineering.scope.module.ScopeModules;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.SpecialRecipeBuilder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
@@ -24,6 +29,8 @@ import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
+
+import static malte0811.controlengineering.loot.BlueprintChestModifier.SCOPE_COMPONENTS_BLUEPRINT;
 
 public class Recipes extends RecipeProvider {
     public Recipes(DataGenerator generatorIn) {
@@ -37,6 +44,7 @@ public class Recipes extends RecipeProvider {
         panelRecipes(consumer);
         clockRecipes(consumer);
         logicRecipes(consumer);
+        scopeRecipes(consumer);
     }
 
     private void busRecipes(Consumer<FinishedRecipe> consumer) {
@@ -203,12 +211,68 @@ public class Recipes extends RecipeProvider {
                 .define('e', IEItemRefs.LIGHT_ENGINEERING)
                 .save(consumer);
         SpecialRecipeBuilder.special(CERecipeSerializers.SCHEMATIC_COPY.get())
-                .save(consumer, ControlEngineering.MODID+":schematic_copy");
+                .save(consumer, ControlEngineering.MODID + ":schematic_copy");
         NoAdvancementShapelessBuilder.shapeless(CEItems.SCHEMATIC)
                 .requires(Items.PAPER)
                 .requires(Tags.Items.DYES_RED)
                 .requires(Tags.Items.DYES_GREEN)
                 .requires(IETags.hopGraphiteDust)
                 .save(consumer);
+    }
+
+    private void scopeRecipes(Consumer<FinishedRecipe> consumer) {
+        BlueprintCraftingRecipeBuilder.builder(SCOPE_COMPONENTS_BLUEPRINT, CEItems.CRT_TUBE.get())
+                .addInput(Tags.Items.DUSTS_GLOWSTONE)
+                .addInput(Tags.Items.DUSTS_REDSTONE)
+                .addInput(Tags.Items.GLASS)
+                .addInput(new IngredientWithSize(IETags.getTagsFor(EnumMetals.COPPER).plate, 4))
+                .addInput(IETags.getTagsFor(EnumMetals.NICKEL).plate)
+                .build(consumer, new ResourceLocation(ControlEngineering.MODID, "crt_tube"));
+        BlueprintCraftingRecipeBuilder.builder(SCOPE_COMPONENTS_BLUEPRINT, CEItems.SCOPE_MODULE_CASE.get())
+                .addInput(new IngredientWithSize(IETags.getTagsFor(EnumMetals.ALUMINUM).plate, 2))
+                .addInput(IETags.copperWire)
+                .addInput(IETags.plasticPlate)
+                .build(consumer, new ResourceLocation(ControlEngineering.MODID, "scope_module_case"));
+        NoAdvancementShapedBuilder.shaped(CEBlocks.SCOPE)
+                .pattern("BlB")
+                .pattern("Tac")
+                .pattern("BBB")
+                .define('l', Tags.Items.LEATHER)
+                .define('B', IEItemRefs.LIGHT_BLUE_SHEETMETAL)
+                .define('T', CEItems.CRT_TUBE)
+                .define('a', IEItemRefs.COMPONENT_ADVANCED)
+                .define('c', CEBlocks.BUS_RELAY)
+                .save(consumer);
+        NoAdvancementShapedBuilder.shaped(CEItems.SCOPE_MODULES.get(ScopeModules.ANALOG.getRegistryName()))
+                .pattern("cCw")
+                .pattern("wBM")
+                .pattern("cCw")
+                .define('c', Items.COMPARATOR)
+                .define('C', IEItemRefs.COMPONENT_BASIC)
+                .define('w', IETags.copperWire)
+                .define('M', CEItems.SCOPE_MODULE_CASE)
+                .define('B', IEItemRefs.CIRCUIT_BOARD)
+                .save(consumer);
+        NoAdvancementShapedBuilder.shaped(CEItems.SCOPE_MODULES.get(ScopeModules.DIGITAL.getRegistryName()))
+                .pattern("ACM")
+                .pattern("ABw")
+                .pattern("ACM")
+                .define('A', Items.REPEATER)
+                .define('C', IEItemRefs.COMPONENT_BASIC)
+                .define('B', IEItemRefs.CIRCUIT_BOARD)
+                .define('M', CEItems.SCOPE_MODULE_CASE)
+                .define('w', IETags.copperWire)
+                .save(consumer);
+        // TODO remove in 1.20? This is mostly so existing worlds can get access to the blueprint
+        NoAdvancementShapedBuilder.shaped(BlueprintCraftingRecipe.getTypedBlueprint(SCOPE_COMPONENTS_BLUEPRINT))
+                .pattern("cBa")
+                .pattern("ddd")
+                .pattern("ppp")
+                .define('c', Items.COMPARATOR)
+                .define('B', CEBlocks.BUS_RELAY)
+                .define('a', Items.REPEATER)
+                .define('d', Tags.Items.DYES_BLUE)
+                .define('p', Items.PAPER)
+                .save(consumer, new ResourceLocation(ControlEngineering.MODID, "scope_blueprint"));
     }
 }

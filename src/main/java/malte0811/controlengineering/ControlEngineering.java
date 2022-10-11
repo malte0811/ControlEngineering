@@ -1,9 +1,9 @@
 package malte0811.controlengineering;
 
+import blusunrize.immersiveengineering.api.crafting.BlueprintCraftingRecipe;
 import blusunrize.immersiveengineering.api.wires.localhandlers.LocalNetworkHandler;
 import malte0811.controlengineering.blockentity.CEBlockEntities;
 import malte0811.controlengineering.blocks.CEBlocks;
-import malte0811.controlengineering.blocks.loot.CELootFunctions;
 import malte0811.controlengineering.bus.BusWireType;
 import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
@@ -11,6 +11,8 @@ import malte0811.controlengineering.crafting.CERecipeTypes;
 import malte0811.controlengineering.gui.CEContainers;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.IEItemRefs;
+import malte0811.controlengineering.loot.BlueprintChestModifier;
+import malte0811.controlengineering.loot.CELootFunctions;
 import malte0811.controlengineering.network.CutTapePacket;
 import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.keypunch.KeypunchPacket;
@@ -62,6 +64,8 @@ public class ControlEngineering {
         CERecipeSerializers.REGISTER.register(modBus);
         CELootFunctions.REGISTER.register(modBus);
         CERecipeTypes.REGISTER.register(modBus);
+        BlueprintChestModifier.REGISTER.register(modBus);
+        BlueprintCraftingRecipe.recipeCategories.add(BlueprintChestModifier.SCOPE_COMPONENTS_BLUEPRINT);
         modBus.addListener(this::setup);
         IEItemRefs.init();
     }

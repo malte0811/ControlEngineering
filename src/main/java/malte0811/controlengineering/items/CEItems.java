@@ -41,6 +41,8 @@ public class CEItems {
     public static final RegistryObject<SchematicItem> SCHEMATIC = REGISTER.register(
             "logic_schematic", SchematicItem::new
     );
+    public static final RegistryObject<Item> CRT_TUBE = simpleItem("crt_tube");
+    public static final RegistryObject<Item> SCOPE_MODULE_CASE = simpleItem("scope_module_case");
 
     //Blocks
     private static final RegistryObject<CEBlockItem<Direction>> BUS_RELAY = blockItemCE(CEBlocks.BUS_RELAY);
@@ -64,10 +66,13 @@ public class CEItems {
     }
 
     private static <T> RegistryObject<CEBlockItem<T>> blockItemCE(
-            RegistryObject<? extends CEBlock<T>> block,
-            Item.Properties properties
+            RegistryObject<? extends CEBlock<T>> block, Item.Properties properties
     ) {
         return REGISTER.register(block.getId().getPath(), () -> new CEBlockItem<>(block.get(), properties));
+    }
+
+    private static RegistryObject<Item> simpleItem(String name) {
+        return REGISTER.register(name, () -> new Item(simpleItemProperties()));
     }
 
     public static Item.Properties simpleItemProperties() {

@@ -1,5 +1,5 @@
 Logic Analyzer
 
-The Logic Analyzer is a module for the <link;controlengineering:scope/scope;oscilloscope> which can be used to view all signals of a bus line as digital signals. The bus line to be inspected is connected to the connector at the bottom of the module. Any signal level greater than zero will be interpreted as a logic high.
+<&recipe>The Logic Analyzer is a module for the <link;controlengineering:scope/scope;oscilloscope> which can be used to view all signals of a bus line as digital signals. The bus line to be inspected is connected to the connector at the bottom of the module. Any signal level greater than zero will be interpreted as a logic high.
 It is recommended to disable all unused input signals to save screen space. The position of the first trace, the height of each individual trace, and the space between traces can be configured using the ranges at the top of the module.
 Each channel has a three-position switch indicating its trigger state: high, ignored, or low. If the logic analyzer is selected as the trigger source, a trigger event will be generated whenever all channels meet their trigger condition.

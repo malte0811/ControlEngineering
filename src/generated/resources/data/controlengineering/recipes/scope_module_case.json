@@ -1,0 +1,21 @@
+{
+  "type": "immersiveengineering:blueprint",
+  "category": "controlengineering:scope_components",
+  "inputs": [
+    {
+      "base_ingredient": {
+        "tag": "forge:plates/aluminum"
+      },
+      "count": 2
+    },
+    {
+      "tag": "forge:wires/copper"
+    },
+    {
+      "tag": "forge:plates/plastic"
+    }
+  ],
+  "result": {
+    "item": "controlengineering:scope_module_case"
+  }
+}

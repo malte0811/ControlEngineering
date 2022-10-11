@@ -1,4 +1,4 @@
-package malte0811.controlengineering.blocks.loot;
+package malte0811.controlengineering.loot;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.base.IHasMaster;

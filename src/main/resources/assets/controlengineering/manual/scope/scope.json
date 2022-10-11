@@ -1,2 +1,25 @@
 {
+  "recipe": [
+    {
+      "type": "crafting",
+      "recipes": [
+        [
+          "controlengineering:oscilloscope",
+          "controlengineering:scope_blueprint"
+        ]
+      ]
+    },
+    {
+      "type": "blueprint",
+      "offset": 1,
+      "recipes": [
+        {
+          "item": "controlengineering:crt_tube"
+        },
+        {
+          "item": "controlengineering:scope_module_case"
+        }
+      ]
+    }
+  ]
 }

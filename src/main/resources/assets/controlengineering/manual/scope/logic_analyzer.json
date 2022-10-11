@@ -1,1 +1,10 @@
-{}
+{
+  "recipe": {
+    "type": "crafting",
+    "recipes": [
+      [
+        "controlengineering:digital"
+      ]
+    ]
+  }
+}

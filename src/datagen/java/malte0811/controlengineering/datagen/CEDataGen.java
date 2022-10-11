@@ -17,5 +17,6 @@ public class CEDataGen {
         ev.getGenerator().addProvider(true, new LootGenerator(ev.getGenerator()));
         ev.getGenerator().addProvider(true, new ComponentCostGenerator(ev.getGenerator()));
         ev.getGenerator().addProvider(true, new BlockTagGenerator(ev.getGenerator(), ev.getExistingFileHelper()));
+        ev.getGenerator().addProvider(true, new LootModifierGenerator(ev.getGenerator()));
     }
 }
