@@ -9,7 +9,6 @@ import malte0811.controlengineering.util.typereg.TypedInstance;
 
 import java.util.List;
 
-// TODO split state into config and measurements
 public class ScopeModuleInstance<State> extends TypedInstance<State, ScopeModule<State>> {
     public static final MyCodec<ScopeModuleInstance<?>> CODEC = TypedInstance.makeCodec(ScopeModules.REGISTRY);
 
