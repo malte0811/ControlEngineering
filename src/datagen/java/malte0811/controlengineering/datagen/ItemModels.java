@@ -26,6 +26,8 @@ public class ItemModels extends ItemModelProvider {
         addItemModel("logic_schematic", CEItems.SCHEMATIC);
         addItemModel("key", CEItems.KEY);
         addItemModel("lock_with_key", CEItems.LOCK);
+        addItemModel("crt_tube", CEItems.CRT_TUBE);
+        addItemModel("scope_module_case", CEItems.SCOPE_MODULE_CASE);
         withExistingParent(name(CEItems.PANEL_TOP), modLoc("transform/panel_top_base"))
                 .customLoader(DynamicModelBuilder.customLoader(ModelLoaders.PANEL_MODEL))
                 .end();
