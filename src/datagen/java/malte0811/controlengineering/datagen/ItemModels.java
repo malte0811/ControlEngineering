@@ -5,6 +5,7 @@ import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.datagen.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.items.CEItems;
+import malte0811.controlengineering.scope.module.ScopeModules;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
@@ -28,13 +29,15 @@ public class ItemModels extends ItemModelProvider {
         addItemModel("lock_with_key", CEItems.LOCK);
         addItemModel("crt_tube", CEItems.CRT_TUBE);
         addItemModel("scope_module_case", CEItems.SCOPE_MODULE_CASE);
+        addItemModel("analog_scope_module", ScopeModules.ANALOG.item());
+        addItemModel("digital_scope_module", ScopeModules.DIGITAL.item());
         withExistingParent(name(CEItems.PANEL_TOP), modLoc("transform/panel_top_base"))
                 .customLoader(DynamicModelBuilder.customLoader(ModelLoaders.PANEL_MODEL))
                 .end();
         withExistingParent(ItemModels.name(CEBlocks.CONTROL_PANEL), modLoc("transform/panel_base"))
                 .customLoader(DynamicModelBuilder.customLoader(ModelLoaders.PANEL_MODEL))
                 .end();
-        CEItems.CLOCK_GENERATORS.forEach((rl, item) -> addItemModel(rl.getPath().replace('_', '/'), item));
+        CEItems.CLOCK_GENERATORS.forEach((rl, item) -> addItemModel("clock/" + rl.getPath(), item));
     }
 
     public static String name(Supplier<? extends ItemLike> item) {

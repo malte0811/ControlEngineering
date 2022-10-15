@@ -1,5 +1,4 @@
-// 1.19.2	2022-10-11T16:21:31.570702127	Recipes
-6a0cc509f8b15146904c823585f2a9cff903d0ff data/controlengineering/recipes/analog.json
+// 1.19.2	2022-10-15T11:46:42.802584244	Recipes
 68edd0f39ab2e5863ffb1a78efb44ad87b004da4 data/controlengineering/recipes/bus_interface.json
 fc2513d0ec3bd6fe81e7a7165a722c2aff559078 data/controlengineering/recipes/bus_relay.json
 55b82a5f7f5e99e0d8e296fad25d81f4ddbc0686 data/controlengineering/recipes/bus_wire_coil.json
@@ -7,7 +6,6 @@ b20cfd87d5c194772b8ffcced96ea18e986f2fc4 data/controlengineering/recipes/clock_e
 86c9142fa1bf6065c9f1220ef596927be0d57622 data/controlengineering/recipes/clock_free.json
 e83eea1821ac680a7ed9dc26f5918d9ad592a149 data/controlengineering/recipes/clock_state.json
 dca9411c37146c1bd518f5881c8bf75315322257 data/controlengineering/recipes/crt_tube.json
-fde6fa043b843083268a4313d5212d16330a5ff6 data/controlengineering/recipes/digital.json
 734d4bdd3a0493ddc31e0783d48f565c8a913966 data/controlengineering/recipes/empty_tape.json
 def26c1f3c9023ab40f76c10cce1965b69c3c603 data/controlengineering/recipes/glue_tape.json
 0260d372e3a4c12a4a84f7b78937014d8772bc81 data/controlengineering/recipes/key.json
@@ -25,5 +23,7 @@ d84977dd937ba9cea38b5afe0b9726878b6fa569 data/controlengineering/recipes/panel_t
 e9297b3849a6fb9a74711c498fab298904dd8bf8 data/controlengineering/recipes/rs_remapper.json
 c9d5371622dbba8d8d1610a791c8f96b3b78c00b data/controlengineering/recipes/schematic_copy.json
 cda5ec08715e1cc8b40f8eb8c5bd35732b4282d4 data/controlengineering/recipes/scope_blueprint.json
+d5ddf99a3f4b859e94947b011f394b6b4391eac2 data/controlengineering/recipes/scope_module_analog.json
 3ed7d5c2e39efec5b4b824f2b0a369bb16ecf1d6 data/controlengineering/recipes/scope_module_case.json
+53846dc4c2a960f47860ceded121d74c1ba95bae data/controlengineering/recipes/scope_module_digital.json
 f0560ee1ad61aef88bdbdffc02b1cc2ccf0d9fad data/controlengineering/recipes/sequencer.json

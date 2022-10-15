@@ -80,19 +80,23 @@ public class CEItems {
     }
 
     private static <T>
-    Map<ResourceLocation, RegistryObject<Item>> makeItemsFor(Map<ResourceLocation, T> owners, Predicate<T> shouldAdd) {
+    Map<ResourceLocation, RegistryObject<Item>> makeItemsFor(
+            Map<ResourceLocation, T> owners, Predicate<T> shouldAdd, String prefix
+    ) {
         ImmutableMap.Builder<ResourceLocation, RegistryObject<Item>> items = ImmutableMap.builder();
         for (Map.Entry<ResourceLocation, T> entry : owners.entrySet()) {
             ResourceLocation id = entry.getKey();
             if (shouldAdd.test(entry.getValue())) {
-                items.put(id, REGISTER.register(id.getPath(), () -> new Item(simpleItemProperties())));
+                items.put(id, REGISTER.register(prefix + id.getPath(), () -> new Item(simpleItemProperties())));
             }
         }
         return items.build();
     }
 
     static {
-        CLOCK_GENERATORS = makeItemsFor(ClockTypes.getGenerators(), ClockGenerator::isActiveClock);
-        SCOPE_MODULES = makeItemsFor(ScopeModules.REGISTRY.getEntries(), Predicate.not(ScopeModule::isEmpty));
+        CLOCK_GENERATORS = makeItemsFor(ClockTypes.getGenerators(), ClockGenerator::isActiveClock, "clock_");
+        SCOPE_MODULES = makeItemsFor(
+                ScopeModules.REGISTRY.getEntries(), Predicate.not(ScopeModule::isEmpty), "scope_module_"
+        );
     }
 }
