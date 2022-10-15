@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "B": {
+      "item": "immersiveengineering:circuit_board"
+    },
+    "C": {
+      "item": "immersiveengineering:component_electronic"
+    },
+    "M": {
+      "item": "controlengineering:scope_module_case"
+    },
+    "c": {
+      "item": "minecraft:comparator"
+    },
+    "w": {
+      "tag": "forge:wires/copper"
+    }
+  },
+  "pattern": [
+    "cCw",
+    "wBM",
+    "cCw"
+  ],
+  "result": {
+    "item": "controlengineering:scope_module_analog"
+  }
+}
