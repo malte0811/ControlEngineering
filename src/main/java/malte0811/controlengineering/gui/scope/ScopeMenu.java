@@ -17,23 +17,17 @@ import org.apache.commons.lang3.mutable.MutableObject;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class ScopeMenu extends CEContainerMenu<IScopeSubPacket> {
-    // TODO handle another player replacing a module
     private final List<ModuleInScope> modules;
     private final Mutable<Traces> traces;
-    // TODO deduplicate with keypunch?
-    private final Set<ScopeMenu> openMenusOnBE;
     private final Mutable<GlobalConfig> globalConfig;
     private final Mutable<GlobalState> globalState;
 
     public ScopeMenu(@Nullable MenuType<?> type, int id, ScopeBlockEntity scope) {
-        super(type, id, isValidFor(scope), scope::setChanged);
+        super(type, id, isValidFor(scope), scope::setChanged, scope.getOpenMenus());
         this.modules = scope.getModules();
-        this.openMenusOnBE = scope.getOpenMenus();
         this.traces = new LambdaMutable<>(scope::getTraces, scope::setTraces);
         this.globalConfig = new LambdaMutable<>(scope::getGlobalConfig, scope::setGlobalConfig);
         this.globalState = LambdaMutable.getterOnly(scope::getGlobalSyncState);
@@ -42,7 +36,6 @@ public class ScopeMenu extends CEContainerMenu<IScopeSubPacket> {
     public ScopeMenu(MenuType<?> type, int id) {
         super(type, id);
         this.modules = new ArrayList<>();
-        this.openMenusOnBE = new HashSet<>();
         this.traces = new MutableObject<>(new Traces());
         this.globalConfig = new MutableObject<>(new GlobalConfig());
         this.globalState = new MutableObject<>(new GlobalState());
@@ -66,20 +59,8 @@ public class ScopeMenu extends CEContainerMenu<IScopeSubPacket> {
     }
 
     @Override
-    protected IScopeSubPacket getInitialSync() {
+    public IScopeSubPacket getInitialSync() {
         return new FullSync(getModules(), getTraces(), getGlobalConfig(), getGlobalState());
-    }
-
-    @Override
-    protected void onFirstOpened() {
-        super.onFirstOpened();
-        openMenusOnBE.add(this);
-    }
-
-    @Override
-    protected void onLastClosed() {
-        super.onLastClosed();
-        openMenusOnBE.remove(this);
     }
 
     public GlobalConfig getGlobalConfig() {

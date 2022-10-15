@@ -58,7 +58,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-// TODO power consumption (respecting disabled modules? UI on-switch?)
 public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwner, IBusInterface, IExtraDropBE {
     private static final int NUM_SLOTS = 4;
     public static final int NUM_HORIZONTAL_DIVS = 8;
@@ -297,6 +296,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
                 if (!bEntity.level.isClientSide) {
                     ScopeModuleInstance.ensureOneTriggerActive(bEntity.getModules(), -1);
                     BEUtil.markDirtyAndSync(bEntity);
+                    bEntity.openMenus.forEach(sm -> sm.sendToListeningPlayers(sm.getInitialSync()));
                 }
                 return result;
             }));

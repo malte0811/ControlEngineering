@@ -13,21 +13,16 @@ import malte0811.controlengineering.network.keypunch.TypeChar;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.MenuType;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class KeypunchMenu extends CEContainerMenu<KeypunchSubPacket> {
     private final KeypunchState state;
     private final ByteConsumer printNonLoopback;
     private final DataSlot isLoopback;
-    private final Set<KeypunchMenu> openMenus;
 
     public KeypunchMenu(MenuType<?> type, int id, KeypunchBlockEntity keypunch) {
-        super(type, id, isValidFor(keypunch), keypunch::setChanged);
+        super(type, id, isValidFor(keypunch), keypunch::setChanged, keypunch.getOpenContainers());
         this.state = keypunch.getState();
         this.printNonLoopback = keypunch::queueForRemotePrint;
         this.isLoopback = addDataSlot(LambdaDataSlot.serverSide(() -> keypunch.isLoopback() ? 1 : 0));
-        this.openMenus = keypunch.getOpenContainers();
     }
 
     public KeypunchMenu(MenuType<?> type, int id) {
@@ -35,7 +30,6 @@ public class KeypunchMenu extends CEContainerMenu<KeypunchSubPacket> {
         this.state = new KeypunchState(() -> {});
         this.printNonLoopback = $ -> {};
         this.isLoopback = addDataSlot(DataSlot.standalone());
-        this.openMenus = new HashSet<>();
     }
 
     @Override
@@ -62,18 +56,6 @@ public class KeypunchMenu extends CEContainerMenu<KeypunchSubPacket> {
 
     public void resyncFullTape() {
         sendToListeningPlayers(getInitialSync());
-    }
-
-    @Override
-    protected void onFirstOpened() {
-        super.onFirstOpened();
-        openMenus.add(this);
-    }
-
-    @Override
-    protected void onLastClosed() {
-        super.onLastClosed();
-        openMenus.remove(this);
     }
 
     public ByteConsumer getPrintNonLoopback() {

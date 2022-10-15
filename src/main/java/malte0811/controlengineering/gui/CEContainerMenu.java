@@ -3,11 +3,11 @@ package malte0811.controlengineering.gui;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.network.SimplePacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,6 +18,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 @Mod.EventBusSubscriber(modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -25,15 +26,28 @@ public abstract class CEContainerMenu<PacketType> extends AbstractContainerMenu 
     private final List<ServerPlayer> listeners = new ArrayList<>();
     private final Predicate<Player> isValid;
     private final Runnable setChanged;
+    @Nullable
+    private final OpenMenuListener<?> openListener;
 
     protected CEContainerMenu(@Nullable MenuType<?> type, int id, Predicate<Player> isValid, Runnable setChanged) {
+        this(type, id, isValid, setChanged, null);
+    }
+
+    protected CEContainerMenu(
+            @Nullable MenuType<?> type,
+            int id,
+            Predicate<Player> isValid,
+            Runnable setChanged,
+            @Nullable Set<? extends CEContainerMenu<PacketType>> openMenus
+    ) {
         super(type, id);
         this.isValid = isValid;
         this.setChanged = setChanged;
+        this.openListener = openMenus != null ? new OpenMenuListener<>(openMenus) : null;
     }
 
     protected CEContainerMenu(@Nullable MenuType<?> type, int id) {
-        this(type, id, $ -> true, () -> {});
+        this(type, id, $ -> true, () -> { });
     }
 
     @Override
@@ -69,17 +83,13 @@ public abstract class CEContainerMenu<PacketType> extends AbstractContainerMenu 
 
     private void addListener(ServerPlayer serverPlayer) {
         if (!listeners.contains(serverPlayer)) {
-            if (listeners.isEmpty()) {
-                onFirstOpened();
+            if (listeners.isEmpty() && openListener != null) {
+                openListener.close(this);
             }
             listeners.add(serverPlayer);
             sendTo(serverPlayer, getInitialSync());
         }
     }
-
-    protected void onFirstOpened() {}
-
-    protected void onLastClosed() {}
 
     @SubscribeEvent
     public static void openContainer(PlayerContainerEvent.Open ev) {
@@ -101,8 +111,8 @@ public abstract class CEContainerMenu<PacketType> extends AbstractContainerMenu 
             return;
         }
         ceContainer.listeners.remove(serverPlayer);
-        if (ceContainer.listeners.isEmpty()) {
-            ceContainer.onLastClosed();
+        if (ceContainer.listeners.isEmpty() && ceContainer.openListener != null) {
+            ceContainer.openListener.close(ceContainer);
         }
     }
 
@@ -115,5 +125,16 @@ public abstract class CEContainerMenu<PacketType> extends AbstractContainerMenu 
     public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
         // TODO broken? Is this even any screen where this is called in CE?
         return ItemStack.EMPTY;
+    }
+
+    @SuppressWarnings("unchecked")
+    private record OpenMenuListener<T extends CEContainerMenu<?>>(Set<T> openSetRef) {
+        private void open(CEContainerMenu<?> self) {
+            openSetRef.add((T) self);
+        }
+
+        private void close(CEContainerMenu<?> self) {
+            openSetRef.remove((T) self);
+        }
     }
 }
