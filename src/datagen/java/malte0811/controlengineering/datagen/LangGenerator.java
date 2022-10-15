@@ -296,7 +296,7 @@ public class LangGenerator extends LanguageProvider {
     }
 
     private void addScopeModule(ScopeModule<?> type, String name) {
-        addItem(CEItems.SCOPE_MODULES.get(type.getRegistryName()), name);
+        addItem(type.item(), name);
     }
 
     private void addManualSection(String id, String name) {

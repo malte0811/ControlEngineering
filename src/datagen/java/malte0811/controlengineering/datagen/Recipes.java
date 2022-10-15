@@ -21,7 +21,6 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.SpecialRecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
@@ -227,12 +226,12 @@ public class Recipes extends RecipeProvider {
                 .addInput(Tags.Items.GLASS)
                 .addInput(new IngredientWithSize(IETags.getTagsFor(EnumMetals.COPPER).plate, 4))
                 .addInput(IETags.getTagsFor(EnumMetals.NICKEL).plate)
-                .build(consumer, new ResourceLocation(ControlEngineering.MODID, "crt_tube"));
+                .build(consumer, ControlEngineering.ceLoc("crt_tube"));
         BlueprintCraftingRecipeBuilder.builder(SCOPE_COMPONENTS_BLUEPRINT, CEItems.SCOPE_MODULE_CASE.get())
                 .addInput(new IngredientWithSize(IETags.getTagsFor(EnumMetals.ALUMINUM).plate, 2))
                 .addInput(IETags.copperWire)
                 .addInput(IETags.plasticPlate)
-                .build(consumer, new ResourceLocation(ControlEngineering.MODID, "scope_module_case"));
+                .build(consumer, ControlEngineering.ceLoc("scope_module_case"));
         NoAdvancementShapedBuilder.shaped(CEBlocks.SCOPE)
                 .pattern("BlB")
                 .pattern("Tac")
@@ -243,7 +242,7 @@ public class Recipes extends RecipeProvider {
                 .define('a', IEItemRefs.COMPONENT_ADVANCED)
                 .define('c', CEBlocks.BUS_RELAY)
                 .save(consumer);
-        NoAdvancementShapedBuilder.shaped(CEItems.SCOPE_MODULES.get(ScopeModules.ANALOG.getRegistryName()))
+        NoAdvancementShapedBuilder.shaped(ScopeModules.ANALOG.item())
                 .pattern("cCw")
                 .pattern("wBM")
                 .pattern("cCw")
@@ -253,7 +252,7 @@ public class Recipes extends RecipeProvider {
                 .define('M', CEItems.SCOPE_MODULE_CASE)
                 .define('B', IEItemRefs.CIRCUIT_BOARD)
                 .save(consumer);
-        NoAdvancementShapedBuilder.shaped(CEItems.SCOPE_MODULES.get(ScopeModules.DIGITAL.getRegistryName()))
+        NoAdvancementShapedBuilder.shaped(ScopeModules.DIGITAL.item())
                 .pattern("ACM")
                 .pattern("ABw")
                 .pattern("ACM")
@@ -273,6 +272,6 @@ public class Recipes extends RecipeProvider {
                 .define('a', Items.REPEATER)
                 .define('d', Tags.Items.DYES_BLUE)
                 .define('p', Items.PAPER)
-                .save(consumer, new ResourceLocation(ControlEngineering.MODID, "scope_blueprint"));
+                .save(consumer, ControlEngineering.ceLoc("scope_blueprint"));
     }
 }

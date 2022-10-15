@@ -40,7 +40,7 @@ public class SingleIngredRecipeBuilder {
             @Nonnull
             @Override
             public ResourceLocation getId() {
-                return new ResourceLocation(ControlEngineering.MODID, id);
+                return ControlEngineering.ceLoc(id);
             }
 
             @Nonnull

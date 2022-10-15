@@ -3,8 +3,8 @@ package malte0811.controlengineering.gui.tape;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.network.CutTapePacket;
 import malte0811.controlengineering.client.render.utils.ScreenUtils;
+import malte0811.controlengineering.network.CutTapePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -16,9 +16,7 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public class ViewTapeScreen extends Screen {
-    public static final ResourceLocation BASE_SCREEN = new ResourceLocation(
-            ControlEngineering.MODID, "textures/gui/read_tape.png"
-    );
+    public static final ResourceLocation BASE_SCREEN = ControlEngineering.ceLoc("textures/gui/read_tape.png");
     private static final int WIDTH = 256;
     private static final int HEIGHT = 128;
     private static final int FIRST_CHAR_X = 48;

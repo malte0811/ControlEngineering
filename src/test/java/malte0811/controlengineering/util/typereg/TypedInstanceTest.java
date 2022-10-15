@@ -6,13 +6,12 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 import org.junit.Assert;
 
 public class TypedInstanceTest extends TestCase {
 
     public void testCodecResets() {
-        final var entryName = new ResourceLocation(ControlEngineering.MODID, "test");
+        final var entryName = ControlEngineering.ceLoc("test");
         Tag nbt;
         {
             TypedRegistry<Type<?>> oldReg = new TypedRegistry<>();

@@ -72,7 +72,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLog
         this.spriteGetter = spriteGetter;
         this.modelTransform = modelTransform;
         particles = this.board.bake(
-                bakery, spriteGetter, modelTransform, new ResourceLocation(ControlEngineering.MODID, "temp")
+                bakery, spriteGetter, modelTransform, ControlEngineering.ceLoc("temp")
         ).getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null).get(0).getSprite();
 
         PoseStack transform = new PoseStack();
@@ -203,7 +203,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLog
             ModelState offsetTransform = new SimpleModelState(modelTransform.getRotation().compose(new Transformation(
                     offset, null, null, null
             )));
-            ResourceLocation dummy = new ResourceLocation(ControlEngineering.MODID, "dynamic");
+            ResourceLocation dummy = ControlEngineering.ceLoc("dynamic");
             BakedModel baked = model.bake(bakery, spriteGetter, offsetTransform, dummy);
             if (baked == null) {
                 return ImmutableList.of();

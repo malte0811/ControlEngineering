@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ServerFontRecipe extends BaseRecipe {
-    public static final ResourceLocation LOCATION = new ResourceLocation(ControlEngineering.MODID, "server_font_width");
+    public static final ResourceLocation LOCATION = ControlEngineering.ceLoc("server_font_width");
     public static boolean IN_UNIT_TEST = false;
 
     private final Int2FloatMap widths;

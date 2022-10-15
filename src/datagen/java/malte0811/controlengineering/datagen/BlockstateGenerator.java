@@ -1,6 +1,5 @@
 package malte0811.controlengineering.datagen;
 
-import blusunrize.immersiveengineering.api.Lib;
 import blusunrize.immersiveengineering.data.models.MirroredModelBuilder;
 import blusunrize.immersiveengineering.data.models.ModelProviderUtils;
 import blusunrize.immersiveengineering.data.models.NongeneratedModels;
@@ -41,7 +40,7 @@ import java.util.function.Supplier;
 
 public class BlockstateGenerator extends BlockStateProvider {
     private static final ConfiguredModel EMPTY_MODEL = new ConfiguredModel(
-            new ModelFile.UncheckedModelFile(new ResourceLocation(Lib.MODID, "block/ie_empty"))
+            new ModelFile.UncheckedModelFile(ControlEngineering.ieLoc("block/ie_empty"))
     );
     private final NongeneratedModels nongenerated;
 
@@ -141,7 +140,7 @@ public class BlockstateGenerator extends BlockStateProvider {
         final var mainModel = obj("scope/main.obj", nongenerated);
         final var analogModel = obj("scope/analog.obj", nongenerated);
         final var digitalModel = obj("scope/digital.obj", nongenerated);
-        final var empty = nongenerated.withExistingParent("empty", new ResourceLocation(Lib.MODID, "block/ie_empty"));
+        final var empty = nongenerated.withExistingParent("empty", ControlEngineering.ieLoc("block/ie_empty"));
         final var combined = models().withExistingParent("scope", mcLoc("block/block"))
                 .customLoader(ScopeModelBuilder::begin)
                 .main(mainModel)

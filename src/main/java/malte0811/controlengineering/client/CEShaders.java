@@ -1,8 +1,8 @@
 package malte0811.controlengineering.client;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import malte0811.controlengineering.ControlEngineering;
 import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterShadersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,7 +19,7 @@ public class CEShaders {
     @SubscribeEvent
     public static void registerShaders(RegisterShadersEvent ev) throws IOException {
         ev.registerShader(new ShaderInstance(
-                ev.getResourceManager(), new ResourceLocation(MODID, "scope_trace"), DefaultVertexFormat.BLOCK
+                ev.getResourceManager(), ControlEngineering.ceLoc("scope_trace"), DefaultVertexFormat.BLOCK
         ), shader -> scopeTrace = shader);
     }
 

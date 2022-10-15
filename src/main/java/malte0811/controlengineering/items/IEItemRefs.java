@@ -1,7 +1,6 @@
 package malte0811.controlengineering.items;
 
-import blusunrize.immersiveengineering.api.Lib;
-import net.minecraft.resources.ResourceLocation;
+import malte0811.controlengineering.ControlEngineering;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
@@ -39,6 +38,6 @@ public class IEItemRefs {
     }
 
     private static <T> RegistryObject<T> of(String name, IForgeRegistry<T> registry) {
-        return RegistryObject.create(new ResourceLocation(Lib.MODID, name), registry);
+        return RegistryObject.create(ControlEngineering.ieLoc(name), registry);
     }
 }

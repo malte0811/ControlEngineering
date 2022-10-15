@@ -19,25 +19,13 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = ControlEngineering.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModelLoaders {
-    public static final ResourceLocation PANEL_MODEL = new ResourceLocation(ControlEngineering.MODID, "panel");
-    public static final ResourceLocation LOGIC_CABINET = new ResourceLocation(
-            ControlEngineering.MODID, "dynamic_logic"
-    );
-    public static final ResourceLocation KEYPUNCH_SWITCH = new ResourceLocation(
-            ControlEngineering.MODID, "keypunch_switch"
-    );
-    public static final ResourceLocation SEQUENCER_SWITCH = new ResourceLocation(
-            ControlEngineering.MODID, "sequencer_switch"
-    );
-    public static final ResourceLocation LOGIC_WORKBENCH = new ResourceLocation(
-            ControlEngineering.MODID, "logic_workbench"
-    );
-    public static final ResourceLocation CACHED_COMPOSITE = new ResourceLocation(
-            ControlEngineering.MODID, "cacheable_composite"
-    );
-    public static final ResourceLocation SCOPE = new ResourceLocation(
-            ControlEngineering.MODID, "scope"
-    );
+    public static final ResourceLocation PANEL_MODEL = ControlEngineering.ceLoc("panel");
+    public static final ResourceLocation LOGIC_CABINET = ControlEngineering.ceLoc("dynamic_logic");
+    public static final ResourceLocation KEYPUNCH_SWITCH = ControlEngineering.ceLoc("keypunch_switch");
+    public static final ResourceLocation SEQUENCER_SWITCH = ControlEngineering.ceLoc("sequencer_switch");
+    public static final ResourceLocation LOGIC_WORKBENCH = ControlEngineering.ceLoc("logic_workbench");
+    public static final ResourceLocation CACHED_COMPOSITE = ControlEngineering.ceLoc("cacheable_composite");
+    public static final ResourceLocation SCOPE = ControlEngineering.ceLoc("scope");
 
     @SubscribeEvent
     public static void registerModelLoaders(ModelEvent.RegisterGeometryLoaders ev) {

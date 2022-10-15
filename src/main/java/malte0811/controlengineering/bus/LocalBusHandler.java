@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickable {
-    public static final ResourceLocation NAME = new ResourceLocation(ControlEngineering.MODID, "bus");
+    public static final ResourceLocation NAME = ControlEngineering.ceLoc("bus");
     private boolean updateNextTick = true;
     private final List<ConnectionPoint> loading = new ArrayList<>();
     private final BusEmitterCombiner<Pair<ConnectionPoint, IBusConnector>> stateHandler = new BusEmitterCombiner<>(

@@ -23,9 +23,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public abstract class AbstractRemapperScreen extends Screen implements MenuAccess<AbstractRemapperMenu> {
-    protected static final ResourceLocation TEXTURE = new ResourceLocation(
-            ControlEngineering.MODID, "textures/gui/rs_remapper.png"
-    );
+    protected static final ResourceLocation TEXTURE = ControlEngineering.ceLoc("textures/gui/rs_remapper.png");
     protected static final int WIDTH = 165;
     protected static final int HEIGHT = 154;
     private static final int WIRE_COLOR = 0xffb66232;

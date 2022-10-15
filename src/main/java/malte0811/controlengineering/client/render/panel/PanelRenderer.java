@@ -19,10 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nonnull;
 
 public class PanelRenderer implements BlockEntityRenderer<ControlPanelBlockEntity> {
-    public static final ResourceLocation PANEL_TEXTURE_LOC = new ResourceLocation(
-            ControlEngineering.MODID,
-            "block/control_panel"
-    );
+    public static final ResourceLocation PANEL_TEXTURE_LOC = ControlEngineering.ceLoc("block/control_panel");
     //TODO reset
     public static final ResettableLazy<TextureAtlasSprite> PANEL_TEXTURE = new ResettableLazy<>(
             () -> Minecraft.getInstance()

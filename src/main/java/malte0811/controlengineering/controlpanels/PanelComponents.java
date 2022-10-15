@@ -29,7 +29,7 @@ public class PanelComponents {
     public static final Label LABEL = register("label", new Label());
 
     private static <T extends PanelComponentType<?, ?>> T register(String path, T type) {
-        ResourceLocation nameRL = new ResourceLocation(ControlEngineering.MODID, path);
+        ResourceLocation nameRL = ControlEngineering.ceLoc(path);
         CREATION_KEY.put(path, nameRL);
         return REGISTRY.register(nameRL, type);
     }

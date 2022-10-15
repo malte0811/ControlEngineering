@@ -32,7 +32,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.Vec3;
@@ -49,7 +48,7 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
                 TextureAtlas atlas = Minecraft.getInstance().getModelManager().getAtlas(
                         InventoryMenu.BLOCK_ATLAS
                 );
-                return atlas.getSprite(new ResourceLocation(ControlEngineering.MODID, "block/panel_cnc"));
+                return atlas.getSprite(ControlEngineering.ceLoc("block/panel_cnc"));
             }
     );
     private static final LoadingCache<List<PlacedComponent>, MixedModel> MODEL_CACHE = CacheBuilder.newBuilder()

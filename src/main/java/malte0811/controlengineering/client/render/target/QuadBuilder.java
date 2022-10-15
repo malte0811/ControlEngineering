@@ -22,10 +22,7 @@ import java.util.OptionalInt;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class QuadBuilder {
-    public static final ResourceLocation WHITE_WITH_BORDER = new ResourceLocation(
-            ControlEngineering.MODID,
-            "white_with_border"
-    );
+    public static final ResourceLocation WHITE_WITH_BORDER = ControlEngineering.ceLoc("white_with_border");
 
     private final Vertex[] vertices;
     @Nullable

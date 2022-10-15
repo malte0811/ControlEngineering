@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class KeypunchSwitchModel implements CEBakedModel {
-    public static final ResourceLocation TEXTURE_LOC = new ResourceLocation(ControlEngineering.MODID, "block/keypunch");
+    public static final ResourceLocation TEXTURE_LOC = ControlEngineering.ceLoc("block/keypunch");
     private static final ModelProperty<Boolean> LOOPBACK = new ModelProperty<>();
 
     private final Supplier<TextureAtlasSprite> texture;

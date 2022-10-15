@@ -30,9 +30,9 @@ public class ClockTypes {
     }
 
     static {
-        register(new ResourceLocation(ControlEngineering.MODID, "clock_free"), ALWAYS_ON);
-        register(new ResourceLocation(ControlEngineering.MODID, "clock_edge"), RISING_EDGE);
-        register(new ResourceLocation(ControlEngineering.MODID, "clock_state"), WHILE_RS_ON);
-        register(new ResourceLocation(ControlEngineering.MODID, "clock_none"), NEVER);
+        register(ControlEngineering.ceLoc("free"), ALWAYS_ON);
+        register(ControlEngineering.ceLoc("edge"), RISING_EDGE);
+        register(ControlEngineering.ceLoc("state"), WHILE_RS_ON);
+        register(ControlEngineering.ceLoc("none"), NEVER);
     }
 }

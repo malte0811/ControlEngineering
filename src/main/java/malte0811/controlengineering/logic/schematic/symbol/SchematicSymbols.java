@@ -21,9 +21,7 @@ import static malte0811.controlengineering.logic.schematic.symbol.SymbolPin.*;
 
 public class SchematicSymbols {
     public static final TypedRegistry<SchematicSymbol<?>> REGISTRY = new TypedRegistry<>();
-    public static final ResourceLocation SYMBOLS_SHEET = new ResourceLocation(
-            ControlEngineering.MODID, "textures/gui/schematic_symbols.png"
-    );
+    public static final ResourceLocation SYMBOLS_SHEET = ControlEngineering.ceLoc("textures/gui/schematic_symbols.png");
     public static final IOSymbol INPUT_PIN_ANALOG = new IOSymbol(true, false);
     public static final IOSymbol INPUT_PIN_DIGITAL = new IOSymbol(true, true);
     public static final IOSymbol OUTPUT_PIN = new IOSymbol(false, false);
@@ -130,11 +128,11 @@ public class SchematicSymbols {
         ));
         CONFIG_SWITCH = registerCell(new ConfigSwitchSymbol());
 
-        REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin"), INPUT_PIN_ANALOG);
-        REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "input_pin_digitized"), INPUT_PIN_DIGITAL);
-        REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "output_pin"), OUTPUT_PIN);
-        REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "constant"), CONSTANT);
-        REGISTRY.register(new ResourceLocation(ControlEngineering.MODID, "text"), TEXT);
+        REGISTRY.register(ControlEngineering.ceLoc("input_pin"), INPUT_PIN_ANALOG);
+        REGISTRY.register(ControlEngineering.ceLoc("input_pin_digitized"), INPUT_PIN_DIGITAL);
+        REGISTRY.register(ControlEngineering.ceLoc("output_pin"), OUTPUT_PIN);
+        REGISTRY.register(ControlEngineering.ceLoc("constant"), CONSTANT);
+        REGISTRY.register(ControlEngineering.ceLoc("text"), TEXT);
     }
 
     private static CellSymbol<Unit> delayCell(LeafcellType<?, Unit> cell, int uSize, SignalType type) {

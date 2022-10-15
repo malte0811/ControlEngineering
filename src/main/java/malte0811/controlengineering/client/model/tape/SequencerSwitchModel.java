@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -35,10 +34,7 @@ import java.util.function.Supplier;
 
 //TODO deduplicate with KeypunchSwitchModel and DynamicLogicModel
 public class SequencerSwitchModel implements CEBakedModel {
-    public static final ResourceLocation TEXTURE_LOC = new ResourceLocation(
-            ControlEngineering.MODID,
-            "block/sequencer"
-    );
+    public static final ResourceLocation TEXTURE_LOC = ControlEngineering.ceLoc("block/sequencer");
     private static final ModelProperty<Data> DATA = new ModelProperty<>();
 
     private final Supplier<TextureAtlasSprite> texture;
