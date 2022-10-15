@@ -1,6 +1,6 @@
 package malte0811.controlengineering.items;
 
-import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
@@ -38,6 +38,6 @@ public class IEItemRefs {
     }
 
     private static <T> RegistryObject<T> of(String name, IForgeRegistry<T> registry) {
-        return RegistryObject.create(ControlEngineering.ieLoc(name), registry);
+        return RegistryObject.create(RLUtils.ieLoc(name), registry);
     }
 }

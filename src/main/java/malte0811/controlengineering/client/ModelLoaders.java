@@ -11,6 +11,7 @@ import malte0811.controlengineering.client.model.scope.ScopeModelLoader;
 import malte0811.controlengineering.client.model.tape.KeypunchSwitchModel;
 import malte0811.controlengineering.client.model.tape.SequencerSwitchModel;
 import malte0811.controlengineering.client.render.panel.PanelRenderer;
+import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent;
@@ -19,13 +20,13 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = ControlEngineering.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModelLoaders {
-    public static final ResourceLocation PANEL_MODEL = ControlEngineering.ceLoc("panel");
-    public static final ResourceLocation LOGIC_CABINET = ControlEngineering.ceLoc("dynamic_logic");
-    public static final ResourceLocation KEYPUNCH_SWITCH = ControlEngineering.ceLoc("keypunch_switch");
-    public static final ResourceLocation SEQUENCER_SWITCH = ControlEngineering.ceLoc("sequencer_switch");
-    public static final ResourceLocation LOGIC_WORKBENCH = ControlEngineering.ceLoc("logic_workbench");
-    public static final ResourceLocation CACHED_COMPOSITE = ControlEngineering.ceLoc("cacheable_composite");
-    public static final ResourceLocation SCOPE = ControlEngineering.ceLoc("scope");
+    public static final ResourceLocation PANEL_MODEL = RLUtils.ceLoc("panel");
+    public static final ResourceLocation LOGIC_CABINET = RLUtils.ceLoc("dynamic_logic");
+    public static final ResourceLocation KEYPUNCH_SWITCH = RLUtils.ceLoc("keypunch_switch");
+    public static final ResourceLocation SEQUENCER_SWITCH = RLUtils.ceLoc("sequencer_switch");
+    public static final ResourceLocation LOGIC_WORKBENCH = RLUtils.ceLoc("logic_workbench");
+    public static final ResourceLocation CACHED_COMPOSITE = RLUtils.ceLoc("cacheable_composite");
+    public static final ResourceLocation SCOPE = RLUtils.ceLoc("scope");
 
     @SubscribeEvent
     public static void registerModelLoaders(ModelEvent.RegisterGeometryLoaders ev) {

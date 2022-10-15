@@ -7,10 +7,10 @@ import blusunrize.lib.manual.ManualInstance;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.cnc.CNCInstructionGenerator;
+import malte0811.controlengineering.util.RLUtils;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
@@ -35,21 +35,21 @@ public class CEManual {
 
     public static void initManual() {
         var ieManual = ManualHelper.getManual();
-        ieManual.registerSpecialElement(ControlEngineering.ceLoc("panel_component"), PanelComponentElement::new);
+        ieManual.registerSpecialElement(RLUtils.ceLoc("panel_component"), PanelComponentElement::new);
         ieManual.registerSpecialElement(
-                ControlEngineering.ceLoc("leafcell"), json -> LeafcellElement.from(json, ieManual)
+                RLUtils.ceLoc("leafcell"), json -> LeafcellElement.from(json, ieManual)
         );
         ieManual.registerSpecialElement(
-                ControlEngineering.ceLoc("leafcell_truth"), json -> LeafcellWithStatesElement.from(ieManual, json)
+                RLUtils.ceLoc("leafcell_truth"), json -> LeafcellWithStatesElement.from(ieManual, json)
         );
         addComponentFormatEntry(ieManual);
     }
 
     private static void addComponentFormatEntry(ManualInstance ieManual) {
-        var ceCategory = ieManual.getRoot().getOrCreateSubnode(ControlEngineering.ceLoc("main"), 100);
-        var panelCategory = ceCategory.getOrCreateSubnode(ControlEngineering.ceLoc("panels"));
+        var ceCategory = ieManual.getRoot().getOrCreateSubnode(RLUtils.ceLoc("main"), 100);
+        var panelCategory = ceCategory.getOrCreateSubnode(RLUtils.ceLoc("panels"));
         ManualEntry.ManualEntryBuilder builder = new ManualEntry.ManualEntryBuilder(ManualHelper.getManual());
-        builder.readFromFile(ControlEngineering.ceLoc("panels/panel_format"));
+        builder.readFromFile(RLUtils.ceLoc("panels/panel_format"));
         builder.appendText(CEManual::makeComponentFormats);
         ieManual.addEntry(panelCategory, builder.create(), 1000);
     }

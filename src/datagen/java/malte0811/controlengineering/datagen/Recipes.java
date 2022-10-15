@@ -17,6 +17,7 @@ import malte0811.controlengineering.items.EmptyTapeItem;
 import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.scope.module.ScopeModules;
+import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
@@ -226,12 +227,12 @@ public class Recipes extends RecipeProvider {
                 .addInput(Tags.Items.GLASS)
                 .addInput(new IngredientWithSize(IETags.getTagsFor(EnumMetals.COPPER).plate, 4))
                 .addInput(IETags.getTagsFor(EnumMetals.NICKEL).plate)
-                .build(consumer, ControlEngineering.ceLoc("crt_tube"));
+                .build(consumer, RLUtils.ceLoc("crt_tube"));
         BlueprintCraftingRecipeBuilder.builder(SCOPE_COMPONENTS_BLUEPRINT, CEItems.SCOPE_MODULE_CASE.get())
                 .addInput(new IngredientWithSize(IETags.getTagsFor(EnumMetals.ALUMINUM).plate, 2))
                 .addInput(IETags.copperWire)
                 .addInput(IETags.plasticPlate)
-                .build(consumer, ControlEngineering.ceLoc("scope_module_case"));
+                .build(consumer, RLUtils.ceLoc("scope_module_case"));
         NoAdvancementShapedBuilder.shaped(CEBlocks.SCOPE)
                 .pattern("BlB")
                 .pattern("Tac")
@@ -272,6 +273,6 @@ public class Recipes extends RecipeProvider {
                 .define('a', Items.REPEATER)
                 .define('d', Tags.Items.DYES_BLUE)
                 .define('p', Items.PAPER)
-                .save(consumer, ControlEngineering.ceLoc("scope_blueprint"));
+                .save(consumer, RLUtils.ceLoc("scope_blueprint"));
     }
 }

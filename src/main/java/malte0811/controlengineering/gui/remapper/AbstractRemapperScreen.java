@@ -3,10 +3,10 @@ package malte0811.controlengineering.gui.remapper;
 import com.google.common.collect.Iterables;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.network.remapper.ClearMapping;
 import malte0811.controlengineering.network.remapper.SetMapping;
+import malte0811.controlengineering.util.RLUtils;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public abstract class AbstractRemapperScreen extends Screen implements MenuAccess<AbstractRemapperMenu> {
-    protected static final ResourceLocation TEXTURE = ControlEngineering.ceLoc("textures/gui/rs_remapper.png");
+    protected static final ResourceLocation TEXTURE = RLUtils.ceLoc("textures/gui/rs_remapper.png");
     protected static final int WIDTH = 165;
     protected static final int HEIGHT = 154;
     private static final int WIRE_COLOR = 0xffb66232;

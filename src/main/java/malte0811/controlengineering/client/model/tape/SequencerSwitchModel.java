@@ -3,12 +3,12 @@ package malte0811.controlengineering.client.model.tape;
 import blusunrize.immersiveengineering.api.utils.client.ModelDataUtils;
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.vertex.PoseStack;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.tape.SequencerBlockEntity;
 import malte0811.controlengineering.client.model.CEBakedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
 import malte0811.controlengineering.util.Bool2ObjectMap;
+import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 
 //TODO deduplicate with KeypunchSwitchModel and DynamicLogicModel
 public class SequencerSwitchModel implements CEBakedModel {
-    public static final ResourceLocation TEXTURE_LOC = ControlEngineering.ceLoc("block/sequencer");
+    public static final ResourceLocation TEXTURE_LOC = RLUtils.ceLoc("block/sequencer");
     private static final ModelProperty<Data> DATA = new ModelProperty<>();
 
     private final Supplier<TextureAtlasSprite> texture;

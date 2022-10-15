@@ -2,11 +2,11 @@ package malte0811.controlengineering.client.render.panel;
 
 import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.mojang.blaze3d.vertex.PoseStack;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.client.model.panel.PanelModelCache;
 import malte0811.controlengineering.client.render.target.MixedModel;
+import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nonnull;
 
 public class PanelRenderer implements BlockEntityRenderer<ControlPanelBlockEntity> {
-    public static final ResourceLocation PANEL_TEXTURE_LOC = ControlEngineering.ceLoc("block/control_panel");
+    public static final ResourceLocation PANEL_TEXTURE_LOC = RLUtils.ceLoc("block/control_panel");
     //TODO reset
     public static final ResettableLazy<TextureAtlasSprite> PANEL_TEXTURE = new ResettableLazy<>(
             () -> Minecraft.getInstance()

@@ -2,7 +2,7 @@ package malte0811.controlengineering.util.typereg;
 
 import com.mojang.datafixers.util.Pair;
 import junit.framework.TestCase;
-import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.util.RLUtils;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.nbt.Tag;
@@ -11,7 +11,7 @@ import org.junit.Assert;
 public class TypedInstanceTest extends TestCase {
 
     public void testCodecResets() {
-        final var entryName = ControlEngineering.ceLoc("test");
+        final var entryName = RLUtils.ceLoc("test");
         Tag nbt;
         {
             TypedRegistry<Type<?>> oldReg = new TypedRegistry<>();

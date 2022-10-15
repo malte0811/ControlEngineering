@@ -5,10 +5,10 @@ import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.ints.AbstractInt2FloatMap;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
 import malte0811.controlengineering.crafting.CERecipeTypes;
 import malte0811.controlengineering.network.PacketUtils;
+import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ServerFontRecipe extends BaseRecipe {
-    public static final ResourceLocation LOCATION = ControlEngineering.ceLoc("server_font_width");
+    public static final ResourceLocation LOCATION = RLUtils.ceLoc("server_font_width");
     public static boolean IN_UNIT_TEST = false;
 
     private final Int2FloatMap widths;

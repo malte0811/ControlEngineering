@@ -10,7 +10,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.panels.CNCJob;
 import malte0811.controlengineering.blockentity.panels.PanelCNCBlockEntity;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
@@ -24,6 +23,7 @@ import malte0811.controlengineering.client.render.utils.TransformingVertexBuilde
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.util.CachedValue;
+import malte0811.controlengineering.util.RLUtils;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -48,7 +48,7 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
                 TextureAtlas atlas = Minecraft.getInstance().getModelManager().getAtlas(
                         InventoryMenu.BLOCK_ATLAS
                 );
-                return atlas.getSprite(ControlEngineering.ceLoc("block/panel_cnc"));
+                return atlas.getSprite(RLUtils.ceLoc("block/panel_cnc"));
             }
     );
     private static final LoadingCache<List<PlacedComponent>, MixedModel> MODEL_CACHE = CacheBuilder.newBuilder()

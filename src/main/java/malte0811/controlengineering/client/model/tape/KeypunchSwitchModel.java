@@ -3,11 +3,11 @@ package malte0811.controlengineering.client.model.tape;
 import blusunrize.immersiveengineering.api.utils.client.ModelDataUtils;
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.vertex.PoseStack;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.client.model.CEBakedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
+import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class KeypunchSwitchModel implements CEBakedModel {
-    public static final ResourceLocation TEXTURE_LOC = ControlEngineering.ceLoc("block/keypunch");
+    public static final ResourceLocation TEXTURE_LOC = RLUtils.ceLoc("block/keypunch");
     private static final ModelProperty<Boolean> LOOPBACK = new ModelProperty<>();
 
     private final Supplier<TextureAtlasSprite> texture;

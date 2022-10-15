@@ -3,8 +3,8 @@ package malte0811.controlengineering.controlpanels;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.controlpanels.components.*;
+import malte0811.controlengineering.util.RLUtils;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import net.minecraft.resources.ResourceLocation;
 
@@ -29,7 +29,7 @@ public class PanelComponents {
     public static final Label LABEL = register("label", new Label());
 
     private static <T extends PanelComponentType<?, ?>> T register(String path, T type) {
-        ResourceLocation nameRL = ControlEngineering.ceLoc(path);
+        ResourceLocation nameRL = RLUtils.ceLoc(path);
         CREATION_KEY.put(path, nameRL);
         return REGISTRY.register(nameRL, type);
     }

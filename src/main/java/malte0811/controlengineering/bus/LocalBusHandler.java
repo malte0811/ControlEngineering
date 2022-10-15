@@ -4,7 +4,7 @@ import blusunrize.immersiveengineering.api.wires.*;
 import blusunrize.immersiveengineering.api.wires.localhandlers.IWorldTickable;
 import blusunrize.immersiveengineering.api.wires.localhandlers.LocalNetworkHandler;
 import com.mojang.datafixers.util.Pair;
-import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickable {
-    public static final ResourceLocation NAME = ControlEngineering.ceLoc("bus");
+    public static final ResourceLocation NAME = RLUtils.ceLoc("bus");
     private boolean updateNextTick = true;
     private final List<ConnectionPoint> loading = new ArrayList<>();
     private final BusEmitterCombiner<Pair<ConnectionPoint, IBusConnector>> stateHandler = new BusEmitterCombiner<>(

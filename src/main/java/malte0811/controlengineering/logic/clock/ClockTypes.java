@@ -1,7 +1,7 @@
 package malte0811.controlengineering.logic.clock;
 
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.items.CEItems;
+import malte0811.controlengineering.util.RLUtils;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Unit;
@@ -30,9 +30,9 @@ public class ClockTypes {
     }
 
     static {
-        register(ControlEngineering.ceLoc("free"), ALWAYS_ON);
-        register(ControlEngineering.ceLoc("edge"), RISING_EDGE);
-        register(ControlEngineering.ceLoc("state"), WHILE_RS_ON);
-        register(ControlEngineering.ceLoc("none"), NEVER);
+        register(RLUtils.ceLoc("free"), ALWAYS_ON);
+        register(RLUtils.ceLoc("edge"), RISING_EDGE);
+        register(RLUtils.ceLoc("state"), WHILE_RS_ON);
+        register(RLUtils.ceLoc("none"), NEVER);
     }
 }

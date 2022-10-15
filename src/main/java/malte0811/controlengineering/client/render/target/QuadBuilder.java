@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.util.BitUtils;
+import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -22,7 +23,7 @@ import java.util.OptionalInt;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class QuadBuilder {
-    public static final ResourceLocation WHITE_WITH_BORDER = ControlEngineering.ceLoc("white_with_border");
+    public static final ResourceLocation WHITE_WITH_BORDER = RLUtils.ceLoc("white_with_border");
 
     private final Vertex[] vertices;
     @Nullable

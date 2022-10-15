@@ -2,12 +2,12 @@ package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Unit;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.cells.LeafcellType;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.cells.impl.*;
+import malte0811.controlengineering.util.RLUtils;
 import malte0811.controlengineering.util.math.Fraction;
 import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
@@ -21,7 +21,7 @@ import static malte0811.controlengineering.logic.schematic.symbol.SymbolPin.*;
 
 public class SchematicSymbols {
     public static final TypedRegistry<SchematicSymbol<?>> REGISTRY = new TypedRegistry<>();
-    public static final ResourceLocation SYMBOLS_SHEET = ControlEngineering.ceLoc("textures/gui/schematic_symbols.png");
+    public static final ResourceLocation SYMBOLS_SHEET = RLUtils.ceLoc("textures/gui/schematic_symbols.png");
     public static final IOSymbol INPUT_PIN_ANALOG = new IOSymbol(true, false);
     public static final IOSymbol INPUT_PIN_DIGITAL = new IOSymbol(true, true);
     public static final IOSymbol OUTPUT_PIN = new IOSymbol(false, false);
@@ -128,11 +128,11 @@ public class SchematicSymbols {
         ));
         CONFIG_SWITCH = registerCell(new ConfigSwitchSymbol());
 
-        REGISTRY.register(ControlEngineering.ceLoc("input_pin"), INPUT_PIN_ANALOG);
-        REGISTRY.register(ControlEngineering.ceLoc("input_pin_digitized"), INPUT_PIN_DIGITAL);
-        REGISTRY.register(ControlEngineering.ceLoc("output_pin"), OUTPUT_PIN);
-        REGISTRY.register(ControlEngineering.ceLoc("constant"), CONSTANT);
-        REGISTRY.register(ControlEngineering.ceLoc("text"), TEXT);
+        REGISTRY.register(RLUtils.ceLoc("input_pin"), INPUT_PIN_ANALOG);
+        REGISTRY.register(RLUtils.ceLoc("input_pin_digitized"), INPUT_PIN_DIGITAL);
+        REGISTRY.register(RLUtils.ceLoc("output_pin"), OUTPUT_PIN);
+        REGISTRY.register(RLUtils.ceLoc("constant"), CONSTANT);
+        REGISTRY.register(RLUtils.ceLoc("text"), TEXT);
     }
 
     private static CellSymbol<Unit> delayCell(LeafcellType<?, Unit> cell, int uSize, SignalType type) {

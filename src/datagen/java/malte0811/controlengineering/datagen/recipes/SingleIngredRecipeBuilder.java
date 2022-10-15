@@ -1,8 +1,8 @@
 package malte0811.controlengineering.datagen.recipes;
 
 import com.google.gson.JsonObject;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.crafting.SingleIngredientRecipeSerializer;
+import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -40,7 +40,7 @@ public class SingleIngredRecipeBuilder {
             @Nonnull
             @Override
             public ResourceLocation getId() {
-                return ControlEngineering.ceLoc(id);
+                return RLUtils.ceLoc(id);
             }
 
             @Nonnull

@@ -22,6 +22,7 @@ import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.datagen.modelbuilder.*;
 import malte0811.controlengineering.scope.module.ScopeModules;
 import malte0811.controlengineering.util.DirectionUtils;
+import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
@@ -40,7 +41,7 @@ import java.util.function.Supplier;
 
 public class BlockstateGenerator extends BlockStateProvider {
     private static final ConfiguredModel EMPTY_MODEL = new ConfiguredModel(
-            new ModelFile.UncheckedModelFile(ControlEngineering.ieLoc("block/ie_empty"))
+            new ModelFile.UncheckedModelFile(RLUtils.ieLoc("block/ie_empty"))
     );
     private final NongeneratedModels nongenerated;
 
@@ -140,7 +141,7 @@ public class BlockstateGenerator extends BlockStateProvider {
         final var mainModel = obj("scope/main.obj", nongenerated);
         final var analogModel = obj("scope/analog.obj", nongenerated);
         final var digitalModel = obj("scope/digital.obj", nongenerated);
-        final var empty = nongenerated.withExistingParent("empty", ControlEngineering.ieLoc("block/ie_empty"));
+        final var empty = nongenerated.withExistingParent("empty", RLUtils.ieLoc("block/ie_empty"));
         final var combined = models().withExistingParent("scope", mcLoc("block/block"))
                 .customLoader(ScopeModelBuilder::begin)
                 .main(mainModel)

@@ -15,6 +15,7 @@ import malte0811.controlengineering.network.scope.ScopeSubPacket.IScopeSubPacket
 import malte0811.controlengineering.scope.GlobalConfig;
 import malte0811.controlengineering.scope.module.ScopeModuleInstance;
 import malte0811.controlengineering.scope.trace.TraceId;
+import malte0811.controlengineering.util.RLUtils;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
@@ -36,7 +37,7 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
     public static final String FORCE_TRIGGER_KEY = ControlEngineering.MODID + ".gui.scope.forceTrigger";
     public static final String RESET_KEY = ControlEngineering.MODID + ".gui.scope.reset";
 
-    public static final ResourceLocation TEXTURE = ControlEngineering.ceLoc("textures/gui/scope.png");
+    public static final ResourceLocation TEXTURE = RLUtils.ceLoc("textures/gui/scope.png");
     private static final SubTexture MAIN_TEXTURE = new SubTexture(TEXTURE, 0, 0, 218, 225);
     public static final int MODULE_SLOT_WIDTH = 49;
     public static final int MODULE_V_MIN = 124;

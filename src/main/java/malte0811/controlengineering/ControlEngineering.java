@@ -1,6 +1,5 @@
 package malte0811.controlengineering;
 
-import blusunrize.immersiveengineering.api.Lib;
 import blusunrize.immersiveengineering.api.crafting.BlueprintCraftingRecipe;
 import blusunrize.immersiveengineering.api.wires.localhandlers.LocalNetworkHandler;
 import malte0811.controlengineering.blockentity.CEBlockEntities;
@@ -21,8 +20,8 @@ import malte0811.controlengineering.network.logic.LogicPacket;
 import malte0811.controlengineering.network.panellayout.PanelPacket;
 import malte0811.controlengineering.network.remapper.RemapperPacket;
 import malte0811.controlengineering.network.scope.ScopePacket;
+import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -46,7 +45,7 @@ public class ControlEngineering {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String VERSION = "1.0.0";
     public static final SimpleChannel NETWORK = NetworkRegistry.newSimpleChannel(
-            ControlEngineering.ceLoc("channel"), () -> VERSION, VERSION::equals, VERSION::equals
+            RLUtils.ceLoc("channel"), () -> VERSION, VERSION::equals, VERSION::equals
     );
 
     public static final CreativeModeTab ITEM_GROUP = new CreativeModeTab(MODID) {
@@ -85,14 +84,6 @@ public class ControlEngineering {
         registerPacket(id++, RemapperPacket.class, RemapperPacket::new);
         registerPacket(id++, ScopePacket.class, ScopePacket::new);
         registerPacket(id++, CutTapePacket.class, CutTapePacket::new, NetworkDirection.PLAY_TO_SERVER);
-    }
-
-    public static ResourceLocation ceLoc(String path) {
-        return new ResourceLocation(MODID, path);
-    }
-
-    public static ResourceLocation ieLoc(String path) {
-        return new ResourceLocation(Lib.MODID, path);
     }
 
     private <T extends SimplePacket> void registerPacket(

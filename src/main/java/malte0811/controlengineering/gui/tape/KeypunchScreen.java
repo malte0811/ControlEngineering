@@ -10,6 +10,7 @@ import malte0811.controlengineering.network.keypunch.Backspace;
 import malte0811.controlengineering.network.keypunch.KeypunchPacket;
 import malte0811.controlengineering.network.keypunch.KeypunchSubPacket;
 import malte0811.controlengineering.network.keypunch.TypeChar;
+import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
@@ -24,7 +25,7 @@ public class KeypunchScreen extends Screen implements MenuAccess<KeypunchMenu> {
     // TODO review once a sound exists
     private static final int MAX_CHARS_PER_SECOND = 8;
     private static final int MIN_CHAR_DELAY = 1000 / MAX_CHARS_PER_SECOND;
-    public static final ResourceLocation TEXTURE = ControlEngineering.ceLoc("textures/gui/keypunch.png");
+    public static final ResourceLocation TEXTURE = RLUtils.ceLoc("textures/gui/keypunch.png");
     private static final SubTexture MAIN_SCREEN = new SubTexture(TEXTURE, 0, 0, 256, 79);
     private static final SubTexture SMALL_KEY = new SubTexture(TEXTURE, 0, 128, 16, 144);
     private static final SubTexture CAPS_KEY = new SubTexture(TEXTURE, 0, 144, 32, 160);

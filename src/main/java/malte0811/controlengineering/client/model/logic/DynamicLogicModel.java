@@ -6,10 +6,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.model.CEBakedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
+import malte0811.controlengineering.util.RLUtils;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -72,7 +72,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLog
         this.spriteGetter = spriteGetter;
         this.modelTransform = modelTransform;
         particles = this.board.bake(
-                bakery, spriteGetter, modelTransform, ControlEngineering.ceLoc("temp")
+                bakery, spriteGetter, modelTransform, RLUtils.ceLoc("temp")
         ).getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null).get(0).getSprite();
 
         PoseStack transform = new PoseStack();
@@ -203,7 +203,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLog
             ModelState offsetTransform = new SimpleModelState(modelTransform.getRotation().compose(new Transformation(
                     offset, null, null, null
             )));
-            ResourceLocation dummy = ControlEngineering.ceLoc("dynamic");
+            ResourceLocation dummy = RLUtils.ceLoc("dynamic");
             BakedModel baked = model.bake(bakery, spriteGetter, offsetTransform, dummy);
             if (baked == null) {
                 return ImmutableList.of();

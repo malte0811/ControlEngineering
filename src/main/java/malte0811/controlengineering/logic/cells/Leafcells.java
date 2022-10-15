@@ -1,8 +1,8 @@
 package malte0811.controlengineering.logic.cells;
 
 import blusunrize.immersiveengineering.api.tool.LogicCircuitHandler.LogicCircuitOperator;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.cells.impl.*;
+import malte0811.controlengineering.util.RLUtils;
 
 public class Leafcells {
     public static final AssociativeFunctionCell AND2 = register(
@@ -54,6 +54,6 @@ public class Leafcells {
     public static final ConfigSwitch CONFIG_SWITCH = register("config_switch", new ConfigSwitch());
 
     private static <T extends LeafcellType<?, ?>> T register(String name, T type) {
-        return LeafcellType.register(ControlEngineering.ceLoc(name), type);
+        return LeafcellType.register(RLUtils.ceLoc(name), type);
     }
 }
