@@ -47,7 +47,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -239,7 +238,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
             }
             return InteractionResult.SUCCESS;
         }
-        final var newModule = ScopeModules.REGISTRY.get(ForgeRegistries.ITEMS.getKey(held.getItem()));
+        final var newModule = ScopeModules.getModule(held.getItem());
         if (newModule == null) { return InteractionResult.PASS; }
         final var targetSlot = modules.get(indexOfTarget).firstSlot();
         final var firstSlotAfter = targetSlot + newModule.getWidth();

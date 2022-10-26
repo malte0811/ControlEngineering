@@ -94,9 +94,11 @@ public class CEItems {
     }
 
     static {
-        CLOCK_GENERATORS = makeItemsFor(ClockTypes.getGenerators(), ClockGenerator::isActiveClock, "clock_");
+        CLOCK_GENERATORS = makeItemsFor(
+                ClockTypes.getGenerators(), ClockGenerator::isActiveClock, ClockTypes.ITEM_KEY_PREFIX
+        );
         SCOPE_MODULES = makeItemsFor(
-                ScopeModules.REGISTRY.getEntries(), Predicate.not(ScopeModule::isEmpty), "scope_module_"
+                ScopeModules.REGISTRY.getEntries(), Predicate.not(ScopeModule::isEmpty), ScopeModules.ITEM_PREFIX
         );
     }
 }
