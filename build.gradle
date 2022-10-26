@@ -116,6 +116,8 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
+            arg '-nogui'
+
             mods {
                 controlengineering {
                     source sourceSets.main
@@ -222,6 +224,8 @@ task speedUpPreRun {
 tasks.withType(Task) {
     if (it.name == "genIntellijRuns") {
         it.finalizedBy speedUpPreRun
+    } else if (it.name == "runServer") {
+        it.standardInput = System.in
     }
 }
 
