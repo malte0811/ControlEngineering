@@ -93,7 +93,7 @@ public class ScopeModel implements CEBakedModel {
                 END_QUAD_VERTICES[offset + 3 * step]
         ).setSprite(texture)
                 .setUCoords(53 / 64f, 53 / 64f, 46 / 64f, 46 / 64f)
-                .setVCoords(40 / 64f, 48 / 64f, 48 / 64f, 40 / 64f)
+                .setVCoords(8 / 32f, 16 / 32f, 16 / 32f, 8 / 32f)
                 .writeTo(BakedQuadVertexBuilder.makeNonInterpolating(texture, transform, quads));
         return quads.get(0);
     }
