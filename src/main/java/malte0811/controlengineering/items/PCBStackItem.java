@@ -8,9 +8,10 @@ import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicCircuitConverter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -42,6 +43,11 @@ public class PCBStackItem extends Item implements ISchematicItem {
     public static Component useIn(RegistryObject<? extends ItemLike> block) {
         return Component.translatable(FOR_USE_IN_KEY, block.get().asItem().getDescription())
                 .withStyle(ChatFormatting.GRAY);
+    }
+
+    @Override
+    public void fillItemCategory(@Nonnull CreativeModeTab category, @Nonnull NonNullList<ItemStack> items) {
+        // NOP
     }
 
     @Nullable

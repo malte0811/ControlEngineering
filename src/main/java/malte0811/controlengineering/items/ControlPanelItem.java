@@ -9,7 +9,9 @@ import malte0811.controlengineering.controlpanels.PanelData;
 import malte0811.controlengineering.controlpanels.PanelTransform;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
@@ -35,6 +37,11 @@ public class ControlPanelItem extends CEBlockItem<PanelOrientation> implements I
                 return itemRender;
             }
         });
+    }
+
+    @Override
+    public void fillItemCategory(@Nonnull CreativeModeTab category, @Nonnull NonNullList<ItemStack> items) {
+        // NOP
     }
 
     private PanelData getPanelData(ItemStack stack) {
