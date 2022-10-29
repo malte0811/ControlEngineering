@@ -69,20 +69,19 @@ public class ScopeModel implements CEBakedModel {
             ItemTransforms transforms
     ) {
         this.mainModel = getDefaultQuads(mainModel);
-        this.particleIcon = mainModel.getParticleIcon(ModelData.EMPTY);
         this.modelTransform = modelTransform;
         this.transforms = transforms;
         this.modules = new HashMap<>();
         for (final var moduleModel : modules.entrySet()) {
             this.modules.put(moduleModel.getKey(), getDefaultQuads(moduleModel.getValue()));
         }
-        this.rightEndQuad = makeEndQuad(true);
-        this.leftEndQuad = makeEndQuad(false);
+        this.particleIcon = this.mainModel.get(0).getSprite();
+        this.rightEndQuad = makeEndQuad(true, this.particleIcon);
+        this.leftEndQuad = makeEndQuad(false, this.particleIcon);
     }
 
-    private BakedQuad makeEndQuad(boolean right) {
+    private BakedQuad makeEndQuad(boolean right, TextureAtlasSprite texture) {
         List<BakedQuad> quads = new ArrayList<>();
-        final var texture = this.mainModel.get(0).getSprite();
         int offset = right ? 0 : 3;
         int step = right ? 1 : -1;
         PoseStack transform = new PoseStack();
