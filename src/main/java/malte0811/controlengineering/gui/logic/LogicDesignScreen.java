@@ -47,8 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class LogicDesignScreen extends StackedScreen implements MenuAccess<LogicDesignMenu> {
     private static final String KEY_PREFIX = ControlEngineering.MODID + ".logicworkbench.";
@@ -87,7 +86,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         super(title);
         this.schematic = new Schematic();
         this.container = container;
-        placementHandler = new PlacementHandler(minecraft);
+        placementHandler = new PlacementHandler(minecraft, this);
         visibleArea = new SchematicViewArea(minecraft);
     }
 
@@ -153,7 +152,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         Optional<Component> currentError = placementHandler.renderFloatingAndGetError(
                 matrixStack, mousePos, schematic
         );
-        if (placementHandler.isDragSelecting()) {
+        if (placementHandler.isDragSelecting(GLFW_MOUSE_BUTTON_LAST + 1)) {
             renderSelectedArea(matrixStack, mousePos);
         }
         RenderSystem.disableScissor();
@@ -297,11 +296,12 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         }
         final Vec2d mousePos = visibleArea.getMousePositionInSchematic((int) mouseX, (int) mouseY);
         if (clickWasConsumed) {
-            if (!placementHandler.isDragSelecting()) { return false; }
+            if (!placementHandler.isDragSelecting(button)) { return false; }
             final Vec2d oldMousePos = visibleArea.getMousePositionInSchematic((int) mouseXDown, (int) mouseYDown);
             final var selectedArea = new RectangleI(mousePos.floor(), oldMousePos.floor());
             if (!placementHandler.takePlacingFromArea(selectedArea, mousePos, getSchematic())) { return false; }
             runAndSendToServer(new DeleteArea(selectedArea));
+            return true;
         }
         clickWasConsumed = true;
         if (!placementHandler.placeCurrentlyHeld(mousePos, schematic, this::runAndSendToServer)) {
@@ -347,7 +347,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
             visibleArea.move(dragX, dragY);
             return true;
         }
-        return placementHandler.isDragSelecting();
+        return placementHandler.isDragSelecting(button);
     }
 
     @Override

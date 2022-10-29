@@ -14,6 +14,7 @@ import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
@@ -29,14 +30,16 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class PlacementHandler {
     private final Minecraft minecraft;
+    private final Screen owner;
 
     @Nullable
     private Vec2i currentWireStart = null;
     @Nullable
     private PlacingSymbols placingSymbol = null;
 
-    public PlacementHandler(Minecraft minecraft) {
+    public PlacementHandler(Minecraft minecraft, Screen owner) {
         this.minecraft = minecraft;
+        this.owner = owner;
     }
 
     public void setPlacingSymbol(SymbolInstance<?> symbol) {
@@ -62,11 +65,20 @@ public class PlacementHandler {
         }
     }
 
-    public boolean isDragSelecting() {
+    public boolean isDragSelecting(int pressedButton) {
+        if (minecraft.screen != owner) {
+            // Not selecting if some other window is open above this one
+            return false;
+        }
         if (placingSymbol != null || currentWireStart != null) {
             return false;
         }
-        return glfwGetMouseButton(minecraft.getWindow().getWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+        final int dragButton = GLFW_MOUSE_BUTTON_LEFT;
+        if (pressedButton > GLFW_MOUSE_BUTTON_LAST) {
+            return glfwGetMouseButton(minecraft.getWindow().getWindow(), dragButton) == GLFW_PRESS;
+        } else {
+            return pressedButton == dragButton;
+        }
     }
 
     @Nullable
