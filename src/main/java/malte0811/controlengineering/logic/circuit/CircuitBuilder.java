@@ -51,7 +51,7 @@ public class CircuitBuilder {
 
     public class CellBuilder {
         private final LeafcellInstance<?, ?> cell;
-        private Vec2i pos;
+        private final Vec2i pos;
         private final Map<PinReference, NetReference> cellPins = new HashMap<>();
         private final Set<NetReference> outputNets = new HashSet<>();
 

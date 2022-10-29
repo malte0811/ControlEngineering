@@ -46,7 +46,7 @@ public class Leafcells {
             "analog_mux", new Multiplexer(SignalType.ANALOG, new CellCost(5, 5))
     );
     public static final Multiplexer DIGITAL_MUX = register(
-            "digital_mux", new Multiplexer(SignalType.ANALOG, new CellCost(4, 5))
+            "digital_mux", new Multiplexer(SignalType.DIGITAL, new CellCost(4, 5))
     );
     public static final VoltageDivider DIVIDER = register("divider", new VoltageDivider());
     public static final Adder ANALOG_ADDER = register("adder", new Adder());

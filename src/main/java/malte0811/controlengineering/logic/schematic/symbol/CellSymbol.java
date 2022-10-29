@@ -3,7 +3,7 @@ package malte0811.controlengineering.logic.schematic.symbol;
 import com.google.common.base.Preconditions;
 import malte0811.controlengineering.logic.cells.CellCost;
 import malte0811.controlengineering.logic.cells.LeafcellType;
-import net.minecraft.network.chat.Component;
+import malte0811.controlengineering.logic.cells.Pin;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 
@@ -24,11 +24,19 @@ public class CellSymbol<Config> extends SchematicSymbol<Config> {
         this.height = height;
         this.pins = pins;
         for (SymbolPin pin : pins) {
+            final Pin cellPin;
             if (pin.isOutput()) {
-                Preconditions.checkState(type.getOutputPins().containsKey(pin.pinName()));
+                cellPin = type.getOutputPins().get(pin.pinName());
             } else {
-                Preconditions.checkState(type.getInputPins().containsKey(pin.pinName()));
+                cellPin = type.getInputPins().get(pin.pinName());
             }
+            Preconditions.checkNotNull(
+                    cellPin, pin.pinName() + " not found in " + pin.isOutput() + " pins of " + type.getRegistryName()
+            );
+            Preconditions.checkState(
+                    cellPin.type() == pin.type(),
+                    "Type mismatch for pin " + pin.pinName() + " of " + type.getRegistryName()
+            );
         }
     }
 
