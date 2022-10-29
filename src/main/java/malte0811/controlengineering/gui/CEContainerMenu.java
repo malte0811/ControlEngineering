@@ -84,7 +84,7 @@ public abstract class CEContainerMenu<PacketType> extends AbstractContainerMenu 
     private void addListener(ServerPlayer serverPlayer) {
         if (!listeners.contains(serverPlayer)) {
             if (listeners.isEmpty() && openListener != null) {
-                openListener.close(this);
+                openListener.open(this);
             }
             listeners.add(serverPlayer);
             sendTo(serverPlayer, getInitialSync());
