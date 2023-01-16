@@ -18,7 +18,7 @@ import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.logic.clock.ClockTypes;
 import malte0811.controlengineering.scope.module.ScopeModules;
 import malte0811.controlengineering.util.RLUtils;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.SpecialRecipeBuilder;
@@ -26,25 +26,35 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.data.ExistingFileHelper;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 import static malte0811.controlengineering.loot.BlueprintChestModifier.SCOPE_COMPONENTS_BLUEPRINT;
 
 public class Recipes extends RecipeProvider {
-    public Recipes(DataGenerator generatorIn) {
-        super(generatorIn);
+    private final ExistingFileHelper existingFileHelper;
+
+    public Recipes(PackOutput output, ExistingFileHelper existingFileHelper) {
+        super(output);
+        this.existingFileHelper = existingFileHelper;
     }
 
     @Override
-    protected void buildCraftingRecipes(@Nonnull Consumer<FinishedRecipe> consumer) {
+    protected void buildRecipes(@NotNull Consumer<FinishedRecipe> consumer) {
         busRecipes(consumer);
         tapeRecipes(consumer);
         panelRecipes(consumer);
         clockRecipes(consumer);
         logicRecipes(consumer);
         scopeRecipes(consumer);
+        try {
+            ServerFontData.buildServerFontData(consumer, existingFileHelper);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        ComponentCostGenerator.buildComponentCosts(consumer);
     }
 
     private void busRecipes(Consumer<FinishedRecipe> consumer) {

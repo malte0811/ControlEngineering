@@ -6,8 +6,6 @@ import malte0811.controlengineering.gui.logic.LogicDesignMenu;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
@@ -26,7 +24,7 @@ public class SchematicItem extends Item implements ISchematicItem {
     public static final String EMPTY_SCHEMATIC = ControlEngineering.MODID + ".gui.schematic.empty";
 
     public SchematicItem() {
-        super(new Item.Properties().tab(ControlEngineering.ITEM_GROUP));
+        super(new Item.Properties());
     }
 
     @Nonnull

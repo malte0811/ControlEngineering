@@ -1,18 +1,17 @@
 package malte0811.controlengineering.util.math;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 public class TransformUtil {
     public static Matrix4f shear(float deltaXPerY, float deltaZPerY) {
         return new Matrix4f(
-                new float[]{
-                        1, deltaXPerY, 0, 0,
-                        0, 1, 0, 0,
-                        0, deltaZPerY, 1, 0,
-                        0, 0, 0, 1,
-                }
+                // TODO this is probably transposed?
+                1, deltaXPerY, 0, 0,
+                0, 1, 0, 0,
+                0, deltaZPerY, 1, 0,
+                0, 0, 0, 1
         );
     }
 
@@ -24,7 +23,7 @@ public class TransformUtil {
     }
 
     public static void shear(PoseStack transform, float deltaXPerY, float deltaZPerY) {
-        transform.last().pose().multiply(shear(deltaXPerY, deltaZPerY));
+        transform.last().pose().mul(shear(deltaXPerY, deltaZPerY));
         transform.last().normal().mul(shearNormal(deltaXPerY, deltaZPerY));
     }
 }

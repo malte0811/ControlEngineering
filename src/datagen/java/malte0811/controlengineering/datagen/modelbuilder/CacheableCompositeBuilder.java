@@ -37,7 +37,7 @@ public class CacheableCompositeBuilder<T extends ModelBuilder<T>> extends Custom
         for (var nongenerated : submodels) {
             submodelJson.add(nongenerated.toJson());
         }
-        json.add(CacheableCompositeModel.Loader.SUBMOCELS, submodelJson);
+        json.add(CacheableCompositeModel.Loader.SUBMODELS, submodelJson);
         return json;
     }
 }

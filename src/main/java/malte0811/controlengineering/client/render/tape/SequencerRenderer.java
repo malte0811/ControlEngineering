@@ -1,8 +1,6 @@
 package malte0811.controlengineering.client.render.tape;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import malte0811.controlengineering.blockentity.tape.SequencerBlockEntity;
 import malte0811.controlengineering.blocks.tape.SequencerBlock;
 import malte0811.controlengineering.client.render.utils.BERUtils;
@@ -11,6 +9,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.util.Mth;
+import org.joml.Quaternionf;
 
 import javax.annotation.Nonnull;
 
@@ -18,7 +18,7 @@ public class SequencerRenderer implements BlockEntityRenderer<SequencerBlockEnti
     private static final TapeDriveRender TAPE_DRIVE = new TapeDriveRender(
             2, 1, new Vec2d(5, 8), new Vec2d(7, 5), new Vec2d(11, 8), new Vec2d(9, 5)
     );
-    private static final Quaternion TAPE_ROTATION = new Quaternion(new Vector3f(1, 0, 0), 90, true);
+    private static final Quaternionf TAPE_ROTATION = new Quaternionf().rotationX(Mth.HALF_PI);
 
     public SequencerRenderer(BlockEntityRendererProvider.Context ctx) {
     }

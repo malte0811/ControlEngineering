@@ -1,5 +1,6 @@
 {
   "type": "controlengineering:key_copy",
+  "category": "misc",
   "isIdOptional": false,
   "key": {
     "a": {

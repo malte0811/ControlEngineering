@@ -3,8 +3,6 @@ package malte0811.controlengineering;
 import blusunrize.immersiveengineering.api.IETags;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
 import com.mojang.math.Transformation;
 import malte0811.controlengineering.blockentity.bus.LineAccessBlockEntity;
 import malte0811.controlengineering.blockentity.bus.RSRemapperBlockEntity;
@@ -32,6 +30,8 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -56,10 +56,9 @@ public class ClientEvents {
                 if (nonTopShape.shouldRenderNonTop()) {
                     renderShape(transform, nonTopShape, builder);
                 }
-                var inverse = nonTopShape.outerToInnerPosition().copy();
                 //TODO cache?
-                inverse.invert();
-                new Transformation(inverse).push(transform);
+                var inverse = new Matrix4f(nonTopShape.outerToInnerPosition()).invert();
+                transform.pushTransformation(new Transformation(inverse));
             }
             renderShape(transform, selectedStack.get(pushCount), builder);
             for (int i = 0; i < pushCount; ++i) {

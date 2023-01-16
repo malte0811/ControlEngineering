@@ -2,7 +2,6 @@ package malte0811.controlengineering.gui.panel;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.math.Quaternion;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
@@ -19,6 +18,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.util.Mth;
+import org.joml.Quaternionf;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 
 public class ComponentSelector extends NestedWidget {
     private static final int ROW_MIN_HEIGHT = 40;
+    private static final Quaternionf MINUS_QUARTER_X = new Quaternionf().rotateX(-Mth.HALF_PI);
 
     private final Minecraft mc;
     private final List<PanelComponentType<?, ?>> available;
@@ -55,13 +56,13 @@ public class ComponentSelector extends NestedWidget {
     @Override
     public void renderButton(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
-        final int selectedRow = (mouseY - y) / actualRowHeight;
-        final int selectedCol = (mouseX - x) / colWidth;
+        final int selectedRow = (mouseY - getY()) / actualRowHeight;
+        final int selectedCol = (mouseX - getX()) / colWidth;
         for (int col = 0; col < numCols; ++col) {
             for (int row = 0; row < numRows; ++row) {
                 renderAvailableType(
                         matrixStack, getTypeIn(row, col),
-                        x + col * colWidth, y + row * actualRowHeight,
+                        getX() + col * colWidth, getY() + row * actualRowHeight,
                         col == selectedCol && row == selectedRow
                 );
             }
@@ -104,7 +105,7 @@ public class ComponentSelector extends NestedWidget {
         transform.translate(width / 2, height / 2, 0);
         transform.scale(extraScale, extraScale, .01f);
         transform.translate(-component.getSize(level).x() / 2f, -component.getSize(level).y() / 2f, 0);
-        transform.mulPose(new Quaternion(-90, 0, 0, true));
+        transform.mulPose(MINUS_QUARTER_X);
         TransformUtil.shear(transform, .1f, .1f);
         transform.scale(1, -1, 1);
         //TODO cache?
@@ -118,14 +119,14 @@ public class ComponentSelector extends NestedWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (mouseX < x || mouseY < y || mouseX > x + width || mouseY > y + height) {
+        if (mouseX < getX() || mouseY < getY() || mouseX > getX() + width || mouseY > getY() + height) {
             return false;
         }
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        final int row = (int) ((mouseY - y) / actualRowHeight);
-        final int col = (int) ((mouseX - x) / colWidth);
+        final int row = (int) ((mouseY - getY()) / actualRowHeight);
+        final int col = (int) ((mouseX - getX()) / colWidth);
         if (row >= 0 && row < numRows && col >= 0 && col < numCols) {
             PanelComponentType<?, ?> type = getTypeIn(row, col);
             if (type != null) {
@@ -147,7 +148,7 @@ public class ComponentSelector extends NestedWidget {
     }
 
     @Override
-    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {}
+    public void updateWidgetNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) { }
 
     private static void drawCenteredShrunkString(
             PoseStack transform, Font font, String text, int xMin, int xMax, int y, int color

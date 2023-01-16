@@ -8,8 +8,6 @@ import com.google.common.cache.LoadingCache;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import malte0811.controlengineering.blockentity.panels.CNCJob;
 import malte0811.controlengineering.blockentity.panels.PanelCNCBlockEntity;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
@@ -35,6 +33,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -62,7 +61,7 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
     private static final double HEAD_TRAVERSAL_HEIGHT = 3;
     private static final double HEAD_WORK_HEIGHT = -1;
     private static final Vec3 HEAD_IDLE = new Vec3(8 - HEAD_SIZE / 2, 5, 8 - HEAD_SIZE / 2);
-    private static final Quaternion TAPE_ROTATION = new Quaternion(new Vector3f(1, 0, 0), 90, true);
+    private static final Quaternionf TAPE_ROTATION = new Quaternionf().rotationX(Mth.HALF_PI);
 
     public PanelCNCRenderer(BlockEntityRendererProvider.Context ctx) {
     }

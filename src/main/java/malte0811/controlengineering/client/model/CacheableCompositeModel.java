@@ -7,8 +7,6 @@ import blusunrize.immersiveengineering.api.utils.client.ModelDataUtils;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.datafixers.util.Pair;
-import malte0811.controlengineering.client.render.target.RenderUtils;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModel;
@@ -19,7 +17,6 @@ import net.minecraft.client.resources.model.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
@@ -35,7 +32,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 public record CacheableCompositeModel(
@@ -138,7 +136,7 @@ public record CacheableCompositeModel(
         @Override
         public BakedModel bake(
                 IGeometryBakingContext owner,
-                ModelBakery bakery,
+                ModelBaker baker,
                 Function<Material, TextureAtlasSprite> spriteGetter,
                 ModelState modelTransform,
                 ItemOverrides overrides,
@@ -148,7 +146,7 @@ public record CacheableCompositeModel(
             var renderTypes = new ArrayList<ChunkRenderTypeSet>();
             var bakedSubModels = new ArrayList<ICacheKeyProvider<?>>();
             for (var model : subModels) {
-                var baked = model.bake(bakery, model, spriteGetter, modelTransform, modelLocation, true);
+                var baked = model.bake(baker, model, spriteGetter, modelTransform, modelLocation, true);
                 if (baked instanceof SimpleBakedModel simple) {
                     quads.addAll(simple.getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null));
                     for (var side : DirectionUtils.VALUES) {
@@ -167,23 +165,10 @@ public record CacheableCompositeModel(
                     bakedSubModels, quads, ChunkRenderTypeSet.union(renderTypes), owner.getTransforms()
             );
         }
-
-        @Override
-        public Collection<Material> getMaterials(
-                IGeometryBakingContext owner,
-                Function<ResourceLocation, UnbakedModel> modelGetter,
-                Set<Pair<String, String>> missingTextureErrors
-        ) {
-            Set<Material> set = new HashSet<>();
-            for (BlockModel bm : subModels) {
-                set.addAll(bm.getMaterials(modelGetter, missingTextureErrors));
-            }
-            return set;
-        }
     }
 
     public static class Loader implements IGeometryLoader<Geometry> {
-        public static final String SUBMOCELS = "submodels";
+        public static final String SUBMODELS = "submodels";
 
         @Nonnull
         @Override
@@ -191,7 +176,7 @@ public record CacheableCompositeModel(
                 @Nonnull JsonObject modelContents, @Nonnull JsonDeserializationContext deserializationContext
         ) {
             var submodels = new ArrayList<BlockModel>();
-            for (var submodel : modelContents.getAsJsonArray(SUBMOCELS)) {
+            for (var submodel : modelContents.getAsJsonArray(SUBMODELS)) {
                 submodels.add(ExtendedBlockModelDeserializer.INSTANCE.fromJson(submodel, BlockModel.class));
             }
             return new Geometry(submodels);

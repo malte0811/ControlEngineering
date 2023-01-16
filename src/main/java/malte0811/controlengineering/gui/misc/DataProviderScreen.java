@@ -18,7 +18,6 @@ import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -93,10 +92,10 @@ public class DataProviderScreen<T> extends StackedScreen {
         final int yMin = (height - providerTemp.getHeight()) / 2;
         var provider = factory.create(initial, xMin, yMin);
         addRenderableWidget(provider);
-        addRenderableWidget(new Button(
-                xMin, yMin + provider.getHeight() + 10, provider.getWidth(), 20, Component.translatable(DONE_KEY),
-                $ -> onClose()
-        ));
+        addRenderableWidget(Button.builder(Component.translatable(DONE_KEY), $ -> onClose())
+                .pos(xMin, yMin + provider.getHeight() + 10)
+                .size(provider.getWidth(), 20)
+                .build());
         this.provider = provider;
     }
 

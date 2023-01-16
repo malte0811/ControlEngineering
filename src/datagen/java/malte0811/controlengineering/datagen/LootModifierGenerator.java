@@ -3,14 +3,14 @@ package malte0811.controlengineering.datagen;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.loot.BlueprintChestModifier;
 import malte0811.controlengineering.util.RLUtils;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraftforge.common.data.GlobalLootModifierProvider;
 import net.minecraftforge.common.loot.LootTableIdCondition;
 
 public class LootModifierGenerator extends GlobalLootModifierProvider {
-    public LootModifierGenerator(DataGenerator gen) {
-        super(gen, ControlEngineering.MODID);
+    public LootModifierGenerator(PackOutput output) {
+        super(output, ControlEngineering.MODID);
     }
 
     @Override

@@ -18,14 +18,16 @@ public class PageSelector extends NestedWidget {
         this.numPages = numPages;
         this.currentPage = Mth.clamp(currentPage, 0, numPages - 1);
         if (numPages > 1) {
-            addWidget(new Button(
-                    x, y, width / 3, HEIGHT,
-                    Component.literal("<-"), $ -> this.currentPage = Math.max(0, this.currentPage - 1)
-            ));
-            addWidget(new Button(
-                    x + 2 * width / 3, y, width / 3, HEIGHT,
-                    Component.literal("->"), $ -> this.currentPage = Math.min(numPages - 1, this.currentPage + 1)
-            ));
+            addWidget(Button.builder(Component.literal("<-"), $ -> this.currentPage = Math.max(0, this.currentPage - 1))
+                    .pos(x, y)
+                    .size(width / 3, HEIGHT)
+                    .build());
+            addWidget(Button.builder(
+                            Component.literal("->"), $ -> this.currentPage = Math.min(numPages - 1, this.currentPage + 1)
+                    )
+                    .pos(x + 2 * width / 3, y)
+                    .size(width / 3, HEIGHT)
+                    .build());
         }
     }
 
@@ -36,7 +38,7 @@ public class PageSelector extends NestedWidget {
             var font = Minecraft.getInstance().font;
             drawCenteredString(
                     transform, font, (currentPage + 1) + " / " + numPages,
-                    x + width / 2, y + (HEIGHT - font.lineHeight) / 2, -1
+                    getX() + width / 2, getY() + (HEIGHT - font.lineHeight) / 2, -1
             );
         }
     }

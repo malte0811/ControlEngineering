@@ -1,12 +1,12 @@
 package malte0811.controlengineering.blocks.shapes;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.math.Matrix4f;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.joml.Matrix4fc;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,17 +25,14 @@ public class SingleShape extends SelectionShapes {
     }
 
     @Override
-    public @Nullable
-    VoxelShape mainShape() {
+    public @Nullable VoxelShape mainShape() {
         return this.mainShape;
     }
 
     @Nonnull
     @Override
-    public Matrix4f outerToInnerPosition() {
-        final var id = new Matrix4f();
-        id.setIdentity();
-        return id;
+    public Matrix4fc outerToInnerPosition() {
+        return IDENTITY;
     }
 
     @Nonnull

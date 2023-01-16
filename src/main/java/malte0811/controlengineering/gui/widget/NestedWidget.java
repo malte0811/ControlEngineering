@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -97,5 +98,5 @@ public abstract class NestedWidget extends AbstractWidget implements ContainerEv
     }
 
     @Override
-    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {}
+    protected void updateWidgetNarration(@NotNull NarrationElementOutput p_259858_) { }
 }

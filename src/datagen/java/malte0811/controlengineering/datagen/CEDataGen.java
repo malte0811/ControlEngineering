@@ -9,14 +9,15 @@ import net.minecraftforge.fml.common.Mod;
 public class CEDataGen {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent ev) {
-        ev.getGenerator().addProvider(true, new BlockstateGenerator(ev.getGenerator(), ev.getExistingFileHelper()));
-        ev.getGenerator().addProvider(true, new ItemModels(ev));
-        ev.getGenerator().addProvider(true, new Recipes(ev.getGenerator()));
-        ev.getGenerator().addProvider(true, new LangGenerator(ev.getGenerator()));
-        ev.getGenerator().addProvider(true, new ServerFontData(ev.getGenerator(), ev.getExistingFileHelper()));
-        ev.getGenerator().addProvider(true, new LootGenerator(ev.getGenerator()));
-        ev.getGenerator().addProvider(true, new ComponentCostGenerator(ev.getGenerator()));
-        ev.getGenerator().addProvider(true, new BlockTagGenerator(ev.getGenerator(), ev.getExistingFileHelper()));
-        ev.getGenerator().addProvider(true, new LootModifierGenerator(ev.getGenerator()));
+        final var generator = ev.getGenerator();
+        final var output = generator.getPackOutput();
+        final var exHelper = ev.getExistingFileHelper();
+        generator.addProvider(true, new BlockstateGenerator(output, exHelper));
+        generator.addProvider(true, new ItemModels(output, exHelper));
+        generator.addProvider(true, new Recipes(output, exHelper));
+        generator.addProvider(true, new LangGenerator(output));
+        generator.addProvider(true, new LootGenerator(output));
+        generator.addProvider(true, new BlockTagGenerator(output, ev.getLookupProvider(), exHelper));
+        generator.addProvider(true, new LootModifierGenerator(output));
     }
 }

@@ -45,21 +45,21 @@ public class CEItems {
     public static final RegistryObject<Item> SCOPE_MODULE_CASE = simpleItem("scope_module_case");
 
     //Blocks
-    private static final RegistryObject<CEBlockItem<Direction>> BUS_RELAY = blockItemCE(CEBlocks.BUS_RELAY);
-    private static final RegistryObject<CEBlockItem<Direction>> BUS_INTERFACE = blockItemCE(CEBlocks.BUS_INTERFACE);
-    private static final RegistryObject<CEBlockItem<Direction>> LINE_ACCESS = blockItemCE(CEBlocks.LINE_ACCESS);
-    private static final RegistryObject<CEBlockItem<PanelOrientation>> CONTROL_PANEL = REGISTER.register(
+    public static final RegistryObject<CEBlockItem<Direction>> BUS_RELAY = blockItemCE(CEBlocks.BUS_RELAY);
+    public static final RegistryObject<CEBlockItem<Direction>> BUS_INTERFACE = blockItemCE(CEBlocks.BUS_INTERFACE);
+    public static final RegistryObject<CEBlockItem<Direction>> LINE_ACCESS = blockItemCE(CEBlocks.LINE_ACCESS);
+    public static final RegistryObject<CEBlockItem<PanelOrientation>> CONTROL_PANEL = REGISTER.register(
             CEBlocks.CONTROL_PANEL.getId().getPath(),
             () -> new ControlPanelItem(CEBlocks.CONTROL_PANEL.get(), simpleItemProperties())
     );
-    private static final RegistryObject<CEBlockItem<Direction>> KEYPUNCH = blockItemCE(CEBlocks.KEYPUNCH);
-    private static final RegistryObject<CEBlockItem<Direction>> SEQUENCER = blockItemCE(CEBlocks.SEQUENCER);
-    private static final RegistryObject<CEBlockItem<Direction>> PANEL_CNC = blockItemCE(CEBlocks.PANEL_CNC);
-    private static final RegistryObject<CEBlockItem<Direction>> LOGIC_CABINET = blockItemCE(CEBlocks.LOGIC_CABINET);
-    private static final RegistryObject<CEBlockItem<Direction>> LOGIC_WORKBENCH = blockItemCE(CEBlocks.LOGIC_WORKBENCH);
-    private static final RegistryObject<CEBlockItem<Direction>> PANEL_DESIGNER = blockItemCE(CEBlocks.PANEL_DESIGNER);
-    private static final RegistryObject<CEBlockItem<Direction>> RS_REMAPPER = blockItemCE(CEBlocks.RS_REMAPPER);
-    private static final RegistryObject<CEBlockItem<Direction>> SCOPE = blockItemCE(CEBlocks.SCOPE);
+    public static final RegistryObject<CEBlockItem<Direction>> KEYPUNCH = blockItemCE(CEBlocks.KEYPUNCH);
+    public static final RegistryObject<CEBlockItem<Direction>> SEQUENCER = blockItemCE(CEBlocks.SEQUENCER);
+    public static final RegistryObject<CEBlockItem<Direction>> PANEL_CNC = blockItemCE(CEBlocks.PANEL_CNC);
+    public static final RegistryObject<CEBlockItem<Direction>> LOGIC_CABINET = blockItemCE(CEBlocks.LOGIC_CABINET);
+    public static final RegistryObject<CEBlockItem<Direction>> LOGIC_WORKBENCH = blockItemCE(CEBlocks.LOGIC_WORKBENCH);
+    public static final RegistryObject<CEBlockItem<Direction>> PANEL_DESIGNER = blockItemCE(CEBlocks.PANEL_DESIGNER);
+    public static final RegistryObject<CEBlockItem<Direction>> RS_REMAPPER = blockItemCE(CEBlocks.RS_REMAPPER);
+    public static final RegistryObject<CEBlockItem<Direction>> SCOPE = blockItemCE(CEBlocks.SCOPE);
 
     private static <T> RegistryObject<CEBlockItem<T>> blockItemCE(RegistryObject<? extends CEBlock<T>> block) {
         return blockItemCE(block, simpleItemProperties());
@@ -76,7 +76,7 @@ public class CEItems {
     }
 
     public static Item.Properties simpleItemProperties() {
-        return new Item.Properties().tab(ControlEngineering.ITEM_GROUP);
+        return new Item.Properties();
     }
 
     private static <T>

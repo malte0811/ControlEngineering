@@ -2,17 +2,16 @@ package malte0811.controlengineering.gui.panel;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.math.Quaternion;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.render.panel.PanelRenderer;
 import malte0811.controlengineering.client.render.target.MixedModel;
+import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.controlpanels.PanelComponentInstance;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.renders.ComponentRenderers;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import malte0811.controlengineering.network.panellayout.*;
-import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.util.math.TransformUtil;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
@@ -23,6 +22,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+import org.jetbrains.annotations.NotNull;
+import org.joml.Quaternionf;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -30,6 +32,7 @@ import java.util.List;
 
 public class PanelLayout extends AbstractWidget {
     private static final double PANEL_GRID = 0.5;
+    private static final Quaternionf MINUS_QUARTER_X = new Quaternionf().rotateX(-Mth.HALF_PI);
 
     private final List<PlacedComponent> components;
     private PlacingComponent placing;
@@ -48,11 +51,11 @@ public class PanelLayout extends AbstractWidget {
         TextureAtlasSprite texture = PanelRenderer.PANEL_TEXTURE.get();
         ScreenUtils.bindForShader(texture);
         transform.pushPose();
-        transform.translate(x, y, 0);
+        transform.translate(getX(), getY(), 0);
         blit(transform, 0, 0, 0, width, height, texture);
         transform.scale((float) getPixelSize(), (float) getPixelSize(), 1);
         transform.translate(0, 0, 2);
-        transform.mulPose(new Quaternion(-90, 0, 0, true));
+        transform.mulPose(MINUS_QUARTER_X);
         TransformUtil.shear(transform, .1f, .1f);
         transform.scale(1, -1, 1);
         MixedModel model = ComponentRenderers.renderAll(components, transform);
@@ -71,8 +74,8 @@ public class PanelLayout extends AbstractWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        final double mouseXPanel = getPanelPos(mouseX, x);
-        final double mouseYPanel = getPanelPos(mouseY, y);
+        final double mouseXPanel = getPanelPos(mouseX, getX());
+        final double mouseYPanel = getPanelPos(mouseY, getY());
         int hovered = PlacedComponent.getIndexAt(Minecraft.getInstance().level, components, mouseXPanel, mouseYPanel);
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             if (placing == null) {
@@ -115,7 +118,7 @@ public class PanelLayout extends AbstractWidget {
     }
 
     private boolean delete(double mouseX, double mouseY) {
-        return processAndSend(new Delete(new Vec2d(getPanelPos(mouseX, x), getPanelPos(mouseY, y))));
+        return processAndSend(new Delete(new Vec2d(getPanelPos(mouseX, getX()), getPanelPos(mouseY, getY()))));
     }
 
     private <T> void configure(Vec2d pos, PanelComponentInstance<T, ?> instance) {
@@ -154,14 +157,14 @@ public class PanelLayout extends AbstractWidget {
     }
 
     @Override
-    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {}
+    protected void updateWidgetNarration(@NotNull NarrationElementOutput p_259858_) { }
 
     private record PlacingComponent(PanelComponentInstance<?, ?> component, Vec2d offsetFromMouse) {
         public Vec2d getPlacingPos(PanelLayout relative, double mouseX, double mouseY) {
             var pixel = relative.getPixelSize();
             return new Vec2d(
-                    relative.getGriddedPanelPos(mouseX + offsetFromMouse.x() * pixel, relative.x),
-                    relative.getGriddedPanelPos(mouseY + offsetFromMouse.y() * pixel, relative.y)
+                    relative.getGriddedPanelPos(mouseX + offsetFromMouse.x() * pixel, relative.getX()),
+                    relative.getGriddedPanelPos(mouseY + offsetFromMouse.y() * pixel, relative.getY())
             );
         }
     }

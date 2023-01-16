@@ -6,16 +6,17 @@ import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.datagen.modelbuilder.DynamicModelBuilder;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.scope.module.ScopeModules;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.data.event.GatherDataEvent;
+import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.function.Supplier;
 
 public class ItemModels extends ItemModelProvider {
-    public ItemModels(GatherDataEvent ev) {
-        super(ev.getGenerator(), ControlEngineering.MODID, ev.getExistingFileHelper());
+    public ItemModels(PackOutput output, ExistingFileHelper exHelper) {
+        super(output, ControlEngineering.MODID, exHelper);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class ItemModels extends ItemModelProvider {
     }
 
     public static String name(Supplier<? extends ItemLike> item) {
-        return Registry.ITEM.getKey(item.get().asItem()).getPath();
+        return BuiltInRegistries.ITEM.getKey(item.get().asItem()).getPath();
     }
 
     private void addItemModel(String texture, Supplier<? extends ItemLike> item) {

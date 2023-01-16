@@ -1,10 +1,11 @@
 package malte0811.controlengineering.blocks.shapes;
 
-import com.mojang.math.Matrix4f;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,7 +39,7 @@ public class ListShapes extends SelectionShapes {
 
     @Nonnull
     @Override
-    public Matrix4f outerToInnerPosition() {
+    public Matrix4fc outerToInnerPosition() {
         return outerToInner;
     }
 

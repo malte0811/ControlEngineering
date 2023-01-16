@@ -3,12 +3,12 @@ package malte0811.controlengineering.client.render.utils;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import org.joml.Matrix4f;
 
 public class ScreenUtils {
     public static void fill(PoseStack transform, double minX, double minY, double maxX, double maxY, int color) {
@@ -58,8 +58,9 @@ public class ScreenUtils {
     }
 
     public static void bindForShader(TextureAtlasSprite tas) {
-        tas.atlas().bind();
-        RenderSystem.setShaderTexture(0, tas.atlas().getId());
+        // TODO fix!
+        //tas.atlas().bind();
+        //RenderSystem.setShaderTexture(0, tas.atlas().getId());
     }
 
     public static boolean isInRect(int xMin, int yMin, int width, int height, int x, int y) {

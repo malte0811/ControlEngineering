@@ -3,6 +3,7 @@ package malte0811.controlengineering.datagen.recipes;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.critereon.ImpossibleTrigger;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -21,7 +22,7 @@ public class NoAdvancementShapedBuilder extends ShapedRecipeBuilder {
     private final CompoundTag nbt;
 
     public NoAdvancementShapedBuilder(ItemLike pResult, int pCount, @Nullable CompoundTag nbt) {
-        super(pResult, pCount);
+        super(RecipeCategory.MISC, pResult, pCount);
         this.nbt = nbt;
     }
 

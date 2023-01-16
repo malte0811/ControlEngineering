@@ -1,7 +1,6 @@
 package malte0811.controlengineering.controlpanels.renders;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
@@ -9,7 +8,9 @@ import malte0811.controlengineering.client.render.target.RenderUtils;
 import malte0811.controlengineering.util.DirectionUtils;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -20,8 +21,8 @@ import static malte0811.controlengineering.controlpanels.components.ToggleSwitch
 public class SwitchRender implements ComponentRenderer<BusSignalRef, Boolean> {
     private static final int BASE_COLOR = 0xd0d0d0;
     private static final int ROD_COLOR = 0xa0a0a0;
-    private static final Quaternion ROTATION_OFF = new Quaternion(30, 0, 0, true);
-    private static final Quaternion ROTATION_ON = new Quaternion(-30, 0, 0, true);
+    private static final Quaternionf ROTATION_OFF = new Quaternionf().rotationX(Mth.HALF_PI / 3);
+    private static final Quaternionf ROTATION_ON = new Quaternionf().rotationX(-Mth.HALF_PI / 3);
     private static final Map<Direction, Integer> SIDE_COLORS = Util.make(new EnumMap<>(Direction.class), sideColors -> {
         for (Direction side : DirectionUtils.VALUES) {
             if (side != Direction.DOWN) {

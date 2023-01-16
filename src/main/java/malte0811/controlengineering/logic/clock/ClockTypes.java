@@ -3,7 +3,7 @@ package malte0811.controlengineering.logic.clock;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.util.RLUtils;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.Item;
@@ -34,7 +34,7 @@ public class ClockTypes {
 
     @Nullable
     public static ClockGenerator<?> getClock(Item item) {
-        final var itemName = Registry.ITEM.getKey(item);
+        final var itemName = BuiltInRegistries.ITEM.getKey(item);
         if (!itemName.getPath().startsWith(ITEM_KEY_PREFIX)) { return null; }
         final var clockPath = itemName.getPath().substring(ITEM_KEY_PREFIX.length());
         final var clockName = new ResourceLocation(itemName.getNamespace(), clockPath);

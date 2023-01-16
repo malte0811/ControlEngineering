@@ -3,18 +3,21 @@ package malte0811.controlengineering.client.model.logic;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.client.model.CEBakedModel;
-import malte0811.controlengineering.client.render.target.RenderUtils;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.*;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.*;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,7 +30,8 @@ import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 public record LogicWorkbenchModel(
@@ -104,28 +108,17 @@ public record LogicWorkbenchModel(
         @Override
         public BakedModel bake(
                 IGeometryBakingContext owner,
-                ModelBakery bakery,
+                ModelBaker baker,
                 Function<Material, TextureAtlasSprite> spriteGetter,
                 ModelState modelTransform,
                 ItemOverrides overrides,
                 ResourceLocation modelLocation
         ) {
             return new LogicWorkbenchModel(
-                    workbench.bake(bakery, workbench, spriteGetter, modelTransform, modelLocation, false),
-                    schematic.bake(bakery, schematic, spriteGetter, modelTransform, modelLocation, false),
+                    workbench.bake(baker, workbench, spriteGetter, modelTransform, modelLocation, false),
+                    schematic.bake(baker, schematic, spriteGetter, modelTransform, modelLocation, false),
                     owner.getTransforms()
             );
-        }
-
-        @Override
-        public Collection<Material> getMaterials(
-                IGeometryBakingContext owner,
-                Function<ResourceLocation, UnbakedModel> modelGetter,
-                Set<Pair<String, String>> missingTextureErrors
-        ) {
-            var allTextures = new HashSet<>(workbench.getMaterials(modelGetter, missingTextureErrors));
-            allTextures.addAll(schematic.getMaterials(modelGetter, missingTextureErrors));
-            return allTextures;
         }
     }
 }

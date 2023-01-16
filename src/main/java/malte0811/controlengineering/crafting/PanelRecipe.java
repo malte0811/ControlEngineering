@@ -10,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -18,8 +19,9 @@ import net.minecraftforge.common.crafting.IShapedRecipe;
 
 import javax.annotation.Nonnull;
 
-public record PanelRecipe(ResourceLocation id,
-                          Ingredient cover) implements CraftingRecipe, IShapedRecipe<CraftingContainer> {
+public record PanelRecipe(
+        ResourceLocation id, Ingredient cover
+) implements CraftingRecipe, IShapedRecipe<CraftingContainer> {
     @Override
     public boolean matches(@Nonnull CraftingContainer inv, @Nonnull Level worldIn) {
         for (int x = 0; x < 3; ++x) {
@@ -97,5 +99,10 @@ public record PanelRecipe(ResourceLocation id,
                 cover, Ingredient.of(CEItems.PANEL_TOP.get()), cover,
                 cover, cover, cover
         );
+    }
+
+    @Override
+    public CraftingBookCategory category() {
+        return CraftingBookCategory.MISC;
     }
 }

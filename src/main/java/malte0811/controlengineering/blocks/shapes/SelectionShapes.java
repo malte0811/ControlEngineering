@@ -1,7 +1,6 @@
 package malte0811.controlengineering.blocks.shapes;
 
 import com.mojang.datafixers.util.Pair;
-import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -11,6 +10,8 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,12 +22,13 @@ import java.util.function.Supplier;
 
 public abstract class SelectionShapes {
     private Supplier<Component> getText = () -> null;
+    protected static final Matrix4fc IDENTITY = new Matrix4f();
 
     @Nullable
     public abstract VoxelShape mainShape();
 
     @Nonnull
-    public abstract Matrix4f outerToInnerPosition();
+    public abstract Matrix4fc outerToInnerPosition();
 
     @Nonnull
     public abstract List<? extends SelectionShapes> innerShapes();

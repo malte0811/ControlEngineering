@@ -3,7 +3,6 @@ package malte0811.controlengineering.items;
 import blusunrize.immersiveengineering.api.wires.IWireCoil;
 import blusunrize.immersiveengineering.api.wires.WireType;
 import blusunrize.immersiveengineering.api.wires.utils.WirecoilUtils;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusWireType;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
@@ -15,7 +14,7 @@ import javax.annotation.Nonnull;
 
 public class BusCoilItem extends Item implements IWireCoil {
     public BusCoilItem() {
-        super(new Properties().tab(ControlEngineering.ITEM_GROUP));
+        super(new Properties());
     }
 
     @Override

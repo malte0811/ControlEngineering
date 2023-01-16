@@ -2,7 +2,7 @@ package malte0811.controlengineering.loot;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.base.IHasMaster;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.Serializer;
@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 
 public class CELootFunctions {
     public static final DeferredRegister<LootPoolEntryType> REGISTER = DeferredRegister.create(
-            Registry.LOOT_POOL_ENTRY_TYPE.key(), ControlEngineering.MODID
+            Registries.LOOT_POOL_ENTRY_TYPE, ControlEngineering.MODID
     );
 
     public static final RegistryObject<LootPoolEntryType> B_ENTITY_DROP = registerEntry(

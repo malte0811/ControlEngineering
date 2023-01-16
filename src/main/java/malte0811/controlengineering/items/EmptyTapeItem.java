@@ -1,12 +1,8 @@
 package malte0811.controlengineering.items;
 
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.util.ItemNBTUtil;
 import malte0811.controlengineering.util.TextUtil;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -21,15 +17,7 @@ public class EmptyTapeItem extends Item {
     public static final String EMPTY_TAPE_BYTES = "controlengineering.tooltip.empty_tape_bytes";
 
     public EmptyTapeItem() {
-        super(new Item.Properties().tab(ControlEngineering.ITEM_GROUP).stacksTo(1));
-    }
-
-    @Override
-    public void fillItemCategory(@Nonnull CreativeModeTab group, @Nonnull NonNullList<ItemStack> items) {
-        if (allowedIn(group)) {
-            items.add(withLength(16));
-            items.add(withLength(256));
-        }
+        super(new Item.Properties().stacksTo(1));
     }
 
     @Override

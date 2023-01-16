@@ -5,7 +5,6 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.StackedScreen;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
 
@@ -22,20 +21,17 @@ public class ConfirmScreen extends StackedScreen {
 
     protected void init() {
         super.init();
-        addRenderableWidget(new Button(
-                this.width / 2 - 155, 110,
-                150, 20,
-                Component.translatable(OK_KEY),
-                $ -> {
+        addRenderableWidget(Button.builder(Component.translatable(OK_KEY), $ -> {
                     onOk.run();
                     onClose();
-                }
-        ));
-        addRenderableWidget(new Button(
-                this.width / 2 - 155 + 160, 110,
-                150, 20,
-                Component.translatable(CANCEL_KEY), $ -> onClose()
-        ));
+                })
+                .pos(this.width / 2 - 155, 110)
+                .size(150, 20)
+                .build());
+        addRenderableWidget(Button.builder(Component.translatable(CANCEL_KEY), $ -> onClose())
+                .pos(this.width / 2 - 155 + 160, 110)
+                .size(150, 20)
+                .build());
     }
 
     @Override

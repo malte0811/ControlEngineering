@@ -89,7 +89,7 @@ public class PanelModelCache {
         @Override
         public MixedModel load(@Nonnull PanelData cacheKey) {
             PoseStack transform = new PoseStack();
-            new Transformation(cacheKey.getTransform().getPanelTopToWorld()).push(transform);
+            transform.pushTransformation(new Transformation(cacheKey.getTransform().getPanelTopToWorld()));
             transform.scale(1 / 16f, 1 / 16f, 1 / 16f);
             return ComponentRenderers.renderAll(cacheKey.getComponents(), transform, staticTypes);
         }

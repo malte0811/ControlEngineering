@@ -1,7 +1,6 @@
 package malte0811.controlengineering.controlpanels.renders;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
@@ -9,7 +8,9 @@ import malte0811.controlengineering.client.render.target.RenderUtils;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.controlpanels.components.KeySwitch;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class KeySwitchRender implements ComponentRenderer<BusSignalRef, KeySwitc
             KEY_COLOR, Direction.DOWN, Direction.UP
     );
     private static final Map<Direction, Integer> KEY_HANDLE_COLORS = RenderUtils.makeColorsExcept(0);
-    private static final Quaternion TURN_KEY = new Quaternion(0, 90, 0, true);
+    private static final Quaternionf TURN_KEY = new Quaternionf().rotateY(Mth.HALF_PI);
 
     @Override
     public void render(MixedModel output, BusSignalRef busSignalRef, KeySwitch.State state, PoseStack transform) {

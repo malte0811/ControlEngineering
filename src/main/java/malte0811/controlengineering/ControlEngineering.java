@@ -1,6 +1,5 @@
 package malte0811.controlengineering;
 
-import blusunrize.immersiveengineering.api.crafting.BlueprintCraftingRecipe;
 import blusunrize.immersiveengineering.api.wires.localhandlers.LocalNetworkHandler;
 import malte0811.controlengineering.blockentity.CEBlockEntities;
 import malte0811.controlengineering.blocks.CEBlocks;
@@ -22,8 +21,6 @@ import malte0811.controlengineering.network.remapper.RemapperPacket;
 import malte0811.controlengineering.network.scope.ScopePacket;
 import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -34,7 +31,6 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -48,13 +44,6 @@ public class ControlEngineering {
             RLUtils.ceLoc("channel"), () -> VERSION, VERSION::equals, VERSION::equals
     );
 
-    public static final CreativeModeTab ITEM_GROUP = new CreativeModeTab(MODID) {
-        @Nonnull
-        public ItemStack makeIcon() {
-            return new ItemStack(CEBlocks.LOGIC_CABINET.get());
-        }
-    };
-
     public ControlEngineering() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         CEBlocks.REGISTER.register(modBus);
@@ -65,7 +54,6 @@ public class ControlEngineering {
         CELootFunctions.REGISTER.register(modBus);
         CERecipeTypes.REGISTER.register(modBus);
         BlueprintChestModifier.REGISTER.register(modBus);
-        BlueprintCraftingRecipe.recipeCategories.add(BlueprintChestModifier.SCOPE_COMPONENTS_BLUEPRINT);
         modBus.addListener(this::setup);
         IEItemRefs.init();
     }

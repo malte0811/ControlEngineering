@@ -3,7 +3,7 @@ package malte0811.controlengineering.scope.module;
 import com.mojang.datafixers.util.Unit;
 import malte0811.controlengineering.util.RLUtils;
 import malte0811.controlengineering.util.typereg.TypedRegistry;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 
@@ -18,7 +18,7 @@ public class ScopeModules {
 
     @Nullable
     public static ScopeModule<?> getModule(Item item) {
-        final var itemName = Registry.ITEM.getKey(item);
+        final var itemName = BuiltInRegistries.ITEM.getKey(item);
         if (!itemName.getPath().startsWith(ITEM_PREFIX)) { return null; }
         final var modulePath = itemName.getPath().substring(ITEM_PREFIX.length());
         final var moduleName = new ResourceLocation(itemName.getNamespace(), modulePath);

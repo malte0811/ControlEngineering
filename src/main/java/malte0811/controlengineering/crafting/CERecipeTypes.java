@@ -3,7 +3,7 @@ package malte0811.controlengineering.crafting;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.crafting.noncrafting.ComponentCostRecipe;
 import malte0811.controlengineering.crafting.noncrafting.ServerFontRecipe;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.fml.common.Mod;
@@ -14,7 +14,7 @@ import net.minecraftforge.registries.RegistryObject;
 @Mod.EventBusSubscriber(modid = ControlEngineering.MODID, bus = Bus.MOD)
 public class CERecipeTypes {
     public static final DeferredRegister<RecipeType<?>> REGISTER = DeferredRegister.create(
-            Registry.RECIPE_TYPE_REGISTRY, ControlEngineering.MODID
+            Registries.RECIPE_TYPE, ControlEngineering.MODID
     );
 
     public static RegistryObject<RecipeType<ComponentCostRecipe>> COMPONENT_COST = register("component_cost");

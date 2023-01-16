@@ -19,7 +19,7 @@ public class CEShaders {
     @SubscribeEvent
     public static void registerShaders(RegisterShadersEvent ev) throws IOException {
         ev.registerShader(new ShaderInstance(
-                ev.getResourceManager(), RLUtils.ceLoc("scope_trace"), DefaultVertexFormat.BLOCK
+                ev.getResourceProvider(), RLUtils.ceLoc("scope_trace"), DefaultVertexFormat.BLOCK
         ), shader -> scopeTrace = shader);
     }
 

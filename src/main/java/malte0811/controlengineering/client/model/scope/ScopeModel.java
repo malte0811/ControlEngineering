@@ -6,7 +6,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Transformation;
-import com.mojang.math.Vector3f;
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
 import malte0811.controlengineering.client.model.CEBakedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
@@ -30,6 +29,7 @@ import net.minecraftforge.client.model.QuadTransformers;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -85,7 +85,7 @@ public class ScopeModel implements CEBakedModel {
         int offset = right ? 0 : 3;
         int step = right ? 1 : -1;
         PoseStack transform = new PoseStack();
-        this.modelTransform.blockCenterToCorner().push(transform);
+        transform.pushTransformation(this.modelTransform.blockCenterToCorner());
         new QuadBuilder(
                 END_QUAD_VERTICES[offset],
                 END_QUAD_VERTICES[offset + step],
@@ -162,7 +162,7 @@ public class ScopeModel implements CEBakedModel {
         LastSlotState lastState = LastSlotState.BORDER;
         for (final var module : key.orderedModules()) {
             final var translation = new Vector3f(offsetSlots * (-3 / 16f), 0, 0);
-            translation.transform(modelTransform.getNormalMatrix());
+            translation.mul(modelTransform.getNormalMatrix());
             final var transformer = QuadTransformers.applying(
                     new Transformation(translation, null, null, null)
             );

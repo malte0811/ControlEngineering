@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
@@ -29,7 +28,8 @@ public class KeyboardButton extends Button {
         super(
                 x, y, texture.getWidth(), texture.getHeight(),
                 Component.empty(),
-                btn -> pressedAction.accept(((KeyboardButton) btn).getChar())
+                btn -> pressedAction.accept(((KeyboardButton) btn).getChar()),
+                p_253695_ -> Component.empty()
         );
         this.texture = texture;
         this.lowerCase = lowerCase;
@@ -41,12 +41,12 @@ public class KeyboardButton extends Button {
         Minecraft minecraft = Minecraft.getInstance();
         RenderSystem.setShaderTexture(0, this.texture.getMainTexture());
         RenderSystem.enableDepthTest();
-        texture.blit(matrixStack, x, y);
+        texture.blit(matrixStack, getX(), getY());
         drawCenteredString(
                 matrixStack,
                 minecraft.font,
                 this.getMessage(),
-                this.x + this.width / 2, this.y + (this.height - 8) / 2,
+                this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2,
                 -1
         );
     }

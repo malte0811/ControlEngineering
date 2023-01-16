@@ -2,20 +2,18 @@ package malte0811.controlengineering.client.model.logic;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.*;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Function;
 
 public class DynamicLogicModelLoader implements IGeometryLoader<DynamicLogicModelLoader.DynamicLogicGeometry> {
@@ -40,26 +38,14 @@ public class DynamicLogicModelLoader implements IGeometryLoader<DynamicLogicMode
 
         @Override
         public BakedModel bake(
-                IGeometryBakingContext owner,
-                ModelBakery bakery,
+                IGeometryBakingContext context,
+                ModelBaker baker,
                 Function<Material, TextureAtlasSprite> spriteGetter,
-                ModelState modelTransform,
+                ModelState modelState,
                 ItemOverrides overrides,
                 ResourceLocation modelLocation
         ) {
-            return new DynamicLogicModel(board, tube, bakery, spriteGetter, modelTransform);
-        }
-
-        @Override
-        public Collection<Material> getMaterials(
-                IGeometryBakingContext owner,
-                Function<ResourceLocation, UnbakedModel> modelGetter,
-                Set<Pair<String, String>> missingTextureErrors
-        ) {
-            Set<Material> textures = new HashSet<>();
-            textures.addAll(modelGetter.apply(board).getMaterials(modelGetter, missingTextureErrors));
-            textures.addAll(modelGetter.apply(tube).getMaterials(modelGetter, missingTextureErrors));
-            return textures;
+            return new DynamicLogicModel(board, tube, baker, spriteGetter, modelState);
         }
     }
 }

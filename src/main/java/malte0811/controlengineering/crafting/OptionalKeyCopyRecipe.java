@@ -10,6 +10,7 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
@@ -25,6 +26,7 @@ public class OptionalKeyCopyRecipe extends ShapedRecipe {
     public OptionalKeyCopyRecipe(ShapedRecipe baseRecipe, boolean isIdOptional) {
         super(
                 baseRecipe.getId(), baseRecipe.getGroup(),
+                CraftingBookCategory.MISC,
                 baseRecipe.getWidth(), baseRecipe.getHeight(),
                 baseRecipe.getIngredients(), baseRecipe.getResultItem()
         );

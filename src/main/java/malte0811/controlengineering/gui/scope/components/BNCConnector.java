@@ -1,7 +1,6 @@
 package malte0811.controlengineering.gui.scope.components;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.gui.SubTexture;
@@ -11,13 +10,16 @@ import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 public class BNCConnector implements IScopeComponent {
     private static final SubTexture BNC_PLUG = new SubTexture(ScopeScreen.TEXTURE, 227, 242, 241, 256);
+    private static final Quaternionf CABLE_ANGLE = new Quaternionf().rotateZ(Mth.HALF_PI / 10);
     private static final int WIRE_COLOR = 0xff202020;
 
     private final RectangleI area;
@@ -45,7 +47,7 @@ public class BNCConnector implements IScopeComponent {
         transform.pushPose();
         final var center = area.center();
         transform.translate(center.x(), center.y(), 0);
-        transform.mulPose(new Quaternion(0, 0, 10, true));
+        transform.mulPose(CABLE_ANGLE);
         // TODO make more flexible-looking?
         ScreenUtils.fill(transform, -3, 0, 3, 1000, WIRE_COLOR);
         ScreenUtils.fill(transform, -2, -0.5, 2, 1000, 0xff393939);

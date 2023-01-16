@@ -1,18 +1,20 @@
 package malte0811.controlengineering.logic.schematic.symbol;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
+import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.logic.cells.PinDirection;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.WireSegment;
-import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.util.ColorUtils;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.util.Mth;
+import org.joml.Quaternionf;
 
 public record SymbolPin(
         Vec2i position, SignalType type, PinDirection direction, String pinName, boolean vertical
 ) {
+    private static final Quaternionf ROTATE_VERTICAL = new Quaternionf().rotateZ(-Mth.HALF_PI);
+
     public SymbolPin(Vec2i position, SignalType type, PinDirection direction, String pinName) {
         this(position, type, direction, pinName, false);
     }
@@ -50,7 +52,7 @@ public record SymbolPin(
         if (vertical) {
             stack.pushPose();
             stack.translate(pinPos.x() + 0.5, pinPos.y() + 0.5, 0);
-            stack.mulPose(new Quaternion(0, 0, -Mth.HALF_PI, false));
+            stack.mulPose(ROTATE_VERTICAL);
             stack.translate(-0.5 - pinPos.x(), -0.5 - pinPos.y(), 0);
         }
         final int wirePixels = 1;

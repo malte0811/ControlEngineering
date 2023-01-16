@@ -29,11 +29,11 @@ public class ColorPicker16 extends AbstractWidget {
     public void renderButton(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         final Font font = Minecraft.getInstance().font;
         final float offset = (width - font.width(getMessage())) / 2f;
-        font.draw(matrixStack, getMessage(), x + offset, y, -1);
+        font.draw(matrixStack, getMessage(), getX() + offset, getY(), -1);
         DyeColor underCursor = getColorUnderCursor(mouseX, mouseY);
         for (DyeColor color : DyeColor.values()) {
-            final int minX = x + (color.getId() % NUM_COLS) * GRID_SIZE;
-            final int minY = y + (color.getId() / NUM_COLS) * GRID_SIZE + TITLE_SPACE;
+            final int minX = getX() + (color.getId() % NUM_COLS) * GRID_SIZE;
+            final int minY = getY() + (color.getId() / NUM_COLS) * GRID_SIZE + TITLE_SPACE;
             int border = 2;
             if (underCursor == color) {
                 final int inverse = ColorUtils.inverseColor(color.getTextColor());
@@ -72,8 +72,8 @@ public class ColorPicker16 extends AbstractWidget {
 
     @Nullable
     private DyeColor getColorUnderCursor(double mouseX, double mouseY) {
-        mouseX -= x;
-        mouseY -= y + TITLE_SPACE;
+        mouseX -= getX();
+        mouseY -= getY() + TITLE_SPACE;
         final int row = (int) (mouseY / GRID_SIZE);
         final int col = (int) (mouseX / GRID_SIZE);
         if (row < 0 || row >= NUM_COLS || col < 0 || col >= NUM_COLS) {
@@ -84,5 +84,5 @@ public class ColorPicker16 extends AbstractWidget {
     }
 
     @Override
-    public void updateNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) {}
+    public void updateWidgetNarration(@Nonnull NarrationElementOutput pNarrationElementOutput) { }
 }

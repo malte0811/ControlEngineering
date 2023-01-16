@@ -1,18 +1,13 @@
 package malte0811.controlengineering.items;
 
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.ClientHooks;
-import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.ItemNBTUtil;
 import malte0811.controlengineering.util.TextUtil;
-import net.minecraft.core.NonNullList;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -28,22 +23,13 @@ public class PunchedTapeItem extends Item {
     public static final String PUNCHED_TAPE_BYTES = "controlengineering.tooltip.written_tape_bytes";
 
     public PunchedTapeItem() {
-        super(new Item.Properties().tab(ControlEngineering.ITEM_GROUP).stacksTo(1));
+        super(new Item.Properties().stacksTo(1));
     }
 
     public static ItemStack withBytes(byte[] bytes) {
         ItemStack result = CEItems.PUNCHED_TAPE.get().getDefaultInstance();
         setBytes(result, bytes);
         return result;
-    }
-
-    @Override
-    public void fillItemCategory(@Nonnull CreativeModeTab group, @Nonnull NonNullList<ItemStack> items) {
-        if (allowedIn(group)) {
-            //TODO remove? replace with more sensible values?
-            items.add(setBytes(new ItemStack(this), BitUtils.toBytesWithParity("Test1")));
-            items.add(setBytes(new ItemStack(this), BitUtils.toBytesWithParity("Another test")));
-        }
     }
 
     @Override

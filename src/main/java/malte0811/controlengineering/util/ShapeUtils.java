@@ -1,10 +1,11 @@
 package malte0811.controlengineering.util;
 
-import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
@@ -19,7 +20,7 @@ public class ShapeUtils {
         return transformFunc(matrix).apply(transform);
     }
 
-    public static UnaryOperator<AABB> transformFunc(Matrix4f transform) {
+    public static UnaryOperator<AABB> transformFunc(Matrix4fc transform) {
         return aabb -> new AABB(
                 MatrixUtils.transform(transform, aabb.minX, aabb.minY, aabb.minZ),
                 MatrixUtils.transform(transform, aabb.maxX, aabb.maxY, aabb.maxZ)

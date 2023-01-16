@@ -1,6 +1,5 @@
 package malte0811.controlengineering.controlpanels;
 
-import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.panels.CachedPanelShape;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
@@ -9,6 +8,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.joml.Matrix4fc;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,7 +30,7 @@ public class PanelSelectionShapes extends SelectionShapes {
 
     @Nonnull
     @Override
-    public Matrix4f outerToInnerPosition() {
+    public Matrix4fc outerToInnerPosition() {
         return bEntity.getTransform().getWorldToPanelTop();
     }
 

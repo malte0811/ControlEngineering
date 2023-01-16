@@ -1,6 +1,5 @@
 package malte0811.controlengineering.controlpanels;
 
-import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import malte0811.controlengineering.util.mycodec.MyCodec;
@@ -9,6 +8,8 @@ import malte0811.controlengineering.util.mycodec.record.CodecField;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 import java.util.Objects;
 
@@ -24,8 +25,8 @@ public class PanelTransform {
     //Transforms panel top coords (x, 0, y) to world coords
     private final Matrix4f panelTopToWorld;
     //Transforms rotated world coords (panel base) to actual world coords
-    private final Matrix4f panelBottomToWorld;
-    private final Matrix4f worldToPanelTop;
+    private final Matrix4fc panelBottomToWorld;
+    private final Matrix4fc worldToPanelTop;
 
     public PanelTransform(float centerHeight, float degrees, PanelOrientation blockData) {
         this(new BETransformData(centerHeight, degrees), blockData);
@@ -37,11 +38,11 @@ public class PanelTransform {
         final float borderHeight = getFrontHeight();
 
         panelBottomToWorld = TransformCaches.makePanelBottomToWorld(blockData);
-        panelTopToWorld = panelBottomToWorld.copy();
-        panelTopToWorld.multiply(TransformCaches.makePanelTopToPanelBottom(borderHeight, radians));
+        panelTopToWorld = new Matrix4f(panelBottomToWorld);
+        panelTopToWorld.mul(TransformCaches.makePanelTopToPanelBottom(borderHeight, radians));
 
-        worldToPanelTop = TransformCaches.makePanelBottomToPanelTop(borderHeight, radians).copy();
-        worldToPanelTop.multiply(TransformCaches.makeWorldToPanelBottom(blockData));
+        worldToPanelTop = new Matrix4f(TransformCaches.makePanelBottomToPanelTop(borderHeight, radians))
+                .mul(TransformCaches.makeWorldToPanelBottom(blockData));
     }
 
     public PanelTransform() {
@@ -54,7 +55,7 @@ public class PanelTransform {
         return new PanelTransform(centerHeight, (float) Math.toDegrees(angle), orientation);
     }
 
-    public Matrix4f getPanelBottomToWorld() {
+    public Matrix4fc getPanelBottomToWorld() {
         return panelBottomToWorld;
     }
 
@@ -62,7 +63,7 @@ public class PanelTransform {
         return panelTopToWorld;
     }
 
-    public Matrix4f getWorldToPanelTop() {
+    public Matrix4fc getWorldToPanelTop() {
         return worldToPanelTop;
     }
 

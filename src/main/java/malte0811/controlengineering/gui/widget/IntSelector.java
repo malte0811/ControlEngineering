@@ -5,7 +5,6 @@ import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
 import java.util.function.IntConsumer;
@@ -35,10 +34,10 @@ public class IntSelector extends StackedScreen {
                 selector != null ? selector.getValue() : initial
         );
         addRenderableWidget(selector);
-        addRenderableWidget(new Button(
-                width / 2 - 64, height / 2 + ColorPicker16.SIZE / 2 + 20, 128, 20,
-                Component.translatable(DataProviderScreen.DONE_KEY), $ -> onClose()
-        ));
+        addRenderableWidget(Button.builder(Component.translatable(DataProviderScreen.DONE_KEY), $ -> onClose())
+                .pos(width / 2 - 64, height / 2 + ColorPicker16.SIZE / 2 + 20)
+                .size(128, 20)
+                .build());
     }
 
     @Override

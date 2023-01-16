@@ -44,16 +44,14 @@ public class ViewTapeScreen extends Screen {
         final int buttonWidth = 20;
         final int leftButtonX = FIRST_CHAR_X - 30 + (this.width - WIDTH) / 2;
         final int buttonY = FIRST_HOLE_Y + 3 + (this.height - HEIGHT) / 2;
-        addRenderableWidget(new Button(
-                leftButtonX + 1, buttonY, buttonWidth, 20,
-                Component.literal("<"),
-                btn -> incOffset()
-        ));
-        addRenderableWidget(new Button(
-                width - leftButtonX - buttonWidth + 1, buttonY, buttonWidth, 20,
-                Component.literal(">"),
-                btn -> decOffset()
-        ));
+        addRenderableWidget(Button.builder(Component.literal("<"), btn -> incOffset())
+                .pos(leftButtonX + 1, buttonY)
+                .size(buttonWidth, 20)
+                .build());
+        addRenderableWidget(Button.builder(Component.literal(">"), btn -> decOffset())
+                .pos(width - leftButtonX - buttonWidth + 1, buttonY)
+                .size(buttonWidth, 20)
+                .build());
     }
 
     @Override

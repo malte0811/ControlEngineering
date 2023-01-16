@@ -1,3 +1,4 @@
 {
-  "type": "controlengineering:schematic_copy"
+  "type": "controlengineering:schematic_copy",
+  "category": "misc"
 }

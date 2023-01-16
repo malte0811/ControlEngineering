@@ -1,7 +1,6 @@
 package malte0811.controlengineering.controlpanels.renders;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.client.render.target.RenderUtils;
 import malte0811.controlengineering.controlpanels.PanelComponents;
@@ -9,7 +8,9 @@ import malte0811.controlengineering.controlpanels.components.CoveredToggleSwitch
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class CoveredSwitchRender implements ComponentRenderer<ColorAndSignal, St
         var shape = Objects.requireNonNull(PanelComponents.COVERED_SWITCH.newInstance().getSelectionShape());
         return new Vec3(shape.maxX, shape.maxY, shape.maxZ);
     });
-    private static final Quaternion OPEN_ROTATION = new Quaternion(-60, 0, 0, true);
+    private static final Quaternionf OPEN_ROTATION = new Quaternionf().rotateX(-Mth.PI * 2 / 3);
 
     @Override
     public void render(MixedModel output, ColorAndSignal config, State state, PoseStack transform) {

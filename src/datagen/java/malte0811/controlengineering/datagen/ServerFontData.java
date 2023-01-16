@@ -7,9 +7,7 @@ import com.mojang.blaze3d.font.GlyphProvider;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
 import malte0811.controlengineering.crafting.noncrafting.ServerFontRecipe;
 import net.minecraft.client.gui.font.providers.BitmapProvider;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -17,36 +15,19 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class ServerFontData extends RecipeProvider {
-    private final MultiPackResourceManager clientResources;
+public class ServerFontData {
 
-    public ServerFontData(DataGenerator dataGen, ExistingFileHelper existingFiles) {
-        super(dataGen);
-        try {
-            Field serverData = ExistingFileHelper.class.getDeclaredField("clientResources");
-            serverData.setAccessible(true);
-            clientResources = (MultiPackResourceManager) serverData.get(existingFiles);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    protected void buildCraftingRecipes(@Nonnull Consumer<FinishedRecipe> out) {
-        try {
-            buildCraftingRecipesInner(out);
-        } catch (IOException x) {
-            throw new RuntimeException(x);
-        }
-    }
-
-    private void buildCraftingRecipesInner(@Nonnull Consumer<FinishedRecipe> out) throws IOException {
+    public static void buildServerFontData(
+            @Nonnull Consumer<FinishedRecipe> out, ExistingFileHelper existingFiles
+    ) throws Exception {
+        Field serverData = ExistingFileHelper.class.getDeclaredField("clientResources");
+        serverData.setAccessible(true);
+        final var clientResources = (MultiPackResourceManager) serverData.get(existingFiles);
         final String asciiLoc = "minecraft:font/ascii.png";
         final JsonObject fontDef = JsonParser.parseReader(new InputStreamReader(
                 clientResources.getResource(new ResourceLocation("font/default.json")).orElseThrow().open()
@@ -91,11 +72,5 @@ public class ServerFontData extends RecipeProvider {
                 return null;
             }
         });
-    }
-
-    @Nonnull
-    @Override
-    public String getName() {
-        return "Server font data";
     }
 }

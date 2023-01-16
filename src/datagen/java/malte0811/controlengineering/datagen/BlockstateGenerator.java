@@ -25,7 +25,7 @@ import malte0811.controlengineering.util.DirectionUtils;
 import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -45,9 +45,9 @@ public class BlockstateGenerator extends BlockStateProvider {
     );
     private final NongeneratedModels nongenerated;
 
-    public BlockstateGenerator(DataGenerator gen, ExistingFileHelper exFileHelper) {
-        super(gen, ControlEngineering.MODID, exFileHelper);
-        this.nongenerated = new NongeneratedModels(gen, exFileHelper);
+    public BlockstateGenerator(PackOutput output, ExistingFileHelper exFileHelper) {
+        super(output, ControlEngineering.MODID, exFileHelper);
+        this.nongenerated = new NongeneratedModels(output, exFileHelper);
     }
 
     @Override

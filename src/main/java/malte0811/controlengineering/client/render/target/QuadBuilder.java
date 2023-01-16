@@ -1,7 +1,6 @@
 package malte0811.controlengineering.client.render.target;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.RLUtils;
@@ -12,9 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -99,7 +97,7 @@ public class QuadBuilder {
     public void writeTo(VertexConsumer target) {
         TextureAtlasSprite sprite = this.sprite == null ? getWhiteTexture() : this.sprite;
         Vec3 normalD = this.normal == null ? automaticNormal() : this.normal;
-        Vector3f normal = new Vector3f(normalD);
+        Vector3f normal = normalD.toVector3f();
         for (Vertex v : vertices) {
             target.vertex(
                     (float) v.position.x, (float) v.position.y, (float) v.position.z,
@@ -125,12 +123,14 @@ public class QuadBuilder {
                 .getSprite(WHITE_WITH_BORDER));
     }
 
+    /*TODO JSON
     @SubscribeEvent
     public static void onTextureStitch(TextureStitchEvent.Pre ev) {
         if (ev.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
             ev.addSprite(WHITE_WITH_BORDER);
         }
     }
+     */
 
     private static class Vertex {
         private final Vec3 position;

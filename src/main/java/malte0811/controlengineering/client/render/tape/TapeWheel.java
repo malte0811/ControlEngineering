@@ -8,13 +8,13 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.math.Quaternion;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.renderer.SpriteCoordinateExpander;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Mth;
+import org.joml.Quaternionf;
 
 import java.util.List;
 import java.util.function.BiPredicate;
@@ -110,7 +110,7 @@ public class TapeWheel {
 
     private void renderTapeRoll(VertexConsumer output, PoseStack stack) {
         stack.pushPose();
-        stack.mulPose(new Quaternion(0, (float) rotationRadians, 0, false));
+        stack.mulPose(new Quaternionf().rotateY((float) rotationRadians));
         // render top
         for (int i = 1; i + 2 < NUM_CORNERS; i += 2) {
             for (int vertex : new int[]{0, i, i + 1, i + 2}) {

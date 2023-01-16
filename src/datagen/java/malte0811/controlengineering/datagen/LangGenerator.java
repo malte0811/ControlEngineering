@@ -38,8 +38,8 @@ import malte0811.controlengineering.loot.BlueprintChestModifier;
 import malte0811.controlengineering.scope.module.ScopeModule;
 import malte0811.controlengineering.scope.module.ScopeModules;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
-import net.minecraft.core.Registry;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -56,8 +56,8 @@ import java.util.stream.Collectors;
 public class LangGenerator extends LanguageProvider {
     private final Set<ResourceLocation> localizedItems = new HashSet<>();
 
-    public LangGenerator(DataGenerator gen) {
-        super(gen, ControlEngineering.MODID, "en_us");
+    public LangGenerator(PackOutput output) {
+        super(output, ControlEngineering.MODID, "en_us");
     }
 
     @Override
@@ -306,13 +306,13 @@ public class LangGenerator extends LanguageProvider {
     @Override
     public void addBlock(@Nonnull Supplier<? extends Block> key, @Nonnull String name) {
         super.addBlock(key, name);
-        localizedItems.add(Registry.BLOCK.getKey(key.get()));
+        localizedItems.add(BuiltInRegistries.BLOCK.getKey(key.get()));
     }
 
     @Override
     public void addItem(@Nonnull Supplier<? extends Item> key, @Nonnull String name) {
         super.addItem(key, name);
-        localizedItems.add(Registry.ITEM.getKey(key.get()));
+        localizedItems.add(BuiltInRegistries.ITEM.getKey(key.get()));
     }
 
     private void assertAllLocalized(Set<ResourceLocation> localized, DeferredRegister<?> register) {

@@ -3,18 +3,21 @@ package malte0811.controlengineering.client.model.scope;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.*;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 public class ScopeModelLoader implements IGeometryLoader<ScopeModelLoader.Unbaked> {
@@ -39,7 +42,7 @@ public class ScopeModelLoader implements IGeometryLoader<ScopeModelLoader.Unbake
     ) implements IUnbakedGeometry<Unbaked> {
         @Override
         public BakedModel bake(
-                IGeometryBakingContext context, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter,
+                IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter,
                 ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation
         ) {
             var rootTransform = context.getRootTransform();
@@ -50,29 +53,16 @@ public class ScopeModelLoader implements IGeometryLoader<ScopeModelLoader.Unbake
             Map<ResourceLocation, BakedModel> modules = new HashMap<>();
             for (final var entry : moduleModels.entrySet()) {
                 final var baked = entry.getValue().bake(
-                        bakery, entry.getValue(), spriteGetter, modelState, modelLocation, true
+                        baker, entry.getValue(), spriteGetter, modelState, modelLocation, true
                 );
                 modules.put(entry.getKey(), baked);
             }
             return new ScopeModel(
-                    mainModel.bake(bakery, mainModel, spriteGetter, modelState, modelLocation, true),
+                    mainModel.bake(baker, mainModel, spriteGetter, modelState, modelLocation, true),
                     modules,
                     modelState.getRotation(),
                     context.getTransforms()
             );
-        }
-
-        @Override
-        public Collection<Material> getMaterials(
-                IGeometryBakingContext context,
-                Function<ResourceLocation, UnbakedModel> modelGetter,
-                Set<Pair<String, String>> missingTextureErrors
-        ) {
-            Set<Material> materials = new HashSet<>(mainModel.getMaterials(modelGetter, missingTextureErrors));
-            for (final var moduleModel : moduleModels.values()) {
-                materials.addAll(moduleModel.getMaterials(modelGetter, missingTextureErrors));
-            }
-            return materials;
         }
     }
 }

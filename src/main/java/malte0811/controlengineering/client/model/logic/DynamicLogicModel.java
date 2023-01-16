@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Transformation;
-import com.mojang.math.Vector3f;
 import malte0811.controlengineering.client.model.CEBakedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
@@ -27,6 +26,7 @@ import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -50,7 +50,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLog
 
     private final UnbakedModel board;
     private final UnbakedModel tube;
-    private final ModelBakery bakery;
+    private final ModelBaker baker;
     private final Function<Material, TextureAtlasSprite> spriteGetter;
     private final ModelState modelTransform;
     private final TextureAtlasSprite particles;
@@ -61,22 +61,22 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLog
     public DynamicLogicModel(
             ResourceLocation board,
             ResourceLocation tube,
-            ModelBakery bakery,
+            ModelBaker baker,
             Function<Material, TextureAtlasSprite> spriteGetter,
             ModelState modelTransform
     ) {
 
-        this.board = bakery.getModel(board);
-        this.tube = bakery.getModel(tube);
-        this.bakery = bakery;
+        this.board = baker.getModel(board);
+        this.tube = baker.getModel(tube);
+        this.baker = baker;
         this.spriteGetter = spriteGetter;
         this.modelTransform = modelTransform;
         particles = this.board.bake(
-                bakery, spriteGetter, modelTransform, RLUtils.ceLoc("temp")
+                baker, spriteGetter, modelTransform, RLUtils.ceLoc("temp")
         ).getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null).get(0).getSprite();
 
         PoseStack transform = new PoseStack();
-        modelTransform.getRotation().blockCenterToCorner().push(transform);
+        transform.pushTransformation(modelTransform.getRotation().blockCenterToCorner());
         List<BakedQuad> quads = new ArrayList<>();
         new QuadBuilder(
                 new Vec3(1, 0.375, 0.625),
@@ -180,8 +180,8 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLog
                         );
                         final int centerRGBA = quadSprite.getPixelRGBA(
                                 0,
-                                (int)(centerUV.x() * quadSprite.getWidth()),
-                                (int) (centerUV.y() * quadSprite.getHeight())
+                                (int) (centerUV.x() * quadSprite.contents().width()),
+                                (int) (centerUV.y() * quadSprite.contents().height())
                         );
                         if (centerRGBA >>> 24 == 255) {
                             solid.add(tubeQuad);
@@ -204,7 +204,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLog
                     offset, null, null, null
             )));
             ResourceLocation dummy = RLUtils.ceLoc("dynamic");
-            BakedModel baked = model.bake(bakery, spriteGetter, offsetTransform, dummy);
+            BakedModel baked = model.bake(baker, spriteGetter, offsetTransform, dummy);
             if (baked == null) {
                 return ImmutableList.of();
             } else {

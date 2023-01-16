@@ -1,7 +1,6 @@
 package malte0811.controlengineering.controlpanels;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.math.Matrix4f;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.util.math.RectangleD;
 import malte0811.controlengineering.util.math.Vec2d;
@@ -19,6 +18,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.util.Lazy;
+import org.joml.Matrix4fc;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -116,10 +116,8 @@ public class PlacedComponent extends SelectionShapes {
 
     @Nonnull
     @Override
-    public Matrix4f outerToInnerPosition() {
-        final var id = new Matrix4f();
-        id.setIdentity();
-        return id;
+    public Matrix4fc outerToInnerPosition() {
+        return IDENTITY;
     }
 
     @Nonnull

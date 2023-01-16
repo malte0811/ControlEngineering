@@ -9,28 +9,22 @@ import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
 import malte0811.controlengineering.crafting.noncrafting.ComponentCostRecipe;
 import malte0811.controlengineering.items.IEItemRefs;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.Tags;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ComponentCostGenerator extends RecipeProvider {
+public class ComponentCostGenerator {
 
-    public ComponentCostGenerator(DataGenerator pGenerator) {
-        super(pGenerator);
-    }
-
-    @Override
-    protected void buildCraftingRecipes(@Nonnull Consumer<FinishedRecipe> out) {
+    public static void buildComponentCosts(@NotNull Consumer<FinishedRecipe> out) {
         var anyDye = new IngredientWithSize(Tags.Items.DYES);
         //TODO tag?
         var paper = new IngredientWithSize(Ingredient.of(Items.PAPER));
@@ -55,7 +49,7 @@ public class ComponentCostGenerator extends RecipeProvider {
         addCosts(out, PanelComponents.KEY_SWITCH, new IngredientWithSize(IETags.copperWire));
     }
 
-    private void addCosts(
+    private static void addCosts(
             Consumer<FinishedRecipe> out, PanelComponentType<?, ?> component, IngredientWithSize... cost
     ) {
         out.accept(new FinishedRecipe() {
@@ -92,11 +86,5 @@ public class ComponentCostGenerator extends RecipeProvider {
                 return null;
             }
         });
-    }
-
-    @Nonnull
-    @Override
-    public String getName() {
-        return "Panel component costs";
     }
 }

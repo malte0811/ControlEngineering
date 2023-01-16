@@ -1,7 +1,6 @@
 package malte0811.controlengineering.controlpanels.renders;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.client.render.target.MixedModel;
@@ -11,6 +10,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +24,9 @@ public class PanelMeterRender implements ComponentRenderer<BusSignalRef, Integer
             list.add(new Marker(Integer.toString(strength), rotationFor(strength)));
         }
     });
-    private static final Quaternion MARKER_FONT_ROTATION = Util.make(() -> {
-        var result = new Quaternion(0, Mth.PI, 0, false);
-        result.mul(new Quaternion(Mth.HALF_PI, 0, 0, false));
-        return result;
-    });
+    private static final Quaternionf MARKER_FONT_ROTATION = new Quaternionf()
+            .rotateY(Mth.PI)
+            .rotationX(Mth.HALF_PI);
     private static final double AXIS_X = SIZE.x() / 2;
     private static final double AXIS_Y = SIZE.y() / 6;
     private static final double NEEDLE_LENGTH = SIZE.y() - 2 * AXIS_Y;
@@ -72,12 +70,12 @@ public class PanelMeterRender implements ComponentRenderer<BusSignalRef, Integer
         ).setRGB(0).writeTo(new TransformingVertexBuilder(output, MixedModel.SOLID_DYNAMIC, transform));
     }
 
-    private static Quaternion rotationFor(int signalStrength) {
+    private static Quaternionf rotationFor(int signalStrength) {
         var relative = signalStrength / (float) BusLine.MAX_VALID_VALUE;
         var totalAngle = 2 / 3f * Mth.PI;
         var angleFromVertical = (relative - 0.5f) * totalAngle;
-        return new Quaternion(0, Mth.PI - angleFromVertical, 0, false);
+        return new Quaternionf().rotateY(Mth.PI - angleFromVertical);
     }
 
-    private record Marker(String desc, Quaternion angle) {}
+    private record Marker(String desc, Quaternionf angle) { }
 }

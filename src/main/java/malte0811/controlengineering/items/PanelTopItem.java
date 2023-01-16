@@ -1,7 +1,6 @@
 package malte0811.controlengineering.items;
 
 import com.google.common.collect.ImmutableList;
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.client.model.panel.PanelItemRenderer;
 import malte0811.controlengineering.controlpanels.PanelData;
@@ -22,7 +21,7 @@ public class PanelTopItem extends Item {
     private static final PanelTransform FLAT_PANEL = new PanelTransform(0, 0, PanelOrientation.UP_NORTH);
 
     public PanelTopItem() {
-        super(new Item.Properties().tab(ControlEngineering.ITEM_GROUP));
+        super(new Item.Properties());
     }
 
     @Override

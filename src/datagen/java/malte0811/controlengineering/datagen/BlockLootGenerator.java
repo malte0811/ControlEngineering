@@ -3,6 +3,7 @@ package malte0811.controlengineering.datagen;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.loot.ExtraBEDropEntry;
 import malte0811.controlengineering.loot.PanelDropEntry;
+import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
@@ -13,18 +14,18 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
-public class BlockLootGenerator implements Consumer<BiConsumer<ResourceLocation, LootTable.Builder>> {
+public class BlockLootGenerator implements LootTableSubProvider {
     private final Map<ResourceLocation, LootTable.Builder> tables = new HashMap<>();
 
     @Override
-    public void accept(BiConsumer<ResourceLocation, LootTable.Builder> out) {
+    public void generate(@NotNull BiConsumer<ResourceLocation, LootTable.Builder> out) {
         registerSelfDropping(CEBlocks.LOGIC_CABINET, bEntityDrops());
         registerSelfDropping(CEBlocks.PANEL_CNC, bEntityDrops());
         registerSelfDropping(CEBlocks.KEYPUNCH, bEntityDrops());

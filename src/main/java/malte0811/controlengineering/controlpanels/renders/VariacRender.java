@@ -1,7 +1,6 @@
 package malte0811.controlengineering.controlpanels.renders;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
 import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
@@ -13,6 +12,7 @@ import net.minecraft.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -41,7 +41,8 @@ public class VariacRender implements ComponentRenderer<BusSignalRef, Integer> {
     private static final Vec3 ROD_MAX = new Vec3(ROD_RADIUS, ROD_LENGTH, ROD_RADIUS);
     private static final Vec3 KNOB_MIN = new Vec3(-KNOB_RADIUS, ROD_LENGTH, -KNOB_RADIUS);
     private static final Vec3 KNOB_MAX = new Vec3(KNOB_RADIUS, MAX_Y, KNOB_RADIUS);
-    private static final Quaternion ONE_EIGHTH = new Quaternion(0, Mth.HALF_PI / 2, 0, false);
+    private static final Quaternionf ONE_EIGHTH = new Quaternionf()
+            .rotateY(Mth.HALF_PI / 2);
 
     @Override
     public void render(MixedModel output, BusSignalRef busSignalRef, Integer strength, PoseStack transform) {
@@ -69,7 +70,7 @@ public class VariacRender implements ComponentRenderer<BusSignalRef, Integer> {
         transform.popPose();
     }
 
-    private static Quaternion getRotation(int strength) {
-        return new Quaternion(0, Variac.getRotationForStrength(strength), 0, false);
+    private static Quaternionf getRotation(int strength) {
+        return new Quaternionf().rotateY(Variac.getRotationForStrength(strength));
     }
 }
