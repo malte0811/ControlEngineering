@@ -21,7 +21,7 @@ import java.util.OptionalInt;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class QuadBuilder {
-    public static final ResourceLocation WHITE_WITH_BORDER = RLUtils.ceLoc("white_with_border");
+    public static final ResourceLocation WHITE_WITH_BORDER = RLUtils.ceLoc("block/white_with_border");
 
     private final Vertex[] vertices;
     @Nullable
@@ -122,15 +122,6 @@ public class QuadBuilder {
                 .getAtlas(InventoryMenu.BLOCK_ATLAS)
                 .getSprite(WHITE_WITH_BORDER));
     }
-
-    /*TODO JSON
-    @SubscribeEvent
-    public static void onTextureStitch(TextureStitchEvent.Pre ev) {
-        if (ev.getAtlas().location().equals(InventoryMenu.BLOCK_ATLAS)) {
-            ev.addSprite(WHITE_WITH_BORDER);
-        }
-    }
-     */
 
     private static class Vertex {
         private final Vec3 position;

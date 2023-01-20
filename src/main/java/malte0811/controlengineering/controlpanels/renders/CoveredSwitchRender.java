@@ -21,7 +21,7 @@ public class CoveredSwitchRender implements ComponentRenderer<ColorAndSignal, St
         var shape = Objects.requireNonNull(PanelComponents.COVERED_SWITCH.newInstance().getSelectionShape());
         return new Vec3(shape.maxX, shape.maxY, shape.maxZ);
     });
-    private static final Quaternionf OPEN_ROTATION = new Quaternionf().rotateX(-Mth.PI * 2 / 3);
+    private static final Quaternionf OPEN_ROTATION = new Quaternionf().rotateX(-Mth.PI / 3);
 
     @Override
     public void render(MixedModel output, ColorAndSignal config, State state, PoseStack transform) {

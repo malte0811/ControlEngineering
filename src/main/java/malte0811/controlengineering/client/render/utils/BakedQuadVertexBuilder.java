@@ -16,6 +16,8 @@ public class BakedQuadVertexBuilder {
     ) {
         final var baker = new QuadBakingVertexConsumer(quads::add);
         baker.setSprite(sprite);
+        baker.setHasAmbientOcclusion(true);
+        baker.setShade(true);
         return new TransformingVertexBuilder(baker, transform, DefaultVertexFormat.BLOCK);
     }
 
@@ -24,6 +26,8 @@ public class BakedQuadVertexBuilder {
     ) {
         final var baker = new QuadBakingVertexConsumer(quads::add);
         baker.setSprite(sprite);
+        baker.setHasAmbientOcclusion(true);
+        baker.setShade(true);
         return new TransformingVertexBuilder(baker, transform, DefaultVertexFormat.BLOCK) {
             @Nonnull
             @Override

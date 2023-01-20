@@ -7,6 +7,7 @@ import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.joml.Matrix4f;
 
@@ -61,6 +62,7 @@ public class ScreenUtils {
         // TODO fix!
         //tas.atlas().bind();
         //RenderSystem.setShaderTexture(0, tas.atlas().getId());
+        RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
     }
 
     public static boolean isInRect(int xMin, int yMin, int width, int height, int x, int y) {

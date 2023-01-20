@@ -38,6 +38,7 @@ import java.util.function.Function;
 @Mod.EventBusSubscriber(modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ControlEngineering {
     public static final String MODID = "controlengineering";
+    public static final String MODNAME = "Control Engineering";
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String VERSION = "1.0.0";
     public static final SimpleChannel NETWORK = NetworkRegistry.newSimpleChannel(

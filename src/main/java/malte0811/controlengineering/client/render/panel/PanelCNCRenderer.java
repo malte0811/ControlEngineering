@@ -61,7 +61,7 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
     private static final double HEAD_TRAVERSAL_HEIGHT = 3;
     private static final double HEAD_WORK_HEIGHT = -1;
     private static final Vec3 HEAD_IDLE = new Vec3(8 - HEAD_SIZE / 2, 5, 8 - HEAD_SIZE / 2);
-    private static final Quaternionf TAPE_ROTATION = new Quaternionf().rotationX(Mth.HALF_PI);
+    private static final Quaternionf TAPE_ROTATION = new Quaternionf().rotateX(Mth.HALF_PI);
 
     public PanelCNCRenderer(BlockEntityRendererProvider.Context ctx) {
     }

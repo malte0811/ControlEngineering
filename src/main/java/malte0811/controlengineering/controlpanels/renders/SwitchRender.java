@@ -21,8 +21,8 @@ import static malte0811.controlengineering.controlpanels.components.ToggleSwitch
 public class SwitchRender implements ComponentRenderer<BusSignalRef, Boolean> {
     private static final int BASE_COLOR = 0xd0d0d0;
     private static final int ROD_COLOR = 0xa0a0a0;
-    private static final Quaternionf ROTATION_OFF = new Quaternionf().rotationX(Mth.HALF_PI / 3);
-    private static final Quaternionf ROTATION_ON = new Quaternionf().rotationX(-Mth.HALF_PI / 3);
+    private static final Quaternionf ROTATION_OFF = new Quaternionf().rotateX(Mth.HALF_PI / 3);
+    private static final Quaternionf ROTATION_ON = new Quaternionf().rotateX(-Mth.HALF_PI / 3);
     private static final Map<Direction, Integer> SIDE_COLORS = Util.make(new EnumMap<>(Direction.class), sideColors -> {
         for (Direction side : DirectionUtils.VALUES) {
             if (side != Direction.DOWN) {

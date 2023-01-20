@@ -12,7 +12,7 @@ import org.joml.Quaternionf;
 public class LabelRender implements ComponentRenderer<ColorAndText, Unit> {
     private static final Quaternionf ROTATION = new Quaternionf()
             .scale(Label.SCALE)
-            .rotationX(Mth.HALF_PI);
+            .rotateX(Mth.HALF_PI);
 
     @Override
     public void render(MixedModel output, ColorAndText s, Unit unit, PoseStack transform) {

@@ -3,6 +3,7 @@ package malte0811.controlengineering.items;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.util.BitUtils;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -20,6 +21,7 @@ public class CECreativeTab {
         TAB = ev.registerCreativeModeTab(
                 new ResourceLocation(ControlEngineering.MODID, "main"),
                 builder -> builder.icon(() -> new ItemStack(CEBlocks.LOGIC_CABINET.get()))
+                        .title(Component.literal(ControlEngineering.MODNAME))
         );
     }
 

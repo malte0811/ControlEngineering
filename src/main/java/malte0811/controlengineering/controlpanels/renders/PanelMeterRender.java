@@ -26,7 +26,7 @@ public class PanelMeterRender implements ComponentRenderer<BusSignalRef, Integer
     });
     private static final Quaternionf MARKER_FONT_ROTATION = new Quaternionf()
             .rotateY(Mth.PI)
-            .rotationX(Mth.HALF_PI);
+            .rotateX(Mth.HALF_PI);
     private static final double AXIS_X = SIZE.x() / 2;
     private static final double AXIS_Y = SIZE.y() / 6;
     private static final double NEEDLE_LENGTH = SIZE.y() - 2 * AXIS_Y;

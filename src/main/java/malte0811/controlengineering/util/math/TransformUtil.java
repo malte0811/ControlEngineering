@@ -7,10 +7,9 @@ import org.joml.Matrix4f;
 public class TransformUtil {
     public static Matrix4f shear(float deltaXPerY, float deltaZPerY) {
         return new Matrix4f(
-                // TODO this is probably transposed?
-                1, deltaXPerY, 0, 0,
-                0, 1, 0, 0,
-                0, deltaZPerY, 1, 0,
+                1, 0, 0, 0,
+                deltaXPerY, 1, deltaZPerY, 0,
+                0, 0, 1, 0,
                 0, 0, 0, 1
         );
     }

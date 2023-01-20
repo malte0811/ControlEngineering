@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
@@ -68,15 +67,11 @@ public class PanelModelCache {
         if (list == null) {
             list = new PanelData();
         }
-        try {
-            T result = cache.getIfPresent(list);
-            if (result == null) {
-                result = cache.get(list.copy(false));
-            }
-            return result;
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+        T result = cache.getIfPresent(list);
+        if (result == null) {
+            result = cache.getUnchecked(list.copy(false));
         }
+        return result;
     }
 
     private static class MixedLoader extends CacheLoader<PanelData, MixedModel> {
@@ -117,7 +112,10 @@ public class PanelModelCache {
             List<BakedQuad> quads = new ArrayList<>(mixed.getStaticQuads());
             PoseStack transform = new PoseStack();
             TextureAtlasSprite panelTexture = PanelRenderer.PANEL_TEXTURE.get();
-            renderPanel(cacheKey.getTransform(), BakedQuadVertexBuilder.makeInterpolating(panelTexture, transform, quads));
+            renderPanel(
+                    cacheKey.getTransform(),
+                    BakedQuadVertexBuilder.makeNonInterpolating(panelTexture, transform, quads)
+            );
             // TODO render type
             return new SimpleBakedModel(
                     quads, EMPTY_LISTS_ON_ALL_SIDES, true, true, true,
@@ -149,11 +147,25 @@ public class PanelModelCache {
             Vec3[] first, Vec3[] second, double[] height
     ) {
         Preconditions.checkArgument(first.length == second.length);
+        final double epsilon = 1e-4;
         for (int i = 0; i < first.length; ++i) {
             int next = (i + 1) % first.length;
-            new QuadBuilder(first[i], second[i], second[next], first[next])
-                    .setSprite(texture)
-                    .setVCoords(0, (float) height[i], (float) height[next], 0)
+            final var zeroAtI = Math.abs(height[i]) < epsilon;
+            final var zeroAtNext = Math.abs(height[next]) < epsilon;
+            if (zeroAtI && zeroAtNext) {
+                continue;
+            }
+            QuadBuilder quadBuilder;
+            // Apparently the lighting engine only handles degeneracy at specific vertices of a quad, so we need 2
+            // different orders here depending on where the quad is degenerate
+            if (zeroAtI) {
+                quadBuilder = new QuadBuilder(second[next], first[next], first[i], second[i])
+                        .setVCoords((float) height[next], 0, 0, 0);
+            } else {
+                quadBuilder = new QuadBuilder(first[i], second[i], second[next], first[next])
+                        .setVCoords(0, (float) height[i], (float) height[next], 0);
+            }
+            quadBuilder.setSprite(texture)
                     .writeTo(builder);
         }
     }

@@ -18,7 +18,7 @@ public class SequencerRenderer implements BlockEntityRenderer<SequencerBlockEnti
     private static final TapeDriveRender TAPE_DRIVE = new TapeDriveRender(
             2, 1, new Vec2d(5, 8), new Vec2d(7, 5), new Vec2d(11, 8), new Vec2d(9, 5)
     );
-    private static final Quaternionf TAPE_ROTATION = new Quaternionf().rotationX(Mth.HALF_PI);
+    private static final Quaternionf TAPE_ROTATION = new Quaternionf().rotateX(Mth.HALF_PI);
 
     public SequencerRenderer(BlockEntityRendererProvider.Context ctx) {
     }

@@ -30,7 +30,7 @@ public class MatrixUtils {
             return;
         }
         switch (facing) {
-            case UP -> mat.rotationX(factor * Mth.HALF_PI);
+            case UP -> mat.rotateX(factor * Mth.HALF_PI);
             case DOWN -> mat.rotateX(-factor * Mth.HALF_PI);
             case SOUTH -> mat.rotateY(factor * Mth.PI);
             case EAST -> mat.rotateY(-factor * Mth.HALF_PI);
