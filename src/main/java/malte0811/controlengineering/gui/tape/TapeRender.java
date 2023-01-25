@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.RedstoneTapeUtils;
-import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -94,12 +93,12 @@ public class TapeRender {
     }
 
     private void renderRSAndColor(PoseStack matrixStack, byte[] shownBytes) {
+        RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
         final int sideSpace = -2;
         final double vOffset = yStart + TAPE_WIDTH + font.get().lineHeight - 2;
         final float rsSize = 16 + 2 * sideSpace;
         TextureAtlas texture = Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
         TextureAtlasSprite sprite = texture.getSprite(new ResourceLocation("block/redstone_dust_dot"));
-        ScreenUtils.bindForShader(sprite);
         forEachRow(matrixStack, shownBytes, rsSize, vOffset, (transform, currentByte) -> {
             int strength = RedstoneTapeUtils.getStrength(currentByte);
             int color = RedStoneWireBlock.getColorForPower(strength);
@@ -107,7 +106,6 @@ public class TapeRender {
         });
 
         TextureAtlasSprite white = QuadBuilder.getWhiteTexture();
-        ScreenUtils.bindForShader(white);
         forEachRow(matrixStack, shownBytes, 1, vOffset + CHAR_DISTANCE + 2, (transform, currentByte) -> {
             final DyeColor color = RedstoneTapeUtils.getColor(currentByte);
             blitWithColor(transform, 0, 1, 1, white, color.getTextColor());

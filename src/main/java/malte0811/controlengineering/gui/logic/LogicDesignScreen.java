@@ -80,14 +80,14 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
 
     private double mouseXDown;
     private double mouseYDown;
-    // Start at true: We don't want to consider a release if there wasn't a click before it
-    private boolean clickWasConsumed = true;
+    // Start at consumed: We don't want to consider a release if there wasn't a click before it
+    private ClickState clickState = ClickState.CLICKED_CONSUMED;
 
     public LogicDesignScreen(LogicDesignMenu container, Component title) {
         super(title);
         this.schematic = new Schematic();
         this.container = container;
-        placementHandler = new PlacementHandler(minecraft, this);
+        placementHandler = new PlacementHandler(minecraft, this, container.readOnly);
         visibleArea = new SchematicViewArea(minecraft);
     }
 
@@ -240,8 +240,10 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     }
 
     private void renderSelectedArea(PoseStack transform, Vec2d mousePos) {
-        final var mouseDownPos = visibleArea.getMousePositionInSchematic((int) mouseXDown, (int) mouseYDown);
-        final var selectedRect = new RectangleI(mouseDownPos.floor(), mousePos.floor());
+        final var mouseDownPos = visibleArea.getMousePositionInSchematic((int) mouseXDown, (int) mouseYDown).floor();
+        final var roundedMousePos = mousePos.floor();
+        if (mouseDownPos.equals(roundedMousePos)) { return; }
+        final var selectedRect = new RectangleI(mouseDownPos, roundedMousePos);
         ScreenUtils.drawBordersOutside(
                 transform, selectedRect.minX(), selectedRect.minY(), selectedRect.maxX(), selectedRect.maxY(),
                 1 / visibleArea.getCurrentScale(), -1
@@ -283,11 +285,12 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (super.mouseClicked(mouseX, mouseY, button)) {
+            clickState = ClickState.CLICKED_CONSUMED;
             return true;
         }
         mouseXDown = mouseX;
         mouseYDown = mouseY;
-        clickWasConsumed = false;
+        clickState = ClickState.CLICKED_UNDECIDED;
         return false;
     }
 
@@ -296,8 +299,11 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         if (super.mouseReleased(mouseX, mouseY, button)) {
             return true;
         }
+        if (clickState == ClickState.NOT_CLICKED || clickState == ClickState.CLICKED_CONSUMED) { return false; }
         final Vec2d mousePos = visibleArea.getMousePositionInSchematic((int) mouseX, (int) mouseY);
-        if (clickWasConsumed) {
+        final var oldClickState = clickState;
+        clickState = ClickState.NOT_CLICKED;
+        if (oldClickState == ClickState.CLICKED_DRAGGING) {
             if (!placementHandler.isDragSelecting(button)) { return false; }
             final Vec2d oldMousePos = visibleArea.getMousePositionInSchematic((int) mouseXDown, (int) mouseYDown);
             final var selectedArea = new RectangleI(mousePos.floor(), oldMousePos.floor());
@@ -305,7 +311,6 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
             runAndSendToServer(new DeleteArea(selectedArea));
             return true;
         }
-        clickWasConsumed = true;
         if (!placementHandler.placeCurrentlyHeld(mousePos, schematic, this::runAndSendToServer)) {
             var clicked = schematic.getSymbolAt(mousePos, minecraft.level);
             if (clicked != null) {
@@ -323,7 +328,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
             placementHandler.startWire(mousePos);
             return;
         }
-        if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        if (button == GLFW_MOUSE_BUTTON_LEFT && !container.readOnly) {
             placementHandler.pickupComponent(clicked, mousePos, this::runAndSendToServer);
         } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
             if (!container.readOnly || instance.getType().canConfigureOnReadOnly()) {
@@ -341,10 +346,12 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         if (super.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
             return true;
         }
-        if (!clickWasConsumed && !(Math.abs(mouseX - mouseXDown) > 1) && !(Math.abs(mouseY - mouseYDown) > 1)) {
-            return false;
+        if (clickState != ClickState.CLICKED_DRAGGING) {
+            if (!(Math.abs(mouseX - mouseXDown) > 1) && !(Math.abs(mouseY - mouseYDown) > 1)) {
+                return false;
+            }
+            clickState = ClickState.CLICKED_DRAGGING;
         }
-        clickWasConsumed = true;
         if (button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
             visibleArea.move(dragX, dragY);
             return true;
@@ -368,6 +375,9 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                     return true;
                 }
             } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
+                if (placementHandler.clearPlacingSymbol()) {
+                    return true;
+                }
                 final Vec2d mousePos = visibleArea.getMousePositionInSchematic(ScreenUtils.getMousePosition());
                 if (schematic.removeOneContaining(mousePos, minecraft.level)) {
                     sendToServer(new Delete(mousePos));
@@ -446,5 +456,9 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
         } else {
             errors = ImmutableList.of();
         }
+    }
+
+    private enum ClickState {
+        NOT_CLICKED, CLICKED_UNDECIDED, CLICKED_CONSUMED, CLICKED_DRAGGING
     }
 }

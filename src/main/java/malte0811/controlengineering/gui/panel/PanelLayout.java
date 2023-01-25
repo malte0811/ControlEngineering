@@ -1,5 +1,6 @@
 package malte0811.controlengineering.gui.panel;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import malte0811.controlengineering.ControlEngineering;
@@ -20,7 +21,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
@@ -48,11 +49,10 @@ public class PanelLayout extends AbstractWidget {
 
     @Override
     public void renderButton(@Nonnull PoseStack transform, int mouseX, int mouseY, float partialTicks) {
-        TextureAtlasSprite texture = PanelRenderer.PANEL_TEXTURE.get();
-        ScreenUtils.bindForShader(texture);
+        RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
         transform.pushPose();
         transform.translate(getX(), getY(), 0);
-        blit(transform, 0, 0, 0, width, height, texture);
+        blit(transform, 0, 0, 0, width, height, PanelRenderer.PANEL_TEXTURE.get());
         transform.scale((float) getPixelSize(), (float) getPixelSize(), 1);
         transform.translate(0, 0, 2);
         transform.mulPose(MINUS_QUARTER_X);

@@ -1,5 +1,6 @@
 package malte0811.controlengineering.gui.logic;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicNet;
@@ -31,18 +32,21 @@ import static org.lwjgl.glfw.GLFW.*;
 public class PlacementHandler {
     private final Minecraft minecraft;
     private final Screen owner;
+    private final boolean readOnly;
 
     @Nullable
     private Vec2i currentWireStart = null;
     @Nullable
     private PlacingSymbols placingSymbol = null;
 
-    public PlacementHandler(Minecraft minecraft, Screen owner) {
+    public PlacementHandler(Minecraft minecraft, Screen owner, boolean readOnly) {
         this.minecraft = minecraft;
         this.owner = owner;
+        this.readOnly = readOnly;
     }
 
     public void setPlacingSymbol(SymbolInstance<?> symbol) {
+        Preconditions.checkState(!readOnly);
         placingSymbol = new PlacingSymbols(new PlacedSymbol(Vec2i.ZERO, symbol), Vec2d.ZERO, false);
     }
 
@@ -66,7 +70,7 @@ public class PlacementHandler {
     }
 
     public boolean isDragSelecting(int pressedButton) {
-        if (minecraft.screen != owner) {
+        if (readOnly || minecraft.screen != owner) {
             // Not selecting if some other window is open above this one
             return false;
         }
@@ -112,6 +116,7 @@ public class PlacementHandler {
     }
 
     public boolean takePlacingFromArea(RectangleI selectedArea, Vec2d mousePos, Schematic schematic) {
+        Preconditions.checkState(!readOnly);
         List<WireSegment> movedSegments = new ArrayList<>();
         for (final var segmentIdx : schematic.getWiresWithin(selectedArea)) {
             movedSegments.addAll(schematic.getWireSegments(segmentIdx));
@@ -133,11 +138,13 @@ public class PlacementHandler {
     }
 
     public void startWire(Vec2d mousePos) {
+        Preconditions.checkState(!readOnly);
         currentWireStart = mousePos.floor();
     }
 
     private boolean tryPlaceSymbol(Vec2d mousePos, Schematic schematic, Consumer<LogicSubPacket> execPacket) {
         if (placingSymbol == null) { return false; }
+        Preconditions.checkState(!readOnly);
         final var symbols = placingSymbol.absoluteSymbols(mousePos);
         final var wires = placingSymbol.absoluteWires(mousePos);
         if (schematic.makeChecker(minecraft.level).getErrorForAddingAll(symbols, wires).isEmpty()) {
@@ -152,6 +159,7 @@ public class PlacementHandler {
     private boolean tryPlaceWire(Vec2d mousePos, Schematic schematic, Consumer<LogicSubPacket> execPacket) {
         WireSegment placedWire = getPlacingSegment(mousePos);
         if (placedWire == null) { return false; }
+        Preconditions.checkState(!readOnly);
         if (schematic.makeChecker(minecraft.level).canAdd(placedWire)) {
             execPacket.accept(new Add(List.of(placedWire), List.of()));
             if (placedWire.end().equals(currentWireStart)) {
@@ -164,17 +172,28 @@ public class PlacementHandler {
     }
 
     public void pickupComponent(PlacedSymbol clicked, Vec2d mousePos, Predicate<LogicSubPacket> execPacket) {
+        Preconditions.checkState(!readOnly);
         if (execPacket.test(new Delete(mousePos))) {
             placingSymbol = new PlacingSymbols(clicked, mousePos, true);
         }
     }
 
     public boolean putBackOnEsc(Schematic schematic, Consumer<LogicSubPacket> execPacket) {
+        Preconditions.checkState(!readOnly);
         if (currentWireStart == null && placingSymbol == null) { return false; }
         if (placingSymbol != null && placingSymbol.movingExisting) {
             tryPlaceSymbol(placingSymbol.originalMousePos(), schematic, execPacket);
         }
         currentWireStart = null;
+        placingSymbol = null;
+        return true;
+    }
+
+    public boolean clearPlacingSymbol() {
+        if (placingSymbol == null) {
+            return false;
+        }
+        Preconditions.checkState(!readOnly);
         placingSymbol = null;
         return true;
     }
