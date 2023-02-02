@@ -1,6 +1,7 @@
 package malte0811.controlengineering.datagen;
 
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.datagen.manual.CEManualDataGenerator;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -19,5 +20,6 @@ public class CEDataGen {
         generator.addProvider(true, new LootGenerator(output));
         generator.addProvider(true, new BlockTagGenerator(output, ev.getLookupProvider(), exHelper));
         generator.addProvider(true, new LootModifierGenerator(output));
+        CEManualDataGenerator.addProviders(generator, exHelper);
     }
 }

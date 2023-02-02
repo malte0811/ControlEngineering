@@ -4,14 +4,32 @@ on:
   push:
 jobs:
   run:
+    defaults:
+      run:
+        working-directory: main-repo
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+        with:
+          path: main-repo
+      - uses: actions/checkout@v2
+        with:
+          path: manual-data
+      - name: Set up manual data repo
+        if: ${{ github.event_name != 'pull_request' && startsWith(github.ref_name, '1.')}}
+        run: |
+          cd ../manual-data
+          MANUAL_BRANCH=manual-data/$(git branch --show-current)
+          echo Online manual data branch: $MANUAL_BRANCH
+          git fetch
+          git switch $MANUAL_BRANCH || git switch --orphan $MANUAL_BRANCH
+          cd ../main-repo
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
+            build/fg_cache
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
@@ -24,7 +42,7 @@ jobs:
       - name: Create list of existing generated resources
         run: find src/generated/resources/ ! -path "**/.cache*" > resources.txt
       - name: Run data generation
-        run: ./gradlew runData
+        run: xvfb-run --auto-servernum bash -c "ce_manual_datagen_path=$(pwd)/../manual-data ./gradlew runData"
       - name: Check that no files have changed
         # TODO --exit-code doesn't seem to be working as advertised?
         run: git update-index --really-refresh && git diff-index --ignore-all-space HEAD && git diff-index --ignore-all-space --quiet HEAD || (git diff && false)
@@ -32,6 +50,17 @@ jobs:
         run: find src/generated/resources/ ! -path "**/.cache*" > resources_new.txt
       - name: Check that no new resources have been created
         run: diff resources.txt resources_new.txt
+      - name: Commit and push manual data
+        if: ${{ github.event_name != 'pull_request' && startsWith(github.ref_name, '1.')}}
+        run: |
+          cd ../manual-data/
+          git add --all
+          if ! git diff-index --quiet HEAD ; then
+            git config user.name github-actions
+            git config user.email github-actions@github.com
+            git commit -m "Update generated manual data"
+            git push --set-upstream origin $(git branch --show-current)
+          fi
       - name: Build CE
         run: ./gradlew build
       - name: Upload artifacts

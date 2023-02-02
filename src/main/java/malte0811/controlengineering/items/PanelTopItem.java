@@ -1,5 +1,6 @@
 package malte0811.controlengineering.items;
 
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.client.model.panel.PanelItemRenderer;
@@ -16,6 +17,7 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class PanelTopItem extends Item {
     private static final PanelTransform FLAT_PANEL = new PanelTransform(0, 0, PanelOrientation.UP_NORTH);
@@ -27,9 +29,13 @@ public class PanelTopItem extends Item {
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
+            private final Supplier<BlockEntityWithoutLevelRenderer> renderer = Suppliers.memoize(
+                    () -> new PanelItemRenderer(is -> new PanelData(getComponentsOn(is), FLAT_PANEL))
+            );
+
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return new PanelItemRenderer(is -> new PanelData(getComponentsOn(is), FLAT_PANEL));
+                return renderer.get();
             }
         });
     }

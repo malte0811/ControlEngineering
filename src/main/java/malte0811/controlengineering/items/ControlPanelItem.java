@@ -1,6 +1,7 @@
 package malte0811.controlengineering.items;
 
 import blusunrize.immersiveengineering.api.tool.IConfigurableTool;
+import com.google.common.base.Suppliers;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlock;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
@@ -15,6 +16,7 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class ControlPanelItem extends CEBlockItem<PanelOrientation> implements IConfigurableTool {
     public static final String FRONT_HEIGHT_OPTION = "front_height";
@@ -28,11 +30,13 @@ public class ControlPanelItem extends CEBlockItem<PanelOrientation> implements I
     public void initializeClient(@Nonnull Consumer<IClientItemExtensions> consumer) {
         super.initializeClient(consumer);
         consumer.accept(new IClientItemExtensions() {
-            private final BlockEntityWithoutLevelRenderer itemRender = new PanelItemRenderer(is -> getPanelData(is));
+            private final Supplier<BlockEntityWithoutLevelRenderer> renderer = Suppliers.memoize(
+                    () -> new PanelItemRenderer(is -> getPanelData(is))
+            );
 
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return itemRender;
+                return renderer.get();
             }
         });
     }
