@@ -1,0 +1,7 @@
+{
+    "modid": "controlengineering",
+    "branchMap": {
+        "1.18.2": "main",
+        "1.19.2": "1.19"
+    }
+}
