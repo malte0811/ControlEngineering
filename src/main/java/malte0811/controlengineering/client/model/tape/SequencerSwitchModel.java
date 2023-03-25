@@ -47,7 +47,7 @@ public class SequencerSwitchModel implements CEBakedModel {
                 () -> Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(TEXTURE_LOC)
         );
         PoseStack transform = new PoseStack();
-        modelTransform.getRotation().blockCenterToCorner().push(transform);
+        transform.pushTransformation(modelTransform.getRotation().blockCenterToCorner());
         this.compactSwitch = makeSwitchQuads(4.5, transform);
         this.autoresetSwitch = makeSwitchQuads(10.5, transform);
         this.clockQuad = Suppliers.memoize(() -> {

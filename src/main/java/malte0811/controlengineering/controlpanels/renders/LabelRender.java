@@ -6,6 +6,7 @@ import malte0811.controlengineering.client.render.target.MixedModel;
 import malte0811.controlengineering.controlpanels.components.Label;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndText;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.util.Mth;
 import org.joml.Quaternionf;
 
@@ -24,7 +25,7 @@ public class LabelRender implements ComponentRenderer<ColorAndText, Unit> {
                 0, 0,
                 s.color(), false,
                 transform.last().pose(), output,
-                false, 0, 0
+                Font.DisplayMode.NORMAL, 0, 0
         );
         transform.popPose();
     }

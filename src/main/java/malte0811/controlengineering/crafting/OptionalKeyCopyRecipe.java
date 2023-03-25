@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.ItemWithKeyID;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -28,9 +29,9 @@ public class OptionalKeyCopyRecipe extends ShapedRecipe {
                 baseRecipe.getId(), baseRecipe.getGroup(),
                 CraftingBookCategory.MISC,
                 baseRecipe.getWidth(), baseRecipe.getHeight(),
-                baseRecipe.getIngredients(), baseRecipe.getResultItem()
+                baseRecipe.getIngredients(), baseRecipe.getResultItem(null)
         );
-        Preconditions.checkArgument(getResultItem().getItem() instanceof ItemWithKeyID);
+        Preconditions.checkArgument(getResultItem(null).getItem() instanceof ItemWithKeyID);
         this.isIdOptional = isIdOptional;
         this.ingredientsWithIdSource = NonNullList.create();
         this.ingredientsWithIdSource.addAll(baseRecipe.getIngredients());
@@ -68,14 +69,14 @@ public class OptionalKeyCopyRecipe extends ShapedRecipe {
 
     @Nonnull
     @Override
-    public ItemStack assemble(@Nonnull CraftingContainer inv) {
+    public ItemStack assemble(@Nonnull CraftingContainer inv, RegistryAccess access) {
         final var match = removeIDSource(inv);
         final ItemStack producedItem;
         if (match != null) {
-            producedItem = super.assemble(match.withoutSource);
+            producedItem = super.assemble(match.withoutSource, access);
             ItemWithKeyID.copyIdFrom(producedItem, inv.getItem(match.slotId));
         } else {
-            producedItem = super.assemble(inv);
+            producedItem = super.assemble(inv, access);
             ItemWithKeyID.addRandomId(producedItem);
         }
         return producedItem;

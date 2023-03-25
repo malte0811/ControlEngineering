@@ -36,10 +36,10 @@ public class ParallelPortMapperScreen extends AbstractRemapperScreen {
     }
 
     @Override
-    public void renderBackground(@Nonnull PoseStack transform, int vOffset) {
-        super.renderBackground(transform, vOffset);
+    public void renderBackground(@Nonnull PoseStack transform) {
+        super.renderBackground(transform);
         transform.pushPose();
-        transform.translate(leftPos, topPos, vOffset);
+        transform.translate(leftPos, topPos, 0);
         OPEN_DOOR.blit(transform, -38, -31);
         LEFT_TEXTURE.blit(transform, LEFT_X_MIN, LEFT_Y_MIN);
         for (int line = 0; line < BusWireType.NUM_LINES; ++line) {

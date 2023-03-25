@@ -4,6 +4,7 @@ import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.ISchematicItem;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -24,7 +25,7 @@ public record SchematicCopyRecipe(ResourceLocation id) implements CraftingRecipe
 
     @Override
     @Nonnull
-    public ItemStack assemble(@Nonnull CraftingContainer container) {
+    public ItemStack assemble(@Nonnull CraftingContainer container, RegistryAccess access) {
         var schematic = getSchematicToCopy(container);
         if (schematic != null) {
             return ISchematicItem.create(CEItems.SCHEMATIC, schematic.toCopy());
@@ -51,7 +52,7 @@ public record SchematicCopyRecipe(ResourceLocation id) implements CraftingRecipe
 
     @Override
     @Nonnull
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess access) {
         return CEItems.SCHEMATIC.get().getDefaultInstance();
     }
 

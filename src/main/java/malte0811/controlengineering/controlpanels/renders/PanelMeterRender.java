@@ -8,6 +8,7 @@ import malte0811.controlengineering.client.render.target.QuadBuilder;
 import malte0811.controlengineering.client.render.utils.TransformingVertexBuilder;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
@@ -54,7 +55,7 @@ public class PanelMeterRender implements ComponentRenderer<BusSignalRef, Integer
             font.drawInBatch(
                     marker.desc(),
                     -font.width(marker.desc()) / 2f, -font.lineHeight / 2f,
-                    0, false, transform.last().pose(), output, false, 0, 0
+                    0, false, transform.last().pose(), output, Font.DisplayMode.NORMAL, 0, 0
             );
             transform.popPose();
         }

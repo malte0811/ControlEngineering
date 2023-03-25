@@ -1,5 +1,6 @@
 package malte0811.controlengineering.crafting.noncrafting;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +30,7 @@ public class BaseRecipe implements Recipe<Container> {
 
     @Nonnull
     @Override
-    public ItemStack assemble(@Nonnull Container pContainer) {
+    public ItemStack assemble(@Nonnull Container pContainer, RegistryAccess access) {
         return ItemStack.EMPTY;
     }
 
@@ -40,7 +41,7 @@ public class BaseRecipe implements Recipe<Container> {
 
     @Nonnull
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess access) {
         return ItemStack.EMPTY;
     }
 

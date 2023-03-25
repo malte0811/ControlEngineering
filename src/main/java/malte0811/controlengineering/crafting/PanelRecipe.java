@@ -6,6 +6,7 @@ import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PanelTopItem;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -41,9 +42,9 @@ public record PanelRecipe(
 
     @Nonnull
     @Override
-    public ItemStack assemble(@Nonnull CraftingContainer inv) {
+    public ItemStack assemble(@Nonnull CraftingContainer inv, RegistryAccess access) {
         final ItemStack middleStack = inv.getItem(inv.getWidth() + 1);
-        final ItemStack result = getResultItem().copy();
+        final ItemStack result = getResultItem(access).copy();
         CompoundTag resultNBT = middleStack.getTag();
         if (resultNBT == null) {
             resultNBT = new CompoundTag();
@@ -64,7 +65,7 @@ public record PanelRecipe(
 
     @Nonnull
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess access) {
         return new ItemStack(CEBlocks.CONTROL_PANEL.get());
     }
 

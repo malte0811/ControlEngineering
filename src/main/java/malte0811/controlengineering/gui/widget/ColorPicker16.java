@@ -26,7 +26,7 @@ public class ColorPicker16 extends AbstractWidget {
     }
 
     @Override
-    public void renderButton(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         final Font font = Minecraft.getInstance().font;
         final float offset = (width - font.width(getMessage())) / 2f;
         font.draw(matrixStack, getMessage(), getX() + offset, getY(), -1);

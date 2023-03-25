@@ -33,7 +33,6 @@ public class ScreenUtils {
 
     public static void endPositionColorDraw() {
         Tesselator.getInstance().end();
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 
@@ -41,7 +40,6 @@ public class ScreenUtils {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tesselator.getBuilder();
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);

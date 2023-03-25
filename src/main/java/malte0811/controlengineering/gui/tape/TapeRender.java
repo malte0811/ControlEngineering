@@ -110,6 +110,7 @@ public class TapeRender {
             final DyeColor color = RedstoneTapeUtils.getColor(currentByte);
             blitWithColor(transform, 0, 1, 1, white, color.getTextColor());
         });
+        RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
     private void forEachRow(

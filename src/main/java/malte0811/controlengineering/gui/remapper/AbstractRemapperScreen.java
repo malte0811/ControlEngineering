@@ -70,10 +70,10 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
     }
 
     @Override
-    public void renderBackground(@Nonnull PoseStack transform, int vOffset) {
-        super.renderBackground(transform, vOffset);
+    public void renderBackground(@Nonnull PoseStack transform) {
+        super.renderBackground(transform);
         transform.pushPose();
-        transform.translate(leftPos, topPos, vOffset);
+        transform.translate(leftPos, topPos, 0);
         BACKGROUND.blit(transform, 0, 0);
         transform.popPose();
     }
@@ -205,7 +205,6 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
     ) {
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -216,7 +215,6 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
         bufferbuilder.vertex(matrix, x3, y3, 1.0F).color(color).endVertex();
         bufferbuilder.vertex(matrix, x4, y4, 1.0F).color(color).endVertex();
         BufferUploader.draw(bufferbuilder.end());
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 

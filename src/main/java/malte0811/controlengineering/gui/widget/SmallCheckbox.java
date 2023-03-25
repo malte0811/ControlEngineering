@@ -30,12 +30,12 @@ public class SmallCheckbox extends Checkbox {
     }
 
     @Override
-    public void renderButton(@Nonnull PoseStack transform, int mouseX, int mouseY, float partial) {
+    public void renderWidget(@Nonnull PoseStack transform, int mouseX, int mouseY, float partial) {
         transform.pushPose();
         transform.translate(getX(), getY() + width / 4., 0);
         transform.scale(0.5f, 0.5f, 1);
         transform.translate(-getX(), -getY(), 0);
-        super.renderButton(transform, mouseX, mouseY, partial);
+        super.renderWidget(transform, mouseX, mouseY, partial);
         transform.popPose();
         var font = Minecraft.getInstance().font;
         drawString(

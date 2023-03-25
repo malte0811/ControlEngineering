@@ -69,7 +69,7 @@ public abstract class CEContainerMenu<PacketType> extends AbstractContainerMenu 
 
     protected final void sendTo(ServerPlayer listener, PacketType packet) {
         ControlEngineering.NETWORK.sendTo(
-                makePacket(packet), listener.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT
+                makePacket(packet), listener.connection.connection, NetworkDirection.PLAY_TO_CLIENT
         );
     }
 

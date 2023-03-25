@@ -29,7 +29,7 @@ public abstract class NestedWidget extends AbstractWidget implements ContainerEv
     }
 
     @Override
-    public void renderButton(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         for (AbstractWidget w : subWidgets) {
             w.render(matrixStack, mouseX, mouseY, partialTicks);
         }

@@ -44,7 +44,7 @@ public class KeypunchSwitchModel implements CEBakedModel {
                 () -> Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(TEXTURE_LOC)
         );
         PoseStack transform = new PoseStack();
-        modelTransform.getRotation().blockCenterToCorner().push(transform);
+        transform.pushTransformation(modelTransform.getRotation().blockCenterToCorner());
         this.loopbackQuad = Suppliers.memoize(() -> makeQuad(6.5, transform));
         this.remoteQuad = Suppliers.memoize(() -> makeQuad(8.5, transform));
     }

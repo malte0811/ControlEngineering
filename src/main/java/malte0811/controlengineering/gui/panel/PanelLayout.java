@@ -48,7 +48,7 @@ public class PanelLayout extends AbstractWidget {
     }
 
     @Override
-    public void renderButton(@Nonnull PoseStack transform, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(@Nonnull PoseStack transform, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
         transform.pushPose();
         transform.translate(getX(), getY(), 0);

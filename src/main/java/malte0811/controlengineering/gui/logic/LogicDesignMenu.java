@@ -9,6 +9,7 @@ import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.logic.FullSync;
 import malte0811.controlengineering.network.logic.LogicPacket;
 import malte0811.controlengineering.network.logic.LogicSubPacket;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.registries.DeferredRegister;
@@ -71,7 +72,9 @@ public class LogicDesignMenu extends CEContainerMenu<LogicSubPacket> {
     public static LogicDesignMenuType makeType(String name, boolean readOnly, DeferredRegister<MenuType<?>> register) {
         var type = register.register(name, () -> {
             Mutable<MenuType<LogicDesignMenu>> typeBox = new MutableObject<>();
-            typeBox.setValue(new MenuType<>((id, inv) -> new LogicDesignMenu(typeBox.getValue(), id, readOnly)));
+            typeBox.setValue(new MenuType<>(
+                    (id, inv) -> new LogicDesignMenu(typeBox.getValue(), id, readOnly), FeatureFlagSet.of()
+            ));
             return typeBox.getValue();
         });
         return new LogicDesignMenuType(type, readOnly);

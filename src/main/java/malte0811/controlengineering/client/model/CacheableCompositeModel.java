@@ -18,6 +18,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -111,7 +112,7 @@ public record CacheableCompositeModel(
     @Nonnull
     @Override
     public BakedModel applyTransform(
-            @Nonnull ItemTransforms.TransformType transformType,
+            @Nonnull ItemDisplayContext transformType,
             @Nonnull PoseStack transform,
             boolean applyLeftHandTransform
     ) {

@@ -4,6 +4,7 @@ import malte0811.controlengineering.blockentity.tape.KeypunchState;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -28,7 +29,7 @@ public record GlueTapeRecipe(
 
     @Nonnull
     @Override
-    public ItemStack assemble(@Nonnull CraftingContainer inv) {
+    public ItemStack assemble(@Nonnull CraftingContainer inv, RegistryAccess access) {
         int match = findMatch(inv);
         if (match < 0) {
             return ItemStack.EMPTY;
@@ -69,7 +70,7 @@ public record GlueTapeRecipe(
 
     @Nonnull
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess access) {
         return CEItems.PUNCHED_TAPE.get().getDefaultInstance();
     }
 

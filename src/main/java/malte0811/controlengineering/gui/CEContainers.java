@@ -13,6 +13,7 @@ import malte0811.controlengineering.gui.remapper.RSRemapperMenu;
 import malte0811.controlengineering.gui.scope.ScopeMenu;
 import malte0811.controlengineering.gui.tape.KeypunchMenu;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.inventory.MenuType;
@@ -65,7 +66,9 @@ public class CEContainers {
     Supplier<MenuType<T>> create(ArgMenuFactory<T, Inventory> factory) {
         return () -> {
             Mutable<MenuType<T>> result = new MutableObject<>();
-            result.setValue(new MenuType<>((id, inv) -> factory.create(result.getValue(), id, inv)));
+            result.setValue(new MenuType<>(
+                    (id, inv) -> factory.create(result.getValue(), id, inv), FeatureFlagSet.of()
+            ));
             return result.getValue();
         };
     }

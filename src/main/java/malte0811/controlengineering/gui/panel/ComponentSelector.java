@@ -54,8 +54,8 @@ public class ComponentSelector extends NestedWidget {
     }
 
     @Override
-    public void renderButton(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
+    public void renderWidget(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        super.renderWidget(matrixStack, mouseX, mouseY, partialTicks);
         final int selectedRow = (mouseY - getY()) / actualRowHeight;
         final int selectedCol = (mouseX - getX()) / colWidth;
         for (int col = 0; col < numCols; ++col) {
