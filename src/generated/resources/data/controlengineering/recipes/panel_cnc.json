@@ -22,5 +22,6 @@
   ],
   "result": {
     "item": "controlengineering:panel_cnc"
-  }
+  },
+  "show_notification": true
 }

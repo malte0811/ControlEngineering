@@ -25,5 +25,6 @@
   ],
   "result": {
     "item": "controlengineering:oscilloscope"
-  }
+  },
+  "show_notification": true
 }

@@ -22,5 +22,6 @@
   ],
   "result": {
     "item": "controlengineering:rs_remapper"
-  }
+  },
+  "show_notification": true
 }

@@ -25,5 +25,6 @@
   ],
   "result": {
     "item": "controlengineering:keypunch"
-  }
+  },
+  "show_notification": true
 }

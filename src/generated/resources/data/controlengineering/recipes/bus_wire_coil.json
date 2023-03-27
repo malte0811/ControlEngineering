@@ -16,5 +16,6 @@
   ],
   "result": {
     "item": "controlengineering:bus_wire_coil"
-  }
+  },
+  "show_notification": true
 }

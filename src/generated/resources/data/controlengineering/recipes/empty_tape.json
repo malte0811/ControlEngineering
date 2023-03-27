@@ -19,5 +19,6 @@
     "nbt": {
       "length": 256
     }
-  }
+  },
+  "show_notification": true
 }

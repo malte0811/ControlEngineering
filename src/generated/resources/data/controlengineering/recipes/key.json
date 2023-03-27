@@ -16,5 +16,6 @@
   ],
   "result": {
     "item": "controlengineering:key"
-  }
+  },
+  "show_notification": true
 }

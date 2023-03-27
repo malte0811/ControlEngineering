@@ -19,5 +19,6 @@
   "result": {
     "count": 4,
     "item": "controlengineering:bus_relay"
-  }
+  },
+  "show_notification": true
 }

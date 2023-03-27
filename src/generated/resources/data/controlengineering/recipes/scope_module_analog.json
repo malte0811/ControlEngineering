@@ -25,5 +25,6 @@
   ],
   "result": {
     "item": "controlengineering:scope_module_analog"
-  }
+  },
+  "show_notification": true
 }

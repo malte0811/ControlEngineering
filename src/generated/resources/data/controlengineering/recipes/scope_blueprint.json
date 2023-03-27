@@ -28,5 +28,6 @@
     "nbt": {
       "blueprint": "controlengineering:scope_components"
     }
-  }
+  },
+  "show_notification": true
 }

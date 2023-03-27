@@ -15,5 +15,6 @@
   ],
   "result": {
     "item": "controlengineering:panel_top"
-  }
+  },
+  "show_notification": true
 }

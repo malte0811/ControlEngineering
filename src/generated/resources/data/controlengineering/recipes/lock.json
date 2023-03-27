@@ -23,5 +23,6 @@
   ],
   "result": {
     "item": "controlengineering:lock"
-  }
+  },
+  "show_notification": true
 }

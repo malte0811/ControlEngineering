@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "controlengineering:clock_free"
-  }
+  },
+  "show_notification": true
 }
