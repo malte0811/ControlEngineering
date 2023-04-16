@@ -214,7 +214,7 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
         bufferbuilder.vertex(matrix, x2, y2, 1.0F).color(color).endVertex();
         bufferbuilder.vertex(matrix, x3, y3, 1.0F).color(color).endVertex();
         bufferbuilder.vertex(matrix, x4, y4, 1.0F).color(color).endVertex();
-        BufferUploader.draw(bufferbuilder.end());
+        BufferUploader.drawWithShader(bufferbuilder.end());
         RenderSystem.disableBlend();
     }
 
