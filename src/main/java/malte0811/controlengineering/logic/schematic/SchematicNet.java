@@ -207,10 +207,10 @@ public class SchematicNet {
     }
 
     private void splitIntersections() {
-        for (int xI = 0; xI < segments.size(); xI++) {
+        xLoop: for (int xI = 0; xI < segments.size(); xI++) {
             final WireSegment horizontal = segments.get(xI);
             if (horizontal.axis() != X) { continue; }
-            for (int yI = 0; yI < segments.size(); yI++) {
+            yLoop: for (int yI = 0; yI < segments.size(); yI++) {
                 final WireSegment vertical = segments.get(yI);
                 if (vertical.axis() != Y) { continue; }
                 if (horizontal.crossesOneOpen(vertical)) {
@@ -218,10 +218,12 @@ public class SchematicNet {
                     if (vertical.containsOpen(intersection)) {
                         splitSegmentAt(yI, intersection);
                         --yI;
+                        continue yLoop;
                     }
                     if (horizontal.containsOpen(intersection)) {
                         splitSegmentAt(xI, intersection);
                         --xI;
+                        continue xLoop;
                     }
                 }
             }
