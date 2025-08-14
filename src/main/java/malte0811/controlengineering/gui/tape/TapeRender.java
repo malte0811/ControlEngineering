@@ -18,8 +18,10 @@ import net.minecraft.world.level.block.RedStoneWireBlock;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import static net.minecraft.client.gui.GuiComponent.blit;
-import static net.minecraft.client.gui.GuiComponent.fill;
+//import static net.minecraft.client.gui.GuiComponent.blit;
+//import static net.minecraft.client.gui.GuiComponent.fill;
+
+import net.minecraft.client.gui.GuiGraphics;
 
 public class TapeRender {
     private static final int TAPE_COLOR = 0xffcea1a2;
@@ -45,15 +47,15 @@ public class TapeRender {
         this.data = data;
     }
 
-    public void render(PoseStack matrixStack) {
+    public void render(GuiGraphics graphics) {
         byte[] shownBytes = data;
-        matrixStack.pushPose();
-        matrixStack.translate(xStart, 0, 0);
-        renderHoles(matrixStack, shownBytes);
-        matrixStack.translate(-1.5, 0, 0);
-        renderChars(matrixStack, shownBytes);
-        renderRSAndColor(matrixStack, shownBytes);
-        matrixStack.popPose();
+        graphics.pose().pushPose();
+        graphics.pose().translate(xStart, 0, 0);
+        renderHoles(graphics, shownBytes);
+        graphics.pose().translate(-1.5, 0, 0);
+        renderChars(graphics, shownBytes);
+        renderRSAndColor(graphics, shownBytes);
+        graphics.pose().popPose();
     }
 
     public void setData(byte[] data) {
@@ -61,77 +63,77 @@ public class TapeRender {
         this.data = data;
     }
 
-    private void renderHoles(PoseStack matrixStack, byte[] shownBytes) {
-        forEachRow(matrixStack, shownBytes, CHAR_DISTANCE, yStart, (transform, currentByte) -> {
+    private void renderHoles(GuiGraphics graphics, byte[] shownBytes) {
+        forEachRow(graphics, shownBytes, CHAR_DISTANCE, yStart, (transform, currentByte) -> {
             for (int bit = 0; bit < HOLE_OFFSETS.length; ++bit) {
                 if (!BitUtils.getBit(currentByte, bit)) {
                     int yPos = HOLE_OFFSETS[bit];
-                    fill(transform, 0, yPos, HOLE_WIDTH, yPos + HOLE_HEIGHT, TAPE_COLOR);
+                    graphics.fill( 0, yPos, HOLE_WIDTH, yPos + HOLE_HEIGHT, TAPE_COLOR);
                 }
             }
         });
     }
 
-    private void renderChars(PoseStack matrixStack, byte[] shownBytes) {
+    private void renderChars(GuiGraphics graphics, byte[] shownBytes) {
         double vOffset = yStart + TAPE_WIDTH + 1;
         final int delta = 8;
-        forEachRow(matrixStack, shownBytes, delta, vOffset, (transform, currentByte) -> {
+        forEachRow(graphics, shownBytes, delta, vOffset, (transform, currentByte) -> {
                     char asChar = (char) BitUtils.clearParity(currentByte);
                     if (asChar <= ' ' || asChar >= 0x7f) {
                         asChar = '.';
                     }
                     String toPrint = String.valueOf(asChar);
                     float width = font.get().getSplitter().stringWidth(toPrint);
-                    float centerOffset = (delta - width) / 2f;
+                    int centerOffset = (int) ((delta - width) / 2f);
                     int color = -1;
                     if (!BitUtils.isCorrectParity(currentByte)) {
                         color &= 0xff_00_00;
                     }
-                    font.get().draw(transform, toPrint, centerOffset, 0, color);
+                    graphics.drawString(this.font.get(), toPrint, centerOffset, 0, color);
                 }
         );
     }
 
-    private void renderRSAndColor(PoseStack matrixStack, byte[] shownBytes) {
+    private void renderRSAndColor(GuiGraphics graphics, byte[] shownBytes) {
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
         final int sideSpace = -2;
         final double vOffset = yStart + TAPE_WIDTH + font.get().lineHeight - 2;
         final float rsSize = 16 + 2 * sideSpace;
         TextureAtlas texture = Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
         TextureAtlasSprite sprite = texture.getSprite(new ResourceLocation("block/redstone_dust_dot"));
-        forEachRow(matrixStack, shownBytes, rsSize, vOffset, (transform, currentByte) -> {
+        forEachRow(graphics, shownBytes, rsSize, vOffset, (transform, currentByte) -> {
             int strength = RedstoneTapeUtils.getStrength(currentByte);
             int color = RedStoneWireBlock.getColorForPower(strength);
-            blitWithColor(transform, sideSpace, 16, 16, sprite, color);
+            blitWithColor(graphics , sideSpace, 16, 16, sprite, color);
         });
 
         TextureAtlasSprite white = QuadBuilder.getWhiteTexture();
-        forEachRow(matrixStack, shownBytes, 1, vOffset + CHAR_DISTANCE + 2, (transform, currentByte) -> {
+        forEachRow(graphics, shownBytes, 1, vOffset + CHAR_DISTANCE + 2, (transform, currentByte) -> {
             final DyeColor color = RedstoneTapeUtils.getColor(currentByte);
-            blitWithColor(transform, 0, 1, 1, white, color.getTextColor());
+            blitWithColor(graphics, 0, 1, 1, white, color.getTextColor());
         });
         RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
     private void forEachRow(
-            PoseStack matrixStack,
+            GuiGraphics graphics,
             byte[] shownBytes,
             float width,
             double verticalOffset, BiConsumer<PoseStack, Byte> draw
     ) {
-        matrixStack.pushPose();
-        matrixStack.translate(0, verticalOffset, 0);
+        graphics.pose().pushPose();
+        graphics.pose().translate(0, verticalOffset, 0);
         float factor = CHAR_DISTANCE / width;
-        matrixStack.scale(factor, factor, 1);
+        graphics.pose().scale(factor, factor, 1);
         for (byte b : shownBytes) {
-            draw.accept(matrixStack, b);
-            matrixStack.translate(width, 0, 0);
+            draw.accept(graphics.pose(), b);
+            graphics.pose().translate(width, 0, 0);
         }
-        matrixStack.popPose();
+        graphics.pose().popPose();
     }
 
-    private static void blitWithColor(
-            PoseStack m, int x, int width, int height, TextureAtlasSprite texture, int color
+    private static void blitWithColor(GuiGraphics graphics,
+             int x, int width, int height, TextureAtlasSprite texture, int color
     ) {
         RenderSystem.setShaderColor(
                 BitUtils.getBits(color, 16, 8) / 255f,
@@ -139,6 +141,7 @@ public class TapeRender {
                 BitUtils.getBits(color, 0, 8) / 255f,
                 1
         );
-        blit(m, x, 0, 0, width, height, texture);
+        
+       graphics.blit( x, 0, 0, width, height, texture);
     }
 }

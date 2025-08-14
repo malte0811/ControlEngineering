@@ -14,6 +14,7 @@ import malte0811.controlengineering.gui.panel.ComponentSelector;
 import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -56,34 +57,34 @@ public class PanelComponentElement extends SpecialManualElement {
     }
 
     @Override
-    public void render(PoseStack transform, ManualScreen gui, int x, int y, int mouseX, int mouseY) {
+    public void render(GuiGraphics graphics, ManualScreen gui, int x, int y, int mouseX, int mouseY) {
         var manual = gui.getManual();
-        transform.pushPose();
-        transform.translate(x, y, 0);
+        graphics.pose().pushPose();
+        graphics.pose().translate(x, y, 0);
         var font = getFont();
         var labelWidth = font.width(INGREDIENTS_LABEL);
-        font.draw(transform, INGREDIENTS_LABEL, manual.pageWidth - labelWidth, 0, 0);
-        transform.translate(0, font.lineHeight, 0);
+        graphics.drawString(font, INGREDIENTS_LABEL, manual.pageWidth - labelWidth, 0, 0);
+        graphics.pose().translate(0, font.lineHeight, 0);
         var shownIngredients = getShownIngredients();
-        var tooltipStack = renderIngredients(
-                transform, shownIngredients, manual.pageWidth, mouseX, mouseY - font.lineHeight
+        ItemStack tooltipStack = renderIngredients(
+                graphics, shownIngredients, manual.pageWidth, mouseX, mouseY - font.lineHeight
         );
-        ComponentSelector.renderComponentInGui(transform, type, manual.pageWidth - ITEM_SIZE, getComponentDemoHeight());
-        transform.popPose();
-        if (!tooltipStack.isEmpty()) {
-            gui.renderTooltip(transform, tooltipStack, mouseX, mouseY);
+        ComponentSelector.renderComponentInGui(graphics, type, manual.pageWidth - ITEM_SIZE, getComponentDemoHeight());
+        graphics.pose().popPose();
+        if (!(tooltipStack).isEmpty()) {
+            graphics.renderTooltip(font, tooltipStack, mouseX, mouseY);
         }
     }
 
     private ItemStack renderIngredients(
-            PoseStack transform, List<ItemStack> shownIngredients, int width, int mouseX, int mouseY
+            GuiGraphics graphics, List<ItemStack> shownIngredients, int width, int mouseX, int mouseY
     ) {
         ItemStack highlighted = ItemStack.EMPTY;
         for (int i = 0; i < shownIngredients.size(); ++i) {
             var x = width - ITEM_SIZE;
             var y = i * ITEM_SIZE;
             var item = shownIngredients.get(i);
-            ManualUtils.renderItemStack(transform, item, x, y, false);
+            ManualUtils.renderItemStack(graphics, item, x, y, false);
             if (highlighted.isEmpty() && ScreenUtils.isInRect(x, y, ITEM_SIZE, ITEM_SIZE, mouseX, mouseY)) {
                 highlighted = item;
             }

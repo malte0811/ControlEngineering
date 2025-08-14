@@ -7,8 +7,8 @@ import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.logic.clock.ClockGenerator;
 import malte0811.controlengineering.logic.clock.ClockTypes;
-import malte0811.controlengineering.scope.module.ScopeModule;
-import malte0811.controlengineering.scope.module.ScopeModules;
+//import malte0811.controlengineering.scope.module.ScopeModule;
+//import malte0811.controlengineering.scope.module.ScopeModules;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -36,11 +36,11 @@ public class CEItems {
     public static final RegistryObject<ItemWithKeyID> LOCK = REGISTER.register("lock", ItemWithKeyID::new);
     public static final RegistryObject<ItemWithKeyID> KEY = REGISTER.register("key", ItemWithKeyID::new);
     public static final Map<ResourceLocation, RegistryObject<Item>> CLOCK_GENERATORS;
-    public static final Map<ResourceLocation, RegistryObject<Item>> SCOPE_MODULES;
-    public static final RegistryObject<PCBStackItem> PCB_STACK = REGISTER.register("pcb_stack", PCBStackItem::new);
-    public static final RegistryObject<SchematicItem> SCHEMATIC = REGISTER.register(
-            "logic_schematic", SchematicItem::new
-    );
+//    public static final Map<ResourceLocation, RegistryObject<Item>> SCOPE_MODULES;
+//    public static final RegistryObject<PCBStackItem> PCB_STACK = REGISTER.register("pcb_stack", PCBStackItem::new);
+//    public static final RegistryObject<SchematicItem> SCHEMATIC = REGISTER.register(
+//            "logic_schematic", SchematicItem::new
+//    );
     public static final RegistryObject<Item> CRT_TUBE = simpleItem("crt_tube");
     public static final RegistryObject<Item> SCOPE_MODULE_CASE = simpleItem("scope_module_case");
 
@@ -55,11 +55,11 @@ public class CEItems {
     public static final RegistryObject<CEBlockItem<Direction>> KEYPUNCH = blockItemCE(CEBlocks.KEYPUNCH);
     public static final RegistryObject<CEBlockItem<Direction>> SEQUENCER = blockItemCE(CEBlocks.SEQUENCER);
     public static final RegistryObject<CEBlockItem<Direction>> PANEL_CNC = blockItemCE(CEBlocks.PANEL_CNC);
-    public static final RegistryObject<CEBlockItem<Direction>> LOGIC_CABINET = blockItemCE(CEBlocks.LOGIC_CABINET);
-    public static final RegistryObject<CEBlockItem<Direction>> LOGIC_WORKBENCH = blockItemCE(CEBlocks.LOGIC_WORKBENCH);
+//    public static final RegistryObject<CEBlockItem<Direction>> LOGIC_CABINET = blockItemCE(CEBlocks.LOGIC_CABINET);
+//    public static final RegistryObject<CEBlockItem<Direction>> LOGIC_WORKBENCH = blockItemCE(CEBlocks.LOGIC_WORKBENCH);
     public static final RegistryObject<CEBlockItem<Direction>> PANEL_DESIGNER = blockItemCE(CEBlocks.PANEL_DESIGNER);
     public static final RegistryObject<CEBlockItem<Direction>> RS_REMAPPER = blockItemCE(CEBlocks.RS_REMAPPER);
-    public static final RegistryObject<CEBlockItem<Direction>> SCOPE = blockItemCE(CEBlocks.SCOPE);
+//    public static final RegistryObject<CEBlockItem<Direction>> SCOPE = blockItemCE(CEBlocks.SCOPE);
 
     private static <T> RegistryObject<CEBlockItem<T>> blockItemCE(RegistryObject<? extends CEBlock<T>> block) {
         return blockItemCE(block, simpleItemProperties());
@@ -97,8 +97,8 @@ public class CEItems {
         CLOCK_GENERATORS = makeItemsFor(
                 ClockTypes.getGenerators(), ClockGenerator::isActiveClock, ClockTypes.ITEM_KEY_PREFIX
         );
-        SCOPE_MODULES = makeItemsFor(
-                ScopeModules.REGISTRY.getEntries(), Predicate.not(ScopeModule::isEmpty), ScopeModules.ITEM_PREFIX
-        );
+//        SCOPE_MODULES = makeItemsFor(
+//                ScopeModules.REGISTRY.getEntries(), Predicate.not(ScopeModule::isEmpty), ScopeModules.ITEM_PREFIX
+//        );
     }
 }

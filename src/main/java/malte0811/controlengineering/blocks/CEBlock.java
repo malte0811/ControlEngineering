@@ -27,7 +27,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -144,13 +144,13 @@ public abstract class CEBlock<PlacementData> extends Block implements EntityBloc
             @Nonnull InteractionHand handIn,
             @Nonnull BlockHitResult hit
     ) {
-        if (worldIn.getBlockEntity(pos) instanceof SelectionShapeOwner shapeOwner) {
-            return shapeOwner.getShape()
-                    .onUse(
-                            new UseOnContext(player, handIn, hit),
-                            RaytraceUtils.create(player, 0, Vec3.atLowerCornerOf(pos))
-                    );
-        }
+       if (worldIn.getBlockEntity(pos) instanceof SelectionShapeOwner shapeOwner) {
+           return shapeOwner.getShape()
+                   .onUse(
+                           new UseOnContext(player, handIn, hit),
+                           RaytraceUtils.create(player, 0, Vec3.atLowerCornerOf(pos))
+                   );
+       }
         return super.use(state, worldIn, pos, player, handIn, hit);
     }
 
@@ -189,9 +189,10 @@ public abstract class CEBlock<PlacementData> extends Block implements EntityBloc
     }
 
     protected static BlockBehaviour.Properties defaultProperties() {
-        return Properties.of(Material.METAL)
+        return Properties.of()
                 .strength(3, 15)
-                .sound(SoundType.METAL);
+                .sound(SoundType.METAL)
+                .mapColor(MapColor.METAL);
     }
 
     protected static BlockBehaviour.Properties defaultPropertiesNotSolid() {

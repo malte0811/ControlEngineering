@@ -11,6 +11,7 @@ import malte0811.controlengineering.network.keypunch.KeypunchPacket;
 import malte0811.controlengineering.network.keypunch.KeypunchSubPacket;
 import malte0811.controlengineering.network.keypunch.TypeChar;
 import malte0811.controlengineering.util.RLUtils;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
@@ -67,17 +68,17 @@ public class KeypunchScreen extends Screen implements MenuAccess<KeypunchMenu> {
     }
 
     @Override
-    public void render(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(matrixStack);
-        {
-            matrixStack.pushPose();
-            matrixStack.translate(getXStart(), getYStart(), 0);
-        }
-        MAIN_SCREEN.blit(matrixStack, 0, 0);
-        tapeRender.render(matrixStack);
-        font.draw(matrixStack, Integer.toString(state.getAvailable()), 210, 35, -1);
-        matrixStack.popPose();
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(graphics);
+        
+            graphics.pose().pushPose();
+            graphics.pose().translate(getXStart(), getYStart(), 0);
+        
+        MAIN_SCREEN.blit(graphics.pose(), 0, 0);
+        tapeRender.render(graphics);
+        graphics.drawString(font, Integer.toString(state.getAvailable()), 210, 35, -1);
+        graphics.pose().popPose();
+        super.render(graphics, mouseX, mouseY, partialTicks);
     }
 
     @Override

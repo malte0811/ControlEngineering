@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.chars.CharConsumer;
 import malte0811.controlengineering.gui.SubTexture;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -37,13 +38,12 @@ public class KeyboardButton extends Button {
     }
 
     @Override
-    public void render(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
         RenderSystem.setShaderTexture(0, this.texture.getMainTexture());
         RenderSystem.enableDepthTest();
-        texture.blit(matrixStack, getX(), getY());
-        drawCenteredString(
-                matrixStack,
+        texture.blit(graphics.pose(), getX(), getY());
+        graphics.drawCenteredString(
                 minecraft.font,
                 this.getMessage(),
                 this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2,

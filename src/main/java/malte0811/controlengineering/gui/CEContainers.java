@@ -2,15 +2,15 @@ package malte0811.controlengineering.gui;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.bus.RSRemapperBlockEntity;
-import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
+//import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
 import malte0811.controlengineering.blockentity.panels.PanelDesignerBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
-import malte0811.controlengineering.gui.logic.LogicDesignMenu;
-import malte0811.controlengineering.gui.logic.LogicDesignMenu.LogicDesignMenuType;
+//import malte0811.controlengineering.gui.logic.LogicDesignMenu;
+//import malte0811.controlengineering.gui.logic.LogicDesignMenu.LogicDesignMenuType;
 import malte0811.controlengineering.gui.panel.PanelDesignMenu;
 import malte0811.controlengineering.gui.remapper.ParallelPortMapperMenu;
 import malte0811.controlengineering.gui.remapper.RSRemapperMenu;
-import malte0811.controlengineering.gui.scope.ScopeMenu;
+//import malte0811.controlengineering.gui.scope.ScopeMenu;
 import malte0811.controlengineering.gui.tape.KeypunchMenu;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -34,13 +34,13 @@ public class CEContainers {
             REGISTER.register("keypunch", createNoInv(KeypunchMenu::new)), KeypunchMenu::new
     );
 
-    public static final LogicDesignMenuType LOGIC_DESIGN_VIEW = LogicDesignMenu.makeType(
-            "logic_design_view", true, REGISTER
-    );
-
-    public static final LogicDesignMenuType LOGIC_DESIGN_EDIT = LogicDesignMenu.makeType(
-            "logic_design_edit", false, REGISTER
-    );
+//    public static final LogicDesignMenuType LOGIC_DESIGN_VIEW = LogicDesignMenu.makeType(
+//            "logic_design_view", true, REGISTER
+//    );
+//
+//    public static final LogicDesignMenuType LOGIC_DESIGN_EDIT = LogicDesignMenu.makeType(
+//            "logic_design_edit", false, REGISTER
+//    );
 
     public static final ArgMenuType<PanelDesignMenu, PanelDesignerBlockEntity> PANEL_DESIGN = new ArgMenuType<>(
             REGISTER.register("panel_layout", createNoInv(PanelDesignMenu::new)), PanelDesignMenu::new
@@ -53,9 +53,9 @@ public class CEContainers {
             REGISTER.register("port_remapper", createNoInv(ParallelPortMapperMenu::new))
     );
 
-    public static final ArgMenuType<ScopeMenu, ScopeBlockEntity> SCOPE = new ArgMenuType<>(
-            REGISTER.register("scope", createNoInv(ScopeMenu::new)), ScopeMenu::new
-    );
+//    public static final ArgMenuType<ScopeMenu, ScopeBlockEntity> SCOPE = new ArgMenuType<>(
+//            REGISTER.register("scope", createNoInv(ScopeMenu::new)), ScopeMenu::new
+//    );
 
     private static <T extends AbstractContainerMenu>
     Supplier<MenuType<T>> createNoInv(NoInvMenuFactory<T> factory) {

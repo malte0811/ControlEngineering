@@ -27,7 +27,7 @@ public class ItemUtil {
     ) {
         return tryConsumeItemsFrom(toConsume, sources, true) && tryConsumeItemsFrom(toConsume, sources, false);
     }
-
+   // TODO: refactor out into report missing ingredients so we can report back the missing items in the CNC error report
     public static boolean tryConsumeItemsFrom(
             List<IngredientWithSize> toConsume, Collection<CapabilityReference<IItemHandler>> sources, boolean simulate
     ) {

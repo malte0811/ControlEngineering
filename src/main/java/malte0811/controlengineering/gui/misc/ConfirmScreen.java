@@ -3,6 +3,7 @@ package malte0811.controlengineering.gui.misc;
 import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.StackedScreen;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
@@ -35,7 +36,7 @@ public class ConfirmScreen extends StackedScreen {
     }
 
     @Override
-    protected void renderForeground(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        drawCenteredString(matrixStack, this.font, this.title, this.width / 2, 90, -1);
+    protected void renderForeground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        graphics.drawCenteredString( this.font, this.title, this.width / 2, 90, -1);
     }
 }

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.util.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -26,10 +27,10 @@ public class ColorPicker16 extends AbstractWidget {
     }
 
     @Override
-    public void renderWidget(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         final Font font = Minecraft.getInstance().font;
         final float offset = (width - font.width(getMessage())) / 2f;
-        font.draw(matrixStack, getMessage(), getX() + offset, getY(), -1);
+        graphics.drawString(font, getMessage(), (int) (getX() + offset), getY(), -1);
         DyeColor underCursor = getColorUnderCursor(mouseX, mouseY);
         for (DyeColor color : DyeColor.values()) {
             final int minX = getX() + (color.getId() % NUM_COLS) * GRID_SIZE;
@@ -37,15 +38,14 @@ public class ColorPicker16 extends AbstractWidget {
             int border = 2;
             if (underCursor == color) {
                 final int inverse = ColorUtils.inverseColor(color.getTextColor());
-                fill(matrixStack, minX, minY, minX + GRID_SIZE, minY + GRID_SIZE, inverse);
+                graphics.fill(minX, minY, minX + GRID_SIZE, minY + GRID_SIZE, inverse);
                 if (selected == color) {
                     border = 1;
                 }
             } else if (selected == color) {
                 border = 0;
             }
-            fill(
-                    matrixStack,
+            graphics.fill(
                     minX + border, minY + border,
                     minX + GRID_SIZE - border, minY + GRID_SIZE - border,
                     0xff000000 | color.getTextColor()

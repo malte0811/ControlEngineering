@@ -17,11 +17,11 @@ public class CERecipeTypes {
             Registries.RECIPE_TYPE, ControlEngineering.MODID
     );
 
-    public static RegistryObject<RecipeType<ComponentCostRecipe>> COMPONENT_COST = register("component_cost");
-    public static RegistryObject<RecipeType<ServerFontRecipe>> SERVER_FONT = register("server_font_width");
+    public static RegistryObject<RecipeType<ComponentCostRecipe>> COMPONENT_COST = REGISTER.register("component_cost", () -> new RecipeType<ComponentCostRecipe>() {});
+    public static RegistryObject<RecipeType<ServerFontRecipe>> SERVER_FONT = REGISTER.register("server_font_width", () -> new RecipeType<ServerFontRecipe>() {});
 
-    private static <T extends Recipe<?>>
-    RegistryObject<RecipeType<T>> register(String path) {
-        return REGISTER.register(path, () -> new RecipeType<>() {});
-    }
+//    private static <T extends Recipe<?>>
+//    RegistryObject<RecipeType<T>> register(String path) {
+//        return REGISTER.register(path, () -> new RecipeType<>() {});
+//    }
 }

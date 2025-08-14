@@ -15,6 +15,7 @@ import malte0811.controlengineering.logic.cells.impl.VoltageDivider;
 import malte0811.controlengineering.util.math.Fraction;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
@@ -109,7 +110,7 @@ public class DataProviderScreen<T> extends StackedScreen {
     }
 
     @Override
-    protected void renderForeground(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    protected void renderForeground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 
     }
 }

@@ -3,16 +3,16 @@ package malte0811.controlengineering.blockentity;
 import com.google.common.collect.ImmutableSet;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.bus.*;
-import malte0811.controlengineering.blockentity.logic.LogicCabinetBlockEntity;
-import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
+//import malte0811.controlengineering.blockentity.logic.LogicCabinetBlockEntity;
+//import malte0811.controlengineering.blockentity.logic.LogicWorkbenchBlockEntity;
 import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blockentity.panels.PanelCNCBlockEntity;
 import malte0811.controlengineering.blockentity.panels.PanelDesignerBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.blockentity.tape.SequencerBlockEntity;
 import malte0811.controlengineering.blocks.CEBlocks;
-import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
-import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
+//import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
+//import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelDesignerBlock;
 import net.minecraft.core.BlockPos;
@@ -66,17 +66,17 @@ public class CEBlockEntities {
             "sequencer", createBEType(SequencerBlockEntity::new, CEBlocks.SEQUENCER)
     );
 
-    public static MultiblockBEType<LogicCabinetBlockEntity, ?> LOGIC_CABINET = makeMBType(
-            "logic_cabinet", LogicCabinetBlockEntity::new, CEBlocks.LOGIC_CABINET, LogicCabinetBlock::isMaster
-    );
+//    public static MultiblockBEType<LogicCabinetBlockEntity, ?> LOGIC_CABINET = makeMBType(
+//            "logic_cabinet", LogicCabinetBlockEntity::new, CEBlocks.LOGIC_CABINET, LogicCabinetBlock::isMaster
+//    );
+//
+//    public static MultiblockBEType<LogicWorkbenchBlockEntity, ?> LOGIC_WORKBENCH = makeMBType(
+//            "logic_workbench", LogicWorkbenchBlockEntity::new, CEBlocks.LOGIC_WORKBENCH, LogicWorkbenchBlock::isMaster
+//    );
 
-    public static MultiblockBEType<LogicWorkbenchBlockEntity, ?> LOGIC_WORKBENCH = makeMBType(
-            "logic_workbench", LogicWorkbenchBlockEntity::new, CEBlocks.LOGIC_WORKBENCH, LogicWorkbenchBlock::isMaster
-    );
-
-    public static RegistryObject<BlockEntityType<ScopeBlockEntity>> SCOPE = REGISTER.register(
-            "oscilloscope", createBEType(ScopeBlockEntity::new, CEBlocks.SCOPE)
-    );
+//    public static RegistryObject<BlockEntityType<ScopeBlockEntity>> SCOPE = REGISTER.register(
+//            "oscilloscope", createBEType(ScopeBlockEntity::new, CEBlocks.SCOPE)
+//    );
 
     public static <T extends BlockEntity> Supplier<BlockEntityType<T>> createBEType(
             BEConstructor<T> createTE, Supplier<? extends Block> valid

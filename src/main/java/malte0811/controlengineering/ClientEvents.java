@@ -10,9 +10,10 @@ import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.gui.misc.BusSignalSelector;
 import malte0811.controlengineering.items.IEItemRefs;
-import malte0811.controlengineering.items.PCBStackItem;
+//import malte0811.controlengineering.items.PCBStackItem;
 import malte0811.controlengineering.util.RaytraceUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -81,10 +82,10 @@ public class ClientEvents {
         }
         List<Component> lines = new ArrayList<>();
         final BlockPos pos = hitResult.getBlockPos();
-        var targetBE = mc.player.level.getBlockEntity(pos);
+        var targetBE = mc.player.level().getBlockEntity(pos);
         if (held.is(IETags.screwdrivers)) {
             if (targetBE instanceof LineAccessBlockEntity access) {
-                lines.add(Component.translatable(BusSignalSelector.BUS_LINE_INDEX_KEY, access.selectedLine));
+               lines.add(Component.translatable(BusSignalSelector.BUS_LINE_INDEX_KEY, access.selectedLine));
             } else if (targetBE instanceof RSRemapperBlockEntity remapper) {
                 remapper.addOverlay(lines, hitResult);
             }
@@ -98,13 +99,16 @@ public class ClientEvents {
                 }
             }
         }
+        GuiGraphics graphics = event.getGuiGraphics();
         for (int i = 0; i < lines.size(); ++i) {
-            mc.font.draw(
-                    event.getPoseStack(),
+            
+            graphics.drawString(
+                    mc.font,
                     lines.get(i),
-                    mc.getWindow().getGuiScaledWidth() / 2f + 8,
-                    mc.getWindow().getGuiScaledHeight() / 2f + 8 + i * (mc.font.lineHeight + 2),
-                    -1
+                    (int)(mc.getWindow().getGuiScaledWidth() / 2f + 8),
+                    (int)(mc.getWindow().getGuiScaledHeight() / 2f + 8 + i * (mc.font.lineHeight + 2)),
+                    0xFFFFFFFF,
+                    false
             );
         }
     }
@@ -112,7 +116,7 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onTooltipEvent(ItemTooltipEvent ev) {
         if (ev.getItemStack().is(IEItemRefs.LOGIC_CIRCUIT.asItem())) {
-            ev.getToolTip().add(PCBStackItem.useIn(IEItemRefs.LOGIC_UNIT));
+//            ev.getToolTip().add(PCBStackItem.useIn(IEItemRefs.LOGIC_UNIT));
         }
     }
 

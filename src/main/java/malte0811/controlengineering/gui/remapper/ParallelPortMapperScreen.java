@@ -6,6 +6,7 @@ import malte0811.controlengineering.bus.BusSignalRef;
 import malte0811.controlengineering.bus.BusWireType;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.util.math.Vec2i;
+import net.minecraft.client.gui.GuiGraphics;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -36,20 +37,20 @@ public class ParallelPortMapperScreen extends AbstractRemapperScreen {
     }
 
     @Override
-    public void renderBackground(@Nonnull PoseStack transform) {
-        super.renderBackground(transform);
-        transform.pushPose();
-        transform.translate(leftPos, topPos, 0);
-        OPEN_DOOR.blit(transform, -38, -31);
-        LEFT_TEXTURE.blit(transform, LEFT_X_MIN, LEFT_Y_MIN);
+    public void renderBackground(@Nonnull GuiGraphics graphics) {
+        super.renderBackground(graphics);
+        graphics.pose().pushPose();
+        graphics.pose().translate(leftPos, topPos, 0);
+        OPEN_DOOR.blit(graphics.pose(), -38, -31);
+        LEFT_TEXTURE.blit(graphics.pose(), LEFT_X_MIN, LEFT_Y_MIN);
         for (int line = 0; line < BusWireType.NUM_LINES; ++line) {
             final var lineY = getLineY(line);
-            LINE_COLORS.blit(transform, RIGHT_X_MIN, lineY);
+            LINE_COLORS.blit(graphics.pose(), RIGHT_X_MIN, lineY);
             final int labelX = RIGHT_X_MIN + LINE_COLORS.getWidth() + SPACE_TO_LABEL;
             final int labelY = lineY + (LINE_COLORS.getHeight() - LINE_LABELS[line].getHeight()) / 2;
-            LINE_LABELS[line].blit(transform, labelX, labelY);
+            LINE_LABELS[line].blit(graphics.pose(), labelX, labelY);
         }
-        transform.popPose();
+        graphics.pose().popPose();
     }
 
     private static List<ConnectionPoint> makeSourcePoints() {

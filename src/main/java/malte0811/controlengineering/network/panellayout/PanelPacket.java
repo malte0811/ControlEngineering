@@ -34,7 +34,7 @@ public class PanelPacket extends SimplePacket {
             Preconditions.checkState(packet.allowSendingToServer());
             AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
             if (activeContainer instanceof PanelDesignMenu panelContainer) {
-                packet.process(ctx.getSender().level, panelContainer.getComponents());
+                packet.process(ctx.getSender().level(), panelContainer.getComponents());
                 panelContainer.sendToListeningPlayersExcept(ctx.getSender(), packet);
                 panelContainer.markDirty();
             }

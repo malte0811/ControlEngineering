@@ -7,6 +7,7 @@ import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -44,12 +45,11 @@ public class PanelDesignScreen extends StackedScreen implements MenuAccess<Panel
     }
 
     @Override
-    protected void renderForeground(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    protected void renderForeground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         final int required = container.getRequiredTapeLength();
         final int available = container.getAvailableTapeLength();
         final int color = required <= available ? -1 : 0xff_ff0000;
-        Minecraft.getInstance().font.draw(
-                matrixStack,
+        graphics.drawString(Minecraft.getInstance().font,
                 Component.translatable(REQUIRED_VS_AVAILABLE_TAPE, required, available),
                 panelLayoutXMin, panelLayoutYMax + 5,
                 color

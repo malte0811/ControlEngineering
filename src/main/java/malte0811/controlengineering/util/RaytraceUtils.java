@@ -13,7 +13,7 @@ public class RaytraceUtils {
     }
 
     public static ClipContext create(Player e, float partialTicks, Vec3 offset) {
-        double rayTraceDistance = e.getAttributeValue(ForgeMod.REACH_DISTANCE.get());
+        double rayTraceDistance = e.getAttributeValue(ForgeMod.BLOCK_REACH.get());
         Vec3 startVec = e.getEyePosition(partialTicks).subtract(offset);
         Vec3 lookDirection = e.getViewVector(partialTicks);
         Vec3 endVec = startVec.add(

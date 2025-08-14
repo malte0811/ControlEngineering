@@ -16,6 +16,7 @@ import malte0811.controlengineering.network.panellayout.*;
 import malte0811.controlengineering.util.math.TransformUtil;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.LightTexture;
@@ -48,28 +49,28 @@ public class PanelLayout extends AbstractWidget {
     }
 
     @Override
-    public void renderWidget(@Nonnull PoseStack transform, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
-        transform.pushPose();
-        transform.translate(getX(), getY(), 0);
-        blit(transform, 0, 0, 0, width, height, PanelRenderer.PANEL_TEXTURE.get());
-        transform.scale((float) getPixelSize(), (float) getPixelSize(), 1);
-        transform.translate(0, 0, 2);
-        transform.mulPose(MINUS_QUARTER_X);
-        TransformUtil.shear(transform, .1f, .1f);
-        transform.scale(1, -1, 1);
-        MixedModel model = ComponentRenderers.renderAll(components, transform);
+        graphics.pose().pushPose();
+        graphics.pose().translate(getX(), getY(), 0);
+        graphics.blit(0, 0, 0, width, height, PanelRenderer.PANEL_TEXTURE.get());
+        graphics.pose().scale((float) getPixelSize(), (float) getPixelSize(), 1);
+        graphics.pose().translate(0, 0, 2);
+        graphics.pose().mulPose(MINUS_QUARTER_X);
+        TransformUtil.shear(graphics.pose(), .1f, .1f);
+        graphics.pose().scale(1, -1, 1);
+        MixedModel model = ComponentRenderers.renderAll(components, graphics.pose());
         if (placing != null) {
             final var placingPos = placing.getPlacingPos(this, mouseX, mouseY);
-            transform.pushPose();
-            transform.translate(placingPos.x(), 0, placingPos.y());
-            ComponentRenderers.render(model, placing.component(), transform);
-            transform.popPose();
+            graphics.pose().pushPose();
+            graphics.pose().translate(placingPos.x(), 0, placingPos.y());
+            ComponentRenderers.render(model, placing.component(), graphics.pose());
+            graphics.pose().popPose();
         }
         MultiBufferSource.BufferSource impl = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         model.renderTo(impl, new PoseStack(), LightTexture.pack(15, 15), OverlayTexture.NO_OVERLAY);
         impl.endBatch();
-        transform.popPose();
+        graphics.pose().popPose();
     }
 
     @Override
@@ -90,6 +91,11 @@ public class PanelLayout extends AbstractWidget {
                 }
                 return false;
             } else {
+                if (mouseXPanel<0 || mouseYPanel<0 || mouseXPanel>16 || mouseYPanel>16 ) {
+                    //clicked outside of grid holding component. Put component away
+                    placing = null;
+                    return true;
+                }
                 final var placingPos = placing.getPlacingPos(this, (int) mouseX, (int) mouseY);
                 PlacedComponent newComponent = new PlacedComponent(placing.component(), placingPos);
                 if (processAndSend(new Add(newComponent))) {

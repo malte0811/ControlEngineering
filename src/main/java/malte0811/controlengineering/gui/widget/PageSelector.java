@@ -2,6 +2,7 @@ package malte0811.controlengineering.gui.widget;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -32,12 +33,12 @@ public class PageSelector extends NestedWidget {
     }
 
     @Override
-    public void render(@Nonnull PoseStack transform, int mouseX, int mouseY, float partialTick) {
-        super.render(transform, mouseX, mouseY, partialTick);
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
         if (numPages > 1) {
             var font = Minecraft.getInstance().font;
-            drawCenteredString(
-                    transform, font, (currentPage + 1) + " / " + numPages,
+            graphics.drawCenteredString(
+                     font, (currentPage + 1) + " / " + numPages,
                     getX() + width / 2, getY() + (HEIGHT - font.lineHeight) / 2, -1
             );
         }

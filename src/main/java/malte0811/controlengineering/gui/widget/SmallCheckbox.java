@@ -3,6 +3,7 @@ package malte0811.controlengineering.gui.widget;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
@@ -30,16 +31,16 @@ public class SmallCheckbox extends Checkbox {
     }
 
     @Override
-    public void renderWidget(@Nonnull PoseStack transform, int mouseX, int mouseY, float partial) {
-        transform.pushPose();
-        transform.translate(getX(), getY() + width / 4., 0);
-        transform.scale(0.5f, 0.5f, 1);
-        transform.translate(-getX(), -getY(), 0);
-        super.renderWidget(transform, mouseX, mouseY, partial);
-        transform.popPose();
+    public void renderWidget(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partial) {
+        graphics.pose().pushPose();
+        graphics.pose().translate(getX(), getY() + width / 4., 0);
+        graphics.pose().scale(0.5f, 0.5f, 1);
+        graphics.pose().translate(-getX(), -getY(), 0);
+        super.renderWidget(graphics, mouseX, mouseY, partial);
+        graphics.pose().popPose();
         var font = Minecraft.getInstance().font;
-        drawString(
-                transform, font, this.getMessage(),
+        graphics.drawString(
+                 font, this.getMessage(),
                 this.getX() + 12, this.getY() + (this.height - 8) / 2,
                 0xffe0e0e0
         );

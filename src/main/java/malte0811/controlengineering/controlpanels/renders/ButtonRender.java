@@ -31,7 +31,7 @@ public class ButtonRender<S> implements ComponentRenderer<ColorAndSignal, S> {
         this.active = active;
     }
 
-    @Override
+    @Override 
     public void render(MixedModel output, ColorAndSignal config, S state, PoseStack transform) {
         EnumMap<Direction, Integer> colors = new EnumMap<>(Direction.class);
         for (Direction d : DirectionUtils.BY_HORIZONTAL_INDEX) {

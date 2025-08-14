@@ -13,6 +13,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 
+import net.minecraft.client.gui.GuiGraphics;
+
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
@@ -55,31 +57,31 @@ public class ViewTapeScreen extends Screen {
     }
 
     @Override
-    public void render(@Nonnull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(matrixStack);
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(graphics);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, BASE_SCREEN);
         int startX = (this.width - WIDTH) / 2;
         int startY = (this.height - HEIGHT) / 2;
-        matrixStack.pushPose();
-        matrixStack.translate(startX, startY, 0);
-        blit(matrixStack, 0, 0, 0, 0, WIDTH, HEIGHT);
-        tapeRender.render(matrixStack);
+        graphics.pose().pushPose();
+        graphics.pose().translate(startX, startY, 0);
+        graphics.blit(BASE_SCREEN, 0, 0, 0, 0, WIDTH, HEIGHT);
+        tapeRender.render(graphics);
         if (canCut) {
             final int visualCutOffset = getVisualFocussedRow(mouseX - startX, mouseY - startY);
             if (visualCutOffset >= 0) {
                 final double xMin = FIRST_CHAR_X + (visualCutOffset) * TapeRender.CHAR_DISTANCE - 1.5;
                 final int color = 0x80_ff0000;
                 ScreenUtils.fill(
-                        matrixStack,
+                        graphics.pose(),
                         xMin, TAPE_MIN_Y, xMin + TapeRender.CHAR_DISTANCE, TAPE_MIN_Y + TapeRender.TAPE_WIDTH,
                         color
                 );
             }
         }
-        matrixStack.popPose();
+        graphics.pose().popPose();
 
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        super.render(graphics, mouseX, mouseY, partialTicks);
     }
 
     private int getVisualFocussedRow(double mouseX, double mouseY) {

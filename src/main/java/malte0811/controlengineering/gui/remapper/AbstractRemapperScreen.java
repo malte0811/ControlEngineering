@@ -8,6 +8,7 @@ import malte0811.controlengineering.network.remapper.ClearMapping;
 import malte0811.controlengineering.network.remapper.SetMapping;
 import malte0811.controlengineering.util.RLUtils;
 import malte0811.controlengineering.util.math.Vec2i;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.renderer.GameRenderer;
@@ -49,33 +50,33 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
     }
 
     @Override
-    public void render(@Nonnull PoseStack transform, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(transform);
-        transform.pushPose();
-        transform.translate(leftPos, topPos, 0);
-        renderConnections(transform);
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(graphics);
+        graphics.pose().pushPose();
+        graphics.pose().translate(leftPos, topPos, 0);
+        renderConnections(graphics);
         if (fixedEndOfConnecting != null) {
-            renderWireAtMouse(transform, fixedEndOfConnecting, mouseX - this.leftPos, mouseY - this.topPos);
+            renderWireAtMouse(graphics, fixedEndOfConnecting, mouseX - this.leftPos, mouseY - this.topPos);
         } else {
             var hovered = getCPUnder(mouseX, mouseY);
             if (hovered != null) {
                 var connectedTo = getOtherEnd(hovered);
                 if (connectedTo != null) {
-                    renderFullyConnectedWire(transform, hovered, connectedTo, HIGHLIGHT_WIRE_COLOR);
+                    renderFullyConnectedWire(graphics, hovered, connectedTo, HIGHLIGHT_WIRE_COLOR);
                 }
             }
         }
-        transform.popPose();
-        super.render(transform, mouseX, mouseY, partialTick);
+        graphics.pose().popPose();
+        super.render(graphics, mouseX, mouseY, partialTick);
     }
 
     @Override
-    public void renderBackground(@Nonnull PoseStack transform) {
-        super.renderBackground(transform);
-        transform.pushPose();
-        transform.translate(leftPos, topPos, 0);
-        BACKGROUND.blit(transform, 0, 0);
-        transform.popPose();
+    public void renderBackground(@Nonnull GuiGraphics graphics) {
+        super.renderBackground(graphics);
+        graphics.pose().pushPose();
+        graphics.pose().translate(leftPos, topPos, 0);
+        BACKGROUND.blit(graphics.pose(), 0, 0);
+        graphics.pose().popPose();
     }
 
     @Override
@@ -139,7 +140,7 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
         }
     }
 
-    private void renderConnections(PoseStack transform) {
+    private void renderConnections(GuiGraphics graphics) {
         var mapping = menu.getMapping();
         for (int sourceIndex = 0; sourceIndex < mapping.length; ++sourceIndex) {
             var mappedTo = mapping[sourceIndex];
@@ -148,13 +149,13 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
             }
             var sourceCP = sourceConnectionPoints.get(sourceIndex);
             var targetCP = targetConnectionPoints.get(mappedTo);
-            sourceCP.sprite.blit(transform, sourceCP.area().getX(), sourceCP.area().getY());
-            targetCP.sprite.blit(transform, targetCP.area().getX(), targetCP.area().getY());
-            renderFullyConnectedWire(transform, sourceCP, targetCP, WIRE_COLOR);
+            sourceCP.sprite.blit(graphics.pose(), sourceCP.area().getX(), sourceCP.area().getY());
+            targetCP.sprite.blit(graphics.pose(), targetCP.area().getX(), targetCP.area().getY());
+            renderFullyConnectedWire(graphics, sourceCP, targetCP, WIRE_COLOR);
         }
     }
 
-    private void renderFullyConnectedWire(PoseStack transform, ConnectionPoint start, ConnectionPoint end, int color) {
+    private void renderFullyConnectedWire(GuiGraphics graphics, ConnectionPoint start, ConnectionPoint end, int color) {
         if (!start.isMappingSource) {
             var temp = start;
             start = end;
@@ -171,7 +172,7 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
         float halfWireHeight = Math.abs(wireRadius / cosAlpha);
 
         renderWire(
-                transform,
+                graphics,
                 xStart, yStart + halfWireHeight,
                 xEnd, yEnd + halfWireHeight,
                 xEnd, yEnd - halfWireHeight,
@@ -180,13 +181,13 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
         );
     }
 
-    private void renderWireAtMouse(PoseStack transform, ConnectionPoint fixed, int mouseX, int mouseY) {
+    private void renderWireAtMouse(GuiGraphics graphics, ConnectionPoint fixed, int mouseX, int mouseY) {
         var fixedY = fixed.wireY();
         var fixedX = fixed.wireX();
         Vec2 radius = new Vec2(fixedY - mouseY, mouseX - fixedX).normalized();
 
         renderWire(
-                transform,
+                graphics,
                 fixedX + radius.x, fixedY + radius.y,
                 mouseX + radius.x, mouseY + radius.y,
                 mouseX - radius.x, mouseY - radius.y,
@@ -196,7 +197,7 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
     }
 
     private void renderWire(
-            PoseStack transform,
+            GuiGraphics graphics,
             float x1, float y1,
             float x2, float y2,
             float x3, float y3,
@@ -208,7 +209,7 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        var matrix = transform.last().pose();
+        var matrix = graphics.pose().last().pose();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         bufferbuilder.vertex(matrix, x1, y1, 1.0F).color(color).endVertex();
         bufferbuilder.vertex(matrix, x2, y2, 1.0F).color(color).endVertex();

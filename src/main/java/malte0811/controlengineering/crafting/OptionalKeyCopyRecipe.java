@@ -8,6 +8,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -97,7 +98,7 @@ public class OptionalKeyCopyRecipe extends ShapedRecipe {
     private Match removeIDSource(@Nonnull CraftingContainer inv) {
         for (int i = 0; i < inv.getContainerSize(); ++i) {
             if (inv.getItem(i).getItem() instanceof ItemWithKeyID) {
-                CraftingContainer newContainer = new CraftingContainer(
+                CraftingContainer newContainer = new TransientCraftingContainer(
                         new AbstractContainerMenu(null, 0) {
                             @Nonnull
                             @Override

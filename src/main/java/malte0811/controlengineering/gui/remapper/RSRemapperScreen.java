@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.util.math.Vec2i;
+import net.minecraft.client.gui.GuiGraphics;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -23,13 +24,13 @@ public class RSRemapperScreen extends AbstractRemapperScreen {
     }
 
     @Override
-    public void renderBackground(@Nonnull PoseStack transform) {
-        super.renderBackground(transform);
-        transform.pushPose();
-        transform.translate(leftPos, topPos, 0);
-        POINTS_LEFT.blit(transform, WRAP_X_COLOR - 8, FIRST_WRAP_Y - 2);
-        POINTS_RIGHT.blit(transform, WRAP_X_GRAY - 1, FIRST_WRAP_Y - 2);
-        transform.popPose();
+    public void renderBackground(@Nonnull GuiGraphics graphics) {
+        super.renderBackground(graphics);
+        graphics.pose().pushPose();
+        graphics.pose().translate(leftPos, topPos, 0);
+        POINTS_LEFT.blit(graphics.pose(), WRAP_X_COLOR - 8, FIRST_WRAP_Y - 2);
+        POINTS_RIGHT.blit(graphics.pose(), WRAP_X_GRAY - 1, FIRST_WRAP_Y - 2);
+        graphics.pose().popPose();
     }
 
     private static List<ConnectionPoint> makePoints(boolean color) {

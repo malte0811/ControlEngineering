@@ -4,7 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
+//import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -25,17 +26,17 @@ public class TextUtil {
     }
 
     public static void renderBoxWithText(
-            PoseStack transform, int color, String text, float scale, int x, int y, int xSize, int ySize
+            GuiGraphics graphics, int color, String text, float scale, int x, int y, int xSize, int ySize
     ) {
-        GuiComponent.fill(transform, x, y, x + xSize, y + ySize, color);
+        graphics.fill( x, y, x + xSize, y + ySize, color);
         final Font font = Minecraft.getInstance().font;
         final float yOffset = (ySize - font.lineHeight / scale) / 2;
         final float xOffset = (xSize - font.width(text) / scale) / 2;
-        transform.pushPose();
-        transform.translate(xOffset + x, y + yOffset, 0);
-        transform.scale(1 / scale, 1 / scale, 1);
+        graphics.pose().pushPose();
+        graphics.pose().translate(xOffset + x, y + yOffset, 0);
+        graphics.pose().scale(1 / scale, 1 / scale, 1);
         final int textColor = 0xff000000 | ColorUtils.inverseColor(color);
-        font.draw(transform, text, 0, 0, textColor);
-        transform.popPose();
+        graphics.drawString(font, text, 0, 0, textColor);
+        graphics.pose().popPose();
     }
 }
