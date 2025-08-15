@@ -28,8 +28,7 @@ public class CECreativeTab {
             // Set name of tab to display
             .title(Component.literal(ControlEngineering.MODNAME))
             // Set icon of creative tab
-//            .icon(() -> new ItemStack(CEBlocks.LOGIC_CABINET.get()))
-            .icon(() -> new ItemStack(CEItems.EMPTY_TAPE.get()))
+            .icon(() -> new ItemStack(CEBlocks.LOGIC_CABINET.get()))
             .build()
           );
 
@@ -40,7 +39,7 @@ public class CECreativeTab {
         }
         for (final var itemRO : CEItems.REGISTER.getEntries()) {
             if (itemRO.equals(CEItems.CONTROL_PANEL)) { continue; }
-//            if (itemRO.equals(CEItems.PCB_STACK)) { continue; }
+            if (itemRO.equals(CEItems.PCB_STACK)) { continue; }
             if (itemRO.equals(CEItems.EMPTY_TAPE)) {
                 ev.accept(EmptyTapeItem.withLength(16));
                 ev.accept(EmptyTapeItem.withLength(256));

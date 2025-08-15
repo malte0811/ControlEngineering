@@ -1,11 +1,9 @@
 package malte0811.controlengineering.util;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-//import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -36,7 +34,7 @@ public class TextUtil {
         graphics.pose().translate(xOffset + x, y + yOffset, 0);
         graphics.pose().scale(1 / scale, 1 / scale, 1);
         final int textColor = 0xff000000 | ColorUtils.inverseColor(color);
-        graphics.drawString(font, text, 0, 0, textColor);
+        graphics.drawString(font, text, 0, 0, textColor, false);
         graphics.pose().popPose();
     }
 }

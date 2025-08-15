@@ -2,8 +2,8 @@ package malte0811.controlengineering.blocks;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.bus.*;
-//import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
-//import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
+import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
+import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
 import malte0811.controlengineering.blocks.panels.PanelDesignerBlock;
@@ -45,15 +45,15 @@ public class CEBlocks {
 
     public static final RegistryObject<SequencerBlock> SEQUENCER = REGISTER.register("sequencer", SequencerBlock::new);
 
-//    public static final RegistryObject<LogicCabinetBlock> LOGIC_CABINET = REGISTER.register(
-//            "logic_cabinet", LogicCabinetBlock::new
-//    );
-//
-//    public static final RegistryObject<LogicWorkbenchBlock> LOGIC_WORKBENCH = REGISTER.register(
-//            "logic_workbench", LogicWorkbenchBlock::new
-//    );
+   public static final RegistryObject<LogicCabinetBlock> LOGIC_CABINET = REGISTER.register(
+           "logic_cabinet", LogicCabinetBlock::new
+   );
 
-//    public static final RegistryObject<ScopeBlock> SCOPE = REGISTER.register(
-//            "oscilloscope", ScopeBlock::new
-//    );
+   public static final RegistryObject<LogicWorkbenchBlock> LOGIC_WORKBENCH = REGISTER.register(
+           "logic_workbench", LogicWorkbenchBlock::new
+   );
+
+   public static final RegistryObject<ScopeBlock> SCOPE = REGISTER.register(
+           "oscilloscope", ScopeBlock::new
+   );
 }

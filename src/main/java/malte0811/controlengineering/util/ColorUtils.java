@@ -1,7 +1,7 @@
 package malte0811.controlengineering.util;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
-//import malte0811.controlengineering.logic.schematic.SchematicNet;
+import malte0811.controlengineering.logic.schematic.SchematicNet;
 
 public class ColorUtils {
     public static int halfColor(int inColor) {

@@ -18,9 +18,6 @@ import net.minecraft.world.level.block.RedStoneWireBlock;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-//import static net.minecraft.client.gui.GuiComponent.blit;
-//import static net.minecraft.client.gui.GuiComponent.fill;
-
 import net.minecraft.client.gui.GuiGraphics;
 
 public class TapeRender {

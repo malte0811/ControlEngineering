@@ -10,7 +10,7 @@ import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.gui.misc.BusSignalSelector;
 import malte0811.controlengineering.items.IEItemRefs;
-//import malte0811.controlengineering.items.PCBStackItem;
+import malte0811.controlengineering.items.PCBStackItem;
 import malte0811.controlengineering.util.RaytraceUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -116,7 +116,7 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onTooltipEvent(ItemTooltipEvent ev) {
         if (ev.getItemStack().is(IEItemRefs.LOGIC_CIRCUIT.asItem())) {
-//            ev.getToolTip().add(PCBStackItem.useIn(IEItemRefs.LOGIC_UNIT));
+           ev.getToolTip().add(PCBStackItem.useIn(IEItemRefs.LOGIC_UNIT));
         }
     }
 

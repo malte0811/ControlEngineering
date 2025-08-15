@@ -25,9 +25,9 @@ public class CERecipeSerializers {
     public static final RegistryObject<ServerFontRecipe.Serializer> FONT_WIDTH = REGISTER.register(
             "server_font_width", ServerFontRecipe.Serializer::new
     );
-//    public static final RegistryObject<SimpleRecipeSerializer<SchematicCopyRecipe>> SCHEMATIC_COPY = REGISTER.register(
-//            "schematic_copy", () -> new SimpleRecipeSerializer<>(SchematicCopyRecipe::new)
-//    );
+   public static final RegistryObject<SimpleRecipeSerializer<SchematicCopyRecipe>> SCHEMATIC_COPY = REGISTER.register(
+           "schematic_copy", () -> new SimpleRecipeSerializer<>(SchematicCopyRecipe::new)
+   );
     public static final RegistryObject<OptionalKeyCopySerializer> OPTIONAL_KEY_COPY = REGISTER.register(
             "key_copy", OptionalKeyCopySerializer::new
     );
