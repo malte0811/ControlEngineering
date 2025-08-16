@@ -13,7 +13,12 @@ import malte0811.controlengineering.bus.LocalBusHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -42,7 +47,7 @@ public class LineAccessBlockEntity extends DualConnectorBlockEntity implements I
     @Override
     public void saveAdditional(@Nonnull CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.putInt("selectedLine", selectedLine);
+        nbt.putInt("selectedLine", selectedLine);   
     }
 
     /*BUS*/
@@ -129,4 +134,18 @@ public class LineAccessBlockEntity extends DualConnectorBlockEntity implements I
     private ConnectionPoint getBusPoint() {
         return maxPoint;
     }
+    
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag nbt = super.getUpdateTag();
+        saveAdditional(nbt);
+        return nbt; 
+    }
+    
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket(){
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+    
 }

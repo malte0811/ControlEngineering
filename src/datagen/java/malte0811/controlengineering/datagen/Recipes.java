@@ -50,7 +50,7 @@ public class Recipes extends RecipeProvider {
         logicRecipes(consumer);
         scopeRecipes(consumer);
         try {
-            ServerFontData.buildServerFontData(consumer, existingFileHelper);
+//            ServerFontData.buildServerFontData(consumer, existingFileHelper);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

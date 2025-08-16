@@ -68,7 +68,12 @@ public class LineAccessBlock extends CEBlock<Direction> {
     ) {
         ItemStack held = player.getItemInHand(handIn);
         if (held.is(IETags.screwdrivers) && worldIn.getBlockEntity(pos) instanceof LineAccessBlockEntity lineBE) {
+
             lineBE.selectedLine = (lineBE.selectedLine + 1) % BusWireType.NUM_LINES;
+            lineBE.setChanged();
+
+            worldIn.sendBlockUpdated(pos, lineBE.getBlockState(), lineBE.getBlockState(), Block.UPDATE_ALL);
+            
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
