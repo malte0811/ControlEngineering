@@ -8,6 +8,7 @@ import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.RedstoneTapeUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
@@ -17,8 +18,6 @@ import net.minecraft.world.level.block.RedStoneWireBlock;
 
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
-
-import net.minecraft.client.gui.GuiGraphics;
 
 public class TapeRender {
     private static final int TAPE_COLOR = 0xffcea1a2;

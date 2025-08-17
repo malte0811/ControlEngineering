@@ -4,7 +4,6 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.crafting.noncrafting.ServerFontRecipe;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 

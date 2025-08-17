@@ -4,7 +4,6 @@ import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.cells.Leafcells;
 import malte0811.controlengineering.logic.cells.impl.ConfigSwitch;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Component;
 
 import java.util.List;
 

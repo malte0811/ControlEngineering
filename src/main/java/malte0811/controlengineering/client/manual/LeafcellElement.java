@@ -5,7 +5,6 @@ import blusunrize.lib.manual.ManualUtils;
 import blusunrize.lib.manual.SpecialManualElement;
 import blusunrize.lib.manual.gui.ManualScreen;
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.logic.schematic.client.ClientSymbols;

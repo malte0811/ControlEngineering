@@ -31,7 +31,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
-import java.util.Random;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
 

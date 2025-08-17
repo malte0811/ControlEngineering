@@ -1,6 +1,5 @@
 package malte0811.controlengineering.logic.schematic.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import net.minecraft.client.Minecraft;

@@ -1,7 +1,6 @@
 package malte0811.controlengineering.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.chars.CharConsumer;
 import malte0811.controlengineering.gui.SubTexture;
 import net.minecraft.client.Minecraft;

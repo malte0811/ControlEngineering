@@ -1,6 +1,5 @@
 package malte0811.controlengineering.gui.tape;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.tape.KeypunchState;
 import malte0811.controlengineering.gui.SubTexture;

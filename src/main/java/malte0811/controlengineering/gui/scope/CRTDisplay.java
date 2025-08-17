@@ -9,7 +9,6 @@ import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.scope.trace.Trace;
 import malte0811.controlengineering.scope.trace.TraceId;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 

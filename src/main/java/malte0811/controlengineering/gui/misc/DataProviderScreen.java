@@ -1,6 +1,5 @@
 package malte0811.controlengineering.gui.misc;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Function3;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.bus.BusSignalRef;

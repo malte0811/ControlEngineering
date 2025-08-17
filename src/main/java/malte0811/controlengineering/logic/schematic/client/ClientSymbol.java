@@ -1,13 +1,11 @@
 package malte0811.controlengineering.logic.schematic.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.logic.schematic.SchematicNet;
 import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
-import malte0811.controlengineering.util.ColorUtils;
 import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.function.Consumer;

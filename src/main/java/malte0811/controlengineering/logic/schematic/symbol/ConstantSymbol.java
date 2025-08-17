@@ -6,7 +6,6 @@ import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;

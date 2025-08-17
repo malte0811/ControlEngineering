@@ -1,10 +1,8 @@
 package malte0811.controlengineering.gui.scope.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.util.math.RectangleI;
 import malte0811.controlengineering.util.math.Vec2i;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;

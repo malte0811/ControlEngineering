@@ -2,11 +2,8 @@ package malte0811.controlengineering.network.panellayout;
 
 import com.google.common.base.Preconditions;
 import malte0811.controlengineering.client.ClientHooks;
-import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignMenu;
-import malte0811.controlengineering.gui.panel.PanelDesignScreen;
 import malte0811.controlengineering.network.SimplePacket;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.network.NetworkDirection;

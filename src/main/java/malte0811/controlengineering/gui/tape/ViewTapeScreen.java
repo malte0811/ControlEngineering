@@ -1,19 +1,17 @@
 package malte0811.controlengineering.gui.tape;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.network.CutTapePacket;
 import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
-
-import net.minecraft.client.gui.GuiGraphics;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;

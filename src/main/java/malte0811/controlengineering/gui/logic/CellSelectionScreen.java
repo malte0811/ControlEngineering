@@ -1,6 +1,5 @@
 package malte0811.controlengineering.gui.logic;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.widget.PageSelector;
 import malte0811.controlengineering.logic.schematic.client.ClientSymbols;
@@ -9,7 +8,6 @@ import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbols;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;

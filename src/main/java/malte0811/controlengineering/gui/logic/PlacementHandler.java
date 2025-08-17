@@ -1,7 +1,6 @@
 package malte0811.controlengineering.gui.logic;
 
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicNet;
 import malte0811.controlengineering.logic.schematic.WireSegment;

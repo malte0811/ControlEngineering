@@ -1,13 +1,11 @@
 package malte0811.controlengineering.logic.schematic;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SymbolPin;
-import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.math.Vec2i;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;

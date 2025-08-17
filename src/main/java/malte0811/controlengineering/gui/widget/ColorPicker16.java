@@ -1,6 +1,5 @@
 package malte0811.controlengineering.gui.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.util.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

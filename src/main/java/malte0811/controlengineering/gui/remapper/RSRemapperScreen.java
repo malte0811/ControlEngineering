@@ -1,6 +1,5 @@
 package malte0811.controlengineering.gui.remapper;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.bus.BusLine;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.util.math.Vec2i;

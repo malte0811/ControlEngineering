@@ -7,7 +7,6 @@ import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.controlpanels.components.TimedButton;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 
 import java.util.HashMap;

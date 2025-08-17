@@ -5,7 +5,6 @@ import blusunrize.lib.manual.ManualInstance;
 import blusunrize.lib.manual.SpecialManualElement;
 import blusunrize.lib.manual.gui.ManualScreen;
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import malte0811.controlengineering.bus.BusLine;
@@ -15,7 +14,6 @@ import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbol;
 import malte0811.controlengineering.logic.schematic.symbol.SchematicSymbols;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 

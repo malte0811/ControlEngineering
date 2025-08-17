@@ -1,6 +1,5 @@
 package malte0811.controlengineering.gui.scope.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.bus.BusWireType;
 import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;

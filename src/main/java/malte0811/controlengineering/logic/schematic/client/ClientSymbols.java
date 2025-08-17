@@ -1,6 +1,5 @@
 package malte0811.controlengineering.logic.schematic.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.logic.schematic.Schematic;
 import malte0811.controlengineering.logic.schematic.SchematicNet;
 import malte0811.controlengineering.logic.schematic.symbol.*;

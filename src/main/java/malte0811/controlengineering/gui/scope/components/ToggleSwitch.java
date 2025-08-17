@@ -1,6 +1,5 @@
 package malte0811.controlengineering.gui.scope.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import malte0811.controlengineering.gui.SubTexture;
 import malte0811.controlengineering.util.math.RectangleI;

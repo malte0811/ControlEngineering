@@ -1,6 +1,5 @@
 package malte0811.controlengineering.logic.schematic.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.logic.schematic.symbol.CellSymbol;
 import malte0811.controlengineering.util.math.Fraction;
 import net.minecraft.client.Minecraft;

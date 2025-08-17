@@ -1,10 +1,8 @@
 package malte0811.controlengineering.logic.schematic;
 
-import blusunrize.immersiveengineering.api.utils.FastEither;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.logic.schematic.symbol.PlacedSymbol;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 

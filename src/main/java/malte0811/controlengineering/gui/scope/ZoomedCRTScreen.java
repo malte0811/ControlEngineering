@@ -1,6 +1,5 @@
 package malte0811.controlengineering.gui.scope;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import malte0811.controlengineering.gui.StackedScreen;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
