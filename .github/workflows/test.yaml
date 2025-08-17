@@ -9,10 +9,10 @@ jobs:
         working-directory: main-repo
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           path: main-repo
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           path: manual-data
       - name: Set up manual data repo
@@ -24,7 +24,7 @@ jobs:
           git fetch
           git switch $MANUAL_BRANCH || git switch --orphan $MANUAL_BRANCH
           cd ../main-repo
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -34,9 +34,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
+          distribution: temurin
       - name: Run unit tests
         run: ./gradlew test
       - name: Create list of existing generated resources
@@ -64,7 +65,7 @@ jobs:
       - name: Build CE
         run: ./gradlew build
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: build/libs/*.jar
