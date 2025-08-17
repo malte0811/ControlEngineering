@@ -47,7 +47,7 @@ public class LineAccessBlockEntity extends DualConnectorBlockEntity implements I
     @Override
     public void saveAdditional(@Nonnull CompoundTag nbt) {
         super.saveAdditional(nbt);
-        nbt.putInt("selectedLine", selectedLine);   
+        nbt.putInt("selectedLine", selectedLine);
     }
 
     /*BUS*/
@@ -134,18 +134,18 @@ public class LineAccessBlockEntity extends DualConnectorBlockEntity implements I
     private ConnectionPoint getBusPoint() {
         return maxPoint;
     }
-    
+
     @Override
     public CompoundTag getUpdateTag() {
         CompoundTag nbt = super.getUpdateTag();
         saveAdditional(nbt);
-        return nbt; 
+        return nbt;
     }
-    
+
     @Nullable
     @Override
-    public Packet<ClientGamePacketListener> getUpdatePacket(){
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
-    
+
 }

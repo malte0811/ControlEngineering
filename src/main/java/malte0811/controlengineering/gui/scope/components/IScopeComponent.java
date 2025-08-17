@@ -8,17 +8,17 @@ import net.minecraft.network.chat.Component;
 import java.util.List;
 
 public interface IScopeComponent {
-   void render(GuiGraphics graphics);
+    void render(GuiGraphics graphics);
 
-   boolean click(double x, double y);
+    boolean click(double x, double y);
 
-   RectangleI getArea();
+    RectangleI getArea();
 
-   List<Component> getTooltip();
+    List<Component> getTooltip();
 
-   boolean requiresPower();
+    boolean requiresPower();
 
-   default PoweredComponent powered(boolean hasPower) {
-       return new PoweredComponent(this, hasPower);
-   }
+    default PoweredComponent powered(boolean hasPower) {
+        return new PoweredComponent(this, hasPower);
+    }
 }

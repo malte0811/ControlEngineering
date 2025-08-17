@@ -8,13 +8,13 @@ import net.minecraft.world.level.Level;
 import java.util.function.Consumer;
 
 public class ClearAll extends LogicSubPacket {
-   public static final MyCodec<ClearAll> CODEC = MyCodecs.unit(new ClearAll());
+    public static final MyCodec<ClearAll> CODEC = MyCodecs.unit(new ClearAll());
 
-   public ClearAll() {}
+    public ClearAll() { }
 
-   @Override
-   public boolean process(Schematic applyTo, Consumer<Schematic> replace, Level level) {
-       applyTo.clear();
-       return true;
-   }
+    @Override
+    public boolean process(Schematic applyTo, Consumer<Schematic> replace, Level level) {
+        applyTo.clear();
+        return true;
+    }
 }

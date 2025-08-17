@@ -106,6 +106,7 @@ public class SchematicViewArea {
                 (mouseY - height / 2.) / currentScale + centerY
         );
     }
+
     public float getCurrentScale() {
         return currentScale;
     }

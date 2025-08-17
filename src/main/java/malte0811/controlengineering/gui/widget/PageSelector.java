@@ -38,7 +38,7 @@ public class PageSelector extends NestedWidget {
         if (numPages > 1) {
             var font = Minecraft.getInstance().font;
             graphics.drawCenteredString(
-                     font, (currentPage + 1) + " / " + numPages,
+                    font, (currentPage + 1) + " / " + numPages,
                     getX() + width / 2, getY() + (HEIGHT - font.lineHeight) / 2, -1
             );
         }

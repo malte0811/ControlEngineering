@@ -73,7 +73,7 @@ public class LineAccessBlock extends CEBlock<Direction> {
             lineBE.setChanged();
 
             worldIn.sendBlockUpdated(pos, lineBE.getBlockState(), lineBE.getBlockState(), Block.UPDATE_ALL);
-            
+
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;

@@ -54,7 +54,7 @@ public class SequencerBlock extends CEBlock<Direction> {
         }
         return super.getTicker(pLevel, pState, pBlockEntityType);
     }
-    
+
     @Override
     public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
         Direction facing = state.getValue(FACING);
@@ -69,5 +69,5 @@ public class SequencerBlock extends CEBlock<Direction> {
         }
         return 0;
     }
-    
+
 }

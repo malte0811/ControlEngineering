@@ -22,90 +22,90 @@ import java.util.List;
 import java.util.Objects;
 
 public class LogicDesignMenu extends CEContainerMenu<LogicSubPacket> {
-   public final boolean readOnly;
-   private final Schematic schematic;
-   @Nullable
-   private final AvailableIngredients availableIngredients;
+    public final boolean readOnly;
+    private final Schematic schematic;
+    @Nullable
+    private final AvailableIngredients availableIngredients;
 
-   public <BE extends BlockEntity & ISchematicBE>
-   LogicDesignMenu(MenuType<?> type, int id, BE schematicBE, boolean readOnly) {
-       super(type, id, isValidFor(schematicBE), schematicBE::setSchematicChanged);
-       this.readOnly = readOnly;
-       this.schematic = Objects.requireNonNull(schematicBE.getSchematic());
-       if (!readOnly) {
-           var logicWorkbench = (LogicWorkbenchBlockEntity) schematicBE;
-           availableIngredients = logicWorkbench.getCosts();
-       } else {
-           availableIngredients = null;
-       }
-       addSlots();
-   }
+    public <BE extends BlockEntity & ISchematicBE>
+    LogicDesignMenu(MenuType<?> type, int id, BE schematicBE, boolean readOnly) {
+        super(type, id, isValidFor(schematicBE), schematicBE::setSchematicChanged);
+        this.readOnly = readOnly;
+        this.schematic = Objects.requireNonNull(schematicBE.getSchematic());
+        if (!readOnly) {
+            var logicWorkbench = (LogicWorkbenchBlockEntity) schematicBE;
+            availableIngredients = logicWorkbench.getCosts();
+        } else {
+            availableIngredients = null;
+        }
+        addSlots();
+    }
 
-   public LogicDesignMenu(MenuType<?> type, int id, Schematic schematic) {
-       super(type, id, $ -> true, () -> {});
-       this.readOnly = true;
-       this.schematic = schematic;
-       availableIngredients = null;
-       addSlots();
-   }
+    public LogicDesignMenu(MenuType<?> type, int id, Schematic schematic) {
+        super(type, id, $ -> true, () -> { });
+        this.readOnly = true;
+        this.schematic = schematic;
+        availableIngredients = null;
+        addSlots();
+    }
 
-   public LogicDesignMenu(MenuType<?> type, int id, boolean readOnly) {
-       super(type, id);
-       this.schematic = new Schematic();
-       this.readOnly = readOnly;
-       availableIngredients = readOnly ? null : new AvailableIngredients();
-       addSlots();
-   }
+    public LogicDesignMenu(MenuType<?> type, int id, boolean readOnly) {
+        super(type, id);
+        this.schematic = new Schematic();
+        this.readOnly = readOnly;
+        availableIngredients = readOnly ? null : new AvailableIngredients();
+        addSlots();
+    }
 
-   private void addSlots() {
-       if (availableIngredients != null) {
-           for (var tracker : List.of(
-                   availableIngredients.makeTubeSlot(0),
-                   availableIngredients.makeWireSlot(1)
-           )) {
-               addSlot(tracker.getFirst());
-               addDataSlot(tracker.getSecond());
-           }
-       }
-   }
+    private void addSlots() {
+        if (availableIngredients != null) {
+            for (var tracker : List.of(
+                    availableIngredients.makeTubeSlot(0),
+                    availableIngredients.makeWireSlot(1)
+            )) {
+                addSlot(tracker.getFirst());
+                addDataSlot(tracker.getSecond());
+            }
+        }
+    }
 
-   public static LogicDesignMenuType makeType(String name, boolean readOnly, DeferredRegister<MenuType<?>> register) {
-       var type = register.register(name, () -> {
-           Mutable<MenuType<LogicDesignMenu>> typeBox = new MutableObject<>();
-           typeBox.setValue(new MenuType<>(
-                   (id, inv) -> new LogicDesignMenu(typeBox.getValue(), id, readOnly), FeatureFlagSet.of()
-           ));
-           return typeBox.getValue();
-       });
-       return new LogicDesignMenuType(type, readOnly);
-   }
+    public static LogicDesignMenuType makeType(String name, boolean readOnly, DeferredRegister<MenuType<?>> register) {
+        var type = register.register(name, () -> {
+            Mutable<MenuType<LogicDesignMenu>> typeBox = new MutableObject<>();
+            typeBox.setValue(new MenuType<>(
+                    (id, inv) -> new LogicDesignMenu(typeBox.getValue(), id, readOnly), FeatureFlagSet.of()
+            ));
+            return typeBox.getValue();
+        });
+        return new LogicDesignMenuType(type, readOnly);
+    }
 
-   @Nullable
-   public AvailableIngredients getAvailableIngredients() {
-       return availableIngredients;
-   }
+    @Nullable
+    public AvailableIngredients getAvailableIngredients() {
+        return availableIngredients;
+    }
 
-   public Schematic getSchematic() {
-       return schematic;
-   }
+    public Schematic getSchematic() {
+        return schematic;
+    }
 
-   @Override
-   protected SimplePacket makePacket(LogicSubPacket subPacket) {
-       return new LogicPacket(subPacket);
-   }
+    @Override
+    protected SimplePacket makePacket(LogicSubPacket subPacket) {
+        return new LogicPacket(subPacket);
+    }
 
-   @Override
-   protected LogicSubPacket getInitialSync() {
-       return new FullSync(getSchematic());
-   }
+    @Override
+    protected LogicSubPacket getInitialSync() {
+        return new FullSync(getSchematic());
+    }
 
-   public record LogicDesignMenuType(RegistryObject<MenuType<LogicDesignMenu>> type, boolean readOnly) {
-       public <T extends BlockEntity & ISchematicBE> LogicDesignMenu makeNew(int id, T blockEntity) {
-           return new LogicDesignMenu(type.get(), id, blockEntity, readOnly);
-       }
+    public record LogicDesignMenuType(RegistryObject<MenuType<LogicDesignMenu>> type, boolean readOnly) {
+        public <T extends BlockEntity & ISchematicBE> LogicDesignMenu makeNew(int id, T blockEntity) {
+            return new LogicDesignMenu(type.get(), id, blockEntity, readOnly);
+        }
 
-       public MenuType<? extends LogicDesignMenu> get() {
-           return type.get();
-       }
-   }
+        public MenuType<? extends LogicDesignMenu> get() {
+            return type.get();
+        }
+    }
 }

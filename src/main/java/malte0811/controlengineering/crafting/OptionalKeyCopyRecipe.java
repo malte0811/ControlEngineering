@@ -127,5 +127,5 @@ public class OptionalKeyCopyRecipe extends ShapedRecipe {
         return isIdOptional;
     }
 
-    private record Match(int slotId, CraftingContainer withoutSource) {}
+    private record Match(int slotId, CraftingContainer withoutSource) { }
 }

@@ -22,7 +22,7 @@ public class ClientDividerSymbol extends ClientCellSymbol<Integer> {
         graphics.pose().scale(1 / scale, 1 / scale, 1);
         graphics.drawString(font, Integer.toString(VoltageDivider.TOTAL_RESISTANCE - rLower), 0, 0, blackColor, false);
         graphics.pose().translate(0, 4 * scale, 0);
-        graphics.drawString(font,  Integer.toString(rLower), 0, 0, blackColor, false);
+        graphics.drawString(font, Integer.toString(rLower), 0, 0, blackColor, false);
         graphics.pose().popPose();
     }
 }

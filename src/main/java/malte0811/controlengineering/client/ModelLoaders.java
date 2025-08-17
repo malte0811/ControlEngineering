@@ -40,8 +40,8 @@ public class ModelLoaders {
                 SequencerSwitchModel::new, SequencerSwitchModel.TEXTURE_LOC
         ));
         ev.register(LOGIC_CABINET.getPath(), new DynamicLogicModelLoader());
-       ev.register(LOGIC_WORKBENCH.getPath(), new LogicWorkbenchModel.Loader());
+        ev.register(LOGIC_WORKBENCH.getPath(), new LogicWorkbenchModel.Loader());
         ev.register(CACHED_COMPOSITE.getPath(), new CacheableCompositeModel.Loader());
-       ev.register(SCOPE.getPath(), new ScopeModelLoader());
+        ev.register(SCOPE.getPath(), new ScopeModelLoader());
     }
 }

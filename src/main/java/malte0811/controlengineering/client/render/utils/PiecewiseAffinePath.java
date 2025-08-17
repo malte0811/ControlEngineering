@@ -36,5 +36,5 @@ public record PiecewiseAffinePath<Vec>(
         Vec scale(Vec vector, double value);
     }
 
-    public record Node<Vec>(Vec point, double time) {}
+    public record Node<Vec>(Vec point, double time) { }
 }

@@ -37,6 +37,6 @@ public class ConfirmScreen extends StackedScreen {
 
     @Override
     protected void renderForeground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        graphics.drawCenteredString( this.font, this.title, this.width / 2, 90, -1);
+        graphics.drawCenteredString(this.font, this.title, this.width / 2, 90, -1);
     }
 }

@@ -9,20 +9,20 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class NoneClientModule extends ClientModule<Unit> {
-   public NoneClientModule() {
-       super(0, ScopeModules.NONE);
-   }
+    public NoneClientModule() {
+        super(0, ScopeModules.NONE);
+    }
 
-   @Override
-   public List<PoweredComponent> createComponents(
-           Vec2i offset, Unit state, Consumer<Unit> setState,
-           boolean scopePowered
-   ) {
-       return List.of();
-   }
+    @Override
+    public List<PoweredComponent> createComponents(
+            Vec2i offset, Unit state, Consumer<Unit> setState,
+            boolean scopePowered
+    ) {
+        return List.of();
+    }
 
-   @Override
-   protected List<RectangleI> computeRelativeChannelAreas() {
-       return List.of();
-   }
+    @Override
+    protected List<RectangleI> computeRelativeChannelAreas() {
+        return List.of();
+    }
 }

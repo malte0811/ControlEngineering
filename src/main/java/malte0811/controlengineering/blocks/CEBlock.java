@@ -130,7 +130,11 @@ public abstract class CEBlock<PlacementData> extends Block implements EntityBloc
 
     @Nonnull
     @Override
-    public VoxelShape getOcclusionShape(@Nonnull BlockState state, @Nonnull BlockGetter worldIn, @Nonnull BlockPos pos) {
+    public VoxelShape getOcclusionShape(
+            @Nonnull BlockState state,
+            @Nonnull BlockGetter worldIn,
+            @Nonnull BlockPos pos
+    ) {
         return state.getBlockSupportShape(worldIn, pos);
     }
 
@@ -144,13 +148,13 @@ public abstract class CEBlock<PlacementData> extends Block implements EntityBloc
             @Nonnull InteractionHand handIn,
             @Nonnull BlockHitResult hit
     ) {
-       if (worldIn.getBlockEntity(pos) instanceof SelectionShapeOwner shapeOwner) {
-           return shapeOwner.getShape()
-                   .onUse(
-                           new UseOnContext(player, handIn, hit),
-                           RaytraceUtils.create(player, 0, Vec3.atLowerCornerOf(pos))
-                   );
-       }
+        if (worldIn.getBlockEntity(pos) instanceof SelectionShapeOwner shapeOwner) {
+            return shapeOwner.getShape()
+                    .onUse(
+                            new UseOnContext(player, handIn, hit),
+                            RaytraceUtils.create(player, 0, Vec3.atLowerCornerOf(pos))
+                    );
+        }
         return super.use(state, worldIn, pos, player, handIn, hit);
     }
 

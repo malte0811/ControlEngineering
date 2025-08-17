@@ -34,13 +34,13 @@ public class CEContainers {
             REGISTER.register("keypunch", createNoInv(KeypunchMenu::new)), KeypunchMenu::new
     );
 
-   public static final LogicDesignMenuType LOGIC_DESIGN_VIEW = LogicDesignMenu.makeType(
-           "logic_design_view", true, REGISTER
-   );
+    public static final LogicDesignMenuType LOGIC_DESIGN_VIEW = LogicDesignMenu.makeType(
+            "logic_design_view", true, REGISTER
+    );
 
-   public static final LogicDesignMenuType LOGIC_DESIGN_EDIT = LogicDesignMenu.makeType(
-           "logic_design_edit", false, REGISTER
-   );
+    public static final LogicDesignMenuType LOGIC_DESIGN_EDIT = LogicDesignMenu.makeType(
+            "logic_design_edit", false, REGISTER
+    );
 
     public static final ArgMenuType<PanelDesignMenu, PanelDesignerBlockEntity> PANEL_DESIGN = new ArgMenuType<>(
             REGISTER.register("panel_layout", createNoInv(PanelDesignMenu::new)), PanelDesignMenu::new
@@ -53,9 +53,9 @@ public class CEContainers {
             REGISTER.register("port_remapper", createNoInv(ParallelPortMapperMenu::new))
     );
 
-   public static final ArgMenuType<ScopeMenu, ScopeBlockEntity> SCOPE = new ArgMenuType<>(
-           REGISTER.register("scope", createNoInv(ScopeMenu::new)), ScopeMenu::new
-   );
+    public static final ArgMenuType<ScopeMenu, ScopeBlockEntity> SCOPE = new ArgMenuType<>(
+            REGISTER.register("scope", createNoInv(ScopeMenu::new)), ScopeMenu::new
+    );
 
     private static <T extends AbstractContainerMenu>
     Supplier<MenuType<T>> createNoInv(NoInvMenuFactory<T> factory) {

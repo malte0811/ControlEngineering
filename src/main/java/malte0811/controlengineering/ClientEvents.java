@@ -85,7 +85,7 @@ public class ClientEvents {
         var targetBE = mc.player.level().getBlockEntity(pos);
         if (held.is(IETags.screwdrivers)) {
             if (targetBE instanceof LineAccessBlockEntity access) {
-               lines.add(Component.translatable(BusSignalSelector.BUS_LINE_INDEX_KEY, access.selectedLine));
+                lines.add(Component.translatable(BusSignalSelector.BUS_LINE_INDEX_KEY, access.selectedLine));
             } else if (targetBE instanceof RSRemapperBlockEntity remapper) {
                 remapper.addOverlay(lines, hitResult);
             }
@@ -101,12 +101,12 @@ public class ClientEvents {
         }
         GuiGraphics graphics = event.getGuiGraphics();
         for (int i = 0; i < lines.size(); ++i) {
-            
+
             graphics.drawString(
                     mc.font,
                     lines.get(i),
-                    (int)(mc.getWindow().getGuiScaledWidth() / 2f + 8),
-                    (int)(mc.getWindow().getGuiScaledHeight() / 2f + 8 + i * (mc.font.lineHeight + 2)),
+                    (int) (mc.getWindow().getGuiScaledWidth() / 2f + 8),
+                    (int) (mc.getWindow().getGuiScaledHeight() / 2f + 8 + i * (mc.font.lineHeight + 2)),
                     0xFFFFFFFF,
                     false
             );
@@ -116,7 +116,7 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onTooltipEvent(ItemTooltipEvent ev) {
         if (ev.getItemStack().is(IEItemRefs.LOGIC_CIRCUIT.asItem())) {
-           ev.getToolTip().add(PCBStackItem.useIn(IEItemRefs.LOGIC_UNIT));
+            ev.getToolTip().add(PCBStackItem.useIn(IEItemRefs.LOGIC_UNIT));
         }
     }
 

@@ -19,7 +19,7 @@ public class BusRelayBlockEntity extends CEIICBlockEntity implements IBusConnect
     }
 
     @Override
-    public void onBusUpdated(ConnectionPoint updatedPoint) {}
+    public void onBusUpdated(ConnectionPoint updatedPoint) { }
 
     @Override
     public BusState getEmittedState(ConnectionPoint checkedPoint) {

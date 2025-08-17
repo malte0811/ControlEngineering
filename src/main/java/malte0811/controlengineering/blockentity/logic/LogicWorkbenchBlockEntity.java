@@ -63,383 +63,384 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class LogicWorkbenchBlockEntity extends CEBlockEntity implements SelectionShapeOwner, ISchematicBE, MenuProvider,
-       IHasMaster<LogicWorkbenchBlockEntity>, IExtraDropBE {
-   public static final String TUBES_EMPTY_KEY = ControlEngineering.MODID + ".gui.tubesEmpty";
-   public static final String WIRES_EMPTY_KEY = ControlEngineering.MODID + ".gui.wiresEmpty";
-   public static final String MORE_BOARDS_THAN_MAX = ControlEngineering.MODID + ".gui.moreThanMaxBoards";
-   public static final String TOO_FEW_BOARDS_HELD = ControlEngineering.MODID + ".gui.needMoreBoards";
-   public static final String TOO_FEW_WIRES = ControlEngineering.MODID + ".gui.needMoreWires";
-   public static final String TOO_FEW_TUBES = ControlEngineering.MODID + ".gui.needMoreTubes";
+        IHasMaster<LogicWorkbenchBlockEntity>, IExtraDropBE {
+    public static final String TUBES_EMPTY_KEY = ControlEngineering.MODID + ".gui.tubesEmpty";
+    public static final String WIRES_EMPTY_KEY = ControlEngineering.MODID + ".gui.wiresEmpty";
+    public static final String MORE_BOARDS_THAN_MAX = ControlEngineering.MODID + ".gui.moreThanMaxBoards";
+    public static final String TOO_FEW_BOARDS_HELD = ControlEngineering.MODID + ".gui.needMoreBoards";
+    public static final String TOO_FEW_WIRES = ControlEngineering.MODID + ".gui.needMoreWires";
+    public static final String TOO_FEW_TUBES = ControlEngineering.MODID + ".gui.needMoreTubes";
 
-   private static final TagKey<Item> TUBES = IETags.circuitLogic;
-   //TODO solder?
-   //TODO add utility tag
-   private static final TagKey<Item> WIRE = IETags.copperWire;
+    private static final TagKey<Item> TUBES = IETags.circuitLogic;
+    //TODO solder?
+    //TODO add utility tag
+    private static final TagKey<Item> WIRE = IETags.copperWire;
 
-   @Nullable
-   // Null = no logic schematic item on this bench
-   private Schematic schematic = null;
-   private final CircuitIngredientDrawer tubeStorage = new CircuitIngredientDrawer(TUBES, TUBES_EMPTY_KEY);
-   private final CircuitIngredientDrawer wireStorage = new CircuitIngredientDrawer(WIRE, WIRES_EMPTY_KEY);
-   private final CachedValue<BlockState, SelectionShapes> shapes = new CachedValue<>(
-           this::getBlockState,
-           state -> {
-               LogicWorkbenchBlock.Offset offset = state.getValue(LogicWorkbenchBlock.OFFSET);
-               Direction facing = state.getValue(LogicWorkbenchBlock.FACING);
-               VoxelShape baseShape = LogicWorkbenchBlock.SHAPE.apply(offset, facing);
-               if (offset == LogicWorkbenchBlock.Offset.TOP_RIGHT) {
-                   Function<UseOnContext, InteractionResult> create = makeInteraction(
-                           state, LogicWorkbenchBlockEntity::handleSolderingClick
-                   );
-                   SelectionShapes wireDrawer = makeDrawerShape(
-                           state, LogicWorkbenchBlock.WIRE_DRAWER_TOP_RIGHT, be -> be.wireStorage
-                   );
-                   return new ListShapes(
-                           baseShape,
-                           MatrixUtils.inverseFacing(facing),
-                           ImmutableList.of(new SingleShape(LogicWorkbenchBlock.BURNER, create), wireDrawer),
-                           $ -> InteractionResult.PASS
-                   );
-               } else if (offset == LogicWorkbenchBlock.Offset.TOP_LEFT) {
-                   SelectionShapes wireDrawer = makeDrawerShape(
-                           state, LogicWorkbenchBlock.WIRE_DRAWER, be -> be.wireStorage
-                   );
-                   SelectionShapes tubeDrawer = makeDrawerShape(
-                           state, LogicWorkbenchBlock.TUBE_DRAWER, be -> be.tubeStorage
-                   );
-                   return new ListShapes(
-                           baseShape,
-                           MatrixUtils.inverseFacing(facing),
-                           ImmutableList.of(tubeDrawer, wireDrawer),
-                           $ -> InteractionResult.PASS
-                   );
-               } else {
-                   return new SingleShape(baseShape, makeInteraction(state, LogicWorkbenchBlockEntity::handleMainClick));
-               }
-           }
-   );
+    @Nullable
+    // Null = no logic schematic item on this bench
+    private Schematic schematic = null;
+    private final CircuitIngredientDrawer tubeStorage = new CircuitIngredientDrawer(TUBES, TUBES_EMPTY_KEY);
+    private final CircuitIngredientDrawer wireStorage = new CircuitIngredientDrawer(WIRE, WIRES_EMPTY_KEY);
+    private final CachedValue<BlockState, SelectionShapes> shapes = new CachedValue<>(
+            this::getBlockState,
+            state -> {
+                LogicWorkbenchBlock.Offset offset = state.getValue(LogicWorkbenchBlock.OFFSET);
+                Direction facing = state.getValue(LogicWorkbenchBlock.FACING);
+                VoxelShape baseShape = LogicWorkbenchBlock.SHAPE.apply(offset, facing);
+                if (offset == LogicWorkbenchBlock.Offset.TOP_RIGHT) {
+                    Function<UseOnContext, InteractionResult> create = makeInteraction(
+                            state, LogicWorkbenchBlockEntity::handleSolderingClick
+                    );
+                    SelectionShapes wireDrawer = makeDrawerShape(
+                            state, LogicWorkbenchBlock.WIRE_DRAWER_TOP_RIGHT, be -> be.wireStorage
+                    );
+                    return new ListShapes(
+                            baseShape,
+                            MatrixUtils.inverseFacing(facing),
+                            ImmutableList.of(new SingleShape(LogicWorkbenchBlock.BURNER, create), wireDrawer),
+                            $ -> InteractionResult.PASS
+                    );
+                } else if (offset == LogicWorkbenchBlock.Offset.TOP_LEFT) {
+                    SelectionShapes wireDrawer = makeDrawerShape(
+                            state, LogicWorkbenchBlock.WIRE_DRAWER, be -> be.wireStorage
+                    );
+                    SelectionShapes tubeDrawer = makeDrawerShape(
+                            state, LogicWorkbenchBlock.TUBE_DRAWER, be -> be.tubeStorage
+                    );
+                    return new ListShapes(
+                            baseShape,
+                            MatrixUtils.inverseFacing(facing),
+                            ImmutableList.of(tubeDrawer, wireDrawer),
+                            $ -> InteractionResult.PASS
+                    );
+                } else {
+                    return new SingleShape(baseShape,
+                            makeInteraction(state, LogicWorkbenchBlockEntity::handleMainClick));
+                }
+            }
+    );
 
-   public LogicWorkbenchBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-       super(type, pos, state);
-   }
+    public LogicWorkbenchBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
 
-   private Function<UseOnContext, InteractionResult> makeInteraction(
-           BlockState state, BiFunction<LogicWorkbenchBlockEntity, UseOnContext, InteractionResult> handler
-   ) {
-       return ctx -> {
-           LogicWorkbenchBlockEntity atOrigin = getOrComputeMasterBE(state);
-           if (atOrigin != null) {
-               return handler.apply(atOrigin, ctx);
-           } else {
-               return InteractionResult.FAIL;
-           }
-       };
-   }
+    private Function<UseOnContext, InteractionResult> makeInteraction(
+            BlockState state, BiFunction<LogicWorkbenchBlockEntity, UseOnContext, InteractionResult> handler
+    ) {
+        return ctx -> {
+            LogicWorkbenchBlockEntity atOrigin = getOrComputeMasterBE(state);
+            if (atOrigin != null) {
+                return handler.apply(atOrigin, ctx);
+            } else {
+                return InteractionResult.FAIL;
+            }
+        };
+    }
 
-   @Nullable
-   @Override
-   public LogicWorkbenchBlockEntity computeMasterBE(BlockState state) {
-       if (level == null) {
-           return null;
-       }
-       BlockPos origin = CEBlocks.LOGIC_WORKBENCH.get().getMainBlock(state, this);
-       BlockEntity atOrigin = level.getBlockEntity(origin);
-       if (atOrigin instanceof LogicWorkbenchBlockEntity originWB) {
-           return originWB;
-       } else {
-           return null;
-       }
-   }
+    @Nullable
+    @Override
+    public LogicWorkbenchBlockEntity computeMasterBE(BlockState state) {
+        if (level == null) {
+            return null;
+        }
+        BlockPos origin = CEBlocks.LOGIC_WORKBENCH.get().getMainBlock(state, this);
+        BlockEntity atOrigin = level.getBlockEntity(origin);
+        if (atOrigin instanceof LogicWorkbenchBlockEntity originWB) {
+            return originWB;
+        } else {
+            return null;
+        }
+    }
 
-   @Override
-   public SelectionShapes getShape() {
-       return shapes.get();
-   }
+    @Override
+    public SelectionShapes getShape() {
+        return shapes.get();
+    }
 
-   @Override
-   protected void writeSyncedData(CompoundTag out) {
-       writeCommonData(out);
-       out.putBoolean("hasSchematic", schematic != null);
-   }
+    @Override
+    protected void writeSyncedData(CompoundTag out) {
+        writeCommonData(out);
+        out.putBoolean("hasSchematic", schematic != null);
+    }
 
-   private void writeCommonData(CompoundTag out) {
-       out.put("tubes", tubeStorage.write());
-       out.put("wires", wireStorage.write());
-   }
+    private void writeCommonData(CompoundTag out) {
+        out.put("tubes", tubeStorage.write());
+        out.put("wires", wireStorage.write());
+    }
 
-   @Override
-   protected void readSyncedData(CompoundTag in) {
-       readCommonData(in);
-       var hadSchematic = schematic != null;
-       var hasSchematic = in.getBoolean("hasSchematic");
-       schematic = hasSchematic ? new Schematic() : null;
-       if (hasSchematic != hadSchematic && level != null) {
-           level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
-       }
-   }
+    @Override
+    protected void readSyncedData(CompoundTag in) {
+        readCommonData(in);
+        var hadSchematic = schematic != null;
+        var hasSchematic = in.getBoolean("hasSchematic");
+        schematic = hasSchematic ? new Schematic() : null;
+        if (hasSchematic != hadSchematic && level != null) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+        }
+    }
 
-   private void readCommonData(CompoundTag in) {
-       tubeStorage.read(in.getCompound("tubes"));
-       wireStorage.read(in.getCompound("wires"));
-   }
+    private void readCommonData(CompoundTag in) {
+        tubeStorage.read(in.getCompound("tubes"));
+        wireStorage.read(in.getCompound("wires"));
+    }
 
-   @Override
-   public void saveAdditional(@Nonnull CompoundTag compound) {
-       super.saveAdditional(compound);
-       if (schematic != null) {
-           compound.put("schematic", Schematic.CODEC.toNBT(schematic));
-       }
-       writeCommonData(compound);
-   }
+    @Override
+    public void saveAdditional(@Nonnull CompoundTag compound) {
+        super.saveAdditional(compound);
+        if (schematic != null) {
+            compound.put("schematic", Schematic.CODEC.toNBT(schematic));
+        }
+        writeCommonData(compound);
+    }
 
-   @Override
-   public void load(@Nonnull CompoundTag nbt) {
-       super.load(nbt);
-       var schematicNBT = nbt.get("schematic");
-       if (schematicNBT != null) {
-           schematic = Schematic.CODEC.fromNBT(schematicNBT);
-       } else {
-           schematic = null;
-       }
-       readCommonData(nbt);
-   }
+    @Override
+    public void load(@Nonnull CompoundTag nbt) {
+        super.load(nbt);
+        var schematicNBT = nbt.get("schematic");
+        if (schematicNBT != null) {
+            schematic = Schematic.CODEC.fromNBT(schematicNBT);
+        } else {
+            schematic = null;
+        }
+        readCommonData(nbt);
+    }
 
-   private InteractionResult handleMainClick(UseOnContext ctx) {
-       if (level == null) {
-           return InteractionResult.PASS;
-       } else if (schematic != null) {
-           if (!level.isClientSide) {
-               if (ctx.getPlayer() != null && ctx.getPlayer().isShiftKeyDown()) {
-                   ItemUtil.giveOrDrop(ctx.getPlayer(), ISchematicItem.create(CEItems.SCHEMATIC, schematic));
-                   schematic = null;
-                   BEUtil.markDirtyAndSync(this);
-               } else {
-                   CEBlocks.LOGIC_WORKBENCH.get().openContainer(
-                           ctx.getPlayer(), getBlockState(), ctx.getLevel(), worldPosition
-                   );
-               }
-           }
-           return InteractionResult.SUCCESS;
-       } else if (ctx.getItemInHand().is(CEItems.SCHEMATIC.get())) {
-           if (!level.isClientSide) {
-               schematic = Objects.requireNonNullElseGet(
-                       ISchematicItem.getSchematic(ctx.getItemInHand()), Schematic::new
-               );
-               ctx.getItemInHand().shrink(1);
-               BEUtil.markDirtyAndSync(this);
-           }
-           return InteractionResult.SUCCESS;
-       } else {
-           return InteractionResult.PASS;
-       }
-   }
+    private InteractionResult handleMainClick(UseOnContext ctx) {
+        if (level == null) {
+            return InteractionResult.PASS;
+        } else if (schematic != null) {
+            if (!level.isClientSide) {
+                if (ctx.getPlayer() != null && ctx.getPlayer().isShiftKeyDown()) {
+                    ItemUtil.giveOrDrop(ctx.getPlayer(), ISchematicItem.create(CEItems.SCHEMATIC, schematic));
+                    schematic = null;
+                    BEUtil.markDirtyAndSync(this);
+                } else {
+                    CEBlocks.LOGIC_WORKBENCH.get().openContainer(
+                            ctx.getPlayer(), getBlockState(), ctx.getLevel(), worldPosition
+                    );
+                }
+            }
+            return InteractionResult.SUCCESS;
+        } else if (ctx.getItemInHand().is(CEItems.SCHEMATIC.get())) {
+            if (!level.isClientSide) {
+                schematic = Objects.requireNonNullElseGet(
+                        ISchematicItem.getSchematic(ctx.getItemInHand()), Schematic::new
+                );
+                ctx.getItemInHand().shrink(1);
+                BEUtil.markDirtyAndSync(this);
+            }
+            return InteractionResult.SUCCESS;
+        } else {
+            return InteractionResult.PASS;
+        }
+    }
 
-   private InteractionResult handleSolderingClick(UseOnContext ctx) {
-       if (ctx.getPlayer() == null) {
-           return InteractionResult.PASS;
-       }
-       if (ctx.getItemInHand().is(IEItemRefs.CIRCUIT_BOARD.asItem())) {
-           return handleCreationClick(ctx.getPlayer(), ctx.getItemInHand());
-       } else if (ctx.getItemInHand().is(CEItems.PCB_STACK.get())) {
-           return handleDisassemblyClick(ctx.getPlayer(), ctx.getItemInHand());
-       }
-       return InteractionResult.PASS;
-   }
+    private InteractionResult handleSolderingClick(UseOnContext ctx) {
+        if (ctx.getPlayer() == null) {
+            return InteractionResult.PASS;
+        }
+        if (ctx.getItemInHand().is(IEItemRefs.CIRCUIT_BOARD.asItem())) {
+            return handleCreationClick(ctx.getPlayer(), ctx.getItemInHand());
+        } else if (ctx.getItemInHand().is(CEItems.PCB_STACK.get())) {
+            return handleDisassemblyClick(ctx.getPlayer(), ctx.getItemInHand());
+        }
+        return InteractionResult.PASS;
+    }
 
-   private InteractionResult handleCreationClick(Player player, ItemStack heldStack) {
-       if (schematic == null) {
-           return InteractionResult.PASS;
-       }
-       if (level == null || level.isClientSide) {
-           return InteractionResult.SUCCESS;
-       }
-       Optional<BusConnectedCircuit> circuit = SchematicCircuitConverter.toCircuit(schematic);
-       if (circuit.isEmpty()) {
-           return InteractionResult.FAIL;
-       }
-       final int numTubes = schematic.getNumLogicTubes();
-       final int numBoards = schematic.getNumBoards();
-       if (numBoards > LogicCabinetBlockEntity.MAX_NUM_BOARDS) {
-           player.displayClientMessage(
-                   Component.translatable(MORE_BOARDS_THAN_MAX, numBoards, LogicCabinetBlockEntity.MAX_NUM_BOARDS),
-                   true
-           );
-           return InteractionResult.FAIL;
-       } else if (numBoards > heldStack.getCount()) {
-           player.displayClientMessage(Component.translatable(TOO_FEW_BOARDS_HELD, numBoards), true);
-           return InteractionResult.FAIL;
-       }
-       final int numWires = schematic.getWireLength();
-       if (!level.isClientSide) {
-           final boolean enoughTubes = tubeStorage.canConsume(numTubes);
-           final boolean enoughWires = wireStorage.canConsume(numWires);
-           if (enoughTubes && enoughWires) {
-               tubeStorage.consume(numTubes);
-               wireStorage.consume(numWires);
-               heldStack.shrink(numBoards);
-               level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
-               ItemUtil.giveOrDrop(player, PCBStackItem.forSchematic(schematic));
-               schematic = null;
-               setChanged();
-           } else if (!enoughTubes) {
-               player.displayClientMessage(Component.translatable(TOO_FEW_TUBES, numTubes), true);
-           } else {
-               player.displayClientMessage(Component.translatable(TOO_FEW_WIRES, numWires), true);
-           }
-       }
-       return InteractionResult.SUCCESS;
-   }
+    private InteractionResult handleCreationClick(Player player, ItemStack heldStack) {
+        if (schematic == null) {
+            return InteractionResult.PASS;
+        }
+        if (level == null || level.isClientSide) {
+            return InteractionResult.SUCCESS;
+        }
+        Optional<BusConnectedCircuit> circuit = SchematicCircuitConverter.toCircuit(schematic);
+        if (circuit.isEmpty()) {
+            return InteractionResult.FAIL;
+        }
+        final int numTubes = schematic.getNumLogicTubes();
+        final int numBoards = schematic.getNumBoards();
+        if (numBoards > LogicCabinetBlockEntity.MAX_NUM_BOARDS) {
+            player.displayClientMessage(
+                    Component.translatable(MORE_BOARDS_THAN_MAX, numBoards, LogicCabinetBlockEntity.MAX_NUM_BOARDS),
+                    true
+            );
+            return InteractionResult.FAIL;
+        } else if (numBoards > heldStack.getCount()) {
+            player.displayClientMessage(Component.translatable(TOO_FEW_BOARDS_HELD, numBoards), true);
+            return InteractionResult.FAIL;
+        }
+        final int numWires = schematic.getWireLength();
+        if (!level.isClientSide) {
+            final boolean enoughTubes = tubeStorage.canConsume(numTubes);
+            final boolean enoughWires = wireStorage.canConsume(numWires);
+            if (enoughTubes && enoughWires) {
+                tubeStorage.consume(numTubes);
+                wireStorage.consume(numWires);
+                heldStack.shrink(numBoards);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+                ItemUtil.giveOrDrop(player, PCBStackItem.forSchematic(schematic));
+                schematic = null;
+                setChanged();
+            } else if (!enoughTubes) {
+                player.displayClientMessage(Component.translatable(TOO_FEW_TUBES, numTubes), true);
+            } else {
+                player.displayClientMessage(Component.translatable(TOO_FEW_WIRES, numWires), true);
+            }
+        }
+        return InteractionResult.SUCCESS;
+    }
 
-   private InteractionResult handleDisassemblyClick(Player player, ItemStack heldStack) {
-       if (!player.isShiftKeyDown()) {
-           return InteractionResult.PASS;
-       }
-       final var heldSchematic = ISchematicItem.getSchematic(heldStack);
-       if (heldSchematic == null) {
-           return InteractionResult.PASS;
-       } else if (level == null || level.isClientSide) {
-           return InteractionResult.SUCCESS;
-       }
-       heldStack.shrink(1);
-       ItemUtil.giveOrDrop(player, ISchematicItem.create(CEItems.SCHEMATIC, heldSchematic));
-       ItemUtil.giveOrDrop(player, new ItemStack(IEItemRefs.CIRCUIT_BOARD, heldSchematic.getNumBoards()));
-       ItemUtil.giveOrDrop(player, getRecovered(IEItemRefs.TUBE, heldSchematic.getNumLogicTubes(), 50));
-       ItemUtil.giveOrDrop(player, getRecovered(IEItemRefs.WIRE, heldSchematic.getWireLength(), 5));
-       return InteractionResult.SUCCESS;
-   }
+    private InteractionResult handleDisassemblyClick(Player player, ItemStack heldStack) {
+        if (!player.isShiftKeyDown()) {
+            return InteractionResult.PASS;
+        }
+        final var heldSchematic = ISchematicItem.getSchematic(heldStack);
+        if (heldSchematic == null) {
+            return InteractionResult.PASS;
+        } else if (level == null || level.isClientSide) {
+            return InteractionResult.SUCCESS;
+        }
+        heldStack.shrink(1);
+        ItemUtil.giveOrDrop(player, ISchematicItem.create(CEItems.SCHEMATIC, heldSchematic));
+        ItemUtil.giveOrDrop(player, new ItemStack(IEItemRefs.CIRCUIT_BOARD, heldSchematic.getNumBoards()));
+        ItemUtil.giveOrDrop(player, getRecovered(IEItemRefs.TUBE, heldSchematic.getNumLogicTubes(), 50));
+        ItemUtil.giveOrDrop(player, getRecovered(IEItemRefs.WIRE, heldSchematic.getWireLength(), 5));
+        return InteractionResult.SUCCESS;
+    }
 
-   private static ItemStack getRecovered(ItemLike item, int numAvailable, int breakOneIn) {
-       int numRecovered = 0;
-       for (int i = 0; i < numAvailable; ++i) {
-           if (ApiUtils.RANDOM.nextInt(breakOneIn) != 0) {
-               ++numRecovered;
-           }
-       }
-       return new ItemStack(item, numRecovered);
-   }
+    private static ItemStack getRecovered(ItemLike item, int numAvailable, int breakOneIn) {
+        int numRecovered = 0;
+        for (int i = 0; i < numAvailable; ++i) {
+            if (ApiUtils.RANDOM.nextInt(breakOneIn) != 0) {
+                ++numRecovered;
+            }
+        }
+        return new ItemStack(item, numRecovered);
+    }
 
-   public CircuitIngredientDrawer getTubeStorage() {
-       return tubeStorage;
-   }
+    public CircuitIngredientDrawer getTubeStorage() {
+        return tubeStorage;
+    }
 
-   public CircuitIngredientDrawer getWireStorage() {
-       return wireStorage;
-   }
+    public CircuitIngredientDrawer getWireStorage() {
+        return wireStorage;
+    }
 
-   private SelectionShapes makeDrawerShape(
-           BlockState state, VoxelShape shape, Function<LogicWorkbenchBlockEntity, CircuitIngredientDrawer> getDrawer
-   ) {
-       Function<UseOnContext, InteractionResult> onClick = makeInteraction(
-               state,
-               (bEntity, ctx) -> {
-                   InteractionResult ret = getDrawer.apply(bEntity).interact(ctx);
-                   bEntity.level.sendBlockUpdated(
-                           bEntity.worldPosition, bEntity.getBlockState(), bEntity.getBlockState(), Block.UPDATE_ALL
-                   );
-                   bEntity.setChanged();
-                   return ret;
-               }
-       );
-       return new SingleShape(shape, onClick).setTextGetter(() -> {
-           final LogicWorkbenchBlockEntity main = getOrComputeMasterBE(state);
-           if (main == null) {
-               return null;
-           }
-           final CircuitIngredientDrawer drawer = getDrawer.apply(main);
-           if (drawer.getStored().count() == 0) {
-               return Component.translatable(drawer.getEmptyKey());
-           } else {
-               return Component.literal(drawer.getStored().count() + " x ")
-                       .append(drawer.getStored().type().getHoverName().getString());
-           }
-       });
-   }
+    private SelectionShapes makeDrawerShape(
+            BlockState state, VoxelShape shape, Function<LogicWorkbenchBlockEntity, CircuitIngredientDrawer> getDrawer
+    ) {
+        Function<UseOnContext, InteractionResult> onClick = makeInteraction(
+                state,
+                (bEntity, ctx) -> {
+                    InteractionResult ret = getDrawer.apply(bEntity).interact(ctx);
+                    bEntity.level.sendBlockUpdated(
+                            bEntity.worldPosition, bEntity.getBlockState(), bEntity.getBlockState(), Block.UPDATE_ALL
+                    );
+                    bEntity.setChanged();
+                    return ret;
+                }
+        );
+        return new SingleShape(shape, onClick).setTextGetter(() -> {
+            final LogicWorkbenchBlockEntity main = getOrComputeMasterBE(state);
+            if (main == null) {
+                return null;
+            }
+            final CircuitIngredientDrawer drawer = getDrawer.apply(main);
+            if (drawer.getStored().count() == 0) {
+                return Component.translatable(drawer.getEmptyKey());
+            } else {
+                return Component.literal(drawer.getStored().count() + " x ")
+                        .append(drawer.getStored().type().getHoverName().getString());
+            }
+        });
+    }
 
-   @Nullable
-   @Override
-   public Schematic getSchematic() {
-       return schematic;
-   }
+    @Nullable
+    @Override
+    public Schematic getSchematic() {
+        return schematic;
+    }
 
-   @Override
-   public void setSchematicChanged() {
-       this.setChanged();
-   }
+    @Override
+    public void setSchematicChanged() {
+        this.setChanged();
+    }
 
-   public AvailableIngredients getCosts() {
-       return new AvailableIngredients(this);
-   }
+    public AvailableIngredients getCosts() {
+        return new AvailableIngredients(this);
+    }
 
-   @Nonnull
-   @Override
-   public Component getDisplayName() {
-       return Component.empty();
-   }
+    @Nonnull
+    @Override
+    public Component getDisplayName() {
+        return Component.empty();
+    }
 
-   @Nullable
-   @Override
-   public AbstractContainerMenu createMenu(int pContainerId, @Nonnull Inventory pInventory, @Nonnull Player pPlayer) {
-       return CEContainers.LOGIC_DESIGN_EDIT.makeNew(pContainerId, this);
-   }
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int pContainerId, @Nonnull Inventory pInventory, @Nonnull Player pPlayer) {
+        return CEContainers.LOGIC_DESIGN_EDIT.makeNew(pContainerId, this);
+    }
 
-   @Override
-   public void getExtraDrops(Consumer<ItemStack> dropper) {
-       tubeStorage.drop(dropper);
-       wireStorage.drop(dropper);
-       if (schematic != null) {
-           dropper.accept(ISchematicItem.create(CEItems.SCHEMATIC, schematic));
-       }
-   }
+    @Override
+    public void getExtraDrops(Consumer<ItemStack> dropper) {
+        tubeStorage.drop(dropper);
+        wireStorage.drop(dropper);
+        if (schematic != null) {
+            dropper.accept(ISchematicItem.create(CEItems.SCHEMATIC, schematic));
+        }
+    }
 
-   public static class AvailableIngredients {
-       private Mutable<BigItemStack> availableTubes;
-       private Mutable<BigItemStack> availableWires;
+    public static class AvailableIngredients {
+        private Mutable<BigItemStack> availableTubes;
+        private Mutable<BigItemStack> availableWires;
 
-       public AvailableIngredients(LogicWorkbenchBlockEntity bEntity) {
-           this.availableTubes = bEntity.getTubeStorage().getStoredRef();
-           this.availableWires = bEntity.getWireStorage().getStoredRef();
-       }
+        public AvailableIngredients(LogicWorkbenchBlockEntity bEntity) {
+            this.availableTubes = bEntity.getTubeStorage().getStoredRef();
+            this.availableWires = bEntity.getWireStorage().getStoredRef();
+        }
 
-       public AvailableIngredients() {
-           this.availableTubes = new MutableObject<>(BigItemStack.EMPTY);
-           this.availableWires = new MutableObject<>(BigItemStack.EMPTY);
-       }
+        public AvailableIngredients() {
+            this.availableTubes = new MutableObject<>(BigItemStack.EMPTY);
+            this.availableWires = new MutableObject<>(BigItemStack.EMPTY);
+        }
 
-       public BigItemStack getAvailableTubes() {
-           return availableTubes.getValue();
-       }
+        public BigItemStack getAvailableTubes() {
+            return availableTubes.getValue();
+        }
 
-       public BigItemStack getAvailableWires() {
-           return availableWires.getValue();
-       }
+        public BigItemStack getAvailableWires() {
+            return availableWires.getValue();
+        }
 
-       public Pair<Slot, DataSlot> makeTubeSlot(int id) {
-           return makeSlot(id, availableTubes);
-       }
+        public Pair<Slot, DataSlot> makeTubeSlot(int id) {
+            return makeSlot(id, availableTubes);
+        }
 
-       public Pair<Slot, DataSlot> makeWireSlot(int id) {
-           return makeSlot(id, availableWires);
-       }
+        public Pair<Slot, DataSlot> makeWireSlot(int id) {
+            return makeSlot(id, availableWires);
+        }
 
-       private static Pair<Slot, DataSlot> makeSlot(int id, Mutable<BigItemStack> stack) {
-           return Pair.of(
-                   SyncContainer.makeSyncSlot(id, s -> {
-                       var oldCount = stack.getValue().count();
-                       stack.setValue(new BigItemStack(s, oldCount));
-                   }, () -> stack.getValue().type()),
-                   new DataSlot() {
-                       @Override
-                       public int get() {
-                           return stack.getValue().count();
-                       }
+        private static Pair<Slot, DataSlot> makeSlot(int id, Mutable<BigItemStack> stack) {
+            return Pair.of(
+                    SyncContainer.makeSyncSlot(id, s -> {
+                        var oldCount = stack.getValue().count();
+                        stack.setValue(new BigItemStack(s, oldCount));
+                    }, () -> stack.getValue().type()),
+                    new DataSlot() {
+                        @Override
+                        public int get() {
+                            return stack.getValue().count();
+                        }
 
-                       @Override
-                       public void set(int value) {
-                           var oldType = stack.getValue().type();
-                           stack.setValue(new BigItemStack(oldType, value));
-                       }
-                   }
-           );
-       }
-   }
+                        @Override
+                        public void set(int value) {
+                            var oldType = stack.getValue().type();
+                            stack.setValue(new BigItemStack(oldType, value));
+                        }
+                    }
+            );
+        }
+    }
 }

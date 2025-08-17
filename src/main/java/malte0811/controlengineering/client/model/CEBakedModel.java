@@ -85,7 +85,11 @@ public interface CEBakedModel extends BakedModel {
 
         @Nonnull
         @Override
-        default List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand) {
+        default List<BakedQuad> getQuads(
+                @Nullable BlockState state,
+                @Nullable Direction side,
+                @Nonnull RandomSource rand
+        ) {
             return CEBakedModel.super.getQuads(state, side, rand);
         }
 

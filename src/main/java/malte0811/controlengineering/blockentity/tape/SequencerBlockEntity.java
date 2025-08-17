@@ -216,7 +216,7 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
     }
 
     @Override
-    public void onBusUpdated(BusState totalState, BusState otherState) {}
+    public void onBusUpdated(BusState totalState, BusState otherState) { }
 
     @Override
     public BusState getEmittedState() {

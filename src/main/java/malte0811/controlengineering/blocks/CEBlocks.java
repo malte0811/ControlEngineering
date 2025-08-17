@@ -45,15 +45,15 @@ public class CEBlocks {
 
     public static final RegistryObject<SequencerBlock> SEQUENCER = REGISTER.register("sequencer", SequencerBlock::new);
 
-   public static final RegistryObject<LogicCabinetBlock> LOGIC_CABINET = REGISTER.register(
-           "logic_cabinet", LogicCabinetBlock::new
-   );
+    public static final RegistryObject<LogicCabinetBlock> LOGIC_CABINET = REGISTER.register(
+            "logic_cabinet", LogicCabinetBlock::new
+    );
 
-   public static final RegistryObject<LogicWorkbenchBlock> LOGIC_WORKBENCH = REGISTER.register(
-           "logic_workbench", LogicWorkbenchBlock::new
-   );
+    public static final RegistryObject<LogicWorkbenchBlock> LOGIC_WORKBENCH = REGISTER.register(
+            "logic_workbench", LogicWorkbenchBlock::new
+    );
 
-   public static final RegistryObject<ScopeBlock> SCOPE = REGISTER.register(
-           "oscilloscope", ScopeBlock::new
-   );
+    public static final RegistryObject<ScopeBlock> SCOPE = REGISTER.register(
+            "oscilloscope", ScopeBlock::new
+    );
 }

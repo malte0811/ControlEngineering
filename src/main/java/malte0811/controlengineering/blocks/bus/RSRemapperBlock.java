@@ -85,8 +85,9 @@ public class RSRemapperBlock extends CEBlock<Direction> {
             @Nonnull BlockState state, @Nonnull ServerLevel level, @Nonnull BlockPos pos, @Nonnull RandomSource random
     ) {
         super.tick(state, level, pos, random);
-        if (!(level.getBlockEntity(pos) instanceof RSRemapperBlockEntity remapper))
+        if (!(level.getBlockEntity(pos) instanceof RSRemapperBlockEntity remapper)) {
             return;
+        }
         remapper.onBlockTick();
     }
 }

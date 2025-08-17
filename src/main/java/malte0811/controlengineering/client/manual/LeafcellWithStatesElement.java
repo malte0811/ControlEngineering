@@ -25,86 +25,90 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class LeafcellWithStatesElement extends SpecialManualElement {
-   private final ManualInstance manual;
-   private final SchematicSymbol<?> symbol;
-   private final LeafcellElement<?> display;
-   private final ManualElementTable truthTable;
+    private final ManualInstance manual;
+    private final SchematicSymbol<?> symbol;
+    private final LeafcellElement<?> display;
+    private final ManualElementTable truthTable;
 
-   private LeafcellWithStatesElement(ManualInstance manual, ResourceLocation cellName) {
-       this.manual = manual;
-       this.symbol = SchematicSymbols.REGISTRY.get(cellName);
-       this.display = new LeafcellElement<>(symbol, manual);
+    private LeafcellWithStatesElement(ManualInstance manual, ResourceLocation cellName) {
+        this.manual = manual;
+        this.symbol = SchematicSymbols.REGISTRY.get(cellName);
+        this.display = new LeafcellElement<>(symbol, manual);
 
-       var cell = Objects.requireNonNull(LeafcellType.REGISTRY.get(cellName));
-       List<List<Component>> table = new ArrayList<>();
-       List<String> inputNames = cell.getInputPins().keySet().stream().sorted().toList();
-       List<String> outputNames = cell.getOutputPins().keySet().stream().sorted().toList();
-       {
-           List<Component> namesRow = new ArrayList<>();
-           for (var pinList : List.of(inputNames, outputNames)) {
-               for (var pin : pinList) {
-                   namesRow.add(Component.literal(pin.toUpperCase(Locale.ROOT)));
-               }
-           }
-           table.add(namesRow);
-       }
-       Object2IntMap<String> inputs = new Object2IntOpenHashMap<>();
-       for (int packedInputs = 0; packedInputs < 1 << inputNames.size(); ++packedInputs) {
-           List<Component> line = new ArrayList<>();
-           for (int i = 0; i < inputNames.size(); ++i) {
-               var value = (packedInputs >> i) & 1;
-               inputs.put(inputNames.get(i), value * BusLine.MAX_VALID_VALUE);
-               line.add(Component.literal(Integer.toString(value)));
-           }
-           var outputs = cell.getOutputSignals(new CircuitSignals(inputs), null, null);
-           for (var output : outputNames) {
-               line.add(Component.literal(outputs.bool(output) ? "1" : "0"));
-           }
-           table.add(line);
-       }
-       this.truthTable = new ManualElementTable(
-               manual, table.stream().map(l -> l.toArray(Component[]::new)).toArray(Component[][]::new), false
-       );
-   }
+        var cell = Objects.requireNonNull(LeafcellType.REGISTRY.get(cellName));
+        List<List<Component>> table = new ArrayList<>();
+        List<String> inputNames = cell.getInputPins().keySet().stream().sorted().toList();
+        List<String> outputNames = cell.getOutputPins().keySet().stream().sorted().toList();
+        {
+            List<Component> namesRow = new ArrayList<>();
+            for (var pinList : List.of(inputNames, outputNames)) {
+                for (var pin : pinList) {
+                    namesRow.add(Component.literal(pin.toUpperCase(Locale.ROOT)));
+                }
+            }
+            table.add(namesRow);
+        }
+        Object2IntMap<String> inputs = new Object2IntOpenHashMap<>();
+        for (int packedInputs = 0; packedInputs < 1 << inputNames.size(); ++packedInputs) {
+            List<Component> line = new ArrayList<>();
+            for (int i = 0; i < inputNames.size(); ++i) {
+                var value = (packedInputs >> i) & 1;
+                inputs.put(inputNames.get(i), value * BusLine.MAX_VALID_VALUE);
+                line.add(Component.literal(Integer.toString(value)));
+            }
+            var outputs = cell.getOutputSignals(new CircuitSignals(inputs), null, null);
+            for (var output : outputNames) {
+                line.add(Component.literal(outputs.bool(output) ? "1" : "0"));
+            }
+            table.add(line);
+        }
+        this.truthTable = new ManualElementTable(
+                manual, table.stream().map(l -> l.toArray(Component[]::new)).toArray(Component[][]::new), false
+        );
+    }
 
-   public static LeafcellWithStatesElement from(ManualInstance manual, JsonObject obj) {
-       return new LeafcellWithStatesElement(manual, new ResourceLocation(obj.get("cell").getAsString()));
-   }
+    public static LeafcellWithStatesElement from(ManualInstance manual, JsonObject obj) {
+        return new LeafcellWithStatesElement(manual, new ResourceLocation(obj.get("cell").getAsString()));
+    }
 
-   @Override
-   public int getPixelsTaken() {
-       return getPixelsBeforeTable() + truthTable.getPixelsTaken();
-   }
+    @Override
+    public int getPixelsTaken() {
+        return getPixelsBeforeTable() + truthTable.getPixelsTaken();
+    }
 
-   private int getPixelsBeforeTable() {
-       return display.getPixelsTaken() + manual.fontRenderer().lineHeight;
-   }
+    private int getPixelsBeforeTable() {
+        return display.getPixelsTaken() + manual.fontRenderer().lineHeight;
+    }
 
-   @Override
-   public void onOpened(ManualScreen gui, int x, int y, List<Button> buttons) {}
+    @Override
+    public void onOpened(ManualScreen gui, int x, int y, List<Button> buttons) { }
 
-   @Override
-   public void render(GuiGraphics graphics, ManualScreen gui, int x, int y, int mouseX, int mouseY) {
-       display.render(graphics, gui, x, y, mouseX, mouseY);
-       var name = symbol.getDefaultName();
-       var nameWidth = manual.fontRenderer().width(name);
-       graphics.drawString(manual.fontRenderer(), name, (int) (x + (manual.pageWidth - nameWidth) / 2f), y + display.getPixelsTaken() - 4, 0);
- 
-       truthTable.render(graphics, gui, x, y + getPixelsBeforeTable(), mouseX, mouseY);
-   }
+    @Override
+    public void render(GuiGraphics graphics, ManualScreen gui, int x, int y, int mouseX, int mouseY) {
+        display.render(graphics, gui, x, y, mouseX, mouseY);
+        var name = symbol.getDefaultName();
+        var nameWidth = manual.fontRenderer().width(name);
+        graphics.drawString(manual.fontRenderer(),
+                name,
+                (int) (x + (manual.pageWidth - nameWidth) / 2f),
+                y + display.getPixelsTaken() - 4,
+                0);
 
-   @Override
-   public void mouseDragged(
-           int x, int y, double clickX, double clickY, double mx, double my, double lastX, double lastY,
-           int mouseButton
-   ) {
-   }
+        truthTable.render(graphics, gui, x, y + getPixelsBeforeTable(), mouseX, mouseY);
+    }
 
-   @Override
-   public boolean listForSearch(String searchTag) {
-       return false;
-   }
+    @Override
+    public void mouseDragged(
+            int x, int y, double clickX, double clickY, double mx, double my, double lastX, double lastY,
+            int mouseButton
+    ) {
+    }
 
-   @Override
-   public void recalculateCraftingRecipes() {}
+    @Override
+    public boolean listForSearch(String searchTag) {
+        return false;
+    }
+
+    @Override
+    public void recalculateCraftingRecipes() { }
 }

@@ -64,5 +64,5 @@ public class BaseRecipe implements Recipe<Container> {
     }
 
     // TODO remove now that ForgeRegEntry is gone?
-    protected static abstract class BaseSerializer<R extends BaseRecipe> implements RecipeSerializer<R> {}
+    protected static abstract class BaseSerializer<R extends BaseRecipe> implements RecipeSerializer<R> { }
 }

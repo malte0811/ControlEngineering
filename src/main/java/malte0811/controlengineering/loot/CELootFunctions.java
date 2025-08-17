@@ -35,7 +35,9 @@ public class CELootFunctions {
         BlockEntity be = ctx.getParamOrNull(LootContextParams.BLOCK_ENTITY);
         if (be instanceof IHasMaster<?> hasMaster) {
             return hasMaster.getOrComputeMasterBE(ctx.getParamOrNull(LootContextParams.BLOCK_STATE));
-        } else { return be; }
+        } else {
+            return be;
+        }
     }
 
     private static RegistryObject<LootPoolEntryType> registerEntry(

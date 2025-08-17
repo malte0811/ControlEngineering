@@ -28,8 +28,9 @@ public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickab
 
     @Override
     public LocalNetworkHandler merge(LocalNetworkHandler other) {
-        if (!(other instanceof LocalBusHandler otherBus))
+        if (!(other instanceof LocalBusHandler otherBus)) {
             return new LocalBusHandler(localNet, globalNet);
+        }
         for (Pair<ConnectionPoint, IBusConnector> pair : otherBus.stateHandler.getEmitters()) {
             stateHandler.addEmitter(pair);
         }
@@ -76,10 +77,10 @@ public class LocalBusHandler extends LocalNetworkHandler implements IWorldTickab
     }
 
     @Override
-    public void onConnectionAdded(Connection c) {}
+    public void onConnectionAdded(Connection c) { }
 
     @Override
-    public void onConnectionRemoved(Connection c) {}
+    public void onConnectionRemoved(Connection c) { }
 
     public BusState getState() {
         return stateHandler.getTotalState();

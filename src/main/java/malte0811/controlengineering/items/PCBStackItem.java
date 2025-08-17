@@ -24,52 +24,52 @@ import java.util.List;
 import java.util.Optional;
 
 public class PCBStackItem extends Item implements ISchematicItem {
-   public static final String FOR_USE_IN_KEY = ControlEngineering.MODID + ".gui.useIn";
+    public static final String FOR_USE_IN_KEY = ControlEngineering.MODID + ".gui.useIn";
 
-   public PCBStackItem() {
-       super(new Properties().stacksTo(1));
-   }
+    public PCBStackItem() {
+        super(new Properties().stacksTo(1));
+    }
 
-   @Override
-   public void appendHoverText(
-           @Nonnull ItemStack stack, @Nullable Level level, @Nonnull List<Component> out, @Nonnull TooltipFlag advanced
-   ) {
-       super.appendHoverText(stack, level, out, advanced);
-       out.add(useIn(CEBlocks.LOGIC_CABINET));
-   }
+    @Override
+    public void appendHoverText(
+            @Nonnull ItemStack stack, @Nullable Level level, @Nonnull List<Component> out, @Nonnull TooltipFlag advanced
+    ) {
+        super.appendHoverText(stack, level, out, advanced);
+        out.add(useIn(CEBlocks.LOGIC_CABINET));
+    }
 
-   public static Component useIn(RegistryObject<? extends ItemLike> block) {
-       return Component.translatable(FOR_USE_IN_KEY, block.get().asItem().getDescription())
-               .withStyle(ChatFormatting.GRAY);
-   }
+    public static Component useIn(RegistryObject<? extends ItemLike> block) {
+        return Component.translatable(FOR_USE_IN_KEY, block.get().asItem().getDescription())
+                .withStyle(ChatFormatting.GRAY);
+    }
 
-   @Nullable
-   public static Pair<Schematic, BusConnectedCircuit> getSchematicAndCircuit(ItemStack stack) {
-       if (stack.getItem() != CEItems.PCB_STACK.get()) {
-           return null;
-       }
-       var schematic = ISchematicItem.getSchematic(stack);
-       if (schematic == null) {
-           return null;
-       }
-       Optional<BusConnectedCircuit> circuit = SchematicCircuitConverter.toCircuit(schematic);
-       if (!circuit.isPresent()) {
-           return null;
-       }
-       return Pair.of(schematic, circuit.get());
-   }
+    @Nullable
+    public static Pair<Schematic, BusConnectedCircuit> getSchematicAndCircuit(ItemStack stack) {
+        if (stack.getItem() != CEItems.PCB_STACK.get()) {
+            return null;
+        }
+        var schematic = ISchematicItem.getSchematic(stack);
+        if (schematic == null) {
+            return null;
+        }
+        Optional<BusConnectedCircuit> circuit = SchematicCircuitConverter.toCircuit(schematic);
+        if (!circuit.isPresent()) {
+            return null;
+        }
+        return Pair.of(schematic, circuit.get());
+    }
 
-   public static ItemStack forSchematic(Schematic schematic) {
-       if (SchematicCircuitConverter.toCircuit(schematic).isPresent()) {
-           return ISchematicItem.create(CEItems.PCB_STACK, schematic);
-       } else {
-           return ItemStack.EMPTY;
-       }
-   }
+    public static ItemStack forSchematic(Schematic schematic) {
+        if (SchematicCircuitConverter.toCircuit(schematic).isPresent()) {
+            return ISchematicItem.create(CEItems.PCB_STACK, schematic);
+        } else {
+            return ItemStack.EMPTY;
+        }
+    }
 
-   @Override
-   public boolean doesSneakBypassUse(ItemStack stack, LevelReader level, BlockPos pos, Player player) {
-       // Used for disassembly (sneak-r-click on the soldering burner)
-       return true;
-   }
+    @Override
+    public boolean doesSneakBypassUse(ItemStack stack, LevelReader level, BlockPos pos, Player player) {
+        // Used for disassembly (sneak-r-click on the soldering burner)
+        return true;
+    }
 }

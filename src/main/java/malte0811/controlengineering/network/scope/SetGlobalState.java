@@ -10,23 +10,23 @@ import org.apache.commons.lang3.mutable.Mutable;
 import java.util.List;
 
 public record SetGlobalState(GlobalState newState) implements ScopeSubPacket.IScopeSubPacket {
-   public static final MyCodec<SetGlobalState> CODEC = GlobalState.CODEC.xmap(
-           SetGlobalState::new, SetGlobalState::newState
-   );
+    public static final MyCodec<SetGlobalState> CODEC = GlobalState.CODEC.xmap(
+            SetGlobalState::new, SetGlobalState::newState
+    );
 
-   @Override
-   public boolean process(
-           List<ModuleInScope> modules,
-           Mutable<Traces> traces,
-           Mutable<GlobalConfig> globalConfig,
-           Mutable<GlobalState> globalState
-   ) {
-       globalState.setValue(newState);
-       return true;
-   }
+    @Override
+    public boolean process(
+            List<ModuleInScope> modules,
+            Mutable<Traces> traces,
+            Mutable<GlobalConfig> globalConfig,
+            Mutable<GlobalState> globalState
+    ) {
+        globalState.setValue(newState);
+        return true;
+    }
 
-   @Override
-   public boolean allowSendingToServer() {
-       return false;
-   }
+    @Override
+    public boolean allowSendingToServer() {
+        return false;
+    }
 }

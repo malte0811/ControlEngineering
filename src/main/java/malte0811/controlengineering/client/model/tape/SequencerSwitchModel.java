@@ -98,7 +98,10 @@ public class SequencerSwitchModel implements CEBakedModel {
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(
-            @Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull ModelData extraData,
+            @Nullable BlockState state,
+            @Nullable Direction side,
+            @Nonnull RandomSource rand,
+            @Nonnull ModelData extraData,
             @Nullable RenderType layer
     ) {
         var data = extraData.get(DATA);
@@ -122,12 +125,13 @@ public class SequencerSwitchModel implements CEBakedModel {
             @Nonnull BlockState state,
             @Nonnull ModelData tileData
     ) {
-        if (world.getBlockEntity(pos) instanceof SequencerBlockEntity sequencer)
+        if (world.getBlockEntity(pos) instanceof SequencerBlockEntity sequencer) {
             return ModelDataUtils.single(
                     DATA, new Data(sequencer.isCompact(), sequencer.isAutoreset(), sequencer.hasClock())
             );
+        }
         return CEBakedModel.super.getModelData(world, pos, state, tileData);
     }
 
-    private record Data(boolean compact, boolean autoReset, boolean hasClock) {}
+    private record Data(boolean compact, boolean autoReset, boolean hasClock) { }
 }

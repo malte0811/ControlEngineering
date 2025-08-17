@@ -70,10 +70,10 @@ public class ControlEngineering {
     private void registerPackets() {
         int id = 0;
         registerPacket(id++, KeypunchPacket.class, KeypunchPacket::new);
-       registerPacket(id++, LogicPacket.class, LogicPacket::new);
-       registerPacket(id++, PanelPacket.class, PanelPacket::new);
+        registerPacket(id++, LogicPacket.class, LogicPacket::new);
+        registerPacket(id++, PanelPacket.class, PanelPacket::new);
         registerPacket(id++, RemapperPacket.class, RemapperPacket::new);
-       registerPacket(id++, ScopePacket.class, ScopePacket::new);
+        registerPacket(id++, ScopePacket.class, ScopePacket::new);
         registerPacket(id++, CutTapePacket.class, CutTapePacket::new, NetworkDirection.PLAY_TO_SERVER);
     }
 

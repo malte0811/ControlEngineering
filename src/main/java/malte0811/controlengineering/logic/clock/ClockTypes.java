@@ -35,7 +35,9 @@ public class ClockTypes {
     @Nullable
     public static ClockGenerator<?> getClock(Item item) {
         final var itemName = BuiltInRegistries.ITEM.getKey(item);
-        if (!itemName.getPath().startsWith(ITEM_KEY_PREFIX)) { return null; }
+        if (!itemName.getPath().startsWith(ITEM_KEY_PREFIX)) {
+            return null;
+        }
         final var clockPath = itemName.getPath().substring(ITEM_KEY_PREFIX.length());
         final var clockName = new ResourceLocation(itemName.getNamespace(), clockPath);
         return REGISTRY.get(clockName);

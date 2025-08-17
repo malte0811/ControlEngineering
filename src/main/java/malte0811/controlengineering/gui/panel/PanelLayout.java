@@ -91,7 +91,7 @@ public class PanelLayout extends AbstractWidget {
                 }
                 return false;
             } else {
-                if (mouseXPanel<0 || mouseYPanel<0 || mouseXPanel>16 || mouseYPanel>16 ) {
+                if (mouseXPanel < 0 || mouseYPanel < 0 || mouseXPanel > 16 || mouseYPanel > 16) {
                     //clicked outside of grid holding component. Put component away
                     placing = null;
                     return true;

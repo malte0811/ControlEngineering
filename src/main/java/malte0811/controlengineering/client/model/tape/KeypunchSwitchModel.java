@@ -73,7 +73,10 @@ public class KeypunchSwitchModel implements CEBakedModel {
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(
-            @Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull ModelData extraData,
+            @Nullable BlockState state,
+            @Nullable Direction side,
+            @Nonnull RandomSource rand,
+            @Nonnull ModelData extraData,
             @Nullable RenderType layer
     ) {
         var loopbackNullable = extraData.get(LOOPBACK);

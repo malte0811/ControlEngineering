@@ -58,7 +58,7 @@ public interface PlacementBehavior<T> {
 
     BlockState getStateForOffset(Block owner, BlockPos offset, T data);
 
-    default void fillBEData(BlockPos offset, BlockEntity be, T data, ItemStack item) {}
+    default void fillBEData(BlockPos offset, BlockEntity be, T data, ItemStack item) { }
 
     boolean isValidAtOffset(BlockPos offset, BlockState state, BlockEntity be, T data);
 }

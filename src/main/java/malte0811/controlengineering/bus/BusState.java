@@ -74,8 +74,12 @@ public class BusState {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         BusState busState = (BusState) o;
         return lines.equals(busState.lines);
     }

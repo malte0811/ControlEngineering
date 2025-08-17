@@ -22,23 +22,23 @@ public class ContainerScreenManager {
         MenuScreens.<KeypunchMenu, KeypunchScreen>register(
                 CEContainers.KEYPUNCH.get(), (container, inv, title) -> new KeypunchScreen(container, title)
         );
-       MenuScreens.<LogicDesignMenu, LogicDesignScreen>register(
-               CEContainers.LOGIC_DESIGN_EDIT.get(), (container, inv, title) -> new LogicDesignScreen(container, title)
-       );
-       MenuScreens.<LogicDesignMenu, LogicDesignScreen>register(
-               CEContainers.LOGIC_DESIGN_VIEW.get(), (container, inv, title) -> new LogicDesignScreen(container, title)
-       );
+        MenuScreens.<LogicDesignMenu, LogicDesignScreen>register(
+                CEContainers.LOGIC_DESIGN_EDIT.get(), (container, inv, title) -> new LogicDesignScreen(container, title)
+        );
+        MenuScreens.<LogicDesignMenu, LogicDesignScreen>register(
+                CEContainers.LOGIC_DESIGN_VIEW.get(), (container, inv, title) -> new LogicDesignScreen(container, title)
+        );
         MenuScreens.<PanelDesignMenu, PanelDesignScreen>register(
                 CEContainers.PANEL_DESIGN.get(), (container, inv, title) -> new PanelDesignScreen(container, title)
         );
-       MenuScreens.<AbstractRemapperMenu, AbstractRemapperScreen>register(
-               CEContainers.RS_REMAPPER.get(), (container, inv, title) -> new RSRemapperScreen(container)
-       );
+        MenuScreens.<AbstractRemapperMenu, AbstractRemapperScreen>register(
+                CEContainers.RS_REMAPPER.get(), (container, inv, title) -> new RSRemapperScreen(container)
+        );
         MenuScreens.<AbstractRemapperMenu, AbstractRemapperScreen>register(
                 CEContainers.PORT_REMAPPER.get(), (container, inv, title) -> new ParallelPortMapperScreen(container)
         );
-       MenuScreens.<ScopeMenu, ScopeScreen>register(
-               CEContainers.SCOPE.get(), (container, inv, title) -> new ScopeScreen(container)
-       );
+        MenuScreens.<ScopeMenu, ScopeScreen>register(
+                CEContainers.SCOPE.get(), (container, inv, title) -> new ScopeScreen(container)
+        );
     }
 }

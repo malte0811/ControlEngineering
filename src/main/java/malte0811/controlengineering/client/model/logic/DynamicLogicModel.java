@@ -223,5 +223,5 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLog
         }
     }
 
-    public record LogicModelData(int numTubes, boolean hasClock) {}
+    public record LogicModelData(int numTubes, boolean hasClock) { }
 }

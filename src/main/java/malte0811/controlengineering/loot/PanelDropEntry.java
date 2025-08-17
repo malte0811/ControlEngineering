@@ -18,7 +18,12 @@ import java.util.function.Consumer;
 public class PanelDropEntry extends LootPoolSingletonContainer {
     public static final String ID = "panel";
 
-    protected PanelDropEntry(int weightIn, int qualityIn, LootItemCondition[] conditionsIn, LootItemFunction[] functionsIn) {
+    protected PanelDropEntry(
+            int weightIn,
+            int qualityIn,
+            LootItemCondition[] conditionsIn,
+            LootItemFunction[] functionsIn
+    ) {
         super(weightIn, qualityIn, conditionsIn, functionsIn);
     }
 

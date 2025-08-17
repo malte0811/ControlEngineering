@@ -23,84 +23,84 @@ import net.minecraft.world.level.ItemLike;
 import java.util.List;
 
 public class LeafcellElement<State> extends SpecialManualElement {
-   public static final String COST_KEY = ControlEngineering.MODID + ".gui.leafcell.cost";
-   private static final int SCALE = 5;
-   private static final int ITEM_SIZE = 18;
+    public static final String COST_KEY = ControlEngineering.MODID + ".gui.leafcell.cost";
+    private static final int SCALE = 5;
+    private static final int ITEM_SIZE = 18;
 
-   private final SchematicSymbol<State> type;
-   private final ManualInstance manual;
+    private final SchematicSymbol<State> type;
+    private final ManualInstance manual;
 
-   public LeafcellElement(SchematicSymbol<State> type, ManualInstance manual) {
-       this.type = type;
-       this.manual = manual;
-   }
+    public LeafcellElement(SchematicSymbol<State> type, ManualInstance manual) {
+        this.type = type;
+        this.manual = manual;
+    }
 
-   public static LeafcellElement<?> from(ResourceLocation name, ManualInstance manual) {
-       return new LeafcellElement<>(SchematicSymbols.REGISTRY.get(name), manual);
-   }
+    public static LeafcellElement<?> from(ResourceLocation name, ManualInstance manual) {
+        return new LeafcellElement<>(SchematicSymbols.REGISTRY.get(name), manual);
+    }
 
-   public static LeafcellElement<?> from(JsonObject obj, ManualInstance manual) {
-       return from(new ResourceLocation(obj.get("cell").getAsString()), manual);
-   }
+    public static LeafcellElement<?> from(JsonObject obj, ManualInstance manual) {
+        return from(new ResourceLocation(obj.get("cell").getAsString()), manual);
+    }
 
-   @Override
-   public int getPixelsTaken() {
-       return Math.max(
-               type.getDefaultYSize(Minecraft.getInstance().level) * SCALE,
-               manual.fontRenderer().lineHeight + 2 * ITEM_SIZE
-       ) + 4;
-   }
+    @Override
+    public int getPixelsTaken() {
+        return Math.max(
+                type.getDefaultYSize(Minecraft.getInstance().level) * SCALE,
+                manual.fontRenderer().lineHeight + 2 * ITEM_SIZE
+        ) + 4;
+    }
 
-   @Override
-   public void onOpened(ManualScreen gui, int x, int y, List<Button> buttons) {}
+    @Override
+    public void onOpened(ManualScreen gui, int x, int y, List<Button> buttons) { }
 
-   @Override
-   public void render(GuiGraphics graphics, ManualScreen gui, int x, int y, int mouseX, int mouseY) {
-       var manual = gui.getManual();
-       graphics.pose().pushPose();
-       var offsetX = (manual.pageWidth * (2 / 3.) - type.getDefaultXSize(Minecraft.getInstance().level) * SCALE) / 2.;
-       graphics.pose().translate(x + offsetX, y, 0);
-       graphics.pose().scale(SCALE, SCALE, SCALE);
-       ClientSymbols.render(type, graphics, 0, 0, type.getInitialState(), 0xff);
-       graphics.pose().popPose();
-       if (type instanceof CellSymbol<?> cell) {
-           var cost = cell.getCellType().getCost();
-           var font = manual.fontRenderer();
-           final var costStartY = y + font.lineHeight;
-           final var xRight = x + manual.pageWidth;
-           var costLabel = I18n.get(COST_KEY);
-           graphics.drawString(font, costLabel, xRight - font.width(costLabel) - 2, y, 0);
-           renderCost(graphics, font, xRight, costStartY, cost.numTubes(), IEItemRefs.TUBE);
-           renderCost(
-                   graphics, font,
-                   xRight, costStartY + ITEM_SIZE,
-                   cost.wireLength(), IEItemRefs.WIRE
-           );
-       }
-   }
+    @Override
+    public void render(GuiGraphics graphics, ManualScreen gui, int x, int y, int mouseX, int mouseY) {
+        var manual = gui.getManual();
+        graphics.pose().pushPose();
+        var offsetX = (manual.pageWidth * (2 / 3.) - type.getDefaultXSize(Minecraft.getInstance().level) * SCALE) / 2.;
+        graphics.pose().translate(x + offsetX, y, 0);
+        graphics.pose().scale(SCALE, SCALE, SCALE);
+        ClientSymbols.render(type, graphics, 0, 0, type.getInitialState(), 0xff);
+        graphics.pose().popPose();
+        if (type instanceof CellSymbol<?> cell) {
+            var cost = cell.getCellType().getCost();
+            var font = manual.fontRenderer();
+            final var costStartY = y + font.lineHeight;
+            final var xRight = x + manual.pageWidth;
+            var costLabel = I18n.get(COST_KEY);
+            graphics.drawString(font, costLabel, xRight - font.width(costLabel) - 2, y, 0);
+            renderCost(graphics, font, xRight, costStartY, cost.numTubes(), IEItemRefs.TUBE);
+            renderCost(
+                    graphics, font,
+                    xRight, costStartY + ITEM_SIZE,
+                    cost.wireLength(), IEItemRefs.WIRE
+            );
+        }
+    }
 
-   private void renderCost(GuiGraphics graphics, Font font, int xRight, int y, double amount, ItemLike item) {
-       var text = amount + " x ";
-       var textWidth = font.width(text);
-       var xLeft = xRight - ITEM_SIZE - textWidth;
-       ManualUtils.renderItemStack(graphics, item.asItem().getDefaultInstance(), xRight - ITEM_SIZE, y, false);
-       graphics.drawString(font, text, xLeft, (int) (y + (ITEM_SIZE - font.lineHeight) / 2f), 0);
-   }
+    private void renderCost(GuiGraphics graphics, Font font, int xRight, int y, double amount, ItemLike item) {
+        var text = amount + " x ";
+        var textWidth = font.width(text);
+        var xLeft = xRight - ITEM_SIZE - textWidth;
+        ManualUtils.renderItemStack(graphics, item.asItem().getDefaultInstance(), xRight - ITEM_SIZE, y, false);
+        graphics.drawString(font, text, xLeft, (int) (y + (ITEM_SIZE - font.lineHeight) / 2f), 0);
+    }
 
-   @Override
-   public void mouseDragged(
-           int x, int y,
-           double clickX, double clickY,
-           double mx, double my,
-           double lastX, double lastY,
-           int mouseButton
-   ) {}
+    @Override
+    public void mouseDragged(
+            int x, int y,
+            double clickX, double clickY,
+            double mx, double my,
+            double lastX, double lastY,
+            int mouseButton
+    ) { }
 
-   @Override
-   public boolean listForSearch(String searchTag) {
-       return false;
-   }
+    @Override
+    public boolean listForSearch(String searchTag) {
+        return false;
+    }
 
-   @Override
-   public void recalculateCraftingRecipes() {}
+    @Override
+    public void recalculateCraftingRecipes() { }
 }

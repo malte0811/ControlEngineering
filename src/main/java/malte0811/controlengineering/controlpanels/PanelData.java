@@ -59,8 +59,10 @@ public class PanelData {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         PanelData panelData = (PanelData) o;
         return Objects.equals(components, panelData.components) && Objects.equals(transform, panelData.transform);
     }

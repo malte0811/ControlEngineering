@@ -20,62 +20,62 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScopeMenu extends CEContainerMenu<IScopeSubPacket> {
-   private final List<ModuleInScope> modules;
-   private final Mutable<Traces> traces;
-   private final Mutable<GlobalConfig> globalConfig;
-   private final Mutable<GlobalState> globalState;
+    private final List<ModuleInScope> modules;
+    private final Mutable<Traces> traces;
+    private final Mutable<GlobalConfig> globalConfig;
+    private final Mutable<GlobalState> globalState;
 
-   public ScopeMenu(@Nullable MenuType<?> type, int id, ScopeBlockEntity scope) {
-       super(type, id, isValidFor(scope), scope::setChanged, scope.getOpenMenus());
-       this.modules = scope.getModules();
-       this.traces = new LambdaMutable<>(scope::getTraces, scope::setTraces);
-       this.globalConfig = new LambdaMutable<>(scope::getGlobalConfig, scope::setGlobalConfig);
-       this.globalState = LambdaMutable.getterOnly(scope::getGlobalSyncState);
-   }
+    public ScopeMenu(@Nullable MenuType<?> type, int id, ScopeBlockEntity scope) {
+        super(type, id, isValidFor(scope), scope::setChanged, scope.getOpenMenus());
+        this.modules = scope.getModules();
+        this.traces = new LambdaMutable<>(scope::getTraces, scope::setTraces);
+        this.globalConfig = new LambdaMutable<>(scope::getGlobalConfig, scope::setGlobalConfig);
+        this.globalState = LambdaMutable.getterOnly(scope::getGlobalSyncState);
+    }
 
-   public ScopeMenu(MenuType<?> type, int id) {
-       super(type, id);
-       this.modules = new ArrayList<>();
-       this.traces = new MutableObject<>(new Traces());
-       this.globalConfig = new MutableObject<>(new GlobalConfig());
-       this.globalState = new MutableObject<>(new GlobalState());
-   }
+    public ScopeMenu(MenuType<?> type, int id) {
+        super(type, id);
+        this.modules = new ArrayList<>();
+        this.traces = new MutableObject<>(new Traces());
+        this.globalConfig = new MutableObject<>(new GlobalConfig());
+        this.globalState = new MutableObject<>(new GlobalState());
+    }
 
-   public List<ModuleInScope> getModules() {
-       return modules;
-   }
+    public List<ModuleInScope> getModules() {
+        return modules;
+    }
 
-   public Traces getTraces() {
-       return getTracesMutable().getValue();
-   }
+    public Traces getTraces() {
+        return getTracesMutable().getValue();
+    }
 
-   public Mutable<Traces> getTracesMutable() {
-       return traces;
-   }
+    public Mutable<Traces> getTracesMutable() {
+        return traces;
+    }
 
-   @Override
-   protected SimplePacket makePacket(IScopeSubPacket packet) {
-       return new ScopePacket(packet);
-   }
+    @Override
+    protected SimplePacket makePacket(IScopeSubPacket packet) {
+        return new ScopePacket(packet);
+    }
 
-   @Override
-   public IScopeSubPacket getInitialSync() {
-       return new FullSync(getModules(), getTraces(), getGlobalConfig(), getGlobalState());
-   }
+    @Override
+    public IScopeSubPacket getInitialSync() {
+        return new FullSync(getModules(), getTraces(), getGlobalConfig(), getGlobalState());
+    }
 
-   public GlobalConfig getGlobalConfig() {
-       return getGlobalConfigMutable().getValue();
-   }
+    public GlobalConfig getGlobalConfig() {
+        return getGlobalConfigMutable().getValue();
+    }
 
-   public Mutable<GlobalConfig> getGlobalConfigMutable() {
-       return globalConfig;
-   }
+    public Mutable<GlobalConfig> getGlobalConfigMutable() {
+        return globalConfig;
+    }
 
-   public GlobalState getGlobalState() {
-       return getGlobalStateMutable().getValue();
-   }
+    public GlobalState getGlobalState() {
+        return getGlobalStateMutable().getValue();
+    }
 
-   public Mutable<GlobalState> getGlobalStateMutable() {
-       return globalState;
-   }
+    public Mutable<GlobalState> getGlobalStateMutable() {
+        return globalState;
+    }
 }

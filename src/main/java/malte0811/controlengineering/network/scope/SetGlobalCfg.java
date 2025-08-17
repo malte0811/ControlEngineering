@@ -10,22 +10,22 @@ import org.apache.commons.lang3.mutable.Mutable;
 import java.util.List;
 
 public record SetGlobalCfg(GlobalConfig newCfg) implements ScopeSubPacket.IScopeSubPacket {
-   public static final MyCodec<SetGlobalCfg> CODEC = GlobalConfig.CODEC.xmap(
-           SetGlobalCfg::new, SetGlobalCfg::newCfg
-   );
+    public static final MyCodec<SetGlobalCfg> CODEC = GlobalConfig.CODEC.xmap(
+            SetGlobalCfg::new, SetGlobalCfg::newCfg
+    );
 
-   @Override
-   public boolean process(
-           List<ModuleInScope> modules,
-           Mutable<Traces> traces,
-           Mutable<GlobalConfig> globalConfig,
-           Mutable<GlobalState> globalState
-   ) {
-       if (!globalState.getValue().hasPower() && newCfg.powered()) { return false; }
-       globalConfig.setValue(newCfg);
-       if (!newCfg.powered() && !traces.getValue().traces().isEmpty()) {
-           traces.setValue(new Traces());
-       }
-       return true;
-   }
+    @Override
+    public boolean process(
+            List<ModuleInScope> modules,
+            Mutable<Traces> traces,
+            Mutable<GlobalConfig> globalConfig,
+            Mutable<GlobalState> globalState
+    ) {
+        if (!globalState.getValue().hasPower() && newCfg.powered()) { return false; }
+        globalConfig.setValue(newCfg);
+        if (!newCfg.powered() && !traces.getValue().traces().isEmpty()) {
+            traces.setValue(new Traces());
+        }
+        return true;
+    }
 }

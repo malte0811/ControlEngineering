@@ -11,34 +11,34 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
 public class ScopePacket extends SimplePacket {
-   private final IScopeSubPacket packet;
+    private final IScopeSubPacket packet;
 
-   public ScopePacket(FriendlyByteBuf buffer) {
-       this(ScopeSubPacket.read(buffer));
-   }
+    public ScopePacket(FriendlyByteBuf buffer) {
+        this(ScopeSubPacket.read(buffer));
+    }
 
-   public ScopePacket(IScopeSubPacket data) {
-       this.packet = data;
-   }
+    public ScopePacket(IScopeSubPacket data) {
+        this.packet = data;
+    }
 
-   @Override
-   public void write(FriendlyByteBuf out) {
-       packet.writeFull(out);
-   }
+    @Override
+    public void write(FriendlyByteBuf out) {
+        packet.writeFull(out);
+    }
 
-   @Override
-   protected void processOnThread(NetworkEvent.Context ctx) {
-       if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
-           Preconditions.checkState(packet.allowSendingToServer());
-           AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
-           if (!(activeContainer instanceof ScopeMenu scopeMenu)) {
-               return;
-           }
-           ScopeSubPacket.processFull(packet, scopeMenu);
-           scopeMenu.sendToListeningPlayersExcept(ctx.getSender(), packet);
-           scopeMenu.markDirty();
-       } else {
-           ClientHooks.processScopePacketOnClient(packet);
-       }
-   }
+    @Override
+    protected void processOnThread(NetworkEvent.Context ctx) {
+        if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
+            Preconditions.checkState(packet.allowSendingToServer());
+            AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
+            if (!(activeContainer instanceof ScopeMenu scopeMenu)) {
+                return;
+            }
+            ScopeSubPacket.processFull(packet, scopeMenu);
+            scopeMenu.sendToListeningPlayersExcept(ctx.getSender(), packet);
+            scopeMenu.markDirty();
+        } else {
+            ClientHooks.processScopePacketOnClient(packet);
+        }
+    }
 }

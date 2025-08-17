@@ -33,172 +33,178 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> {
-   public static final String TICKS_PER_DIV_KEY = ControlEngineering.MODID + ".gui.scope.ticksPerDiv";
-   public static final String ARM_TRIGGER_KEY = ControlEngineering.MODID + ".gui.scope.armTrigger";
-   public static final String FORCE_TRIGGER_KEY = ControlEngineering.MODID + ".gui.scope.forceTrigger";
-   public static final String RESET_KEY = ControlEngineering.MODID + ".gui.scope.reset";
+    public static final String TICKS_PER_DIV_KEY = ControlEngineering.MODID + ".gui.scope.ticksPerDiv";
+    public static final String ARM_TRIGGER_KEY = ControlEngineering.MODID + ".gui.scope.armTrigger";
+    public static final String FORCE_TRIGGER_KEY = ControlEngineering.MODID + ".gui.scope.forceTrigger";
+    public static final String RESET_KEY = ControlEngineering.MODID + ".gui.scope.reset";
 
-   public static final ResourceLocation TEXTURE = RLUtils.ceLoc("textures/gui/scope.png");
-   private static final SubTexture MAIN_TEXTURE = new SubTexture(TEXTURE, 0, 0, 218, 225);
-   public static final int MODULE_SLOT_WIDTH = 49;
-   public static final int MODULE_V_MIN = 124;
-   public static final int MODULE_V_MAX = 213;
-   public static final int MODULE_U_OFFSET = 11;
-   private static final RectangleI SCREEN_AREA = new RectangleI(5, 16, 164, 115);
+    public static final ResourceLocation TEXTURE = RLUtils.ceLoc("textures/gui/scope.png");
+    private static final SubTexture MAIN_TEXTURE = new SubTexture(TEXTURE, 0, 0, 218, 225);
+    public static final int MODULE_SLOT_WIDTH = 49;
+    public static final int MODULE_V_MIN = 124;
+    public static final int MODULE_V_MAX = 213;
+    public static final int MODULE_U_OFFSET = 11;
+    private static final RectangleI SCREEN_AREA = new RectangleI(5, 16, 164, 115);
 
-   private final ScopeMenu menu;
-   private int leftPos;
-   private int topPos;
-   private CRTDisplay crt;
+    private final ScopeMenu menu;
+    private int leftPos;
+    private int topPos;
+    private CRTDisplay crt;
 
-   public ScopeScreen(ScopeMenu menu) {
-       super(Component.empty());
-       this.menu = menu;
-   }
+    public ScopeScreen(ScopeMenu menu) {
+        super(Component.empty());
+        this.menu = menu;
+    }
 
-   @Override
-   protected void init() {
-       super.init();
-       this.leftPos = (this.width - MAIN_TEXTURE.getWidth()) / 2;
-       this.topPos = (this.height - MAIN_TEXTURE.getHeight()) / 2;
-       this.crt = new CRTDisplay(menu, this.leftPos + 5, this.topPos + 16, 159, 99);
-   }
+    @Override
+    protected void init() {
+        super.init();
+        this.leftPos = (this.width - MAIN_TEXTURE.getWidth()) / 2;
+        this.topPos = (this.height - MAIN_TEXTURE.getHeight()) / 2;
+        this.crt = new CRTDisplay(menu, this.leftPos + 5, this.topPos + 16, 159, 99);
+    }
 
-   @Override
-   protected void renderForeground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-       final var mousePos = new Vec2d(mouseX, mouseY);
-       List<Component> tooltip = null;
-       for (final var powered : getComponents()) {
-           final var component = powered.component();
-           if (powered.canWork()) { component.render(graphics); }
-           if (component.getArea().containsClosed(mousePos)) {
-               tooltip = component.getTooltip();
-           }
-       }
-       TraceId hovered = null;
-       for (final var module : menu.getModules()) {
-           final var clientModule = ClientModules.getModule(module.module().getType());
-           final int hoveredTrace = clientModule.getHoveredChannel(getModuleOffset(module.firstSlot()), mousePos);
-           if (hoveredTrace >= 0) {
-               hovered = new TraceId(module.firstSlot(), hoveredTrace);
-               break;
-           }
-       }
-       crt.draw(graphics, hovered);
-       if (tooltip != null) {
-           graphics.renderTooltip(font, tooltip, Optional.empty(), mouseX, mouseY);
-       }
-   }
+    @Override
+    protected void renderForeground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        final var mousePos = new Vec2d(mouseX, mouseY);
+        List<Component> tooltip = null;
+        for (final var powered : getComponents()) {
+            final var component = powered.component();
+            if (powered.canWork()) {
+                component.render(graphics);
+            }
+            if (component.getArea().containsClosed(mousePos)) {
+                tooltip = component.getTooltip();
+            }
+        }
+        TraceId hovered = null;
+        for (final var module : menu.getModules()) {
+            final var clientModule = ClientModules.getModule(module.module().getType());
+            final int hoveredTrace = clientModule.getHoveredChannel(getModuleOffset(module.firstSlot()), mousePos);
+            if (hoveredTrace >= 0) {
+                hovered = new TraceId(module.firstSlot(), hoveredTrace);
+                break;
+            }
+        }
+        crt.draw(graphics, hovered);
+        if (tooltip != null) {
+            graphics.renderTooltip(font, tooltip, Optional.empty(), mouseX, mouseY);
+        }
+    }
 
-   // TODO cache result
-   private List<PoweredComponent> getComponents() {
-       final boolean globalPowered = getMenu().getGlobalConfig().powered();
-       final var components = makeTopLevelComponents().stream()
-               .map(isc -> new PoweredComponent(isc, globalPowered))
-               .collect(Collectors.toList());
-       for (int i = 0; i < menu.getModules().size(); ++i) {
-           final var module = menu.getModules().get(i);
-           components.addAll(gatherComponentsFor(module.module(), i, module.firstSlot()));
-       }
-       return components;
-   }
+    // TODO cache result
+    private List<PoweredComponent> getComponents() {
+        final boolean globalPowered = getMenu().getGlobalConfig().powered();
+        final var components = makeTopLevelComponents().stream()
+                .map(isc -> new PoweredComponent(isc, globalPowered))
+                .collect(Collectors.toList());
+        for (int i = 0; i < menu.getModules().size(); ++i) {
+            final var module = menu.getModules().get(i);
+            components.addAll(gatherComponentsFor(module.module(), i, module.firstSlot()));
+        }
+        return components;
+    }
 
-   private List<IScopeComponent> makeTopLevelComponents() {
-       List<IScopeComponent> components = new ArrayList<>();
-       final var globalCfg = menu.getGlobalConfig();
-       final var globalState = menu.getGlobalState();
-       final var origin = new Vec2i(this.leftPos, this.topPos);
-       final Consumer<GlobalConfig> setCfg = cfg -> runAndSendToServer(new SetGlobalCfg(cfg));
-       components.add(new PowerButton(
-               globalCfg.powered(), globalState.hasPower(), globalState.consumption(),
-               origin.add(175, 32),
-               b -> setCfg.accept(globalCfg.withPowered(b))
-       ));
-       if (!globalCfg.powered()) {
-           return components;
-       }
-       components.add(Range.makeExponential(
-               Component.translatable(TICKS_PER_DIV_KEY),
-               origin.add(177, 49),
-               2, 64, 1, globalCfg.ticksPerDiv(),
-               i -> setCfg.accept(globalCfg.withTicksPerDiv(i))
-       ));
-       components.add(ScopeButton.makeOrange(
-               origin.add(174, 73), globalCfg.triggerArmed(), Component.translatable(ARM_TRIGGER_KEY),
-               () -> setCfg.accept(globalCfg.withTriggerArmed(true))
-       ));
-       components.add(ScopeButton.makeGreen(
-               origin.add(174, 82), menu.getTraces().isSweeping(), Component.translatable(FORCE_TRIGGER_KEY),
-               () -> {
-                   if (!menu.getTraces().isSweeping()) {
-                       runAndSendToServer(InitTraces.createForModules(menu.getModules(), globalCfg.ticksPerDiv()));
-                   }
-               }
-       ));
-       components.add(new ScopeButton(
-               0xff5e29,
-               Component.translatable(RESET_KEY),
-               origin.add(174, 91),
-               () -> runAndSendToServer(new ResetSweep())
-       ));
-       return components;
-   }
+    private List<IScopeComponent> makeTopLevelComponents() {
+        List<IScopeComponent> components = new ArrayList<>();
+        final var globalCfg = menu.getGlobalConfig();
+        final var globalState = menu.getGlobalState();
+        final var origin = new Vec2i(this.leftPos, this.topPos);
+        final Consumer<GlobalConfig> setCfg = cfg -> runAndSendToServer(new SetGlobalCfg(cfg));
+        components.add(new PowerButton(
+                globalCfg.powered(), globalState.hasPower(), globalState.consumption(),
+                origin.add(175, 32),
+                b -> setCfg.accept(globalCfg.withPowered(b))
+        ));
+        if (!globalCfg.powered()) {
+            return components;
+        }
+        components.add(Range.makeExponential(
+                Component.translatable(TICKS_PER_DIV_KEY),
+                origin.add(177, 49),
+                2, 64, 1, globalCfg.ticksPerDiv(),
+                i -> setCfg.accept(globalCfg.withTicksPerDiv(i))
+        ));
+        components.add(ScopeButton.makeOrange(
+                origin.add(174, 73), globalCfg.triggerArmed(), Component.translatable(ARM_TRIGGER_KEY),
+                () -> setCfg.accept(globalCfg.withTriggerArmed(true))
+        ));
+        components.add(ScopeButton.makeGreen(
+                origin.add(174, 82), menu.getTraces().isSweeping(), Component.translatable(FORCE_TRIGGER_KEY),
+                () -> {
+                    if (!menu.getTraces().isSweeping()) {
+                        runAndSendToServer(InitTraces.createForModules(menu.getModules(), globalCfg.ticksPerDiv()));
+                    }
+                }
+        ));
+        components.add(new ScopeButton(
+                0xff5e29,
+                Component.translatable(RESET_KEY),
+                origin.add(174, 91),
+                () -> runAndSendToServer(new ResetSweep())
+        ));
+        return components;
+    }
 
-   private <T> List<PoweredComponent> gatherComponentsFor(ScopeModuleInstance<T> module, int moduleIndex, int slot) {
-       final var type = module.getType();
-       return ClientModules.getModule(type).createComponents(
-               getModuleOffset(slot),
-               module.getCurrentState(),
-               newState -> runAndSendToServer(new ModuleConfig(moduleIndex, type.newInstance(newState))),
-               getMenu().getGlobalConfig().powered()
-       );
-   }
+    private <T> List<PoweredComponent> gatherComponentsFor(ScopeModuleInstance<T> module, int moduleIndex, int slot) {
+        final var type = module.getType();
+        return ClientModules.getModule(type).createComponents(
+                getModuleOffset(slot),
+                module.getCurrentState(),
+                newState -> runAndSendToServer(new ModuleConfig(moduleIndex, type.newInstance(newState))),
+                getMenu().getGlobalConfig().powered()
+        );
+    }
 
-   private Vec2i getModuleOffset(int slot) {
-       return new Vec2i(this.leftPos + MODULE_U_OFFSET + slot * MODULE_SLOT_WIDTH, this.topPos + MODULE_V_MIN);
-   }
+    private Vec2i getModuleOffset(int slot) {
+        return new Vec2i(this.leftPos + MODULE_U_OFFSET + slot * MODULE_SLOT_WIDTH, this.topPos + MODULE_V_MIN);
+    }
 
-   @Override
-   public boolean mouseClicked(double mouseX, double mouseY, int button) {
-       if (SCREEN_AREA.containsClosed(mouseX - leftPos, mouseY - topPos)) {
-           Minecraft.getInstance().setScreen(new ZoomedCRTScreen(menu));
-           return true;
-       }
-       for (final var powered : getComponents()) {
-           final var component = powered.component();
-           if (!component.getArea().containsClosed(mouseX, mouseY)) { continue; }
-           if (!powered.canWork()) { continue; }
-           if (component.click(mouseX, mouseY)) {
-               return true;
-           }
-       }
-       return super.mouseClicked(mouseX, mouseY, button);
-   }
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (SCREEN_AREA.containsClosed(mouseX - leftPos, mouseY - topPos)) {
+            Minecraft.getInstance().setScreen(new ZoomedCRTScreen(menu));
+            return true;
+        }
+        for (final var powered : getComponents()) {
+            final var component = powered.component();
+            if (!component.getArea().containsClosed(mouseX, mouseY)) {
+                continue;
+            }
+            if (!powered.canWork()) {
+                continue;
+            }
+            if (component.click(mouseX, mouseY)) {
+                return true;
+            }
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
 
-   @Override
-   protected void renderCustomBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-       super.renderCustomBackground(graphics, mouseX, mouseY, partialTicks);
-       graphics.pose().pushPose();
-       graphics.pose().translate(this.leftPos, this.topPos, 0);
-       MAIN_TEXTURE.blit(graphics.pose(), 0, 0);
-       graphics.pose().translate(MODULE_U_OFFSET, MODULE_V_MIN, 0);
-       for (final var module : menu.getModules()) {
-           final var texture = ClientModules.getModule(module.type()).getTexture();
-           texture.blit(graphics.pose(), 0, 0);
-           graphics.pose().translate(MODULE_SLOT_WIDTH * module.type().getWidth(), 0, 0);
-       }
-       graphics.pose().popPose();
-   }
+    @Override
+    protected void renderCustomBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.renderCustomBackground(graphics, mouseX, mouseY, partialTicks);
+        graphics.pose().pushPose();
+        graphics.pose().translate(this.leftPos, this.topPos, 0);
+        MAIN_TEXTURE.blit(graphics.pose(), 0, 0);
+        graphics.pose().translate(MODULE_U_OFFSET, MODULE_V_MIN, 0);
+        for (final var module : menu.getModules()) {
+            final var texture = ClientModules.getModule(module.type()).getTexture();
+            texture.blit(graphics.pose(), 0, 0);
+            graphics.pose().translate(MODULE_SLOT_WIDTH * module.type().getWidth(), 0, 0);
+        }
+        graphics.pose().popPose();
+    }
 
-   @Nonnull
-   @Override
-   public ScopeMenu getMenu() {
-       return menu;
-   }
+    @Nonnull
+    @Override
+    public ScopeMenu getMenu() {
+        return menu;
+    }
 
-   private void runAndSendToServer(IScopeSubPacket data) {
-       if (ScopeSubPacket.processFull(data, menu)) {
-           ControlEngineering.NETWORK.sendToServer(new ScopePacket(data));
-       }
-   }
+    private void runAndSendToServer(IScopeSubPacket data) {
+        if (ScopeSubPacket.processFull(data, menu)) {
+            ControlEngineering.NETWORK.sendToServer(new ScopePacket(data));
+        }
+    }
 }

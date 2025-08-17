@@ -152,8 +152,10 @@ public class PlacedComponent extends SelectionShapes {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         PlacedComponent that = (PlacedComponent) o;
         return component.equals(that.component) && pos.equals(that.pos);
     }

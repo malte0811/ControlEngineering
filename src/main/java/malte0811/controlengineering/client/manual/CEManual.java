@@ -36,12 +36,12 @@ public class CEManual {
     public static void initManual() {
         var ieManual = ManualHelper.getManual();
         ieManual.registerSpecialElement(RLUtils.ceLoc("panel_component"), PanelComponentElement::new);
-       ieManual.registerSpecialElement(
-               RLUtils.ceLoc("leafcell"), json -> LeafcellElement.from(json, ieManual)
-       );
-       ieManual.registerSpecialElement(
-               RLUtils.ceLoc("leafcell_truth"), json -> LeafcellWithStatesElement.from(ieManual, json)
-       );
+        ieManual.registerSpecialElement(
+                RLUtils.ceLoc("leafcell"), json -> LeafcellElement.from(json, ieManual)
+        );
+        ieManual.registerSpecialElement(
+                RLUtils.ceLoc("leafcell_truth"), json -> LeafcellWithStatesElement.from(ieManual, json)
+        );
         addComponentFormatEntry(ieManual);
     }
 

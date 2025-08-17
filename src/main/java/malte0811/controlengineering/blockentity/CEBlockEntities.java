@@ -66,17 +66,17 @@ public class CEBlockEntities {
             "sequencer", createBEType(SequencerBlockEntity::new, CEBlocks.SEQUENCER)
     );
 
-   public static MultiblockBEType<LogicCabinetBlockEntity, ?> LOGIC_CABINET = makeMBType(
-           "logic_cabinet", LogicCabinetBlockEntity::new, CEBlocks.LOGIC_CABINET, LogicCabinetBlock::isMaster
-   );
+    public static MultiblockBEType<LogicCabinetBlockEntity, ?> LOGIC_CABINET = makeMBType(
+            "logic_cabinet", LogicCabinetBlockEntity::new, CEBlocks.LOGIC_CABINET, LogicCabinetBlock::isMaster
+    );
 
-   public static MultiblockBEType<LogicWorkbenchBlockEntity, ?> LOGIC_WORKBENCH = makeMBType(
-           "logic_workbench", LogicWorkbenchBlockEntity::new, CEBlocks.LOGIC_WORKBENCH, LogicWorkbenchBlock::isMaster
-   );
+    public static MultiblockBEType<LogicWorkbenchBlockEntity, ?> LOGIC_WORKBENCH = makeMBType(
+            "logic_workbench", LogicWorkbenchBlockEntity::new, CEBlocks.LOGIC_WORKBENCH, LogicWorkbenchBlock::isMaster
+    );
 
-   public static RegistryObject<BlockEntityType<ScopeBlockEntity>> SCOPE = REGISTER.register(
-           "oscilloscope", createBEType(ScopeBlockEntity::new, CEBlocks.SCOPE)
-   );
+    public static RegistryObject<BlockEntityType<ScopeBlockEntity>> SCOPE = REGISTER.register(
+            "oscilloscope", createBEType(ScopeBlockEntity::new, CEBlocks.SCOPE)
+    );
 
     public static <T extends BlockEntity> Supplier<BlockEntityType<T>> createBEType(
             BEConstructor<T> createTE, Supplier<? extends Block> valid

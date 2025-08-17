@@ -51,7 +51,7 @@ public record SyncContainer(Consumer<ItemStack> setStack, Supplier<ItemStack> ge
     }
 
     @Override
-    public void setChanged() {}
+    public void setChanged() { }
 
     @Override
     public boolean stillValid(@Nonnull Player pPlayer) {

@@ -12,17 +12,17 @@ import org.apache.commons.lang3.mutable.Mutable;
 import java.util.List;
 
 public class ResetSweep implements IScopeSubPacket {
-   public static final MyCodec<ResetSweep> CODEC = MyCodecs.unit(new ResetSweep());
+    public static final MyCodec<ResetSweep> CODEC = MyCodecs.unit(new ResetSweep());
 
-   @Override
-   public boolean process(
-           List<ModuleInScope> modules,
-           Mutable<Traces> traces,
-           Mutable<GlobalConfig> globalConfig,
-           Mutable<GlobalState> globalState
-   ) {
-       globalConfig.setValue(globalConfig.getValue().withTriggerArmed(false));
-       traces.setValue(new Traces());
-       return true;
-   }
+    @Override
+    public boolean process(
+            List<ModuleInScope> modules,
+            Mutable<Traces> traces,
+            Mutable<GlobalConfig> globalConfig,
+            Mutable<GlobalState> globalState
+    ) {
+        globalConfig.setValue(globalConfig.getValue().withTriggerArmed(false));
+        traces.setValue(new Traces());
+        return true;
+    }
 }

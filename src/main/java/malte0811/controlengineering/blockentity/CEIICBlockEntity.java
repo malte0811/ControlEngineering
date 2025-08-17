@@ -38,7 +38,7 @@ public abstract class CEIICBlockEntity extends ImmersiveConnectableBlockEntity {
             ConnectionPoint connectionPoint,
             IImmersiveConnectable iImmersiveConnectable,
             ConnectionPoint connectionPoint1
-    ) {}
+    ) { }
 
     @Nullable
     @Override
@@ -47,7 +47,7 @@ public abstract class CEIICBlockEntity extends ImmersiveConnectableBlockEntity {
     }
 
     @Override
-    public void removeCable(@Nullable Connection connection, ConnectionPoint connectionPoint) {}
+    public void removeCable(@Nullable Connection connection, ConnectionPoint connectionPoint) { }
 
     @Override
     public Collection<ConnectionPoint> getConnectionPoints() {

@@ -15,7 +15,7 @@ public class LambdaDataSlot extends DataSlot {
     }
 
     public static LambdaDataSlot serverSide(IntSupplier get) {
-        return new LambdaDataSlot(get, i -> {throw new RuntimeException();});
+        return new LambdaDataSlot(get, i -> { throw new RuntimeException(); });
     }
 
     @Override

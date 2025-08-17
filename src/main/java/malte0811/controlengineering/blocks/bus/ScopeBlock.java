@@ -22,36 +22,36 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ScopeBlock extends CEBlock<Direction> {
-   public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-   public static final DirectionalShapeProvider SHAPE = new DirectionalShapeProvider(
-           FromBlockFunction.getProperty(FACING),
-           ShapeUtils.createPixelRelative(0, 0, 0, 16, 16, 15)
-   );
+    public static final Property<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final DirectionalShapeProvider SHAPE = new DirectionalShapeProvider(
+            FromBlockFunction.getProperty(FACING),
+            ShapeUtils.createPixelRelative(0, 0, 0, 16, 16, 15)
+    );
 
-   public ScopeBlock() {
-       super(
-               defaultPropertiesNotSolid(),
-               BlockPropertyPlacement.horizontal(FACING),
-               SHAPE,
-               CEBlockEntities.SCOPE
-       );
-   }
+    public ScopeBlock() {
+        super(
+                defaultPropertiesNotSolid(),
+                BlockPropertyPlacement.horizontal(FACING),
+                SHAPE,
+                CEBlockEntities.SCOPE
+        );
+    }
 
-   @Override
-   protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
-       super.createBlockStateDefinition(builder);
-       builder.add(FACING);
-   }
+    @Override
+    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(FACING);
+    }
 
-   @Nullable
-   @Override
-   public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
-           @Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockEntityType<T> actualType
-   ) {
-       if (!level.isClientSide) {
-           return createTickerHelper(actualType, CEBlockEntities.SCOPE, ScopeBlockEntity::tickServer);
-       } else {
-           return null;
-       }
-   }
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            @Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockEntityType<T> actualType
+    ) {
+        if (!level.isClientSide) {
+            return createTickerHelper(actualType, CEBlockEntities.SCOPE, ScopeBlockEntity::tickServer);
+        } else {
+            return null;
+        }
+    }
 }

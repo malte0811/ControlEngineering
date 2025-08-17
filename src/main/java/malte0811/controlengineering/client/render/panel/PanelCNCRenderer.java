@@ -117,7 +117,12 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
     }
 
     private void renderTape(
-            PanelCNCBlockEntity cncBE, MultiBufferSource buffer, PoseStack transform, int light, int overlay, double ticks
+            PanelCNCBlockEntity cncBE,
+            MultiBufferSource buffer,
+            PoseStack transform,
+            int light,
+            int overlay,
+            double ticks
     ) {
         final long totLength = cncBE.getTapeLength();
         if (totLength > 0) {
@@ -130,7 +135,12 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
     }
 
     private void renderHead(
-            PanelCNCBlockEntity cncBE, MultiBufferSource buffer, PoseStack transform, int light, int overlay, double ticks
+            PanelCNCBlockEntity cncBE,
+            MultiBufferSource buffer,
+            PoseStack transform,
+            int light,
+            int overlay,
+            double ticks
     ) {
         Vec3 currentPos;
         if (cncBE.getCurrentJob() != null && cncBE.getState().isInProcess()) {

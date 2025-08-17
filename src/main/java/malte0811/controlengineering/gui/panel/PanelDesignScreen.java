@@ -40,7 +40,11 @@ public class PanelDesignScreen extends StackedScreen implements MenuAccess<Panel
         this.panelLayoutXMin = selectorWidth + offset;
         this.panelLayoutYMax = BORDER + panelSize;
         PanelLayout panelLayout = new PanelLayout(panelLayoutXMin, BORDER, panelSize, container.getComponents());
-        addRenderableWidget(new ComponentSelector(offset, BORDER, selectorWidth, panelSize, panelLayout::setPlacingComponent));
+        addRenderableWidget(new ComponentSelector(offset,
+                BORDER,
+                selectorWidth,
+                panelSize,
+                panelLayout::setPlacingComponent));
         addRenderableWidget(panelLayout);
     }
 

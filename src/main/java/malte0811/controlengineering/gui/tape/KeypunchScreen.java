@@ -70,10 +70,10 @@ public class KeypunchScreen extends Screen implements MenuAccess<KeypunchMenu> {
     @Override
     public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(graphics);
-        
-            graphics.pose().pushPose();
-            graphics.pose().translate(getXStart(), getYStart(), 0);
-        
+
+        graphics.pose().pushPose();
+        graphics.pose().translate(getXStart(), getYStart(), 0);
+
         MAIN_SCREEN.blit(graphics.pose(), 0, 0);
         tapeRender.render(graphics);
         graphics.drawString(font, Integer.toString(state.getAvailable()), 210, 35, -1);

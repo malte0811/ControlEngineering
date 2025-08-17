@@ -27,8 +27,8 @@ public class KeypunchMenu extends CEContainerMenu<KeypunchSubPacket> {
 
     public KeypunchMenu(MenuType<?> type, int id) {
         super(type, id);
-        this.state = new KeypunchState(() -> {});
-        this.printNonLoopback = $ -> {};
+        this.state = new KeypunchState(() -> { });
+        this.printNonLoopback = $ -> { };
         this.isLoopback = addDataSlot(DataSlot.standalone());
     }
 

@@ -10,38 +10,38 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
 public class LogicPacket extends SimplePacket {
-   private final LogicSubPacket packet;
+    private final LogicSubPacket packet;
 
-   public LogicPacket(FriendlyByteBuf buffer) {
-       this(LogicSubPacket.read(buffer));
-   }
+    public LogicPacket(FriendlyByteBuf buffer) {
+        this(LogicSubPacket.read(buffer));
+    }
 
-   public LogicPacket(LogicSubPacket data) {
-       this.packet = data;
-   }
+    public LogicPacket(LogicSubPacket data) {
+        this.packet = data;
+    }
 
-   @Override
-   public void write(FriendlyByteBuf out) {
-       packet.writeFull(out);
-   }
+    @Override
+    public void write(FriendlyByteBuf out) {
+        packet.writeFull(out);
+    }
 
-   @Override
-   protected void processOnThread(NetworkEvent.Context ctx) {
-       if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
-           Preconditions.checkState(packet.allowSendingToServer());
-           AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
-           if (!(activeContainer instanceof LogicDesignMenu logicMenu)) {
-               return;
-           }
-           if (!logicMenu.readOnly || packet.canApplyOnReadOnly()) {
-               packet.process(logicMenu.getSchematic(), $ -> {
-                   throw new RuntimeException();
-               }, ctx.getSender().level());
-               logicMenu.sendToListeningPlayersExcept(ctx.getSender(), packet);
-               logicMenu.markDirty();
-           }
-       } else {
-           ClientHooks.processLogicPacketOnClient(packet);
-       }
-   }
+    @Override
+    protected void processOnThread(NetworkEvent.Context ctx) {
+        if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
+            Preconditions.checkState(packet.allowSendingToServer());
+            AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
+            if (!(activeContainer instanceof LogicDesignMenu logicMenu)) {
+                return;
+            }
+            if (!logicMenu.readOnly || packet.canApplyOnReadOnly()) {
+                packet.process(logicMenu.getSchematic(), $ -> {
+                    throw new RuntimeException();
+                }, ctx.getSender().level());
+                logicMenu.sendToListeningPlayersExcept(ctx.getSender(), packet);
+                logicMenu.markDirty();
+            }
+        } else {
+            ClientHooks.processLogicPacketOnClient(packet);
+        }
+    }
 }

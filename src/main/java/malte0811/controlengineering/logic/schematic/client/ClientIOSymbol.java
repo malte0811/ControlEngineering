@@ -30,9 +30,9 @@ public class ClientIOSymbol extends ClientSymbol<BusSignalRef, IOSymbol> {
         }
         color = ColorUtils.withAlpha(color, alpha);
         if (serverSymbol.isInput()) {
-            graphics.fill( x + 3, y + 1, x + 4, y + 2, color);
+            graphics.fill(x + 3, y + 1, x + 4, y + 2, color);
         } else {
-            graphics.fill( x + 2, y + 1, x + 3, y + 2, color);
+            graphics.fill(x + 2, y + 1, x + 3, y + 2, color);
         }
         final String text = state != null ? Integer.toString(state.line()) : "";
         final int blockX = x + (serverSymbol.isInput() ? 0 : 3);

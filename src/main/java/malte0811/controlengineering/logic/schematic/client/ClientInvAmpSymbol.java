@@ -44,6 +44,6 @@ public class ClientInvAmpSymbol extends ClientCellSymbol<Fraction> {
 
     private void renderFractionNumber(GuiGraphics graphics, Font font, int value, int yPos) {
         final var desc = Integer.toString(value);
-        graphics.drawString( font, desc, (int) (-font.width(desc) / 2f), yPos, 0, false);
+        graphics.drawString(font, desc, (int) (-font.width(desc) / 2f), yPos, 0, false);
     }
 }

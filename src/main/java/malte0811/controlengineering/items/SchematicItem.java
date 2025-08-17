@@ -21,49 +21,49 @@ import java.util.List;
 import java.util.Objects;
 
 public class SchematicItem extends Item implements ISchematicItem {
-   public static final String EMPTY_SCHEMATIC = ControlEngineering.MODID + ".gui.schematic.empty";
+    public static final String EMPTY_SCHEMATIC = ControlEngineering.MODID + ".gui.schematic.empty";
 
-   public SchematicItem() {
-       super(new Item.Properties());
-   }
+    public SchematicItem() {
+        super(new Item.Properties());
+    }
 
-   @Nonnull
-   @Override
-   public InteractionResultHolder<ItemStack> use(
-           @Nonnull Level level, Player player, @Nonnull InteractionHand usedHand
-   ) {
-       var stack = player.getItemInHand(usedHand);
-       if (!level.isClientSide()) {
-           var schematic = Objects.requireNonNullElseGet(ISchematicItem.getSchematic(stack), Schematic::new);
-           player.openMenu(new SimpleMenuProvider(
-                   (id, inv, player1) -> new LogicDesignMenu(CEContainers.LOGIC_DESIGN_VIEW.get(), id, schematic),
-                   Component.empty()
-           ));
-       }
-       return InteractionResultHolder.success(stack);
-   }
+    @Nonnull
+    @Override
+    public InteractionResultHolder<ItemStack> use(
+            @Nonnull Level level, Player player, @Nonnull InteractionHand usedHand
+    ) {
+        var stack = player.getItemInHand(usedHand);
+        if (!level.isClientSide()) {
+            var schematic = Objects.requireNonNullElseGet(ISchematicItem.getSchematic(stack), Schematic::new);
+            player.openMenu(new SimpleMenuProvider(
+                    (id, inv, player1) -> new LogicDesignMenu(CEContainers.LOGIC_DESIGN_VIEW.get(), id, schematic),
+                    Component.empty()
+            ));
+        }
+        return InteractionResultHolder.success(stack);
+    }
 
-   @Override
-   public void appendHoverText(
-           @Nonnull ItemStack stack,
-           @Nullable Level level,
-           @Nonnull List<Component> tooltipComponents,
-           @Nonnull TooltipFlag isAdvanced
-   ) {
-       var schematic = ISchematicItem.getSchematic(stack);
-       if (Schematic.isEmpty(schematic)) {
-           tooltipComponents.add(Component.translatable(EMPTY_SCHEMATIC).withStyle(ChatFormatting.GRAY));
-       }
-   }
+    @Override
+    public void appendHoverText(
+            @Nonnull ItemStack stack,
+            @Nullable Level level,
+            @Nonnull List<Component> tooltipComponents,
+            @Nonnull TooltipFlag isAdvanced
+    ) {
+        var schematic = ISchematicItem.getSchematic(stack);
+        if (Schematic.isEmpty(schematic)) {
+            tooltipComponents.add(Component.translatable(EMPTY_SCHEMATIC).withStyle(ChatFormatting.GRAY));
+        }
+    }
 
-   @Nonnull
-   @Override
-   public Component getName(@Nonnull ItemStack stack) {
-       var name = Component.translatable(this.getDescriptionId(stack));
-       var schematic = ISchematicItem.getSchematic(stack);
-       if (!Schematic.isEmpty(schematic)) {
-           name.append(": " + schematic.getName());
-       }
-       return name;
-   }
+    @Nonnull
+    @Override
+    public Component getName(@Nonnull ItemStack stack) {
+        var name = Component.translatable(this.getDescriptionId(stack));
+        var schematic = ISchematicItem.getSchematic(stack);
+        if (!Schematic.isEmpty(schematic)) {
+            name.append(": " + schematic.getName());
+        }
+        return name;
+    }
 }

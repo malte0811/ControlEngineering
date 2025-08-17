@@ -146,7 +146,7 @@ public class SchematicCircuitConverter {
     }
 
     private static List<InputConnection> getInputConnections(Map<NetReference, List<ConnectedPin>> nets) {
-        record Input(BusSignalRef busSignal, boolean digital) {}
+        record Input(BusSignalRef busSignal, boolean digital) { }
         Map<Input, List<NetReference>> netsByInput = new HashMap<>();
         BiConsumer<Entry<NetReference, BusSignalRef>, Boolean> add = (entry, digital) -> netsByInput.computeIfAbsent(
                 new Input(entry.getValue(), digital), $ -> new ArrayList<>()
@@ -198,10 +198,11 @@ public class SchematicCircuitConverter {
         for (var entry : constantNets.entrySet()) {
             int value = entry.getValue();
             SignalType type;
-            if (value == BusLine.MIN_VALID_VALUE || value == BusLine.MAX_VALID_VALUE)
+            if (value == BusLine.MIN_VALID_VALUE || value == BusLine.MAX_VALID_VALUE) {
                 type = SignalType.DIGITAL;
-            else
+            } else {
                 type = SignalType.ANALOG;
+            }
             builder.addInputNet(entry.getKey(), type);
         }
         for (Entry<NetReference, List<ConnectedPin>> net : nets.entrySet()) {

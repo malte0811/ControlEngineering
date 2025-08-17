@@ -8,17 +8,17 @@ import net.minecraft.world.level.Level;
 import java.util.function.Consumer;
 
 public class SetName extends LogicSubPacket {
-   public static final MyCodec<SetName> CODEC = MyCodecs.STRING.xmap(SetName::new, sn -> sn.newName);
+    public static final MyCodec<SetName> CODEC = MyCodecs.STRING.xmap(SetName::new, sn -> sn.newName);
 
-   private final String newName;
+    private final String newName;
 
-   public SetName(String newName) {
-       this.newName = newName;
-   }
+    public SetName(String newName) {
+        this.newName = newName;
+    }
 
-   @Override
-   public boolean process(Schematic applyTo, Consumer<Schematic> replace, Level level) {
-       applyTo.setName(newName);
-       return true;
-   }
+    @Override
+    public boolean process(Schematic applyTo, Consumer<Schematic> replace, Level level) {
+        applyTo.setName(newName);
+        return true;
+    }
 }

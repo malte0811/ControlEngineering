@@ -46,7 +46,7 @@ public abstract class KeypunchSubPacket {
 
     public abstract boolean process(KeypunchState state);
 
-    public void process(ByteConsumer remotePrint) {}
+    public void process(ByteConsumer remotePrint) { }
 
     public boolean allowSendingToServer() {
         return true;

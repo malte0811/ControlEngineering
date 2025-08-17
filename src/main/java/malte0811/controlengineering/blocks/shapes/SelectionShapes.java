@@ -104,8 +104,9 @@ public abstract class SelectionShapes {
         }
         if (closest != null) {
             var innerHit = closest.fillTargetedStack(innerRay, minDistanceSq, out);
-            if (innerHit != null)
+            if (innerHit != null) {
                 return innerHit;
+            }
         }
         return closestHit;
     }

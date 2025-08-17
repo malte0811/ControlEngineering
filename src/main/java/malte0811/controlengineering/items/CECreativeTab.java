@@ -14,28 +14,33 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.MOD )
+@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CECreativeTab {
     public static final DeferredRegister<CreativeModeTab> REGISTRER = DeferredRegister.create(
-           Registries.CREATIVE_MODE_TAB, ControlEngineering.MODID
+            Registries.CREATIVE_MODE_TAB, ControlEngineering.MODID
     );
 
-    public static final RegistryObject<CreativeModeTab> CE_TAB = REGISTRER.register(ControlEngineering.MODID, () -> CreativeModeTab.builder()
-            // Set name of tab to display
-            .title(Component.literal(ControlEngineering.MODNAME))
-            // Set icon of creative tab
-            .icon(() -> new ItemStack(CEBlocks.LOGIC_CABINET.get()))
-            .build()
-          );
+    public static final RegistryObject<CreativeModeTab> CE_TAB = REGISTRER.register(ControlEngineering.MODID,
+            () -> CreativeModeTab.builder()
+                    // Set name of tab to display
+                    .title(Component.literal(ControlEngineering.MODNAME))
+                    // Set icon of creative tab
+                    .icon(() -> new ItemStack(CEBlocks.LOGIC_CABINET.get()))
+                    .build()
+    );
 
     @SubscribeEvent
     public static void buildContents(BuildCreativeModeTabContentsEvent ev) {
-        if (ev.getTab()    !=  CE_TAB.get()) {
+        if (ev.getTab() != CE_TAB.get()) {
             return;
         }
         for (final var itemRO : CEItems.REGISTER.getEntries()) {
-            if (itemRO.equals(CEItems.CONTROL_PANEL)) { continue; }
-            if (itemRO.equals(CEItems.PCB_STACK)) { continue; }
+            if (itemRO.equals(CEItems.CONTROL_PANEL)) {
+                continue;
+            }
+            if (itemRO.equals(CEItems.PCB_STACK)) {
+                continue;
+            }
             if (itemRO.equals(CEItems.EMPTY_TAPE)) {
                 ev.accept(EmptyTapeItem.withLength(16));
                 ev.accept(EmptyTapeItem.withLength(256));

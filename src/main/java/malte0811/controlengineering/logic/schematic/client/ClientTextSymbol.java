@@ -21,7 +21,7 @@ public class ClientTextSymbol extends ClientSymbol<String, TextSymbol> {
         graphics.pose().pushPose();
         graphics.pose().translate(x, y, 0);
         graphics.pose().scale((float) TextSymbol.SCALE, (float) TextSymbol.SCALE, 1);
-        graphics.drawString( Minecraft.getInstance().font, s, 0, 0, alpha << 24, false);
+        graphics.drawString(Minecraft.getInstance().font, s, 0, 0, alpha << 24, false);
         graphics.pose().popPose();
     }
 

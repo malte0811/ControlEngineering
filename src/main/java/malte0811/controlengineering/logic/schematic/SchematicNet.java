@@ -84,7 +84,7 @@ public class SchematicNet {
         for (WireSegment segment : segments) {
             for (Vec2i end : segment.getEnds()) {
                 if (endsAt.addTo(end, 1) == 2) {
-                    graphics.fill( end.x(), end.y(), end.x() + 1, end.y() + 1, color);
+                    graphics.fill(end.x(), end.y(), end.x() + 1, end.y() + 1, color);
                 }
             }
         }
@@ -191,7 +191,9 @@ public class SchematicNet {
         for (int i = 1; i < segments.size(); i++) {
             final WireSegment last = segments.get(i - 1);
             final WireSegment current = segments.get(i);
-            if (last.axis() != current.axis()) { continue; }
+            if (last.axis() != current.axis()) {
+                continue;
+            }
             final var axis = last.axis();
             if (last.isOnExtendedWire(current.start())) {
                 final int lastEnd = axis.get(last.end());
@@ -207,12 +209,18 @@ public class SchematicNet {
     }
 
     private void splitIntersections() {
-        xLoop: for (int xI = 0; xI < segments.size(); xI++) {
+        xLoop:
+        for (int xI = 0; xI < segments.size(); xI++) {
             final WireSegment horizontal = segments.get(xI);
-            if (horizontal.axis() != X) { continue; }
-            yLoop: for (int yI = 0; yI < segments.size(); yI++) {
+            if (horizontal.axis() != X) {
+                continue;
+            }
+            yLoop:
+            for (int yI = 0; yI < segments.size(); yI++) {
                 final WireSegment vertical = segments.get(yI);
-                if (vertical.axis() != Y) { continue; }
+                if (vertical.axis() != Y) {
+                    continue;
+                }
                 if (horizontal.crossesOneOpen(vertical)) {
                     final Vec2i intersection = new Vec2i(vertical.start().x(), horizontal.start().y());
                     if (vertical.containsOpen(intersection)) {

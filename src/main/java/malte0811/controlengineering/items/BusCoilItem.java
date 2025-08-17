@@ -28,8 +28,14 @@ public class BusCoilItem extends Item implements IWireCoil {
         Vec3 hitVec = context.getClickLocation();
         return WirecoilUtils.doCoilUse(
                 this,
-                context.getPlayer(), context.getLevel(), context.getClickedPos(), context.getHand(), context.getClickedFace(),
-                (float) hitVec.x, (float) hitVec.y, (float) hitVec.z
+                context.getPlayer(),
+                context.getLevel(),
+                context.getClickedPos(),
+                context.getHand(),
+                context.getClickedFace(),
+                (float) hitVec.x,
+                (float) hitVec.y,
+                (float) hitVec.z
         );
     }
 }

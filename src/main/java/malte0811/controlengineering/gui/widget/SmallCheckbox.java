@@ -40,7 +40,7 @@ public class SmallCheckbox extends Checkbox {
         graphics.pose().popPose();
         var font = Minecraft.getInstance().font;
         graphics.drawString(
-                 font, this.getMessage(),
+                font, this.getMessage(),
                 this.getX() + 12, this.getY() + (this.height - 8) / 2,
                 0xffe0e0e0
         );

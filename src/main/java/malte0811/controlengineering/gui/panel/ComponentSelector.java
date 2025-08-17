@@ -55,7 +55,7 @@ public class ComponentSelector extends NestedWidget {
     }
 
     @Override
-    public void renderWidget(@Nonnull  GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         super.renderWidget(graphics, mouseX, mouseY, partialTicks);
         final int selectedRow = (mouseY - getY()) / actualRowHeight;
         final int selectedCol = (mouseX - getX()) / colWidth;
@@ -76,9 +76,9 @@ public class ComponentSelector extends NestedWidget {
         graphics.pose().pushPose();
         graphics.pose().translate(x, y, 0);
         if (highlight && type != null) {
-            graphics.fill( 0, 0, colWidth, actualRowHeight, 0xffaaaaff);
+            graphics.fill(0, 0, colWidth, actualRowHeight, 0xffaaaaff);
         } else {
-            graphics.fill( 0, 0, colWidth, actualRowHeight, 0xffaaaaaa);
+            graphics.fill(0, 0, colWidth, actualRowHeight, 0xffaaaaaa);
         }
         if (type != null) {
             graphics.pose().translate(0, 1, 0);
@@ -161,7 +161,7 @@ public class ComponentSelector extends NestedWidget {
         graphics.pose().pushPose();
         graphics.pose().translate(areaCenter - scale * textWidth / 2., y, 0);
         graphics.pose().scale(scale, scale, 1);
-        graphics.drawString(font, text, 0, 0, color,false);
+        graphics.drawString(font, text, 0, 0, color, false);
         graphics.pose().popPose();
     }
 }

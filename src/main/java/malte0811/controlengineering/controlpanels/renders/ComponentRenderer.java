@@ -10,7 +10,7 @@ import net.minecraft.world.phys.Vec3;
 
 public interface ComponentRenderer<Config, State> {
     double EPSILON = 1e-2;
-    
+
     void render(MixedModel output, Config config, State state, PoseStack transform);
 
     static void renderBase(MixedModel output, PoseStack transform, Vec2d size, int color) {

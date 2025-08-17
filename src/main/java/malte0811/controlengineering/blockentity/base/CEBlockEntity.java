@@ -30,9 +30,9 @@ public abstract class CEBlockEntity extends BlockEntity implements IHasMasterBas
         return cachedMaster;
     }
 
-    protected void writeSyncedData(CompoundTag out) {}
+    protected void writeSyncedData(CompoundTag out) { }
 
-    protected void readSyncedData(CompoundTag in) {}
+    protected void readSyncedData(CompoundTag in) { }
 
     @Override
     public void handleUpdateTag(CompoundTag tag) {

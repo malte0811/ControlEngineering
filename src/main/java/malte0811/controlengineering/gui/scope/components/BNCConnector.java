@@ -19,67 +19,69 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class BNCConnector implements IScopeComponent {
-   private static final SubTexture BNC_PLUG = new SubTexture(ScopeScreen.TEXTURE, 227, 242, 241, 256);
-   private static final Quaternionf CABLE_ANGLE = new Quaternionf().rotateZ(Mth.HALF_PI / 10);
-   private static final int WIRE_COLOR = 0xff202020;
+    private static final SubTexture BNC_PLUG = new SubTexture(ScopeScreen.TEXTURE, 227, 242, 241, 256);
+    private static final Quaternionf CABLE_ANGLE = new Quaternionf().rotateZ(Mth.HALF_PI / 10);
+    private static final int WIRE_COLOR = 0xff202020;
 
-   private final RectangleI area;
-   @Nullable
-   private final BusSignalRef connectedTo;
-   private final Component tooltip;
-   private final Consumer<@Nullable BusSignalRef> setConnection;
+    private final RectangleI area;
+    @Nullable
+    private final BusSignalRef connectedTo;
+    private final Component tooltip;
+    private final Consumer<@Nullable BusSignalRef> setConnection;
 
-   public BNCConnector(
-           Vec2i pos,
-           @Nullable BusSignalRef connectedTo,
-           Component tooltip,
-           Consumer<@Nullable BusSignalRef> setConnection
-   ) {
-       this.area = new RectangleI(pos, pos.add(14, 12));
-       this.connectedTo = connectedTo;
-       this.tooltip = tooltip;
-       this.setConnection = setConnection;
-   }
+    public BNCConnector(
+            Vec2i pos,
+            @Nullable BusSignalRef connectedTo,
+            Component tooltip,
+            Consumer<@Nullable BusSignalRef> setConnection
+    ) {
+        this.area = new RectangleI(pos, pos.add(14, 12));
+        this.connectedTo = connectedTo;
+        this.tooltip = tooltip;
+        this.setConnection = setConnection;
+    }
 
-   @Override
-   public void render(GuiGraphics graphics) {
-       if (connectedTo == null) { return; }
-       BNC_PLUG.blit(graphics.pose(), area.minX(), area.minY());
-       graphics.pose().pushPose();
-       final var center = area.center();
-       graphics.pose().translate(center.x(), center.y(), 0);
-       graphics.pose().mulPose(CABLE_ANGLE);
-       // TODO make more flexible-looking?
-       ScreenUtils.fill(graphics.pose(), -3, 0, 3, 1000, WIRE_COLOR);
-       ScreenUtils.fill(graphics.pose(), -2, -0.5, 2, 1000, 0xff393939);
-       ScreenUtils.fill(graphics.pose(), -1, -1, 1, 1000, 0xff494949);
-       graphics.pose().popPose();
-   }
+    @Override
+    public void render(GuiGraphics graphics) {
+        if (connectedTo == null) {
+            return;
+        }
+        BNC_PLUG.blit(graphics.pose(), area.minX(), area.minY());
+        graphics.pose().pushPose();
+        final var center = area.center();
+        graphics.pose().translate(center.x(), center.y(), 0);
+        graphics.pose().mulPose(CABLE_ANGLE);
+        // TODO make more flexible-looking?
+        ScreenUtils.fill(graphics.pose(), -3, 0, 3, 1000, WIRE_COLOR);
+        ScreenUtils.fill(graphics.pose(), -2, -0.5, 2, 1000, 0xff393939);
+        ScreenUtils.fill(graphics.pose(), -1, -1, 1, 1000, 0xff494949);
+        graphics.pose().popPose();
+    }
 
-   @Override
-   public boolean click(double x, double y) {
-       if (connectedTo != null) {
-           this.setConnection.accept(null);
-       } else {
-           Minecraft.getInstance().setScreen(DataProviderScreen.makeFor(
-                   tooltip, BusSignalRef.DEFAULT, BusSignalRef.CODEC, setConnection
-           ));
-       }
-       return true;
-   }
+    @Override
+    public boolean click(double x, double y) {
+        if (connectedTo != null) {
+            this.setConnection.accept(null);
+        } else {
+            Minecraft.getInstance().setScreen(DataProviderScreen.makeFor(
+                    tooltip, BusSignalRef.DEFAULT, BusSignalRef.CODEC, setConnection
+            ));
+        }
+        return true;
+    }
 
-   @Override
-   public RectangleI getArea() {
-       return area;
-   }
+    @Override
+    public RectangleI getArea() {
+        return area;
+    }
 
-   @Override
-   public List<Component> getTooltip() {
-       return List.of(tooltip);
-   }
+    @Override
+    public List<Component> getTooltip() {
+        return List.of(tooltip);
+    }
 
-   @Override
-   public boolean requiresPower() {
-       return false;
-   }
+    @Override
+    public boolean requiresPower() {
+        return false;
+    }
 }

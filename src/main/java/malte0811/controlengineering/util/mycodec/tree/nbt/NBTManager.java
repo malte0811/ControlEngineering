@@ -6,7 +6,7 @@ import net.minecraft.nbt.*;
 public class NBTManager implements TreeManager<Tag> {
     public static final TreeManager<Tag> INSTANCE = new NBTManager();
 
-    private NBTManager() {}
+    private NBTManager() { }
 
     @Override
     public TreeStorageList<Tag> makeList() {

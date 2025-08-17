@@ -26,66 +26,67 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class LogicCabinetBlock extends CEBlock<Direction> {
-   public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-   public static final BooleanProperty NOT_MIRRORED = BooleanProperty.create("not_mirrored");
-   public static final IntegerProperty HEIGHT = IntegerProperty.create("height", 0, 1);
+    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final BooleanProperty NOT_MIRRORED = BooleanProperty.create("not_mirrored");
+    public static final IntegerProperty HEIGHT = IntegerProperty.create("height", 0, 1);
 
-   public static DirectionalShapeProvider BOTTOM_SHAPE = new DirectionalShapeProvider(
-           FromBlockFunction.getProperty(FACING),
-           Shapes.or(
-                   Shapes.box(0, 0, 0, 1, 0.6875, 1),
-                   Shapes.box(0, 0.6875, 0, 1, 1, 1 / 16.),
-                   Shapes.box(0, 0.6875, 0, 1 / 16., 1, 1),
-                   Shapes.box(15 / 16., 0.6875, 0, 1, 1, 1)
-           )
-   );
-   public static DirectionalShapeProvider TOP_SHAPE = new DirectionalShapeProvider(
-           FromBlockFunction.getProperty(FACING),
-           Shapes.or(
-                   Shapes.box(0, 0, 0, 1, 15 / 16., 1 / 16.),
-                   Shapes.box(0, 0, 0, 1 / 16., 15 / 16., 1),
-                   Shapes.box(15 / 16., 0, 0, 1, 15 / 16., 1),
-                   Shapes.box(0, 15 / 16., 0, 1, 1, 1)
-           )
-   );
+    public static DirectionalShapeProvider BOTTOM_SHAPE = new DirectionalShapeProvider(
+            FromBlockFunction.getProperty(FACING),
+            Shapes.or(
+                    Shapes.box(0, 0, 0, 1, 0.6875, 1),
+                    Shapes.box(0, 0.6875, 0, 1, 1, 1 / 16.),
+                    Shapes.box(0, 0.6875, 0, 1 / 16., 1, 1),
+                    Shapes.box(15 / 16., 0.6875, 0, 1, 1, 1)
+            )
+    );
+    public static DirectionalShapeProvider TOP_SHAPE = new DirectionalShapeProvider(
+            FromBlockFunction.getProperty(FACING),
+            Shapes.or(
+                    Shapes.box(0, 0, 0, 1, 15 / 16., 1 / 16.),
+                    Shapes.box(0, 0, 0, 1 / 16., 15 / 16., 1),
+                    Shapes.box(15 / 16., 0, 0, 1, 15 / 16., 1),
+                    Shapes.box(0, 15 / 16., 0, 1, 1, 1)
+            )
+    );
 
-   public LogicCabinetBlock() {
-       super(
-               defaultPropertiesNotSolid(),
-               HorizontalStructurePlacement.column(FACING, HEIGHT),
-               FromBlockFunction.either((state, world, pos) -> state.getValue(HEIGHT) > 0, BOTTOM_SHAPE, TOP_SHAPE),
-               CEBlockEntities.LOGIC_CABINET
-       );
-   }
+    public LogicCabinetBlock() {
+        super(
+                defaultPropertiesNotSolid(),
+                HorizontalStructurePlacement.column(FACING, HEIGHT),
+                FromBlockFunction.either((state, world, pos) -> state.getValue(HEIGHT) > 0, BOTTOM_SHAPE, TOP_SHAPE),
+                CEBlockEntities.LOGIC_CABINET
+        );
+    }
 
-   @Override
-   protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
-       super.createBlockStateDefinition(builder);
-       builder.add(FACING, HEIGHT, NOT_MIRRORED);
-   }
+    @Override
+    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(FACING, HEIGHT, NOT_MIRRORED);
+    }
 
-   @Nullable
-   @Override
-   public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
-           Level pLevel, @Nonnull BlockState pState, @Nonnull BlockEntityType<T> pBlockEntityType
-   ) {
-       if (!pLevel.isClientSide)
-           return CEBlockEntities.LOGIC_CABINET.makeMasterTicker(pBlockEntityType, LogicCabinetBlockEntity::tick);
-       return null;
-   }
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            Level pLevel, @Nonnull BlockState pState, @Nonnull BlockEntityType<T> pBlockEntityType
+    ) {
+        if (!pLevel.isClientSide) {
+            return CEBlockEntities.LOGIC_CABINET.makeMasterTicker(pBlockEntityType, LogicCabinetBlockEntity::tick);
+        }
+        return null;
+    }
 
-   public static boolean isMaster(BlockState state) {
-       return state.getValue(HEIGHT) == 0;
-   }
-   
-   public static Direction getRotatedDirection(BlockState state, boolean leftIfNonMirrored) {
-       var facing = state.getValue(FACING);
-       var mirrored = state.getValue(NOT_MIRRORED);
-       return (mirrored != leftIfNonMirrored) ? facing.getClockWise() : facing.getCounterClockWise();
-   }
+    public static boolean isMaster(BlockState state) {
+        return state.getValue(HEIGHT) == 0;
+    }
 
-   @Override
-   public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-       return direction != null && isMaster(state) && direction == getRotatedDirection(state, false);
-   }
+    public static Direction getRotatedDirection(BlockState state, boolean leftIfNonMirrored) {
+        var facing = state.getValue(FACING);
+        var mirrored = state.getValue(NOT_MIRRORED);
+        return (mirrored != leftIfNonMirrored) ? facing.getClockWise() : facing.getCounterClockWise();
+    }
+
+    @Override
+    public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+        return direction != null && isMaster(state) && direction == getRotatedDirection(state, false);
+    }
 }

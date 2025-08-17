@@ -125,5 +125,5 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
         return getType().getSelectionShape(getState());
     }
 
-    public record TickResult(boolean updateBus, boolean updateClient) {}
+    public record TickResult(boolean updateBus, boolean updateClient) { }
 }

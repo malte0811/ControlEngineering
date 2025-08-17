@@ -17,7 +17,11 @@ public class PacketUtils {
         return ret;
     }
 
-    public static <T> void writeList(FriendlyByteBuf buffer, List<T> toWrite, BiConsumer<T, FriendlyByteBuf> writeElement) {
+    public static <T> void writeList(
+            FriendlyByteBuf buffer,
+            List<T> toWrite,
+            BiConsumer<T, FriendlyByteBuf> writeElement
+    ) {
         buffer.writeVarInt(toWrite.size());
         for (T element : toWrite) {
             writeElement.accept(element, buffer);

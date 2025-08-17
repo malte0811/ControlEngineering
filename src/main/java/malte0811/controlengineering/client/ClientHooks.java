@@ -26,18 +26,18 @@ public class ClientHooks {
         }
     }
 
-   public static void processLogicPacketOnClient(LogicSubPacket packet) {
-       LogicDesignScreen currentScreen = StackedScreen.findInstanceOf(LogicDesignScreen.class);
-       if (currentScreen != null) {
-           currentScreen.process(packet);
-       }
-   }
+    public static void processLogicPacketOnClient(LogicSubPacket packet) {
+        LogicDesignScreen currentScreen = StackedScreen.findInstanceOf(LogicDesignScreen.class);
+        if (currentScreen != null) {
+            currentScreen.process(packet);
+        }
+    }
 
-   public static void processScopePacketOnClient(ScopeSubPacket.IScopeSubPacket packet) {
-       ScopeScreen currentScreen = StackedScreen.findInstanceOf(ScopeScreen.class);
-       if (currentScreen != null) {
-           final var menu = currentScreen.getMenu();
-           ScopeSubPacket.processFull(packet, menu);
-       }
-   }
+    public static void processScopePacketOnClient(ScopeSubPacket.IScopeSubPacket packet) {
+        ScopeScreen currentScreen = StackedScreen.findInstanceOf(ScopeScreen.class);
+        if (currentScreen != null) {
+            final var menu = currentScreen.getMenu();
+            ScopeSubPacket.processFull(packet, menu);
+        }
+    }
 }

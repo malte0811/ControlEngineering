@@ -23,8 +23,9 @@ public record ListCodec<T>(MyCodec<T> inner) implements MyCodec<List<T>> {
     @Nullable
     @Override
     public List<T> fromTree(TreeElement<?> data) {
-        if (!(data instanceof TreeStorageList<?> list))
+        if (!(data instanceof TreeStorageList<?> list)) {
             return null;
+        }
         List<T> result = new ArrayList<>();
         for (var node : list) {
             var element = inner.fromTree(node);

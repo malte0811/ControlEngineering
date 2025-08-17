@@ -65,7 +65,7 @@ public class TapeRender {
             for (int bit = 0; bit < HOLE_OFFSETS.length; ++bit) {
                 if (!BitUtils.getBit(currentByte, bit)) {
                     int yPos = HOLE_OFFSETS[bit];
-                    graphics.fill( 0, yPos, HOLE_WIDTH, yPos + HOLE_HEIGHT, TAPE_COLOR);
+                    graphics.fill(0, yPos, HOLE_WIDTH, yPos + HOLE_HEIGHT, TAPE_COLOR);
                 }
             }
         });
@@ -101,7 +101,7 @@ public class TapeRender {
         forEachRow(graphics, shownBytes, rsSize, vOffset, (transform, currentByte) -> {
             int strength = RedstoneTapeUtils.getStrength(currentByte);
             int color = RedStoneWireBlock.getColorForPower(strength);
-            blitWithColor(graphics , sideSpace, 16, 16, sprite, color);
+            blitWithColor(graphics, sideSpace, 16, 16, sprite, color);
         });
 
         TextureAtlasSprite white = QuadBuilder.getWhiteTexture();
@@ -129,8 +129,9 @@ public class TapeRender {
         graphics.pose().popPose();
     }
 
-    private static void blitWithColor(GuiGraphics graphics,
-             int x, int width, int height, TextureAtlasSprite texture, int color
+    private static void blitWithColor(
+            GuiGraphics graphics,
+            int x, int width, int height, TextureAtlasSprite texture, int color
     ) {
         RenderSystem.setShaderColor(
                 BitUtils.getBits(color, 16, 8) / 255f,
@@ -138,7 +139,7 @@ public class TapeRender {
                 BitUtils.getBits(color, 0, 8) / 255f,
                 1
         );
-        
-       graphics.blit( x, 0, 0, width, height, texture);
+
+        graphics.blit(x, 0, 0, width, height, texture);
     }
 }

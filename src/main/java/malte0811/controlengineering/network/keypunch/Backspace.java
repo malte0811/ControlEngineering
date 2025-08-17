@@ -4,12 +4,12 @@ import malte0811.controlengineering.blockentity.tape.KeypunchState;
 import net.minecraft.network.FriendlyByteBuf;
 
 public class Backspace extends KeypunchSubPacket {
-    public Backspace() {}
+    public Backspace() { }
 
-    public Backspace(FriendlyByteBuf b) {}
+    public Backspace(FriendlyByteBuf b) { }
 
     @Override
-    protected void write(FriendlyByteBuf out) {}
+    protected void write(FriendlyByteBuf out) { }
 
     @Override
     public boolean process(KeypunchState state) {

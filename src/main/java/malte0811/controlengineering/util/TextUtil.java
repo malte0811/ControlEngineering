@@ -26,7 +26,7 @@ public class TextUtil {
     public static void renderBoxWithText(
             GuiGraphics graphics, int color, String text, float scale, int x, int y, int xSize, int ySize
     ) {
-        graphics.fill( x, y, x + xSize, y + ySize, color);
+        graphics.fill(x, y, x + xSize, y + ySize, color);
         final Font font = Minecraft.getInstance().font;
         final float yOffset = (ySize - font.lineHeight / scale) / 2;
         final float xOffset = (xSize - font.width(text) / scale) / 2;

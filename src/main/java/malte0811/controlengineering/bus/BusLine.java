@@ -71,8 +71,12 @@ public class BusLine {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         BusLine busLine = (BusLine) o;
         return Arrays.equals(values, busLine.values);
     }

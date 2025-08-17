@@ -1,6 +1,6 @@
-modLoader="javafml" #mandatory
-loaderVersion="[32,)"
-license="MIT"
+modLoader = "javafml" #mandatory
+loaderVersion = "[32,)"
+license = "MIT"
 [[mods]]
 modId = "controlengineering"
 version = "${ce_version}"
