@@ -71,7 +71,7 @@ public class PanelComponentElement extends SpecialManualElement {
         );
         ComponentSelector.renderComponentInGui(graphics, type, manual.pageWidth - ITEM_SIZE, getComponentDemoHeight());
         graphics.pose().popPose();
-        if (!(tooltipStack).isEmpty()) {
+        if (!tooltipStack.isEmpty()) {
             graphics.renderTooltip(font, tooltipStack, mouseX, mouseY);
         }
     }
