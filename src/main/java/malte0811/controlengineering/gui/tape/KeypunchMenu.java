@@ -5,7 +5,7 @@ import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchState;
 import malte0811.controlengineering.gui.CEContainerMenu;
 import malte0811.controlengineering.gui.misc.LambdaDataSlot;
-import malte0811.controlengineering.network.SimplePacket;
+import malte0811.controlengineering.network.IPacket;
 import malte0811.controlengineering.network.keypunch.FullSync;
 import malte0811.controlengineering.network.keypunch.KeypunchPacket;
 import malte0811.controlengineering.network.keypunch.KeypunchSubPacket;
@@ -33,7 +33,7 @@ public class KeypunchMenu extends CEContainerMenu<KeypunchSubPacket> {
     }
 
     @Override
-    protected SimplePacket makePacket(KeypunchSubPacket data) {
+    protected IPacket makePacket(KeypunchSubPacket data) {
         return new KeypunchPacket(data);
     }
 

@@ -1,41 +1,31 @@
 package malte0811.controlengineering.network;
 
-import blusunrize.immersiveengineering.api.ApiUtils;
+import blusunrize.immersiveengineering.api.utils.codec.IEStreamCodecs;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.util.ItemUtil;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.Objects;
-
-public class CutTapePacket extends SimplePacket {
-    private final InteractionHand hand;
-    private final int offset;
-
-    public CutTapePacket(InteractionHand hand, int offset) {
-        this.hand = hand;
-        this.offset = offset;
-    }
-
-    public CutTapePacket(FriendlyByteBuf in) {
-        this(in.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, in.readVarInt());
-    }
+public record CutTapePacket(InteractionHand hand, int offset) implements IPacket {
+    public static final CustomPacketPayload.Type<CutTapePacket> ID = IPacket.createType("scope");
+    public static final StreamCodec<FriendlyByteBuf, CutTapePacket> CODEC = StreamCodec.composite(
+            IEStreamCodecs.enumStreamCodec(InteractionHand.values()), CutTapePacket::hand,
+            ByteBufCodecs.VAR_INT, CutTapePacket::offset,
+            CutTapePacket::new
+    );
 
     @Override
-    public void write(FriendlyByteBuf out) {
-        out.writeBoolean(hand == InteractionHand.MAIN_HAND);
-        out.writeVarInt(offset);
-    }
-
-    @Override
-    protected void processOnThread(NetworkEvent.Context ctx) {
-        ServerPlayer player = Objects.requireNonNull(ctx.getSender());
+    public void process(IPayloadContext ctx) {
+        ServerPlayer player = IPacket.serverPlayer(ctx);
         if (!canCut(hand, player)) {
             return;
         }
@@ -48,7 +38,7 @@ public class CutTapePacket extends SimplePacket {
         System.arraycopy(data, 0, startData, 0, offset);
         System.arraycopy(data, offset + 1, endData, 0, endData.length);
         player.setItemInHand(hand, ItemStack.EMPTY);
-        player.getItemInHand(otherHand(hand)).hurt(1, ApiUtils.RANDOM_SOURCE, player);
+        player.getItemInHand(otherHand(hand)).consume(1, player);
         giveTape(player, startData);
         giveTape(player, endData);
     }
@@ -68,6 +58,11 @@ public class CutTapePacket extends SimplePacket {
             return false;
         }
         ItemStack shears = player.getItemInHand(otherHand(tapeHand));
-        return shears.is(Tags.Items.SHEARS);
+        return shears.is(Tags.Items.TOOLS_SHEAR);
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return ID;
     }
 }

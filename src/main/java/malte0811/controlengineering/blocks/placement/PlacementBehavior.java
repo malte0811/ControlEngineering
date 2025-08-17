@@ -3,19 +3,19 @@ package malte0811.controlengineering.blocks.placement;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.datafixers.util.Unit;
+import cpw.mods.util.Lazy;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredBlock;
 
 import java.util.Collection;
 
 public interface PlacementBehavior<T> {
-    static PlacementBehavior<Unit> simple(RegistryObject<? extends Block> block) {
+    static PlacementBehavior<Unit> simple(DeferredBlock<?> block) {
         Lazy<BlockState> state = Lazy.of(() -> block.get().defaultBlockState());
         return new PlacementBehavior<>() {
             @Override

@@ -4,7 +4,7 @@ import malte0811.controlengineering.blockentity.panels.PanelDesignerBlockEntity;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.gui.CEContainerMenu;
 import malte0811.controlengineering.gui.misc.LambdaDataSlot;
-import malte0811.controlengineering.network.SimplePacket;
+import malte0811.controlengineering.network.IPacket;
 import malte0811.controlengineering.network.panellayout.FullSync;
 import malte0811.controlengineering.network.panellayout.PanelPacket;
 import malte0811.controlengineering.network.panellayout.PanelSubPacket;
@@ -39,7 +39,7 @@ public class PanelDesignMenu extends CEContainerMenu<PanelSubPacket> {
     }
 
     @Override
-    protected SimplePacket makePacket(PanelSubPacket panelSubPacket) {
+    protected IPacket makePacket(PanelSubPacket panelSubPacket) {
         return new PanelPacket(panelSubPacket);
     }
 

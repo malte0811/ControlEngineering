@@ -6,10 +6,10 @@ import net.minecraft.resources.ResourceLocation;
 
 public class RLUtils {
     public static ResourceLocation ceLoc(String path) {
-        return new ResourceLocation(ControlEngineering.MODID, path);
+        return ResourceLocation.fromNamespaceAndPath(ControlEngineering.MODID, path);
     }
 
     public static ResourceLocation ieLoc(String path) {
-        return new ResourceLocation(Lib.MODID, path);
+        return ResourceLocation.fromNamespaceAndPath(Lib.MODID, path);
     }
 }

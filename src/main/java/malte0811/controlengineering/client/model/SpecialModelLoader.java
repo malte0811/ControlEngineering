@@ -11,9 +11,9 @@ import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
-import net.minecraftforge.client.model.geometry.IGeometryLoader;
-import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
+import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
+import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
+import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -48,14 +48,13 @@ public class SpecialModelLoader implements IGeometryLoader<SpecialModelLoader.Sp
 
         @Override
         public BakedModel bake(
-                IGeometryBakingContext owner,
-                ModelBaker baker,
-                Function<Material, TextureAtlasSprite> spriteGetter,
-                ModelState modelTransform,
-                ItemOverrides overrides,
-                ResourceLocation modelLocation
+                IGeometryBakingContext iGeometryBakingContext,
+                ModelBaker modelBaker,
+                Function<Material, TextureAtlasSprite> function,
+                ModelState modelState,
+                ItemOverrides itemOverrides
         ) {
-            return modelMaker.apply(owner.getTransforms(), modelTransform);
+            return modelMaker.apply(iGeometryBakingContext.getTransforms(), modelState);
         }
     }
 }

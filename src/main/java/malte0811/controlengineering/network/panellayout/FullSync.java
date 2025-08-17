@@ -1,27 +1,16 @@
 package malte0811.controlengineering.network.panellayout;
 
 import malte0811.controlengineering.controlpanels.PlacedComponent;
-import malte0811.controlengineering.network.PacketUtils;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
 
-public class FullSync extends PanelSubPacket {
-    private final List<PlacedComponent> allComponents;
-
-    public FullSync(List<PlacedComponent> allComponents) {
-        this.allComponents = allComponents;
-    }
-
-    public FullSync(FriendlyByteBuf buffer) {
-        this(PacketUtils.readList(buffer, PlacedComponent::readWithoutState));
-    }
-
-    @Override
-    protected void write(FriendlyByteBuf out) {
-        PacketUtils.writeList(out, allComponents, PlacedComponent::writeToWithoutState);
-    }
+public record FullSync(List<PlacedComponent> allComponents) implements PanelSubPacket {
+    public static final StreamCodec<FriendlyByteBuf, FullSync> CODEC = PlacedComponent.LIST_CODEC.streamCodec().map(
+            FullSync::new, FullSync::allComponents
+    );
 
     @Override
     public boolean process(Level level, List<PlacedComponent> allComponents) {

@@ -28,6 +28,7 @@ import malte0811.controlengineering.util.Clearable;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
@@ -37,7 +38,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -90,8 +91,8 @@ public class KeypunchBlockEntity extends CEBlockEntity
     }
 
     @Override
-    public void load(@Nonnull CompoundTag nbt) {
-        super.load(nbt);
+    public void loadAdditional(@Nonnull CompoundTag nbt, HolderLookup.Provider provider) {
+        super.loadAdditional(nbt, provider);
         readSyncedData(nbt);
         state = new KeypunchState(this::setChanged, nbt.get("state"));
         openMenus.forEach(KeypunchMenu::resyncFullTape);
@@ -99,8 +100,8 @@ public class KeypunchBlockEntity extends CEBlockEntity
     }
 
     @Override
-    public void saveAdditional(@Nonnull CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(@Nonnull CompoundTag compound, HolderLookup.Provider provider) {
+        super.saveAdditional(compound, provider);
         writeSyncedData(compound);
         compound.put("state", state.toNBT());
         compound.put("busInterface", busInterface.toNBT());

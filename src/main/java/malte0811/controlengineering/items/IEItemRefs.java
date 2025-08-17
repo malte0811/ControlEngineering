@@ -1,12 +1,16 @@
 package malte0811.controlengineering.items;
 
 import malte0811.controlengineering.util.RLUtils;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
+
+import java.util.function.Supplier;
 
 public class IEItemRefs {
     public static final ItemLike CIRCUIT_BOARD = of("circuit_board");
@@ -21,23 +25,23 @@ public class IEItemRefs {
     public static final ItemLike COMPONENT_IRON = of("component_iron");
     public static final ItemLike COMPONENT_ADVANCED = of("component_electronic_adv");
     public static final ItemLike COMPONENT_BASIC = of("component_electronic");
-    public static final RegistryObject<Block> LOGIC_UNIT = of("logic_unit", ForgeRegistries.BLOCKS);
-    public static final RegistryObject<Block> RADIATOR = of("radiator", ForgeRegistries.BLOCKS);
-    public static final RegistryObject<Block> CRATE = of("crate", ForgeRegistries.BLOCKS);
-    public static final RegistryObject<Block> LIGHT_ENGINEERING = of("light_engineering", ForgeRegistries.BLOCKS);
-    public static final RegistryObject<Block> LIGHT_BLUE_SHEETMETAL = of(
-            "sheetmetal_colored_" + DyeColor.LIGHT_BLUE.getName(), ForgeRegistries.BLOCKS
+    public static final Supplier<Block> LOGIC_UNIT = of("logic_unit", Registries.BLOCK);
+    public static final Supplier<Block> RADIATOR = of("radiator", Registries.BLOCK);
+    public static final Supplier<Block> CRATE = of("crate", Registries.BLOCK);
+    public static final Supplier<Block> LIGHT_ENGINEERING = of("light_engineering", Registries.BLOCK);
+    public static final Supplier<Block> LIGHT_BLUE_SHEETMETAL = of(
+            "sheetmetal_colored_" + DyeColor.LIGHT_BLUE.getName(), Registries.BLOCK
     );
 
     // Classload early
     public static void init() { }
 
     private static ItemLike of(String path) {
-        var regObject = of(path, ForgeRegistries.ITEMS);
+        var regObject = of(path, Registries.ITEM);
         return regObject::get;
     }
 
-    private static <T> RegistryObject<T> of(String name, IForgeRegistry<T> registry) {
-        return RegistryObject.create(RLUtils.ieLoc(name), registry);
+    private static <T> Supplier<T> of(String name, ResourceKey<Registry<T>> registry) {
+        return DeferredHolder.create(registry, RLUtils.ieLoc(name));
     }
 }

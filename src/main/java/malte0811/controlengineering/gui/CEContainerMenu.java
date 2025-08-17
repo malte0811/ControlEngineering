@@ -1,7 +1,7 @@
 package malte0811.controlengineering.gui;
 
 import malte0811.controlengineering.ControlEngineering;
-import malte0811.controlengineering.network.SimplePacket;
+import malte0811.controlengineering.network.IPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -9,10 +9,9 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.NetworkDirection;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-@Mod.EventBusSubscriber(modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = ControlEngineering.MODID)
 public abstract class CEContainerMenu<PacketType> extends AbstractContainerMenu {
     private final List<ServerPlayer> listeners = new ArrayList<>();
     private final Predicate<Player> isValid;
@@ -68,12 +67,10 @@ public abstract class CEContainerMenu<PacketType> extends AbstractContainerMenu 
     }
 
     protected final void sendTo(ServerPlayer listener, PacketType packet) {
-        ControlEngineering.NETWORK.sendTo(
-                makePacket(packet), listener.connection.connection, NetworkDirection.PLAY_TO_CLIENT
-        );
+        listener.connection.send(makePacket(packet));
     }
 
-    protected abstract SimplePacket makePacket(PacketType type);
+    protected abstract IPacket makePacket(PacketType type);
 
     protected abstract PacketType getInitialSync();
 

@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
@@ -43,7 +43,7 @@ public abstract class SelectionShapes {
         return this;
     }
 
-    public abstract InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType, Vec3 relativeHit);
+    public abstract ItemInteractionResult onUse(UseOnContext ctx, ItemInteractionResult defaultType, Vec3 relativeHit);
 
     public void plotBox(BiConsumer<Vec3, Vec3> drawLine) {
         VoxelShape main = mainShape();
@@ -54,10 +54,10 @@ public abstract class SelectionShapes {
         }
     }
 
-    public final InteractionResult onUse(UseOnContext useCtx, ClipContext ray) {
+    public final ItemInteractionResult onUse(UseOnContext useCtx, ClipContext ray) {
         Pair<List<SelectionShapes>, Vec3> targeted = getTargeted(ray);
         var stack = targeted.getFirst();
-        InteractionResult ret = InteractionResult.PASS;
+        ItemInteractionResult ret = ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         for (int i = 0; i < stack.size(); ++i) {
             ret = stack.get(stack.size() - i - 1).onUse(useCtx, ret, targeted.getSecond());
         }

@@ -9,6 +9,7 @@ import malte0811.controlengineering.util.mycodec.tree.TreeManager;
 import malte0811.controlengineering.util.mycodec.tree.nbt.NBTManager;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -98,8 +99,18 @@ public interface MyCodec<T> {
         return xmap(Function.identity(), Function.identity());
     }
 
-    default T from(FriendlyByteBuf in) {
-        return fromSerial(new PacketBufferStorage(in)).get();
+    default StreamCodec<FriendlyByteBuf, T> streamCodec() {
+        return new StreamCodec<FriendlyByteBuf, T>() {
+            @Override
+            public T decode(FriendlyByteBuf in) {
+                return fromSerial(new PacketBufferStorage(in)).get();
+            }
+
+            @Override
+            public void encode(FriendlyByteBuf o, T t) {
+                toSerial(new PacketBufferStorage(o), t);
+            }
+        };
     }
 
     default MyCodec<T> orElse(MyCodec<T> fallback) {

@@ -12,14 +12,13 @@ import malte0811.controlengineering.gui.remapper.ParallelPortMapperMenu;
 import malte0811.controlengineering.gui.remapper.RSRemapperMenu;
 import malte0811.controlengineering.gui.scope.ScopeMenu;
 import malte0811.controlengineering.gui.tape.KeypunchMenu;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
@@ -27,7 +26,7 @@ import java.util.function.Supplier;
 
 public class CEContainers {
     public static final DeferredRegister<MenuType<?>> REGISTER = DeferredRegister.create(
-            ForgeRegistries.MENU_TYPES, ControlEngineering.MODID
+            Registries.MENU, ControlEngineering.MODID
     );
 
     public static final ArgMenuType<KeypunchMenu, KeypunchBlockEntity> KEYPUNCH = new ArgMenuType<>(
@@ -74,7 +73,7 @@ public class CEContainers {
     }
 
     public record ArgMenuType<M extends AbstractContainerMenu, Arg>(
-            RegistryObject<MenuType<M>> type, ArgMenuFactory<M, Arg> construct
+            Supplier<MenuType<M>> type, ArgMenuFactory<M, Arg> construct
     ) {
         public MenuConstructor argConstructor(Arg arg) {
             return (id, $, $2) -> construct.create(type.get(), id, arg);

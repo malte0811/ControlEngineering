@@ -6,9 +6,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.client.model.CacheableCompositeModel;
-import net.minecraftforge.client.model.generators.CustomLoaderBuilder;
-import net.minecraftforge.client.model.generators.ModelBuilder;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
+import net.neoforged.neoforge.client.model.generators.ModelBuilder;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.ArrayList;
 import java.util.List;

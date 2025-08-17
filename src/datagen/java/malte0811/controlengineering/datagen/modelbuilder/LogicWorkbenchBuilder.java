@@ -4,9 +4,9 @@ import blusunrize.immersiveengineering.data.models.NongeneratedModels.Nongenerat
 import com.google.gson.JsonObject;
 import malte0811.controlengineering.client.ModelLoaders;
 import malte0811.controlengineering.client.model.logic.LogicWorkbenchModel.Loader;
-import net.minecraftforge.client.model.generators.CustomLoaderBuilder;
-import net.minecraftforge.client.model.generators.ModelBuilder;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
+import net.neoforged.neoforge.client.model.generators.ModelBuilder;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class LogicWorkbenchBuilder<T extends ModelBuilder<T>> extends CustomLoaderBuilder<T> {
     private NongeneratedModel workbench;

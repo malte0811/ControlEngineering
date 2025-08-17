@@ -1,29 +1,19 @@
 package malte0811.controlengineering.network.remapper;
 
+import io.netty.buffer.ByteBuf;
 import malte0811.controlengineering.gui.remapper.AbstractRemapperMenu;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
-public class SetMapping extends RemapperSubPacket {
-    private final int colorIndex;
-    private final int grayIndex;
-
-    public SetMapping(int colorIndex, int grayIndex) {
-        this.colorIndex = colorIndex;
-        this.grayIndex = grayIndex;
-    }
-
-    public SetMapping(FriendlyByteBuf in) {
-        this(in.readVarInt(), in.readVarInt());
-    }
+public record SetMapping(int colorIndex, int grayIndex) implements RemapperSubPacket {
+    public static final StreamCodec<ByteBuf, SetMapping> CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, SetMapping::colorIndex,
+            ByteBufCodecs.VAR_INT, SetMapping::grayIndex,
+            SetMapping::new
+    );
 
     @Override
-    protected void write(FriendlyByteBuf out) {
-        out.writeVarInt(colorIndex);
-        out.writeVarInt(grayIndex);
-    }
-
-    @Override
-    protected int[] process(int[] colorToGray) {
+    public int[] process(int[] colorToGray) {
         for (int i = 0; i < colorToGray.length; ++i) {
             if (colorToGray[i] == grayIndex) {
                 colorToGray[i] = AbstractRemapperMenu.NOT_MAPPED;

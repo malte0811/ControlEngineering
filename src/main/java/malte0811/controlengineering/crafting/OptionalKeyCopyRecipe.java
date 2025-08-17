@@ -27,8 +27,7 @@ public class OptionalKeyCopyRecipe extends ShapedRecipe {
 
     public OptionalKeyCopyRecipe(ShapedRecipe baseRecipe, boolean isIdOptional) {
         super(
-                baseRecipe.getId(), baseRecipe.getGroup(),
-                CraftingBookCategory.MISC,
+                baseRecipe.getGroup(), CraftingBookCategory.MISC,
                 baseRecipe.getWidth(), baseRecipe.getHeight(),
                 baseRecipe.getIngredients(), baseRecipe.getResultItem(null)
         );

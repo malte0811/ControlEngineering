@@ -12,66 +12,64 @@ import malte0811.controlengineering.scope.module.ScopeModules;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.Map;
 import java.util.function.Predicate;
 
 public class CEItems {
-    public static final DeferredRegister<Item> REGISTER = DeferredRegister.create(
-            ForgeRegistries.ITEMS, ControlEngineering.MODID
-    );
+    public static final DeferredRegister.Items REGISTER = DeferredRegister.createItems(ControlEngineering.MODID);
 
     //Items
-    public static final RegistryObject<BusCoilItem> BUS_WIRE_COIL = REGISTER.register(
+    public static final DeferredItem<BusCoilItem> BUS_WIRE_COIL = REGISTER.register(
             "bus_wire_coil", BusCoilItem::new
     );
-    public static final RegistryObject<PunchedTapeItem> PUNCHED_TAPE = REGISTER.register(
+    public static final DeferredItem<PunchedTapeItem> PUNCHED_TAPE = REGISTER.register(
             "punched_tape", PunchedTapeItem::new
     );
-    public static final RegistryObject<EmptyTapeItem> EMPTY_TAPE = REGISTER.register("empty_tape", EmptyTapeItem::new);
-    public static final RegistryObject<PanelTopItem> PANEL_TOP = REGISTER.register("panel_top", PanelTopItem::new);
-    public static final RegistryObject<ItemWithKeyID> LOCK = REGISTER.register("lock", ItemWithKeyID::new);
-    public static final RegistryObject<ItemWithKeyID> KEY = REGISTER.register("key", ItemWithKeyID::new);
-    public static final Map<ResourceLocation, RegistryObject<Item>> CLOCK_GENERATORS;
-    public static final Map<ResourceLocation, RegistryObject<Item>> SCOPE_MODULES;
-    public static final RegistryObject<PCBStackItem> PCB_STACK = REGISTER.register("pcb_stack", PCBStackItem::new);
-    public static final RegistryObject<SchematicItem> SCHEMATIC = REGISTER.register(
+    public static final DeferredItem<EmptyTapeItem> EMPTY_TAPE = REGISTER.register("empty_tape", EmptyTapeItem::new);
+    public static final DeferredItem<PanelTopItem> PANEL_TOP = REGISTER.register("panel_top", PanelTopItem::new);
+    public static final DeferredItem<ItemWithKeyID> LOCK = REGISTER.register("lock", ItemWithKeyID::new);
+    public static final DeferredItem<ItemWithKeyID> KEY = REGISTER.register("key", ItemWithKeyID::new);
+    public static final Map<ResourceLocation, DeferredItem<Item>> CLOCK_GENERATORS;
+    public static final Map<ResourceLocation, DeferredItem<Item>> SCOPE_MODULES;
+    public static final DeferredItem<PCBStackItem> PCB_STACK = REGISTER.register("pcb_stack", PCBStackItem::new);
+    public static final DeferredItem<SchematicItem> SCHEMATIC = REGISTER.register(
             "logic_schematic", SchematicItem::new
     );
-    public static final RegistryObject<Item> CRT_TUBE = simpleItem("crt_tube");
-    public static final RegistryObject<Item> SCOPE_MODULE_CASE = simpleItem("scope_module_case");
+    public static final DeferredItem<Item> CRT_TUBE = simpleItem("crt_tube");
+    public static final DeferredItem<Item> SCOPE_MODULE_CASE = simpleItem("scope_module_case");
 
     //Blocks
-    public static final RegistryObject<CEBlockItem<Direction>> BUS_RELAY = blockItemCE(CEBlocks.BUS_RELAY);
-    public static final RegistryObject<CEBlockItem<Direction>> BUS_INTERFACE = blockItemCE(CEBlocks.BUS_INTERFACE);
-    public static final RegistryObject<CEBlockItem<Direction>> LINE_ACCESS = blockItemCE(CEBlocks.LINE_ACCESS);
-    public static final RegistryObject<CEBlockItem<PanelOrientation>> CONTROL_PANEL = REGISTER.register(
+    public static final DeferredItem<CEBlockItem<Direction>> BUS_RELAY = blockItemCE(CEBlocks.BUS_RELAY);
+    public static final DeferredItem<CEBlockItem<Direction>> BUS_INTERFACE = blockItemCE(CEBlocks.BUS_INTERFACE);
+    public static final DeferredItem<CEBlockItem<Direction>> LINE_ACCESS = blockItemCE(CEBlocks.LINE_ACCESS);
+    public static final DeferredItem<CEBlockItem<PanelOrientation>> CONTROL_PANEL = REGISTER.register(
             CEBlocks.CONTROL_PANEL.getId().getPath(),
             () -> new ControlPanelItem(CEBlocks.CONTROL_PANEL.get(), simpleItemProperties())
     );
-    public static final RegistryObject<CEBlockItem<Direction>> KEYPUNCH = blockItemCE(CEBlocks.KEYPUNCH);
-    public static final RegistryObject<CEBlockItem<Direction>> SEQUENCER = blockItemCE(CEBlocks.SEQUENCER);
-    public static final RegistryObject<CEBlockItem<Direction>> PANEL_CNC = blockItemCE(CEBlocks.PANEL_CNC);
-    public static final RegistryObject<CEBlockItem<Direction>> LOGIC_CABINET = blockItemCE(CEBlocks.LOGIC_CABINET);
-    public static final RegistryObject<CEBlockItem<Direction>> LOGIC_WORKBENCH = blockItemCE(CEBlocks.LOGIC_WORKBENCH);
-    public static final RegistryObject<CEBlockItem<Direction>> PANEL_DESIGNER = blockItemCE(CEBlocks.PANEL_DESIGNER);
-    public static final RegistryObject<CEBlockItem<Direction>> RS_REMAPPER = blockItemCE(CEBlocks.RS_REMAPPER);
-    public static final RegistryObject<CEBlockItem<Direction>> SCOPE = blockItemCE(CEBlocks.SCOPE);
+    public static final DeferredItem<CEBlockItem<Direction>> KEYPUNCH = blockItemCE(CEBlocks.KEYPUNCH);
+    public static final DeferredItem<CEBlockItem<Direction>> SEQUENCER = blockItemCE(CEBlocks.SEQUENCER);
+    public static final DeferredItem<CEBlockItem<Direction>> PANEL_CNC = blockItemCE(CEBlocks.PANEL_CNC);
+    public static final DeferredItem<CEBlockItem<Direction>> LOGIC_CABINET = blockItemCE(CEBlocks.LOGIC_CABINET);
+    public static final DeferredItem<CEBlockItem<Direction>> LOGIC_WORKBENCH = blockItemCE(CEBlocks.LOGIC_WORKBENCH);
+    public static final DeferredItem<CEBlockItem<Direction>> PANEL_DESIGNER = blockItemCE(CEBlocks.PANEL_DESIGNER);
+    public static final DeferredItem<CEBlockItem<Direction>> RS_REMAPPER = blockItemCE(CEBlocks.RS_REMAPPER);
+    public static final DeferredItem<CEBlockItem<Direction>> SCOPE = blockItemCE(CEBlocks.SCOPE);
 
-    private static <T> RegistryObject<CEBlockItem<T>> blockItemCE(RegistryObject<? extends CEBlock<T>> block) {
+    private static <T> DeferredItem<CEBlockItem<T>> blockItemCE(DeferredBlock<? extends CEBlock<T>> block) {
         return blockItemCE(block, simpleItemProperties());
     }
 
-    private static <T> RegistryObject<CEBlockItem<T>> blockItemCE(
-            RegistryObject<? extends CEBlock<T>> block, Item.Properties properties
+    private static <T> DeferredItem<CEBlockItem<T>> blockItemCE(
+            DeferredBlock<? extends CEBlock<T>> block, Item.Properties properties
     ) {
         return REGISTER.register(block.getId().getPath(), () -> new CEBlockItem<>(block.get(), properties));
     }
 
-    private static RegistryObject<Item> simpleItem(String name) {
+    private static DeferredItem<Item> simpleItem(String name) {
         return REGISTER.register(name, () -> new Item(simpleItemProperties()));
     }
 
@@ -80,10 +78,10 @@ public class CEItems {
     }
 
     private static <T>
-    Map<ResourceLocation, RegistryObject<Item>> makeItemsFor(
+    Map<ResourceLocation, DeferredItem<Item>> makeItemsFor(
             Map<ResourceLocation, T> owners, Predicate<T> shouldAdd, String prefix
     ) {
-        ImmutableMap.Builder<ResourceLocation, RegistryObject<Item>> items = ImmutableMap.builder();
+        ImmutableMap.Builder<ResourceLocation, DeferredItem<Item>> items = ImmutableMap.builder();
         for (Map.Entry<ResourceLocation, T> entry : owners.entrySet()) {
             ResourceLocation id = entry.getKey();
             if (shouldAdd.test(entry.getValue())) {

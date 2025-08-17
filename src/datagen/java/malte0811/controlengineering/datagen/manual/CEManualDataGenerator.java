@@ -2,7 +2,7 @@ package malte0811.controlengineering.datagen.manual;
 
 import malte0811.controlengineering.ControlEngineering;
 import net.minecraft.data.DataGenerator;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.io.IOException;
 import java.nio.file.Files;

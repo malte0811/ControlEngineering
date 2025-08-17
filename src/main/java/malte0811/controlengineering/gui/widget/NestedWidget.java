@@ -102,8 +102,8 @@ public abstract class NestedWidget extends AbstractWidget implements ContainerEv
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        return ContainerEventHandler.super.mouseScrolled(mouseX, mouseY, delta);
+    public boolean mouseScrolled(double p_94686_, double p_94687_, double p_94688_, double p_294830_) {
+        return ContainerEventHandler.super.mouseScrolled(p_94686_, p_94687_, p_94688_, p_294830_);
     }
 
     @Override

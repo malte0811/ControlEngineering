@@ -1,6 +1,6 @@
 package malte0811.controlengineering.util.energy;
 
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 public class ExtractOnlyEnergyWrapper implements IEnergyStorage {
     private final IEnergyStorage wrapped;

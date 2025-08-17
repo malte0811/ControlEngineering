@@ -4,7 +4,7 @@ import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.panels.CachedPanelShape;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
 import malte0811.controlengineering.util.BEUtil;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -53,7 +53,7 @@ public class PanelSelectionShapes extends SelectionShapes {
     }
 
     @Override
-    public InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType, Vec3 relativeHit) {
+    public ItemInteractionResult onUse(UseOnContext ctx, ItemInteractionResult defaultType, Vec3 relativeHit) {
         if (defaultType.shouldSwing() && !bEntity.getLevel().isClientSide) {
             bEntity.updateBusState();
             bEntity.setChanged();

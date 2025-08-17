@@ -11,8 +11,8 @@ import malte0811.controlengineering.logic.circuit.BusConnectedCircuit.InputConne
 import malte0811.controlengineering.logic.circuit.CircuitBuilder;
 import malte0811.controlengineering.logic.circuit.NetReference;
 import malte0811.controlengineering.logic.schematic.symbol.*;
-import net.minecraftforge.fml.loading.toposort.CyclePresentException;
-import net.minecraftforge.fml.loading.toposort.TopologicalSort;
+import net.neoforged.fml.loading.toposort.CyclePresentException;
+import net.neoforged.fml.loading.toposort.TopologicalSort;
 
 import javax.annotation.Nullable;
 import java.util.*;

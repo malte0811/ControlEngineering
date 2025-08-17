@@ -28,6 +28,7 @@ import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -43,18 +44,19 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.network.NetworkHooks;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static malte0811.controlengineering.blocks.logic.LogicCabinetBlock.NOT_MIRRORED;
 
@@ -103,8 +105,8 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     }
 
     @Override
-    public void load(@Nonnull CompoundTag nbt) {
-        super.load(nbt);
+    public void loadAdditional(@Nonnull CompoundTag nbt, HolderLookup.Provider provider) {
+        super.loadAdditional(nbt, provider);
         clock.load(nbt.get("clock"));
         if (nbt.contains("circuit")) {
             setSchematicAndComputeCircuit(Schematic.CODEC.fromNBT(nbt.get("circuit")));
@@ -115,8 +117,8 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     }
 
     @Override
-    public void saveAdditional(@Nonnull CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(@Nonnull CompoundTag compound, HolderLookup.Provider provider) {
+        super.saveAdditional(compound, provider);
         compound.put("clock", clock.toNBT());
         if (circuit != null) {
             compound.put("schematicAndCircuit", CIRCUIT_CODEC.toNBT(circuit));
@@ -366,7 +368,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         if (circuit != null) {
             dropper.accept(PCBStackItem.forSchematic(circuit.getFirst()));
         }
-        RegistryObject<Item> clockItem = CEItems.CLOCK_GENERATORS.get(clock.getType().getRegistryName());
+        Supplier<Item> clockItem = CEItems.CLOCK_GENERATORS.get(clock.getType().getRegistryName());
         if (clockItem != null) {
             dropper.accept(clockItem.get().getDefaultInstance());
         }

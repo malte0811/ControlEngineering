@@ -7,7 +7,8 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 public class ParallelPortMapperMenu extends AbstractRemapperMenu {
     ParallelPortMapperMenu(MenuType<?> type, int id, BlockEntity bEntity, ParallelPort port) {
@@ -18,7 +19,7 @@ public class ParallelPortMapperMenu extends AbstractRemapperMenu {
         super(type, id, Byte.SIZE + 1);
     }
 
-    public record Type(RegistryObject<MenuType<ParallelPortMapperMenu>> type) {
+    public record Type(Supplier<MenuType<ParallelPortMapperMenu>> type) {
         public <T extends BlockEntity & IParallelPortOwner>
         MenuProvider provider(BlockEntity blockEntity, ParallelPort port) {
             return new SimpleMenuProvider(

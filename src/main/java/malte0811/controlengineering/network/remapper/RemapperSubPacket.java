@@ -3,48 +3,34 @@ package malte0811.controlengineering.network.remapper;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
-public abstract class RemapperSubPacket {
-    static final List<Function<FriendlyByteBuf, ? extends RemapperSubPacket>> FROM_BYTES = new ArrayList<>();
-    static final Object2IntMap<Class<? extends RemapperSubPacket>> BY_TYPE = new Object2IntOpenHashMap<>();
-    private static boolean initialized = false;
+public interface RemapperSubPacket {
+    List<StreamCodec<? super FriendlyByteBuf, ? extends RemapperSubPacket>> CODECS = new ArrayList<>();
+    Object2IntMap<Class<? extends RemapperSubPacket>> BY_TYPE = new Object2IntOpenHashMap<>();
+    StreamCodec<FriendlyByteBuf, RemapperSubPacket> CODEC = ByteBufCodecs.VAR_INT
+            .<FriendlyByteBuf>cast()
+            .dispatch(p -> BY_TYPE.getInt(p.getClass()), CODECS::get);
 
-    public static void init() {
-        if (initialized) {
-            return;
-        }
-        initialized = true;
-        register(FullSync.class, FullSync::new);
-        register(SetMapping.class, SetMapping::new);
-        register(ClearMapping.class, ClearMapping::new);
+    static void init() {
+        register(FullSync.class, FullSync.CODEC);
+        register(SetMapping.class, SetMapping.CODEC);
+        register(ClearMapping.class, ClearMapping.CODEC);
     }
 
     private static <T extends RemapperSubPacket>
-    void register(Class<T> type, Function<FriendlyByteBuf, T> construct) {
-        BY_TYPE.put(type, FROM_BYTES.size());
-        FROM_BYTES.add(construct);
+    void register(Class<T> type, StreamCodec<? super FriendlyByteBuf, ? extends RemapperSubPacket> codec) {
+        BY_TYPE.put(type, CODECS.size());
+        CODECS.add(codec);
     }
 
-    protected static RemapperSubPacket read(FriendlyByteBuf buffer) {
-        init();
-        return FROM_BYTES.get(buffer.readVarInt()).apply(buffer);
-    }
+    int[] process(int[] colorToGray);
 
-    public final void writeFull(FriendlyByteBuf buffer) {
-        init();
-        buffer.writeVarInt(BY_TYPE.getInt(getClass()));
-        write(buffer);
-    }
-
-    protected abstract void write(FriendlyByteBuf out);
-
-    protected abstract int[] process(int[] colorToGray);
-
-    public boolean allowSendingToServer() {
+    default boolean allowSendingToServer() {
         return true;
     }
 }

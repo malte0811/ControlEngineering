@@ -3,40 +3,36 @@ package malte0811.controlengineering.network.panellayout;
 import com.google.common.base.Preconditions;
 import malte0811.controlengineering.client.ClientHooks;
 import malte0811.controlengineering.gui.panel.PanelDesignMenu;
-import malte0811.controlengineering.network.SimplePacket;
+import malte0811.controlengineering.network.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class PanelPacket extends SimplePacket {
-    private final PanelSubPacket packet;
-
-    public PanelPacket(FriendlyByteBuf buffer) {
-        this(PanelSubPacket.read(buffer));
-    }
-
-    public PanelPacket(PanelSubPacket data) {
-        this.packet = data;
-    }
+public record PanelPacket(PanelSubPacket packet) implements IPacket {
+    public static final CustomPacketPayload.Type<PanelPacket> ID = IPacket.createType("panel");
+    public static final StreamCodec<FriendlyByteBuf, PanelPacket> CODEC = PanelSubPackets.CODEC.map(
+            PanelPacket::new, PanelPacket::packet
+    );
 
     @Override
-    public void write(FriendlyByteBuf out) {
-        packet.writeFull(out);
-    }
-
-    @Override
-    protected void processOnThread(NetworkEvent.Context ctx) {
-        if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
+    public void process(IPayloadContext ctx) {
+        if (ctx.flow().isServerbound()) {
             Preconditions.checkState(packet.allowSendingToServer());
-            AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
+            AbstractContainerMenu activeContainer = ctx.player().containerMenu;
             if (activeContainer instanceof PanelDesignMenu panelContainer) {
-                packet.process(ctx.getSender().level(), panelContainer.getComponents());
-                panelContainer.sendToListeningPlayersExcept(ctx.getSender(), packet);
+                packet.process(ctx.player().level(), panelContainer.getComponents());
+                panelContainer.sendToListeningPlayersExcept(IPacket.serverPlayer(ctx), packet);
                 panelContainer.markDirty();
             }
         } else {
             ClientHooks.processPanelPacketOnClient(packet);
         }
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return ID;
     }
 }

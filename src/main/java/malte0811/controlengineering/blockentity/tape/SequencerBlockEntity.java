@@ -17,6 +17,7 @@ import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
@@ -24,10 +25,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -103,8 +104,8 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
     }
 
     @Override
-    public void load(@Nonnull CompoundTag pTag) {
-        super.load(pTag);
+    public void loadAdditional(@Nonnull CompoundTag pTag, HolderLookup.Provider provider) {
+        super.loadAdditional(pTag, provider);
         readSharedData(pTag);
         tape.loadNBT(pTag.get("tape"));
         clock.load(pTag.get("clock"));
@@ -112,8 +113,8 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
     }
 
     @Override
-    protected void saveAdditional(@Nonnull CompoundTag pTag) {
-        super.saveAdditional(pTag);
+    protected void saveAdditional(@Nonnull CompoundTag pTag, HolderLookup.Provider provider) {
+        super.saveAdditional(pTag, provider);
         writeSharedData(pTag);
         pTag.put("tape", tape.toNBT());
         pTag.put("clock", clock.toNBT());

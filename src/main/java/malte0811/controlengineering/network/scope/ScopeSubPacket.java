@@ -11,21 +11,21 @@ import malte0811.controlengineering.scope.trace.Traces;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.serial.PacketBufferStorage;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import org.apache.commons.lang3.mutable.Mutable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class ScopeSubPacket {
-    static final List<MyCodec<? extends IScopeSubPacket>> CODECS = new ArrayList<>();
+    static final List<StreamCodec<? super FriendlyByteBuf, ? extends IScopeSubPacket>> CODECS = new ArrayList<>();
     static final Object2IntMap<Class<? extends IScopeSubPacket>> BY_TYPE = new Object2IntOpenHashMap<>();
-    private static boolean initialized = false;
+    public static final StreamCodec<FriendlyByteBuf, IScopeSubPacket> CODEC = ByteBufCodecs.VAR_INT
+            .<FriendlyByteBuf>cast()
+            .dispatch(p -> BY_TYPE.getInt(p.getClass()), CODECS::get);
 
     public static void init() {
-        if (initialized) {
-            return;
-        }
-        initialized = true;
         register(FullSync.class, FullSync.CODEC);
         register(ModuleConfig.class, ModuleConfig.CODEC);
         register(AddTraceSamples.class, AddTraceSamples.CODEC);
@@ -38,12 +38,7 @@ public final class ScopeSubPacket {
     private static <T extends IScopeSubPacket>
     void register(Class<T> type, MyCodec<T> codec) {
         BY_TYPE.put(type, CODECS.size());
-        CODECS.add(codec);
-    }
-
-    static IScopeSubPacket read(FriendlyByteBuf buffer) {
-        init();
-        return CODECS.get(buffer.readVarInt()).from(buffer);
+        CODECS.add(codec.streamCodec());
     }
 
     public static boolean processFull(IScopeSubPacket packet, ScopeMenu menu) {
@@ -63,13 +58,6 @@ public final class ScopeSubPacket {
                 Mutable<GlobalConfig> globalConfig,
                 Mutable<GlobalState> globalState
         );
-
-        default void writeFull(FriendlyByteBuf buffer) {
-            init();
-            final var index = BY_TYPE.getInt(getClass());
-            buffer.writeVarInt(index);
-            CODECS.get(index).toSerialUnchecked(new PacketBufferStorage(buffer), this);
-        }
 
         default boolean allowSendingToServer() {
             return true;

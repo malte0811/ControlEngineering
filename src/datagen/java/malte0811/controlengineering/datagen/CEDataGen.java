@@ -2,11 +2,11 @@ package malte0811.controlengineering.datagen;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.datagen.manual.CEManualDataGenerator;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.data.event.GatherDataEvent;
+import net.neoforged.eventbus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = ControlEngineering.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class CEDataGen {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent ev) {

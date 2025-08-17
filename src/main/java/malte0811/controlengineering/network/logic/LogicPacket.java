@@ -3,45 +3,41 @@ package malte0811.controlengineering.network.logic;
 import com.google.common.base.Preconditions;
 import malte0811.controlengineering.client.ClientHooks;
 import malte0811.controlengineering.gui.logic.LogicDesignMenu;
-import malte0811.controlengineering.network.SimplePacket;
+import malte0811.controlengineering.network.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class LogicPacket extends SimplePacket {
-    private final LogicSubPacket packet;
-
-    public LogicPacket(FriendlyByteBuf buffer) {
-        this(LogicSubPacket.read(buffer));
-    }
-
-    public LogicPacket(LogicSubPacket data) {
-        this.packet = data;
-    }
+public record LogicPacket(LogicSubPacket packet) implements IPacket {
+    public static final CustomPacketPayload.Type<LogicPacket> ID = IPacket.createType("logic");
+    public static final StreamCodec<FriendlyByteBuf, LogicPacket> CODEC = LogicSubPackets.CODEC.map(
+            LogicPacket::new, LogicPacket::packet
+    );
 
     @Override
-    public void write(FriendlyByteBuf out) {
-        packet.writeFull(out);
-    }
-
-    @Override
-    protected void processOnThread(NetworkEvent.Context ctx) {
-        if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
+    public void process(IPayloadContext ctx) {
+        if (ctx.flow().isServerbound()) {
             Preconditions.checkState(packet.allowSendingToServer());
-            AbstractContainerMenu activeContainer = ctx.getSender().containerMenu;
+            AbstractContainerMenu activeContainer = ctx.player().containerMenu;
             if (!(activeContainer instanceof LogicDesignMenu logicMenu)) {
                 return;
             }
             if (!logicMenu.readOnly || packet.canApplyOnReadOnly()) {
                 packet.process(logicMenu.getSchematic(), $ -> {
                     throw new RuntimeException();
-                }, ctx.getSender().level());
-                logicMenu.sendToListeningPlayersExcept(ctx.getSender(), packet);
+                }, ctx.player().level());
+                logicMenu.sendToListeningPlayersExcept(IPacket.serverPlayer(ctx), packet);
                 logicMenu.markDirty();
             }
         } else {
             ClientHooks.processLogicPacketOnClient(packet);
         }
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return ID;
     }
 }

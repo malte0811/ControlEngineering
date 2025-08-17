@@ -10,7 +10,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredItem;
 
 import javax.annotation.Nonnull;
 
@@ -23,7 +23,7 @@ public class ClockSlot {
             return InteractionResult.PASS;
         }
         ClockGenerator<?> currentClock = clock.getType();
-        RegistryObject<Item> clockItem = CEItems.CLOCK_GENERATORS.get(currentClock.getRegistryName());
+        DeferredItem<?> clockItem = CEItems.CLOCK_GENERATORS.get(currentClock.getRegistryName());
         if (!ctx.getLevel().isClientSide) {
             if (clockItem != null) {
                 ItemUtil.giveOrDrop(ctx.getPlayer(), new ItemStack(clockItem.get()));

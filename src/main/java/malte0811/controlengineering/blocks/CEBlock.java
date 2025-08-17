@@ -12,8 +12,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -32,13 +34,12 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public abstract class CEBlock<PlacementData> extends Block implements EntityBlock {
     public final PlacementBehavior<PlacementData> placementBehavior;
@@ -50,7 +51,7 @@ public abstract class CEBlock<PlacementData> extends Block implements EntityBloc
             Properties properties,
             PlacementBehavior<PlacementData> placement,
             FromBlockFunction<VoxelShape> getShape,
-            @Nullable RegistryObject<BlockEntityType<BE>> beType
+            @Nullable Supplier<BlockEntityType<BE>> beType
     ) {
         this(properties, placement, getShape, (bp, bs) -> beType.get().create(bp, bs));
     }
@@ -140,7 +141,8 @@ public abstract class CEBlock<PlacementData> extends Block implements EntityBloc
 
     @Nonnull
     @Override
-    public InteractionResult use(
+    public ItemInteractionResult useItemOn(
+            ItemStack stack,
             @Nonnull BlockState state,
             @Nonnull Level worldIn,
             @Nonnull BlockPos pos,
@@ -149,13 +151,12 @@ public abstract class CEBlock<PlacementData> extends Block implements EntityBloc
             @Nonnull BlockHitResult hit
     ) {
         if (worldIn.getBlockEntity(pos) instanceof SelectionShapeOwner shapeOwner) {
-            return shapeOwner.getShape()
-                    .onUse(
+            return shapeOwner.getShape().onUse(
                             new UseOnContext(player, handIn, hit),
                             RaytraceUtils.create(player, 0, Vec3.atLowerCornerOf(pos))
                     );
         }
-        return super.use(state, worldIn, pos, player, handIn, hit);
+        return super.useItemOn(stack, state, worldIn, pos, player, handIn, hit);
     }
 
     public void openContainer(Player player, BlockState state, Level worldIn, BlockPos pos) {
@@ -206,7 +207,7 @@ public abstract class CEBlock<PlacementData> extends Block implements EntityBloc
     @Nullable
     protected static <E extends BlockEntity, A extends BlockEntity>
     BlockEntityTicker<A> createTickerHelper(
-            BlockEntityType<A> actual, RegistryObject<BlockEntityType<E>> expected, Consumer<E> ticker
+            BlockEntityType<A> actual, Supplier<BlockEntityType<E>> expected, Consumer<E> ticker
     ) {
         return expected.get() == actual ? ($, $2, $3, bEntity) -> ticker.accept((E) bEntity) : null;
     }

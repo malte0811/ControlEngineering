@@ -4,6 +4,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector4f;
@@ -45,7 +46,7 @@ public class MatrixUtils {
                 transform(mat, end),
                 ClipContext.Block.VISUAL,
                 ClipContext.Fluid.NONE,
-                null
+                CollisionContext.empty()
         );
     }
 

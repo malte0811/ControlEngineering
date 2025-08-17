@@ -26,5 +26,5 @@ side = "BOTH"
 [[dependencies.controlengineering]]
 modId = "forge"
 mandatory = true
-versionRange = "[${forge_version},)"
+versionRange = "[${neoforge_version},)"
 side = "BOTH"

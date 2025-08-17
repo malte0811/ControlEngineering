@@ -3,36 +3,27 @@ package malte0811.controlengineering.network.keypunch;
 import com.google.common.base.Preconditions;
 import malte0811.controlengineering.gui.tape.KeypunchMenu;
 import malte0811.controlengineering.gui.tape.KeypunchScreen;
-import malte0811.controlengineering.network.SimplePacket;
+import malte0811.controlengineering.network.IPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class KeypunchPacket extends SimplePacket {
-    private final KeypunchSubPacket packet;
-
-    public KeypunchPacket(FriendlyByteBuf buffer) {
-        this(KeypunchSubPacket.read(buffer));
-    }
-
-    public KeypunchPacket(KeypunchSubPacket data) {
-        this.packet = data;
-    }
+public record KeypunchPacket(KeypunchSubPacket packet) implements IPacket {
+    public static final CustomPacketPayload.Type<KeypunchPacket> ID = IPacket.createType("keypunch");
+    public static final StreamCodec<FriendlyByteBuf, KeypunchPacket> CODEC = KeypunchSubpackets.STREAM_CODEC.map(
+            KeypunchPacket::new, KeypunchPacket::packet
+    );
 
     @Override
-    public void write(FriendlyByteBuf out) {
-        packet.writeFull(out);
-    }
-
-    @Override
-    protected void processOnThread(NetworkEvent.Context ctx) {
-        if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
+    public void process(IPayloadContext ctx) {
+        if (ctx.flow().isServerbound()) {
             Preconditions.checkState(packet.allowSendingToServer());
-            if (ctx.getSender().containerMenu instanceof KeypunchMenu keypunch) {
+            if (ctx.player().containerMenu instanceof KeypunchMenu keypunch) {
                 if (keypunch.isLoopback()) {
                     packet.process(keypunch.getState());
-                    keypunch.sendToListeningPlayersExcept(ctx.getSender(), packet);
+                    keypunch.sendToListeningPlayersExcept(IPacket.serverPlayer(ctx), packet);
                     keypunch.markDirty();
                 } else {
                     packet.process(keypunch.getPrintNonLoopback());
@@ -41,6 +32,11 @@ public class KeypunchPacket extends SimplePacket {
         } else {
             processOnClient();
         }
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return ID;
     }
 
     private void processOnClient() {

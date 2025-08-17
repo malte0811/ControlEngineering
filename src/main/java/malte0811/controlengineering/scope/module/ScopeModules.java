@@ -23,7 +23,7 @@ public class ScopeModules {
             return null;
         }
         final var modulePath = itemName.getPath().substring(ITEM_PREFIX.length());
-        final var moduleName = new ResourceLocation(itemName.getNamespace(), modulePath);
+        final var moduleName = ResourceLocation.fromNamespaceAndPath(itemName.getNamespace(), modulePath);
         return REGISTRY.get(moduleName);
     }
 

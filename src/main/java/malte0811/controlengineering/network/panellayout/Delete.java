@@ -3,25 +3,15 @@ package malte0811.controlengineering.network.panellayout;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
 
-public class Delete extends PanelSubPacket {
-    private final Vec2d pos;
-
-    public Delete(Vec2d pos) {
-        this.pos = pos;
-    }
-
-    public Delete(FriendlyByteBuf from) {
-        this(new Vec2d(from));
-    }
-
-    @Override
-    protected void write(FriendlyByteBuf out) {
-        pos.write(out);
-    }
+public record Delete(Vec2d pos) implements PanelSubPacket {
+    public static final StreamCodec<FriendlyByteBuf, Delete> CODEC = Vec2d.CODEC.streamCodec().map(
+            Delete::new, Delete::pos
+    );
 
     @Override
     public boolean process(Level level, List<PlacedComponent> allComponents) {

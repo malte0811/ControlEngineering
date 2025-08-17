@@ -98,7 +98,7 @@ public class MyCodecs {
     };
     //TODO handle exceptions?
     public static final MyCodec<ResourceLocation> RESOURCE_LOCATION = STRING.xmap(
-            ResourceLocation::new, ResourceLocation::toString
+            ResourceLocation::parse, ResourceLocation::toString
     );
     public static final MyCodec<UUID> UUID_CODEC = new RecordCodec2<>(
             new CodecField<>("msb", UUID::getMostSignificantBits, LONG),

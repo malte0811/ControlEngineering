@@ -13,12 +13,12 @@ import malte0811.controlengineering.client.model.tape.SequencerSwitchModel;
 import malte0811.controlengineering.client.render.panel.PanelRenderer;
 import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ModelEvent;
 
-@Mod.EventBusSubscriber(modid = ControlEngineering.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = ControlEngineering.MODID, value = Dist.CLIENT)
 public class ModelLoaders {
     public static final ResourceLocation PANEL_MODEL = RLUtils.ceLoc("panel");
     public static final ResourceLocation LOGIC_CABINET = RLUtils.ceLoc("dynamic_logic");
@@ -30,18 +30,18 @@ public class ModelLoaders {
 
     @SubscribeEvent
     public static void registerModelLoaders(ModelEvent.RegisterGeometryLoaders ev) {
-        ev.register(PANEL_MODEL.getPath(), new SpecialModelLoader(
+        ev.register(PANEL_MODEL, new SpecialModelLoader(
                 PanelModel::new, PanelRenderer.PANEL_TEXTURE_LOC
         ));
-        ev.register(KEYPUNCH_SWITCH.getPath(), new SpecialModelLoader(
+        ev.register(KEYPUNCH_SWITCH, new SpecialModelLoader(
                 KeypunchSwitchModel::new, KeypunchSwitchModel.TEXTURE_LOC
         ));
-        ev.register(SEQUENCER_SWITCH.getPath(), new SpecialModelLoader(
+        ev.register(SEQUENCER_SWITCH, new SpecialModelLoader(
                 SequencerSwitchModel::new, SequencerSwitchModel.TEXTURE_LOC
         ));
-        ev.register(LOGIC_CABINET.getPath(), new DynamicLogicModelLoader());
-        ev.register(LOGIC_WORKBENCH.getPath(), new LogicWorkbenchModel.Loader());
-        ev.register(CACHED_COMPOSITE.getPath(), new CacheableCompositeModel.Loader());
-        ev.register(SCOPE.getPath(), new ScopeModelLoader());
+        ev.register(LOGIC_CABINET, new DynamicLogicModelLoader());
+        ev.register(LOGIC_WORKBENCH, new LogicWorkbenchModel.Loader());
+        ev.register(CACHED_COMPOSITE, new CacheableCompositeModel.Loader());
+        ev.register(SCOPE, new ScopeModelLoader());
     }
 }

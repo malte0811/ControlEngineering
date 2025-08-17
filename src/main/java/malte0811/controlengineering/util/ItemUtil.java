@@ -5,7 +5,7 @@ import blusunrize.immersiveengineering.api.utils.CapabilityReference;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.util.ArrayList;

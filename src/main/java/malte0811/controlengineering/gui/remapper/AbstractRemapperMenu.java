@@ -2,7 +2,7 @@ package malte0811.controlengineering.gui.remapper;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.CEContainerMenu;
-import malte0811.controlengineering.network.SimplePacket;
+import malte0811.controlengineering.network.IPacket;
 import malte0811.controlengineering.network.remapper.FullSync;
 import malte0811.controlengineering.network.remapper.RemapperPacket;
 import malte0811.controlengineering.network.remapper.RemapperSubPacket;
@@ -37,7 +37,7 @@ public abstract class AbstractRemapperMenu extends CEContainerMenu<RemapperSubPa
     }
 
     @Override
-    protected SimplePacket makePacket(RemapperSubPacket subPacket) {
+    protected IPacket makePacket(RemapperSubPacket subPacket) {
         return new RemapperPacket(subPacket);
     }
 

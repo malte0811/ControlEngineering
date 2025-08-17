@@ -8,7 +8,7 @@ import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredItem;
 
 import javax.annotation.Nullable;
 
@@ -67,7 +67,7 @@ public abstract class ScopeModule<State> extends TypedRegistryEntry<State, Scope
         }
     }
 
-    public final RegistryObject<Item> item() {
+    public final DeferredItem<Item> item() {
         return CEItems.SCOPE_MODULES.get(getRegistryName());
     }
 }

@@ -19,6 +19,7 @@ import malte0811.controlengineering.util.BEUtil;
 import malte0811.controlengineering.util.Clearable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -83,8 +84,8 @@ public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterf
     }
 
     @Override
-    public void load(@Nonnull CompoundTag nbt) {
-        super.load(nbt);
+    public void loadAdditional(@Nonnull CompoundTag nbt, HolderLookup.Provider provider) {
+        super.loadAdditional(nbt, provider);
         readComponentsAndTransform(nbt);
     }
 
@@ -116,8 +117,8 @@ public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterf
     }
 
     @Override
-    public void saveAdditional(@Nonnull CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(@Nonnull CompoundTag compound, HolderLookup.Provider provider) {
+        super.saveAdditional(compound, provider);
         writeSyncedData(compound);
     }
 

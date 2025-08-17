@@ -1,24 +1,6 @@
-import net.minecraftforge.gradle.common.tasks.SignJar
-
-buildscript {
-    repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        mavenCentral()
-        maven {url 'https://maven.parchmentmc.org'}
-        maven {url 'https://repo.spongepowered.org/repository/maven-public/'}
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.0.+', changing: true
-        classpath 'org.parchmentmc:librarian:1.+'
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-    }
+plugins {
+    id 'net.neoforged.moddev' version "$mdg_version"
 }
-apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'maven-publish'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
-apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'eclipse'
 
 version = project.ce_version+makeVersionSuffix()
 group = "malte0811.controlengineering"
@@ -27,8 +9,6 @@ archivesBaseName = "ControlEngineering"
 String makeVersionSuffix() {
     return System.getenv("GITHUB_ACTIONS") != null ? "-GH-" + System.getenv("GITHUB_RUN_NUMBER") : ""
 }
-
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = 17
 
 sourceSets {
     main {
@@ -61,10 +41,11 @@ def version_replacements = [
         'mc_version': minecraft_version,
         'ie_version': ie_version,
         'ce_version': project.version,
-        'forge_version': forge_version,
+        'neoforge_version': neoforge_version,
 ]
 
 processResources {
+    // TODO generateModMetadata task
     inputs.properties(version_replacements)
     filesMatching("META-INF/mods.toml") {
         expand version_replacements
@@ -72,77 +53,35 @@ processResources {
     exclude ".cache"
 }
 
-// When using "Run using IntelliJ" (the only option with well-working hotswapping) the used "resources" directory is
-// different from the one used by gradle/the processResources task
-task copyModsTomlForIntelliJ(type: Copy) {
-    from processResources.destinationDir
-    into "$projectDir/out/production/resources"
-    include "META-INF/mods.toml"
-}
+neoForge {
+    version = "$neoforge_version"
 
-copyModsTomlForIntelliJ.dependsOn processResources
-afterEvaluate {
-    // prepareRuns doesn't exist before afterEvaluate
-    prepareRuns.dependsOn copyModsTomlForIntelliJ
-}
-
-minecraft {
-    mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
-
-    // Default run configurations.
-    // These can be tweaked, removed, or duplicated as needed.
     runs {
         client {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', ''
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-            mods {
-                controlengineering {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', ''
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-
-            arg '-nogui'
-
-            mods {
-                controlengineering {
-                    source sourceSets.main
-                }
-            }
+            client()
         }
         data {
-            workingDirectory project.file('run')
+            data()
+            sourceSet = sourceSets.datagen
+            programArguments = [
+                    '--mod', 'controlengineering',
+                    '--all',
+                    '--output', file('src/generated/resources/').toString(),
+                    '--validate',
+                    '--existing', sourceSets.main.resources.srcDirs[0].toString()
+            ]
+        }
+        server {
+            server()
+            programArguments = ["-nogui"]
+        }
+    }
 
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', ''
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-            ideaModule project.name+".datagen"
-
-            args '--mod', 'controlengineering', '--all', '--output', file('src/generated/resources/'), '--validate',
-                    '--existing', sourceSets.main.resources.srcDirs[0], '--existing-mod', 'immersiveengineering'
-
-            mods {
-                controlengineering {
-                    source sourceSets.main
-                    source sourceSets.datagen
-                }
-            }
+    mods {
+        controlengineering {
+            sourceSet sourceSets.main
+            // TODO can we not load this except in datagen
+            sourceSet sourceSets.datagen
         }
     }
 }
@@ -159,44 +98,15 @@ repositories {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    runtimeOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}")
-    compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}:api")
-    datagenImplementation fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}:datagen")
+    runtimeOnly "blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}"
+    compileOnly "blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}:api"
+    datagenImplementation "blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}:datagen"
     testImplementation('junit:junit:4.13')
 }
 
 def customGradle = rootProject.file('custom.gradle');
 if (customGradle.exists()) {
     apply from: customGradle;
-}
-
-def reobfFile = file("$buildDir/reobfJar/output.jar")
-def reobfArtifact = artifacts.add('default', reobfFile) {
-    type 'jar'
-    builtBy 'reobfJar'
-}
-
-task signJar(type: SignJar, dependsOn: jar) {
-    onlyIf {
-        project.hasProperty('keyStore')
-    }
-    if (project.hasProperty('keyStore')) {
-        keyStore = project.keyStore
-        alias = project.storeAlias
-        storePass = project.storePass
-        keyPass = project.storePass
-        inputFile = jar.archivePath
-        outputFile = jar.archivePath
-    } else {
-        logger.warn("No key store found, not signing the output jar\n")
-    }
-}
-
-build.dependsOn signJar
-
-afterEvaluate {
-    signJar.dependsOn reobfJar
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -206,27 +116,6 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 artifacts {
     archives sourcesJar
-}
-
-task speedUpPreRun {
-    doLast {
-        for (String s : new String[]{"Client", "Server", "Data"}) {
-            ant.replace(
-                    file: ".idea/runConfigurations/run"+s+".xml",
-                    // prepareRunX is prepareRuns + compile, but compiling is already handled by IntelliJ
-                    token: "prepareRun"+s,
-                    value: "prepareRuns"
-            )
-        }
-    }
-}
-
-tasks.withType(Task) {
-    if (it.name == "genIntellijRuns") {
-        it.finalizedBy speedUpPreRun
-    } else if (it.name == "runServer") {
-        it.standardInput = System.in
-    }
 }
 
 //Minimize/optimize all png files, requires optipng on the PATH

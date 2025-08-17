@@ -2,14 +2,10 @@ package malte0811.controlengineering.network.keypunch;
 
 import malte0811.controlengineering.blockentity.tape.KeypunchState;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
-public class Backspace extends KeypunchSubPacket {
-    public Backspace() { }
-
-    public Backspace(FriendlyByteBuf b) { }
-
-    @Override
-    protected void write(FriendlyByteBuf out) { }
+public record Backspace() implements KeypunchSubPacket {
+    public static final StreamCodec<FriendlyByteBuf, Backspace> CODEC = StreamCodec.unit(new Backspace());
 
     @Override
     public boolean process(KeypunchState state) {

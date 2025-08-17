@@ -16,13 +16,14 @@ import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
 import malte0811.controlengineering.blocks.panels.PanelDesignerBlock;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
@@ -31,22 +32,22 @@ import java.util.function.Supplier;
 
 public class CEBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> REGISTER = DeferredRegister.create(
-            ForgeRegistries.BLOCK_ENTITY_TYPES, ControlEngineering.MODID
+            Registries.BLOCK_ENTITY_TYPE, ControlEngineering.MODID
     );
 
-    public static RegistryObject<BlockEntityType<BusRelayBlockEntity>> BUS_RELAY = REGISTER.register(
+    public static DeferredHolder<BlockEntityType<?>, BlockEntityType<BusRelayBlockEntity>> BUS_RELAY = REGISTER.register(
             "bus_relay", createBEType(BusRelayBlockEntity::new, CEBlocks.BUS_RELAY)
     );
 
-    public static RegistryObject<BlockEntityType<BusInterfaceBlockEntity>> BUS_INTERFACE = REGISTER.register(
+    public static DeferredHolder<BlockEntityType<?>, BlockEntityType<BusInterfaceBlockEntity>> BUS_INTERFACE = REGISTER.register(
             "bus_interface", createBEType(BusInterfaceBlockEntity::new, CEBlocks.BUS_INTERFACE)
     );
 
-    public static RegistryObject<BlockEntityType<LineAccessBlockEntity>> LINE_ACCESS = REGISTER.register(
+    public static DeferredHolder<BlockEntityType<?>, BlockEntityType<LineAccessBlockEntity>> LINE_ACCESS = REGISTER.register(
             "line_access", createBEType(LineAccessBlockEntity::new, CEBlocks.LINE_ACCESS)
     );
 
-    public static RegistryObject<BlockEntityType<RSRemapperBlockEntity>> RS_REMAPPER = REGISTER.register(
+    public static DeferredHolder<BlockEntityType<?>, BlockEntityType<RSRemapperBlockEntity>> RS_REMAPPER = REGISTER.register(
             "rs_remapper", createBEType(RSRemapperBlockEntity::new, CEBlocks.RS_REMAPPER)
     );
 
@@ -62,7 +63,7 @@ public class CEBlockEntities {
 
     public static MultiblockBEType<KeypunchBlockEntity, ?> KEYPUNCH = KeypunchBlockEntity.register(REGISTER);
 
-    public static RegistryObject<BlockEntityType<SequencerBlockEntity>> SEQUENCER = REGISTER.register(
+    public static DeferredHolder<BlockEntityType<?>, BlockEntityType<SequencerBlockEntity>> SEQUENCER = REGISTER.register(
             "sequencer", createBEType(SequencerBlockEntity::new, CEBlocks.SEQUENCER)
     );
 
@@ -74,7 +75,7 @@ public class CEBlockEntities {
             "logic_workbench", LogicWorkbenchBlockEntity::new, CEBlocks.LOGIC_WORKBENCH, LogicWorkbenchBlock::isMaster
     );
 
-    public static RegistryObject<BlockEntityType<ScopeBlockEntity>> SCOPE = REGISTER.register(
+    public static DeferredHolder<BlockEntityType<?>, BlockEntityType<ScopeBlockEntity>> SCOPE = REGISTER.register(
             "oscilloscope", createBEType(ScopeBlockEntity::new, CEBlocks.SCOPE)
     );
 
@@ -93,7 +94,7 @@ public class CEBlockEntities {
     }
 
     public static <T extends BlockEntity> MultiblockBEType<T, T> makeMBType(
-            String name, BEConstructor<T> make, RegistryObject<? extends Block> valid, Predicate<BlockState> isMaster
+            String name, BEConstructor<T> make, DeferredBlock<?> valid, Predicate<BlockState> isMaster
     ) {
         return MultiblockBEType.makeType(REGISTER, name, make, valid, isMaster);
     }

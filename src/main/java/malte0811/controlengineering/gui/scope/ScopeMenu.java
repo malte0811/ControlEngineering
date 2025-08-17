@@ -3,7 +3,7 @@ package malte0811.controlengineering.gui.scope;
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
 import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity.ModuleInScope;
 import malte0811.controlengineering.gui.CEContainerMenu;
-import malte0811.controlengineering.network.SimplePacket;
+import malte0811.controlengineering.network.IPacket;
 import malte0811.controlengineering.network.scope.FullSync;
 import malte0811.controlengineering.network.scope.ScopePacket;
 import malte0811.controlengineering.network.scope.ScopeSubPacket.IScopeSubPacket;
@@ -54,7 +54,7 @@ public class ScopeMenu extends CEContainerMenu<IScopeSubPacket> {
     }
 
     @Override
-    protected SimplePacket makePacket(IScopeSubPacket packet) {
+    protected IPacket makePacket(IScopeSubPacket packet) {
         return new ScopePacket(packet);
     }
 

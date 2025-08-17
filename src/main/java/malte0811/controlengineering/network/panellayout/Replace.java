@@ -1,29 +1,16 @@
 package malte0811.controlengineering.network.panellayout;
 
-import com.google.common.base.Preconditions;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.Level;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
-public class Replace extends PanelSubPacket {
-    @Nullable
-    private final PlacedComponent newComponent;
-
-    public Replace(@Nullable PlacedComponent newComponent) {
-        this.newComponent = newComponent;
-    }
-
-    public Replace(FriendlyByteBuf buffer) {
-        this(PlacedComponent.readWithoutState(buffer));
-    }
-
-    @Override
-    protected void write(FriendlyByteBuf out) {
-        Preconditions.checkNotNull(newComponent).writeToWithoutState(out);
-    }
+public record Replace(PlacedComponent newComponent) implements PanelSubPacket {
+    public static final StreamCodec<FriendlyByteBuf, Replace> CODEC = PlacedComponent.CODEC.streamCodec().map(
+            Replace::new, Replace::newComponent
+    );
 
     @Override
     public boolean process(Level level, List<PlacedComponent> allComponents) {

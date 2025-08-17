@@ -1,25 +1,24 @@
 package malte0811.controlengineering.network.remapper;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
-public class FullSync extends RemapperSubPacket {
-    private final int[] colorToGray;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-    public FullSync(int[] colorToGray) {
-        this.colorToGray = colorToGray;
-    }
-
-    public FullSync(FriendlyByteBuf in) {
-        this(in.readVarIntArray());
-    }
-
-    @Override
-    protected void write(FriendlyByteBuf out) {
-        out.writeVarIntArray(colorToGray);
-    }
+public record FullSync(int[] colorToGray) implements RemapperSubPacket {
+    public static final StreamCodec<ByteBuf, FullSync> CODEC = ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list())
+            .map(
+                    l -> new FullSync(l.stream().mapToInt(i -> i).toArray()),
+                    p -> Arrays.stream(p.colorToGray).boxed().toList()
+            );
 
     @Override
-    protected int[] process(int[] colorToGray) {
+    public int[] process(int[] colorToGray) {
         return this.colorToGray;
     }
 

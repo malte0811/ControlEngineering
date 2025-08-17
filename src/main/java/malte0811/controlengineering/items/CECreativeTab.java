@@ -7,20 +7,21 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+import java.util.function.Supplier;
+
+@EventBusSubscriber(value = Dist.CLIENT, modid = ControlEngineering.MODID)
 public class CECreativeTab {
     public static final DeferredRegister<CreativeModeTab> REGISTRER = DeferredRegister.create(
             Registries.CREATIVE_MODE_TAB, ControlEngineering.MODID
     );
 
-    public static final RegistryObject<CreativeModeTab> CE_TAB = REGISTRER.register(ControlEngineering.MODID,
+    public static final Supplier<CreativeModeTab> CE_TAB = REGISTRER.register(ControlEngineering.MODID,
             () -> CreativeModeTab.builder()
                     // Set name of tab to display
                     .title(Component.literal(ControlEngineering.MODNAME))
@@ -49,7 +50,7 @@ public class CECreativeTab {
                 ev.accept(PunchedTapeItem.setBytes(new ItemStack(item), BitUtils.toBytesWithParity("Test1")));
                 ev.accept(PunchedTapeItem.setBytes(new ItemStack(item), BitUtils.toBytesWithParity("Another test")));
             } else {
-                ev.accept(itemRO);
+                ev.accept(itemRO.get());
             }
         }
     }

@@ -7,8 +7,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
@@ -17,8 +17,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public record MultiblockBEType<M extends BlockEntity, D extends BlockEntity>(
-        RegistryObject<BlockEntityType<M>> master,
-        RegistryObject<BlockEntityType<D>> dummy,
+        Supplier<BlockEntityType<M>> master,
+        Supplier<BlockEntityType<D>> dummy,
         Predicate<BlockState> isMaster
 ) implements BiFunction<BlockPos, BlockState, BlockEntity> {
     @Override

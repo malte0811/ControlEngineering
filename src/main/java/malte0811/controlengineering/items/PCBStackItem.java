@@ -16,12 +16,12 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class PCBStackItem extends Item implements ISchematicItem {
     public static final String FOR_USE_IN_KEY = ControlEngineering.MODID + ".gui.useIn";
@@ -38,7 +38,7 @@ public class PCBStackItem extends Item implements ISchematicItem {
         out.add(useIn(CEBlocks.LOGIC_CABINET));
     }
 
-    public static Component useIn(RegistryObject<? extends ItemLike> block) {
+    public static Component useIn(Supplier<? extends ItemLike> block) {
         return Component.translatable(FOR_USE_IN_KEY, block.get().asItem().getDescription())
                 .withStyle(ChatFormatting.GRAY);
     }

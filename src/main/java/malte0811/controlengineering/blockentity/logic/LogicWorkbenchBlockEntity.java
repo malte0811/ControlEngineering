@@ -30,6 +30,7 @@ import malte0811.controlengineering.util.ItemUtil;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
@@ -183,8 +184,8 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
     }
 
     @Override
-    public void saveAdditional(@Nonnull CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(@Nonnull CompoundTag compound, HolderLookup.Provider provider) {
+        super.saveAdditional(compound, provider);
         if (schematic != null) {
             compound.put("schematic", Schematic.CODEC.toNBT(schematic));
         }
@@ -192,8 +193,8 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
     }
 
     @Override
-    public void load(@Nonnull CompoundTag nbt) {
-        super.load(nbt);
+    public void loadAdditional(@Nonnull CompoundTag nbt, HolderLookup.Provider provider) {
+        super.loadAdditional(nbt, provider);
         var schematicNBT = nbt.get("schematic");
         if (schematicNBT != null) {
             schematic = Schematic.CODEC.fromNBT(schematicNBT);

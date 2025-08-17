@@ -1,9 +1,9 @@
 package malte0811.controlengineering.util;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraftforge.common.util.NonNullConsumer;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class Clearable<T> {
     private T value;
@@ -21,7 +21,7 @@ public class Clearable<T> {
         return Objects.requireNonNull(value);
     }
 
-    public void ifPresent(NonNullConsumer<T> out) {
+    public void ifPresent(Consumer<T> out) {
         if (value != null) {
             out.accept(value);
         }

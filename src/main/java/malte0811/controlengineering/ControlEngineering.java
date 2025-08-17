@@ -14,40 +14,32 @@ import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.loot.BlueprintChestModifier;
 import malte0811.controlengineering.loot.CELootFunctions;
 import malte0811.controlengineering.network.CutTapePacket;
-import malte0811.controlengineering.network.SimplePacket;
 import malte0811.controlengineering.network.keypunch.KeypunchPacket;
+import malte0811.controlengineering.network.keypunch.KeypunchSubpackets;
 import malte0811.controlengineering.network.logic.LogicPacket;
+import malte0811.controlengineering.network.logic.LogicSubPackets;
 import malte0811.controlengineering.network.panellayout.PanelPacket;
+import malte0811.controlengineering.network.panellayout.PanelSubPackets;
 import malte0811.controlengineering.network.remapper.RemapperPacket;
+import malte0811.controlengineering.network.remapper.RemapperSubPacket;
 import malte0811.controlengineering.network.scope.ScopePacket;
-import malte0811.controlengineering.util.RLUtils;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import malte0811.controlengineering.network.scope.ScopeSubPacket;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Optional;
-import java.util.function.Function;
-
 @Mod(ControlEngineering.MODID)
-@Mod.EventBusSubscriber(modid = ControlEngineering.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = ControlEngineering.MODID)
 public class ControlEngineering {
     public static final String MODID = "controlengineering";
     public static final String MODNAME = "Control Engineering";
     public static final Logger LOGGER = LogManager.getLogger();
-    public static final String VERSION = "1.0.0";
-    public static final SimpleChannel NETWORK = NetworkRegistry.newSimpleChannel(
-            RLUtils.ceLoc("channel"), () -> VERSION, VERSION::equals, VERSION::equals
-    );
 
-    public ControlEngineering() {
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public ControlEngineering(IEventBus modBus) {
         CEBlocks.REGISTER.register(modBus);
         CEBlockEntities.REGISTER.register(modBus);
         CEItems.REGISTER.register(modBus);
@@ -58,34 +50,27 @@ public class ControlEngineering {
         BlueprintChestModifier.REGISTER.register(modBus);
         CECreativeTab.REGISTRER.register(modBus);
         modBus.addListener(this::setup);
+        modBus.addListener(this::setupNetwork);
         IEItemRefs.init();
     }
 
     public void setup(FMLCommonSetupEvent ev) {
         LocalNetworkHandler.register(LocalBusHandler.NAME, LocalBusHandler::new);
         BusWireType.init();
-        registerPackets();
     }
 
-    private void registerPackets() {
-        int id = 0;
-        registerPacket(id++, KeypunchPacket.class, KeypunchPacket::new);
-        registerPacket(id++, LogicPacket.class, LogicPacket::new);
-        registerPacket(id++, PanelPacket.class, PanelPacket::new);
-        registerPacket(id++, RemapperPacket.class, RemapperPacket::new);
-        registerPacket(id++, ScopePacket.class, ScopePacket::new);
-        registerPacket(id++, CutTapePacket.class, CutTapePacket::new, NetworkDirection.PLAY_TO_SERVER);
-    }
-
-    private <T extends SimplePacket> void registerPacket(
-            int id, Class<T> type, Function<FriendlyByteBuf, T> read
-    ) {
-        NETWORK.registerMessage(id, type, T::write, read, T::process, Optional.empty());
-    }
-
-    private <T extends SimplePacket> void registerPacket(
-            int id, Class<T> type, Function<FriendlyByteBuf, T> read, NetworkDirection direction
-    ) {
-        NETWORK.registerMessage(id, type, T::write, read, T::process, Optional.of(direction));
+    private void setupNetwork(RegisterPayloadHandlersEvent ev) {
+        final var registrar = ev.registrar(MODID);
+        KeypunchSubpackets.init();
+        LogicSubPackets.init();
+        PanelSubPackets.init();
+        RemapperSubPacket.init();
+        ScopeSubPacket.init();
+        registrar.playBidirectional(KeypunchPacket.ID, KeypunchPacket.CODEC, KeypunchPacket::process);
+        registrar.playBidirectional(LogicPacket.ID, LogicPacket.CODEC, LogicPacket::process);
+        registrar.playBidirectional(PanelPacket.ID, PanelPacket.CODEC, PanelPacket::process);
+        registrar.playBidirectional(RemapperPacket.ID, RemapperPacket.CODEC, RemapperPacket::process);
+        registrar.playBidirectional(ScopePacket.ID, ScopePacket.CODEC, ScopePacket::process);
+        registrar.playToServer(CutTapePacket.ID, CutTapePacket.CODEC, CutTapePacket::process);
     }
 }

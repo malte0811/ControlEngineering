@@ -1,19 +1,16 @@
 package malte0811.controlengineering.network.keypunch;
 
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.bytes.ByteConsumer;
 import malte0811.controlengineering.blockentity.tape.KeypunchState;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
-public class TypeChar extends KeypunchSubPacket {
-    private final byte typed;
-
-    public TypeChar(FriendlyByteBuf buffer) {
-        typed = buffer.readByte();
-    }
-
-    public TypeChar(byte typed) {
-        this.typed = typed;
-    }
+public record TypeChar(byte typed) implements KeypunchSubPacket {
+    public static final StreamCodec<ByteBuf, TypeChar> CODEC = ByteBufCodecs.BYTE.map(
+            TypeChar::new, TypeChar::typed
+    );
 
     @Override
     public void write(FriendlyByteBuf out) {

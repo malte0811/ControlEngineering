@@ -1,26 +1,17 @@
 package malte0811.controlengineering.network.keypunch;
 
+import io.netty.buffer.ByteBuf;
 import malte0811.controlengineering.blockentity.tape.KeypunchState;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
-public class FullSync extends KeypunchSubPacket {
-    private final int numAvailable;
-    private final byte[] typed;
-
-    public FullSync(int numAvailable, byte[] typed) {
-        this.numAvailable = numAvailable;
-        this.typed = typed;
-    }
-
-    public FullSync(FriendlyByteBuf buffer) {
-        this(buffer.readVarInt(), buffer.readByteArray());
-    }
-
-    @Override
-    protected void write(FriendlyByteBuf out) {
-        out.writeVarInt(numAvailable);
-        out.writeByteArray(typed);
-    }
+public record FullSync(int numAvailable, byte[] typed) implements KeypunchSubPacket {
+    public static final StreamCodec<ByteBuf, FullSync> CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, FullSync::numAvailable,
+            ByteBufCodecs.BYTE_ARRAY, FullSync::typed,
+            FullSync::new
+    );
 
     @Override
     public boolean process(KeypunchState state) {

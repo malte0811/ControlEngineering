@@ -6,12 +6,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 public class ItemWithKeyID extends Item {
     public static final String LOCK_ID_KEY = "lockID";
@@ -42,7 +43,7 @@ public class ItemWithKeyID extends Item {
         }
     }
 
-    public static ItemStack create(RegistryObject<? extends ItemWithKeyID> item, UUID uuid) {
+    public static ItemStack create(Supplier<? extends ItemWithKeyID> item, UUID uuid) {
         final var result = item.get().getDefaultInstance();
         setUUID(result, uuid);
         return result;

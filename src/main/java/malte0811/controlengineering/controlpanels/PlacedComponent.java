@@ -10,14 +10,14 @@ import malte0811.controlengineering.util.mycodec.record.CodecField;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.util.Lazy;
+import net.neoforged.neoforge.common.util.Lazy;
 import org.joml.Matrix4fc;
 
 import javax.annotation.Nonnull;
@@ -127,7 +127,7 @@ public class PlacedComponent extends SelectionShapes {
     }
 
     @Override
-    public InteractionResult onUse(UseOnContext ctx, InteractionResult defaultType, Vec3 relativeHit) {
+    public ItemInteractionResult onUse(UseOnContext ctx, ItemInteractionResult defaultType, Vec3 relativeHit) {
         return component.onClick(
                 new PanelComponentType.ComponentClickContext(
                         relativeHit.scale(16).subtract(pos.x(), 0, pos.y()),

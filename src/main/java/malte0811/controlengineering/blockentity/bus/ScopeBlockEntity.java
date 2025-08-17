@@ -31,6 +31,7 @@ import malte0811.controlengineering.util.mycodec.MyCodecs;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,12 +42,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -149,23 +146,23 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     }
 
     @Override
-    public void load(@Nonnull CompoundTag tag) {
-        super.load(tag);
+    public void load(@Nonnull CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         modules = fixModuleList(MODULES_CODEC.fromNBT(tag.get("modules"), ArrayList::new));
         currentBusState = BusState.CODEC.fromNBT(tag.get("busInput"), () -> BusState.EMPTY);
         globalConfig = GlobalConfig.CODEC.fromNBT(tag.get("globalConfig"), GlobalConfig::new);
         traces = Traces.CODEC.fromNBT(tag.get("traces"), Traces::new);
-        energy.deserializeNBT(tag.get("energy"));
+        energy.deserializeNBT(provider, tag.get("energy"));
     }
 
     @Override
-    protected void saveAdditional(@Nonnull CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(@Nonnull CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.put("modules", MODULES_CODEC.toNBT(this.modules));
         tag.put("busInput", BusState.CODEC.toNBT(this.currentBusState));
         tag.put("globalConfig", GlobalConfig.CODEC.toNBT(this.globalConfig));
         tag.put("traces", Traces.CODEC.toNBT(traces));
-        tag.put("energy", energy.serializeNBT());
+        tag.put("energy", energy.serializeNBT(provider));
     }
 
     @Override
