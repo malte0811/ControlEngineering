@@ -15,5 +15,6 @@
       ],
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "controlengineering:blocks/control_panel"
 }
