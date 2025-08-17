@@ -295,7 +295,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
                 if (!bEntity.level.isClientSide) {
                     ScopeModuleInstance.ensureOneTriggerActive(bEntity.getModules(), -1);
                     BEUtil.markDirtyAndSync(bEntity);
-//                    bEntity.openMenus.forEach(sm -> sm.sendToListeningPlayers(sm.getInitialSync()));
+                    bEntity.openMenus.forEach(sm -> sm.sendToListeningPlayers(sm.getInitialSync()));
                 }
                 return result;
             }));
