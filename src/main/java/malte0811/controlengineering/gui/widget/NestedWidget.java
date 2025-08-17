@@ -1,10 +1,12 @@
 package malte0811.controlengineering.gui.widget;
 
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,6 +37,22 @@ public abstract class NestedWidget extends AbstractWidget implements ContainerEv
         }
     }
 
+    @Override
+    public boolean isFocused() {
+        return ContainerEventHandler.super.isFocused();
+    }
+
+    @Nullable
+    public ComponentPath getCurrentFocusPath() {
+        return ContainerEventHandler.super.getCurrentFocusPath();
+    }
+
+    @Override
+    @Nullable
+    public ComponentPath nextFocusPath(FocusNavigationEvent p_265640_) {
+        return ContainerEventHandler.super.nextFocusPath(p_265640_);
+    }
+
     @Nonnull
     @Override
     public List<? extends GuiEventListener> children() {
@@ -59,6 +77,12 @@ public abstract class NestedWidget extends AbstractWidget implements ContainerEv
 
     @Override
     public void setFocused(@Nullable GuiEventListener listener) {
+        if (this.listener != null) {
+            this.listener.setFocused(false);
+        }
+        if (listener != null) {
+            listener.setFocused(true);
+        }
         this.listener = listener;
     }
 
