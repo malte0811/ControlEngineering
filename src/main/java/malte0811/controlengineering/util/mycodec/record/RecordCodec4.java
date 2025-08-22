@@ -3,10 +3,7 @@ package malte0811.controlengineering.util.mycodec.record;
 import com.mojang.datafixers.util.Function4;
 import malte0811.controlengineering.util.FastDataResult;
 import malte0811.controlengineering.util.mycodec.serial.SerialStorage;
-import malte0811.controlengineering.util.mycodec.tree.TreeElement;
-import malte0811.controlengineering.util.mycodec.tree.TreeStorage;
-
-import javax.annotation.Nullable;
+import malte0811.dualcodecs.EntryListCodecs;
 
 public class RecordCodec4<T, E1, E2, E3, E4> extends RecordCodecBase<T> {
     private final CodecField<T, E1> first;
@@ -22,28 +19,22 @@ public class RecordCodec4<T, E1, E2, E3, E4> extends RecordCodecBase<T> {
             CodecField<T, E4> fourth,
             Function4<E1, E2, E3, E4, T> make
     ) {
-        super(first, second, third, fourth);
+        super(EntryListCodecs.composite(
+                first.mapCodec(),
+                first.get(),
+                second.mapCodec(),
+                second.get(),
+                third.mapCodec(),
+                third.get(),
+                fourth.mapCodec(),
+                fourth.get(),
+                make
+        ), first, second, third, fourth);
         this.first = first;
         this.second = second;
         this.third = third;
         this.fourth = fourth;
         this.make = make;
-    }
-
-    @Nullable
-    @Override
-    public T fromTree(TreeElement<?> data) {
-        if (!(data instanceof TreeStorage tree)) {
-            return null;
-        }
-        var firstVal = first.fromNBT(tree);
-        var secondVal = second.fromNBT(tree);
-        var thirdVal = third.fromNBT(tree);
-        var fourthVal = fourth.fromNBT(tree);
-        if (firstVal == null || secondVal == null || thirdVal == null || fourthVal == null) {
-            return null;
-        }
-        return make.apply(firstVal, secondVal, thirdVal, fourthVal);
     }
 
     @Override

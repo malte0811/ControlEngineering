@@ -1,11 +1,11 @@
 package malte0811.controlengineering.util.mycodec.record;
 
+import com.mojang.serialization.Codec;
 import malte0811.controlengineering.util.FastDataResult;
 import malte0811.controlengineering.util.mycodec.serial.SerialStorage;
-import malte0811.controlengineering.util.mycodec.tree.TreeElement;
-import malte0811.controlengineering.util.mycodec.tree.TreeStorage;
+import malte0811.dualcodecs.EntryListCodec;
+import malte0811.dualcodecs.EntryListCodecs;
 
-import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 
 public class RecordCodec2<T, E1, E2> extends RecordCodecBase<T> {
@@ -14,24 +14,13 @@ public class RecordCodec2<T, E1, E2> extends RecordCodecBase<T> {
     private final BiFunction<E1, E2, T> make;
 
     public RecordCodec2(CodecField<T, E1> first, CodecField<T, E2> second, BiFunction<E1, E2, T> make) {
-        super(first, second);
+        super(
+                EntryListCodecs.composite(first.mapCodec(), first.get(), second.mapCodec(), second.get(), make),
+                first, second
+        );
         this.first = first;
         this.second = second;
         this.make = make;
-    }
-
-    @Nullable
-    @Override
-    public T fromTree(TreeElement<?> data) {
-        if (!(data instanceof TreeStorage<?> tree)) {
-            return null;
-        }
-        var firstVal = first.fromNBT(tree);
-        var secondVal = second.fromNBT(tree);
-        if (firstVal == null || secondVal == null) {
-            return null;
-        }
-        return make.apply(firstVal, secondVal);
     }
 
     @Override

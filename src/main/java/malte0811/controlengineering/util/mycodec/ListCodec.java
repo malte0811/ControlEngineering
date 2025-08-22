@@ -1,39 +1,24 @@
 package malte0811.controlengineering.util.mycodec;
 
+import com.mojang.serialization.Codec;
 import malte0811.controlengineering.util.FastDataResult;
 import malte0811.controlengineering.util.mycodec.serial.SerialStorage;
-import malte0811.controlengineering.util.mycodec.tree.TreeElement;
-import malte0811.controlengineering.util.mycodec.tree.TreeManager;
-import malte0811.controlengineering.util.mycodec.tree.TreeStorageList;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public record ListCodec<T>(MyCodec<T> inner) implements MyCodec<List<T>> {
-    @Override
-    public <B> TreeElement<B> toTree(List<T> in, TreeManager<B> manager) {
-        var result = manager.makeList();
-        for (T element : in) {
-            result.add(inner.toTree(element, manager));
-        }
-        return result;
+public class ListCodec<T> implements MyCodec<List<T>> {
+    private final MyCodec<T> inner;
+    private final Codec<List<T>> dfuCodec;
+
+    public ListCodec(MyCodec<T> inner) {
+        this.inner = inner;
+        this.dfuCodec = inner.toDFUCodec().listOf();
     }
 
-    @Nullable
     @Override
-    public List<T> fromTree(TreeElement<?> data) {
-        if (!(data instanceof TreeStorageList<?> list)) {
-            return null;
-        }
-        List<T> result = new ArrayList<>();
-        for (var node : list) {
-            var element = inner.fromTree(node);
-            if (element != null) {
-                result.add(element);
-            }
-        }
-        return result;
+    public Codec<List<T>> toDFUCodec() {
+        return dfuCodec;
     }
 
     @Override

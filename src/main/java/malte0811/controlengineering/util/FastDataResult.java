@@ -2,6 +2,7 @@ package malte0811.controlengineering.util;
 
 import blusunrize.immersiveengineering.api.utils.FastEither;
 import com.google.common.base.Preconditions;
+import com.mojang.serialization.DataResult;
 import org.jetbrains.annotations.Contract;
 
 import java.util.function.Function;
@@ -19,6 +20,13 @@ public class FastDataResult<T> {
 
     public static <T> FastDataResult<T> error(String message) {
         return new FastDataResult<>(FastEither.right(message));
+    }
+
+    // TODO remove this class entirely, or stay with conversions? Probably doesn't do much, but is easier at times
+    public static <T> FastDataResult<T> fromDFU(DataResult<T> dfuResult) {
+    }
+
+    public DataResult<T> toDFU() {
     }
 
     public boolean isError() {

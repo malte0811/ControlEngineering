@@ -1,52 +1,41 @@
 package malte0811.controlengineering.util.mycodec;
 
+import com.mojang.serialization.Codec;
 import malte0811.controlengineering.util.FastDataResult;
 import malte0811.controlengineering.util.mycodec.serial.SerialStorage;
-import malte0811.controlengineering.util.mycodec.tree.TreeElement;
-import malte0811.controlengineering.util.mycodec.tree.TreeManager;
-import malte0811.controlengineering.util.mycodec.tree.TreeStorage;
 
-import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.function.Function;
 
-public record DispatchCodec<Type, Instance>(
-        MyCodec<Type> typeCodec,
-        Function<? super Instance, ? extends Type> type,
-        Function<? super Type, ? extends MyCodec<? extends Instance>> codec,
-        String typeKey,
-        String dataKey
-) implements MyCodec<Instance> {
-    @Override
-    public <B> TreeElement<B> toTree(Instance in, TreeManager<B> manager) {
-        var result = manager.makeTree();
-        var type = type().apply(in);
-        result.put(typeKey, typeCodec.toTree(type, manager));
-        var instanceCodec = codec().apply(type);
-        result.put(dataKey, toNBT(instanceCodec, in, manager));
-        return result;
+public final class DispatchCodec<Type, Instance> implements MyCodec<Instance> {
+    private final MyCodec<Type> typeCodec;
+    private final Function<? super Instance, ? extends Type> type;
+    private final Function<? super Type, ? extends MyCodec<? extends Instance>> codec;
+    private final Codec<Instance> dfuCodec;
+
+    public DispatchCodec(
+            MyCodec<Type> typeCodec,
+            Function<? super Instance, ? extends Type> type,
+            Function<? super Type, ? extends MyCodec<? extends Instance>> codec,
+            String typeKey,
+            String dataKey
+    ) {
+        this.typeCodec = typeCodec;
+        this.type = type;
+        this.codec = codec;
+        this.dfuCodec = typeCodec.dispatch(type, t -> codec.apply(t).toDFUCodec(), typeKey, dataKey);
     }
 
-    @SuppressWarnings("unchecked")
-    private <I extends Instance, B> TreeElement<B> toNBT(MyCodec<I> codec, Instance inst, TreeManager<B> manager) {
-        return codec.toTree((I) inst, manager);
-    }
-
-    @Nullable
     @Override
-    public Instance fromTree(TreeElement<?> data) {
-        if (!(data instanceof TreeStorage tree)) {
-            return null;
-        }
-        var type = typeCodec.fromTree(tree.get(typeKey));
-        var instanceCodec = codec.apply(type);
-        return instanceCodec.fromTree(tree.get(dataKey));
+    public Codec<Instance> toDFUCodec() {
+        return this.dfuCodec;
     }
 
     @Override
     public void toSerial(SerialStorage out, Instance in) {
-        var type = type().apply(in);
+        var type = this.type.apply(in);
         typeCodec.toSerial(out, type);
-        var instanceCodec = codec().apply(type);
+        var instanceCodec = codec.apply(type);
         toSerial(out, instanceCodec, in);
     }
 

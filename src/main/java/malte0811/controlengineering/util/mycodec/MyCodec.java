@@ -1,12 +1,14 @@
 package malte0811.controlengineering.util.mycodec;
 
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import malte0811.controlengineering.util.FastDataResult;
 import malte0811.controlengineering.util.mycodec.record.CodecField;
 import malte0811.controlengineering.util.mycodec.serial.PacketBufferStorage;
 import malte0811.controlengineering.util.mycodec.serial.SerialStorage;
-import malte0811.controlengineering.util.mycodec.tree.TreeElement;
-import malte0811.controlengineering.util.mycodec.tree.TreeManager;
-import malte0811.controlengineering.util.mycodec.tree.nbt.NBTManager;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -17,10 +19,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface MyCodec<T> {
-    <B> TreeElement<B> toTree(T in, TreeManager<B> manager);
-
-    @Nullable
-    T fromTree(TreeElement<?> data);
+    Codec<T> toDFUCodec();
 
     // TODO split into network and string directly?
     void toSerial(SerialStorage out, T in);
@@ -38,36 +37,26 @@ public interface MyCodec<T> {
 
     default <T2> MyCodec<T2> xmap(Function<T, T2> to, Function<T2, T> from) {
         return new SimpleCodec<>(
-                t -> {
-                    final var original = fromTree(t);
-                    return original != null ? to.apply(original) : null;
-                },
+                toDFUCodec().xmap(to, from),
                 (s, t2) -> toSerial(s, from.apply(t2)),
                 s -> fromSerial(s).map(to)
-        ) {
-            @Override
-            public <B> TreeElement<B> toTree(T2 in, TreeManager<B> manager) {
-                return MyCodec.this.toTree(from.apply(in), manager);
-            }
-        };
+        );
     }
 
     default <T2> MyCodec<T2> flatXmap(Function<T, FastDataResult<T2>> to, Function<T2, T> from) {
         return new SimpleCodec<>(
-                t -> to.apply(fromTree(t)).orElse(null),
+                toDFUCodec().flatXmap(
+                        t -> to.apply(t).toDFU(), t2 -> DataResult.success(from.apply(t2))
+                ),
                 (s, t2) -> toSerial(s, from.apply(t2)),
                 s -> fromSerial(s).flatMap(to)
-        ) {
-
-            @Override
-            public <B> TreeElement<B> toTree(T2 in, TreeManager<B> manager) {
-                return MyCodec.this.toTree(from.apply(in), manager);
-            }
-        };
+        );
     }
 
+    @Nullable
     default T fromNBT(Tag data) {
-        return fromTree(NBTManager.INSTANCE.of(data));
+        var result = toDFUCodec().parse(NbtOps.INSTANCE, data);
+        return result.mapOrElse(Function.identity(), (err) -> null);
     }
 
     default T fromNBT(Tag data, Supplier<T> fallback) {
@@ -75,7 +64,7 @@ public interface MyCodec<T> {
     }
 
     default Tag toNBT(T data) {
-        return toTree(data, NBTManager.INSTANCE).getDirect();
+        return toDFUCodec().encodeStart(NbtOps.INSTANCE, data).getOrThrow();
     }
 
     default <E>
@@ -114,21 +103,12 @@ public interface MyCodec<T> {
     }
 
     default MyCodec<T> orElse(MyCodec<T> fallback) {
+        final var dfuCodec = Codec.either(toDFUCodec(), fallback.toDFUCodec())
+                .xmap(e -> e.map(Function.identity(), Function.identity()), Either::left);
         return new MyCodec<>() {
             @Override
-            public <B> TreeElement<B> toTree(T in, TreeManager<B> manager) {
-                return MyCodec.this.toTree(in, manager);
-            }
-
-            @Nullable
-            @Override
-            public T fromTree(TreeElement<?> data) {
-                final T mainResult = MyCodec.this.fromTree(data);
-                if (mainResult != null) {
-                    return mainResult;
-                } else {
-                    return fallback.fromTree(data);
-                }
+            public Codec<T> toDFUCodec() {
+                return dfuCodec;
             }
 
             @Override
