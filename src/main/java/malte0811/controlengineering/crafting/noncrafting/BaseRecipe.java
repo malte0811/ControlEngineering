@@ -1,36 +1,33 @@
 package malte0811.controlengineering.crafting.noncrafting;
 
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
-public class BaseRecipe implements Recipe<Container> {
-    private final ResourceLocation id;
+public class BaseRecipe implements Recipe<SingleRecipeInput> {
     private final RecipeSerializer<?> serializer;
     private final RecipeType<?> type;
 
-    public BaseRecipe(ResourceLocation id, Supplier<? extends RecipeSerializer<?>> serializer, RecipeType<?> type) {
-        this.id = id;
+    public BaseRecipe(Supplier<? extends RecipeSerializer<?>> serializer, RecipeType<?> type) {
         this.serializer = serializer.get();
         this.type = type;
     }
 
     @Override
-    public boolean matches(@Nonnull Container pContainer, @Nonnull Level pLevel) {
+    public boolean matches(@Nonnull SingleRecipeInput pContainer, @Nonnull Level pLevel) {
         return false;
     }
 
     @Nonnull
     @Override
-    public ItemStack assemble(@Nonnull Container pContainer, RegistryAccess access) {
+    public ItemStack assemble(@Nonnull SingleRecipeInput pContainer, HolderLookup.Provider access) {
         return ItemStack.EMPTY;
     }
 
@@ -41,14 +38,8 @@ public class BaseRecipe implements Recipe<Container> {
 
     @Nonnull
     @Override
-    public ItemStack getResultItem(RegistryAccess access) {
+    public ItemStack getResultItem(HolderLookup.Provider access) {
         return ItemStack.EMPTY;
-    }
-
-    @Nonnull
-    @Override
-    public ResourceLocation getId() {
-        return id;
     }
 
     @Nonnull

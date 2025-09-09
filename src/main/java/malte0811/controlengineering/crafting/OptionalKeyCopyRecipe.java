@@ -3,25 +3,37 @@ package malte0811.controlengineering.crafting;
 import com.google.common.base.Preconditions;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.ItemWithKeyID;
+import malte0811.dualcodecs.DualCodecs;
+import malte0811.dualcodecs.DualCompositeMapCodecs;
+import malte0811.dualcodecs.DualMapCodec;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.inventory.TransientCraftingContainer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class OptionalKeyCopyRecipe extends ShapedRecipe {
+    private static final DualMapCodec<RegistryFriendlyByteBuf, ShapedRecipe> BASE_CODEC = new DualMapCodec<>(
+            ShapedRecipe.Serializer.CODEC, ShapedRecipe.Serializer.STREAM_CODEC
+    );
+    public static final DualMapCodec<RegistryFriendlyByteBuf, OptionalKeyCopyRecipe> CODECS = DualCompositeMapCodecs.composite(
+            BASE_CODEC, r -> r,
+            DualCodecs.BOOL.fieldOf("isIdOptional"), OptionalKeyCopyRecipe::isIdOptional,
+            OptionalKeyCopyRecipe::new
+    );
+
     private final boolean isIdOptional;
     private final NonNullList<Ingredient> ingredientsWithIdSource;
 
@@ -59,7 +71,7 @@ public class OptionalKeyCopyRecipe extends ShapedRecipe {
     }
 
     @Override
-    public boolean matches(@Nonnull CraftingContainer inv, @Nonnull Level level) {
+    public boolean matches(@Nonnull CraftingInput inv, @Nonnull Level level) {
         final var idSource = removeIDSource(inv);
         if (!isIdOptional && idSource == null) {
             return false;
@@ -69,7 +81,7 @@ public class OptionalKeyCopyRecipe extends ShapedRecipe {
 
     @Nonnull
     @Override
-    public ItemStack assemble(@Nonnull CraftingContainer inv, RegistryAccess access) {
+    public ItemStack assemble(@Nonnull CraftingInput inv, HolderLookup.Provider access) {
         final var match = removeIDSource(inv);
         final ItemStack producedItem;
         if (match != null) {
@@ -84,7 +96,7 @@ public class OptionalKeyCopyRecipe extends ShapedRecipe {
 
     @Nonnull
     @Override
-    public NonNullList<ItemStack> getRemainingItems(@Nonnull CraftingContainer container) {
+    public NonNullList<ItemStack> getRemainingItems(@Nonnull CraftingInput container) {
         final var idSource = removeIDSource(container);
         final var remaining = super.getRemainingItems(container);
         if (idSource != null) {
@@ -94,28 +106,14 @@ public class OptionalKeyCopyRecipe extends ShapedRecipe {
     }
 
     @Nullable
-    private Match removeIDSource(@Nonnull CraftingContainer inv) {
-        for (int i = 0; i < inv.getContainerSize(); ++i) {
+    private Match removeIDSource(@Nonnull CraftingInput inv) {
+        for (int i = 0; i < inv.size(); ++i) {
             if (inv.getItem(i).getItem() instanceof ItemWithKeyID) {
-                CraftingContainer newContainer = new TransientCraftingContainer(
-                        new AbstractContainerMenu(null, 0) {
-                            @Nonnull
-                            @Override
-                            public ItemStack quickMoveStack(@Nonnull Player pPlayer, int pIndex) {
-                                return ItemStack.EMPTY;
-                            }
-
-                            @Override
-                            public boolean stillValid(@Nonnull Player player) {
-                                return false;
-                            }
-                        }, inv.getWidth(), inv.getHeight()
-                );
-                for (int j = 0; j < inv.getContainerSize(); ++j) {
-                    if (j != i) {
-                        newContainer.setItem(j, inv.getItem(j));
-                    }
+                List<ItemStack> modified = new ArrayList<>();
+                for (int j = 0; j < inv.size(); ++j) {
+                    modified.add(i != j ? inv.getItem(i) : ItemStack.EMPTY);
                 }
+                CraftingInput newContainer = CraftingInput.of(inv.width(), inv.height(), modified);
                 return new Match(i, newContainer);
             }
         }
@@ -126,5 +124,5 @@ public class OptionalKeyCopyRecipe extends ShapedRecipe {
         return isIdOptional;
     }
 
-    private record Match(int slotId, CraftingContainer withoutSource) { }
+    private record Match(int slotId, CraftingInput withoutSource) { }
 }

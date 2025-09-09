@@ -3,7 +3,10 @@ package malte0811.controlengineering.crafting;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.crafting.noncrafting.ComponentCostRecipe;
 import malte0811.controlengineering.crafting.noncrafting.ServerFontRecipe;
+import malte0811.dualcodecs.DualMapCodec;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -14,22 +17,26 @@ public class CERecipeSerializers {
             Registries.RECIPE_SERIALIZER, ControlEngineering.MODID
     );
 
-    public static final Supplier<SingleIngredientRecipeSerializer<?>> PANEL_RECIPE = REGISTER.register(
-            "panel", () -> new SingleIngredientRecipeSerializer<>("cover", PanelRecipe::new, PanelRecipe::cover)
+    public static final Supplier<RecipeSerializer<PanelRecipe>> PANEL_RECIPE = REGISTER.register(
+            "panel", createSerializer(PanelRecipe.CODECS)
     );
-    public static final Supplier<SingleIngredientRecipeSerializer<?>> GLUE_TAPE = REGISTER.register(
-            "glue_tape", () -> new SingleIngredientRecipeSerializer<>("glue", GlueTapeRecipe::new, GlueTapeRecipe::glue)
+    public static final Supplier<RecipeSerializer<GlueTapeRecipe>> GLUE_TAPE = REGISTER.register(
+            "glue_tape", createSerializer(GlueTapeRecipe.CODECS)
     );
-    public static final Supplier<ComponentCostRecipe.Serializer> COMPONENT_COST = REGISTER.register(
-            "component_cost", ComponentCostRecipe.Serializer::new
+    public static final Supplier<RecipeSerializer<ComponentCostRecipe>> COMPONENT_COST = REGISTER.register(
+            "component_cost", createSerializer(ComponentCostRecipe.CODECS)
     );
-    public static final Supplier<ServerFontRecipe.Serializer> FONT_WIDTH = REGISTER.register(
-            "server_font_width", ServerFontRecipe.Serializer::new
+    public static final Supplier<RecipeSerializer<ServerFontRecipe>> FONT_WIDTH = REGISTER.register(
+            "server_font_width", createSerializer(ServerFontRecipe.CODECS)
     );
-    public static final Supplier<SimpleRecipeSerializer<SchematicCopyRecipe>> SCHEMATIC_COPY = REGISTER.register(
-            "schematic_copy", () -> new SimpleRecipeSerializer<>(SchematicCopyRecipe::new)
+    public static final Supplier<RecipeSerializer<SchematicCopyRecipe>> SCHEMATIC_COPY = REGISTER.register(
+            "schematic_copy", () -> SimpleRecipeSerializer.unit(new SchematicCopyRecipe())
     );
-    public static final Supplier<OptionalKeyCopySerializer> OPTIONAL_KEY_COPY = REGISTER.register(
-            "key_copy", OptionalKeyCopySerializer::new
+    public static final Supplier<RecipeSerializer<OptionalKeyCopyRecipe>> OPTIONAL_KEY_COPY = REGISTER.register(
+            "key_copy", createSerializer(OptionalKeyCopyRecipe.CODECS)
     );
+
+    private static <R extends Recipe<?>> Supplier<RecipeSerializer<R>> createSerializer(DualMapCodec<RegistryFriendlyByteBuf, R> codec) {
+        return () -> new SimpleRecipeSerializer<>(codec);
+    }
 }

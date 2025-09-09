@@ -3,6 +3,7 @@ package malte0811.controlengineering.blockentity.bus;
 import blusunrize.immersiveengineering.api.IETags;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.blockentity.BlockCapabilities;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.base.IExtraDropBE;
 import malte0811.controlengineering.blocks.bus.ScopeBlock;
@@ -25,6 +26,7 @@ import malte0811.controlengineering.scope.module.ScopeModuleInstance;
 import malte0811.controlengineering.scope.module.ScopeModules;
 import malte0811.controlengineering.scope.trace.Traces;
 import malte0811.controlengineering.util.*;
+import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
@@ -35,7 +37,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.ItemStack;
@@ -43,11 +44,9 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.energy.EnergyStorage;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.capabilities.Capabilities;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -76,7 +75,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     private GlobalConfig globalConfig = new GlobalConfig();
     private Traces traces = new Traces();
     private final Set<ScopeMenu> openMenus = new ReferenceOpenHashSet<>();
-    private final EnergyStorage energy = new EnergyStorage(BASE_POWER_PER_TICK * 200, 256 + BASE_POWER_PER_TICK) {
+    private final CEEnergyStorage energy = new CEEnergyStorage(BASE_POWER_PER_TICK * 200, 256 + BASE_POWER_PER_TICK) {
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
             final var hadPower = hasPower();
@@ -93,7 +92,6 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
             return result;
         }
     };
-    private final LazyOptional<IEnergyStorage> energyCap = CapabilityUtils.constantOptional(energy);
     private int syncedPowerRequirement;
 
     public ScopeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -153,7 +151,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         currentBusState = BusState.CODEC.fromNBT(tag.get("busInput"), () -> BusState.EMPTY);
         globalConfig = GlobalConfig.CODEC.fromNBT(tag.get("globalConfig"), GlobalConfig::new);
         traces = Traces.CODEC.fromNBT(tag.get("traces"), Traces::new);
-        energy.deserializeNBT(provider, tag.get("energy"));
+        energy.readNBT(tag.get("energy"));
     }
 
     @Override
@@ -163,7 +161,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         tag.put("busInput", BusState.CODEC.toNBT(this.currentBusState));
         tag.put("globalConfig", GlobalConfig.CODEC.toNBT(this.globalConfig));
         tag.put("traces", Traces.CODEC.toNBT(traces));
-        tag.put("energy", energy.serializeNBT(provider));
+        tag.put("energy", energy.writeNBT());
     }
 
     @Override
@@ -330,19 +328,12 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     @Override
     public void addMarkDirtyCallback(Clearable<Runnable> markDirty) { }
 
-    @Override
-    @Nonnull
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (side == getFacing() || side == null) {
-            return ForgeCapabilities.ENERGY.orEmpty(cap, energyCap);
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        energyCap.invalidate();
+    public static void registerCapabilities(BlockCapabilities.BECapabilityRegistrar<ScopeBlockEntity> registrar)
+    {
+        registrar.register(
+                Capabilities.EnergyStorage.BLOCK,
+                (be, side) -> side == be.getFacing() || side == null ? be.energy.insertOnlyView() : null
+        );
     }
 
     public Direction getFacing() {

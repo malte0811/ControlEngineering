@@ -2,7 +2,6 @@ package malte0811.controlengineering.datagen.recipes;
 
 import com.google.gson.JsonObject;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
-import malte0811.controlengineering.crafting.OptionalKeyCopySerializer;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;

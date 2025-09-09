@@ -3,29 +3,26 @@ package malte0811.controlengineering.crafting;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.ISchematicItem;
 import malte0811.controlengineering.logic.schematic.Schematic;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public record SchematicCopyRecipe(ResourceLocation id) implements CraftingRecipe {
+public class SchematicCopyRecipe implements CraftingRecipe {
     @Override
-    public boolean matches(@Nonnull CraftingContainer container, @Nonnull Level level) {
+    public boolean matches(@Nonnull CraftingInput container, @Nonnull Level level) {
         return getSchematicToCopy(container) != null;
     }
 
     @Override
     @Nonnull
-    public ItemStack assemble(@Nonnull CraftingContainer container, RegistryAccess access) {
+    public ItemStack assemble(@Nonnull CraftingInput container, HolderLookup.Provider access) {
         var schematic = getSchematicToCopy(container);
         if (schematic != null) {
             return ISchematicItem.create(CEItems.SCHEMATIC, schematic.toCopy());
@@ -36,7 +33,7 @@ public record SchematicCopyRecipe(ResourceLocation id) implements CraftingRecipe
 
     @Nonnull
     @Override
-    public NonNullList<ItemStack> getRemainingItems(@Nonnull CraftingContainer container) {
+    public NonNullList<ItemStack> getRemainingItems(@Nonnull CraftingInput container) {
         NonNullList<ItemStack> remaining = CraftingRecipe.super.getRemainingItems(container);
         var match = getSchematicToCopy(container);
         if (match != null) {
@@ -52,14 +49,8 @@ public record SchematicCopyRecipe(ResourceLocation id) implements CraftingRecipe
 
     @Override
     @Nonnull
-    public ItemStack getResultItem(RegistryAccess access) {
+    public ItemStack getResultItem(HolderLookup.Provider access) {
         return CEItems.SCHEMATIC.get().getDefaultInstance();
-    }
-
-    @Nonnull
-    @Override
-    public ResourceLocation getId() {
-        return id;
     }
 
     @Nonnull
@@ -84,10 +75,10 @@ public record SchematicCopyRecipe(ResourceLocation id) implements CraftingRecipe
     }
 
     @Nullable
-    private Match getSchematicToCopy(CraftingContainer container) {
+    private Match getSchematicToCopy(CraftingInput container) {
         boolean hasEmpty = false;
         Match matchedSource = null;
-        for (int i = 0; i < container.getContainerSize(); ++i) {
+        for (int i = 0; i < container.size(); ++i) {
             var stackHere = container.getItem(i);
             if (stackHere.getItem() instanceof ISchematicItem) {
                 var schematic = ISchematicItem.getSchematic(stackHere);

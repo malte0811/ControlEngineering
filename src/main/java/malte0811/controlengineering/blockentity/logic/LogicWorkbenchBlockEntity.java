@@ -159,18 +159,18 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
 
     @Override
     protected void writeSyncedData(CompoundTag out, HolderLookup.Provider provider) {
-        writeCommonData(out);
+        writeCommonData(out, provider);
         out.putBoolean("hasSchematic", schematic != null);
     }
 
-    private void writeCommonData(CompoundTag out) {
-        out.put("tubes", tubeStorage.write());
-        out.put("wires", wireStorage.write());
+    private void writeCommonData(CompoundTag out, HolderLookup.Provider provider) {
+        out.put("tubes", tubeStorage.write(provider));
+        out.put("wires", wireStorage.write(provider));
     }
 
     @Override
     protected void readSyncedData(CompoundTag in, HolderLookup.Provider provider) {
-        readCommonData(in);
+        readCommonData(in, provider);
         var hadSchematic = schematic != null;
         var hasSchematic = in.getBoolean("hasSchematic");
         schematic = hasSchematic ? new Schematic() : null;
@@ -179,9 +179,9 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
         }
     }
 
-    private void readCommonData(CompoundTag in) {
-        tubeStorage.read(in.getCompound("tubes"));
-        wireStorage.read(in.getCompound("wires"));
+    private void readCommonData(CompoundTag in, HolderLookup.Provider provider) {
+        tubeStorage.read(in.getCompound("tubes"), provider);
+        wireStorage.read(in.getCompound("wires"), provider);
     }
 
     @Override
@@ -190,7 +190,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
         if (schematic != null) {
             compound.put("schematic", Schematic.CODEC.toNBT(schematic));
         }
-        writeCommonData(compound);
+        writeCommonData(compound, provider);
     }
 
     @Override
@@ -202,7 +202,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
         } else {
             schematic = null;
         }
-        readCommonData(nbt);
+        readCommonData(nbt, provider);
     }
 
     private ItemInteractionResult handleMainClick(UseOnContext ctx) {

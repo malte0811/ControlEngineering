@@ -2,6 +2,7 @@ package malte0811.controlengineering.blockentity.logic;
 
 import malte0811.controlengineering.util.ItemUtil;
 import malte0811.controlengineering.util.LambdaMutable;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.tags.TagKey;
@@ -94,24 +95,14 @@ public class CircuitIngredientDrawer {
         storedCount = 0;
     }
 
-    public void read(CompoundTag nbt) {
-        if (!nbt.contains(COUNT_KEY, Tag.TAG_INT)) {
-            var contentStack = ItemStack.of(nbt);
-            this.storedCount = contentStack.getCount();
-            if (contentStack.isEmpty()) {
-                this.storedType = ItemStack.EMPTY;
-            } else {
-                this.storedType = ItemHandlerHelper.copyStackWithSize(contentStack, 1);
-            }
-        } else {
-            this.storedType = ItemStack.of(nbt.getCompound(ITEM_KEY));
-            this.storedCount = nbt.getInt(COUNT_KEY);
-        }
+    public void read(CompoundTag nbt, HolderLookup.Provider provider) {
+        this.storedType = ItemStack.parseOptional(provider, nbt.getCompound(ITEM_KEY));
+        this.storedCount = nbt.getInt(COUNT_KEY);
     }
 
-    public CompoundTag write() {
+    public CompoundTag write(HolderLookup.Provider provider) {
         var result = new CompoundTag();
-        result.put(ITEM_KEY, storedType.save(new CompoundTag()));
+        result.put(ITEM_KEY, storedType.save(provider));
         result.putInt(COUNT_KEY, storedCount);
         return result;
     }

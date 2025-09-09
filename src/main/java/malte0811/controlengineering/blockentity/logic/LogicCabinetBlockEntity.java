@@ -3,6 +3,8 @@ package malte0811.controlengineering.blockentity.logic;
 import blusunrize.immersiveengineering.api.IETags;
 import blusunrize.immersiveengineering.api.utils.client.ModelDataUtils;
 import com.mojang.datafixers.util.Pair;
+import malte0811.controlengineering.blockentity.BlockCapabilities;
+import malte0811.controlengineering.blockentity.BlockCapabilities.BECapabilityRegistrar;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.base.IExtraDropBE;
 import malte0811.controlengineering.blockentity.base.IHasMaster;
@@ -45,13 +47,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.network.NetworkHooks;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -171,23 +169,12 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         return fromSide == getRotatedDirection(false);
     }
 
-    private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(energy::insertOnlyView);
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(
-            @Nonnull Capability<T> cap, @Nullable Direction side
-    ) {
-        if (cap == ForgeCapabilities.ENERGY && side == getFacing(getBlockState())) {
-            return energyCap.cast();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        energyCap.invalidate();
+    public static void registerCapabilities(BECapabilityRegistrar<LogicCabinetBlockEntity> registrar)
+    {
+        registrar.register(
+                Capabilities.EnergyStorage.BLOCK,
+                    (be, side) -> side == be.getFacing() || side == null ? be.energy.insertOnlyView() : null
+        );
     }
 
     @Override
@@ -220,6 +207,10 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         } else {
             setCircuit(null);
         }
+    }
+
+    private Direction getFacing() {
+        return getFacing(getBlockState());
     }
 
     private static Direction getFacing(BlockState state) {

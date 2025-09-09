@@ -55,7 +55,7 @@ public class CEBlockEntities {
             "control_panel", ControlPanelBlockEntity::new, CEBlocks.CONTROL_PANEL, PanelBlock::isMaster
     );
 
-    public static MultiblockBEType<PanelCNCBlockEntity, ?> PANEL_CNC = PanelCNCBlockEntity.register(REGISTER);
+    public static MultiblockBEType<PanelCNCBlockEntity, PanelCNCBlockEntity.Dummy> PANEL_CNC = PanelCNCBlockEntity.register(REGISTER);
 
     public static MultiblockBEType<PanelDesignerBlockEntity, ?> PANEL_DESIGNER = makeMBType(
             "panel_designer", PanelDesignerBlockEntity::new, CEBlocks.PANEL_DESIGNER, PanelDesignerBlock::isMaster

@@ -1,12 +1,15 @@
 package malte0811.controlengineering.blockentity.panels;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.bytes.ByteList;
+import malte0811.controlengineering.blockentity.BlockCapabilities;
 import malte0811.controlengineering.blockentity.MultiblockBEType;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.base.IExtraDropBE;
 import malte0811.controlengineering.blockentity.bus.ParallelPort;
+import malte0811.controlengineering.blockentity.bus.ScopeBlockEntity;
 import malte0811.controlengineering.blockentity.tape.TapeDrive;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.panels.PanelCNCBlock;
@@ -23,12 +26,14 @@ import malte0811.controlengineering.controlpanels.cnc.CNCInstructionParser;
 import malte0811.controlengineering.items.PanelTopItem;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.util.*;
+import malte0811.controlengineering.util.energy.CEEnergyStorage;
 import malte0811.controlengineering.util.math.MatrixUtils;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -37,16 +42,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -76,15 +80,9 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
     );
     private int currentTicksInJob;
     private final List<PlacedComponent> currentPlacedComponents = new ArrayList<>();
-    private final List<CapabilityReference<IItemHandler>> neighborInventories = Util.make(
-            new ArrayList<>(),
-            list -> {
-                for (Direction d : DirectionUtils.BY_HORIZONTAL_INDEX) {
-                    list.add(CapabilityReference.forNeighbor(this, ForgeCapabilities.ITEM_HANDLER, d));
-                }
-            }
-    );
-    private final EnergyStorage energy = new EnergyStorage(20 * ENERGY_CONSUMPTION);
+    @Nullable
+    private List<BlockCapabilityCache<IItemHandler, ?>> neighborInventories;
+    private final CEEnergyStorage energy = new CEEnergyStorage(20 * ENERGY_CONSUMPTION, 2 * ENERGY_CONSUMPTION);
     private final MarkDirtyHandler markBusDirty = new MarkDirtyHandler();
     private final ParallelPort dataOutput = new ParallelPort();
     // Used and initialized by the renderer
@@ -165,7 +163,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
                 if (!level.isClientSide && currentTicksInJob >= job.tickPlacingComponent().getInt(nextComponent)) {
                     PlacedComponent componentToPlace = job.components().get(nextComponent);
                     var componentCost = componentToPlace.getComponent().getType().getCost(level);
-                    if (!ItemUtil.tryConsumeItemsFrom(componentCost, neighborInventories)) {
+                    if (!ItemUtil.tryConsumeItemsFrom(componentCost, getNeighborInventories())) {
                         dataOutput.queueStringWithParity("Unable to consume items for component number " + nextComponent);
                         setState(State.FAILED);
                     } else {
@@ -220,7 +218,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
     public void saveAdditional(@Nonnull CompoundTag compound, HolderLookup.Provider provider) {
         super.saveAdditional(compound, provider);
         writeSyncedData(compound, provider);
-        compound.put("energy", energy.serializeNBT(provider));
+        compound.put("energy", energy.writeNBT());
         compound.put("dataOutput", dataOutput.toNBT());
     }
 
@@ -228,7 +226,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
     public void loadAdditional(@Nonnull CompoundTag nbt, HolderLookup.Provider provider) {
         super.loadAdditional(nbt, provider);
         readSyncedData(nbt, provider);
-        energy.deserializeNBT(provider, nbt.get("energy"));
+        energy.readNBT(nbt.get("energy"));
         dataOutput.readNBT(nbt.getCompound("dataOutput"));
     }
 
@@ -273,7 +271,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
         return renderBB.get();
     }
 
-    public static MultiblockBEType<PanelCNCBlockEntity, ?> register(DeferredRegister<BlockEntityType<?>> register) {
+    public static MultiblockBEType<PanelCNCBlockEntity, Dummy> register(DeferredRegister<BlockEntityType<?>> register) {
         return MultiblockBEType.makeType(
                 register, "panel_cnc", PanelCNCBlockEntity::new, Dummy::new, CEBlocks.PANEL_CNC, PanelCNCBlock::isMaster
         );
@@ -314,35 +312,39 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
         this.markBusDirty.run();
     }
 
-    private static class Dummy extends CEBlockEntity {
-        private LazyOptional<IEnergyStorage> energyRef = null;
+    private List<BlockCapabilityCache<IItemHandler, ?>> getNeighborInventories() {
+        if (neighborInventories == null) {
+            Preconditions.checkState(level instanceof ServerLevel);
+            neighborInventories = new ArrayList<>();
+            for (Direction d : DirectionUtils.BY_HORIZONTAL_INDEX) {
+                var sideCache = BlockCapabilityCache.create(
+                        Capabilities.ItemHandler.BLOCK, (ServerLevel) level, getBlockPos().relative(d), d.getOpposite()
+                );
+                neighborInventories.add(
+                        sideCache
+                );
+            }
+        }
+        return neighborInventories;
+    }
 
+    public static class Dummy extends CEBlockEntity {
         public Dummy(BlockEntityType<?> type, BlockPos pos, BlockState state) {
             super(type, pos, state);
         }
 
-        @Nonnull
-        @Override
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-            if (cap == ForgeCapabilities.ENERGY && CapabilityUtils.isNullOr(Direction.UP, side)) {
-                if (energyRef == null) {
-                    if (level.getBlockEntity(worldPosition.below()) instanceof PanelCNCBlockEntity paneCNC) {
-                        energyRef = CapabilityUtils.constantOptional(paneCNC.energy);
-                    } else {
-                        return LazyOptional.empty();
+        public static void registerCapabilities(BlockCapabilities.BECapabilityRegistrar<Dummy> registrar) {
+            registrar.register(
+                    Capabilities.EnergyStorage.BLOCK,
+                    (be, side) -> {
+                        if (side == Direction.UP || side == null) {
+                            if (be.level.getBlockEntity(be.worldPosition.below()) instanceof PanelCNCBlockEntity paneCNC) {
+                                return paneCNC.energy.insertOnlyView();
+                            }
+                        }
+                        return null;
                     }
-                }
-                return energyRef.cast();
-            }
-            return super.getCapability(cap, side);
-        }
-
-        @Override
-        public void invalidateCaps() {
-            super.invalidateCaps();
-            if (energyRef != null) {
-                energyRef.invalidate();
-            }
+            );
         }
     }
 

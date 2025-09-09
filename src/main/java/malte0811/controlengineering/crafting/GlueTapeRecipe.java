@@ -1,45 +1,44 @@
 package malte0811.controlengineering.crafting;
 
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import it.unimi.dsi.fastutil.bytes.ByteList;
 import malte0811.controlengineering.blockentity.tape.KeypunchState;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PunchedTapeItem;
+import malte0811.controlengineering.util.CEDualCodecs;
+import malte0811.dualcodecs.DualMapCodec;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.crafting.IShapedRecipe;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
 
-public record GlueTapeRecipe(
-        ResourceLocation id, Ingredient glue
-) implements CraftingRecipe, IShapedRecipe<CraftingContainer> {
+public record GlueTapeRecipe(Ingredient glue) implements CraftingRecipe {
+    public static final DualMapCodec<RegistryFriendlyByteBuf, GlueTapeRecipe> CODECS = CEDualCodecs.INGREDIENT
+            .map(GlueTapeRecipe::new, GlueTapeRecipe::glue)
+            .fieldOf("glue");
 
     @Override
-    public boolean matches(@Nonnull CraftingContainer inv, @Nonnull Level worldIn) {
+    public boolean matches(@Nonnull CraftingInput inv, @Nonnull Level worldIn) {
         return findMatch(inv) >= 0;
     }
 
     @Nonnull
     @Override
-    public ItemStack assemble(@Nonnull CraftingContainer inv, RegistryAccess access) {
+    public ItemStack assemble(@Nonnull CraftingInput inv, HolderLookup.Provider access) {
         int match = findMatch(inv);
         if (match < 0) {
             return ItemStack.EMPTY;
         }
         ItemStack tape1 = inv.getItem(match);
         ItemStack tape2 = inv.getItem(match + 2);
-        byte[] first = PunchedTapeItem.getBytes(tape1);
-        byte[] second = PunchedTapeItem.getBytes(tape2);
-        byte[] combined = Arrays.copyOf(first, first.length + second.length);
-        System.arraycopy(second, 0, combined, first.length, second.length);
+        ByteList first = PunchedTapeItem.getBytes(tape1);
+        ByteList second = PunchedTapeItem.getBytes(tape2);
+        ByteList combined = new ByteArrayList(first);
+        combined.addAll(second);
         return PunchedTapeItem.withBytes(combined);
     }
 
@@ -48,15 +47,15 @@ public record GlueTapeRecipe(
         return width >= 3 && height >= 1;
     }
 
-    private int findMatch(CraftingContainer inv) {
-        for (int x = 0; x < inv.getWidth() - 2; ++x) {
-            for (int y = 0; y < inv.getHeight(); ++y) {
-                int offset = y * inv.getWidth() + x;
+    private int findMatch(CraftingInput inv) {
+        for (int x = 0; x < inv.width() - 2; ++x) {
+            for (int y = 0; y < inv.height(); ++y) {
+                int offset = y * inv.width() + x;
                 ItemStack tape1 = inv.getItem(offset);
                 ItemStack glue = inv.getItem(offset + 1);
                 ItemStack tape2 = inv.getItem(offset + 2);
                 if (tape1.is(CEItems.PUNCHED_TAPE.get()) && this.glue.test(glue) && tape2.is(CEItems.PUNCHED_TAPE.get())) {
-                    var totalLength = PunchedTapeItem.getBytes(tape1).length + PunchedTapeItem.getBytes(tape2).length;
+                    var totalLength = PunchedTapeItem.getBytes(tape1).size() + PunchedTapeItem.getBytes(tape2).size();
                     if (totalLength > KeypunchState.MAX_TAPE_LENGTH) {
                         return -1;
                     } else {
@@ -70,14 +69,8 @@ public record GlueTapeRecipe(
 
     @Nonnull
     @Override
-    public ItemStack getResultItem(RegistryAccess access) {
+    public ItemStack getResultItem(HolderLookup.Provider access) {
         return CEItems.PUNCHED_TAPE.get().getDefaultInstance();
-    }
-
-    @Nonnull
-    @Override
-    public ResourceLocation getId() {
-        return id;
     }
 
     @Override
@@ -94,16 +87,6 @@ public record GlueTapeRecipe(
     @Override
     public RecipeSerializer<?> getSerializer() {
         return CERecipeSerializers.GLUE_TAPE.get();
-    }
-
-    @Override
-    public int getRecipeWidth() {
-        return 3;
-    }
-
-    @Override
-    public int getRecipeHeight() {
-        return 1;
     }
 
     @Override

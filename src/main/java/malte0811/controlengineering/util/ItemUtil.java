@@ -1,10 +1,10 @@
 package malte0811.controlengineering.util;
 
 import blusunrize.immersiveengineering.api.crafting.IngredientWithSize;
-import blusunrize.immersiveengineering.api.utils.CapabilityReference;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.MutablePair;
 
@@ -23,21 +23,21 @@ public class ItemUtil {
     }
 
     public static boolean tryConsumeItemsFrom(
-            List<IngredientWithSize> toConsume, Collection<CapabilityReference<IItemHandler>> sources
+            List<IngredientWithSize> toConsume, Collection<BlockCapabilityCache<IItemHandler, ?>> sources
     ) {
         return tryConsumeItemsFrom(toConsume, sources, true) && tryConsumeItemsFrom(toConsume, sources, false);
     }
 
     // TODO: refactor out into report missing ingredients so we can report back the missing items in the CNC error report
     public static boolean tryConsumeItemsFrom(
-            List<IngredientWithSize> toConsume, Collection<CapabilityReference<IItemHandler>> sources, boolean simulate
+            List<IngredientWithSize> toConsume, Collection<BlockCapabilityCache<IItemHandler, ?>> sources, boolean simulate
     ) {
         List<MutablePair<Ingredient, Integer>> missing = new ArrayList<>(toConsume.size());
         for (IngredientWithSize ingred : toConsume) {
             missing.add(MutablePair.of(ingred.getBaseIngredient(), ingred.getCount()));
         }
-        for (CapabilityReference<IItemHandler> handlerRef : sources) {
-            final IItemHandler handler = handlerRef.getNullable();
+        for (BlockCapabilityCache<IItemHandler, ?> handlerRef : sources) {
+            final IItemHandler handler = handlerRef.getCapability();
             if (handler == null) {
                 continue;
             }

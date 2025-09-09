@@ -1,33 +1,31 @@
 package malte0811.controlengineering.crafting;
 
 import malte0811.controlengineering.blocks.CEBlocks;
-import malte0811.controlengineering.blocks.panels.PanelOrientation;
 import malte0811.controlengineering.controlpanels.PanelTransform;
+import malte0811.controlengineering.itemdata.CEDataComponents;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PanelTopItem;
+import malte0811.controlengineering.util.CEDualCodecs;
+import malte0811.dualcodecs.DualMapCodec;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.crafting.IShapedRecipe;
 
 import javax.annotation.Nonnull;
 
-public record PanelRecipe(
-        ResourceLocation id, Ingredient cover
-) implements CraftingRecipe, IShapedRecipe<CraftingContainer> {
+public record PanelRecipe(Ingredient cover) implements CraftingRecipe {
+    public static final DualMapCodec<RegistryFriendlyByteBuf, PanelRecipe> CODECS = CEDualCodecs.INGREDIENT
+            .map(PanelRecipe::new, PanelRecipe::cover)
+            .fieldOf("cover");
+
     @Override
-    public boolean matches(@Nonnull CraftingContainer inv, @Nonnull Level worldIn) {
+    public boolean matches(@Nonnull CraftingInput inv, @Nonnull Level worldIn) {
         for (int x = 0; x < 3; ++x) {
             for (int y = 0; y < 3; ++y) {
-                ItemStack stack = inv.getItem(x + inv.getWidth() * y);
+                ItemStack stack = inv.getItem(x + inv.width() * y);
                 if (x == 1 && y == 1) {
                     if (stack.getItem() != CEItems.PANEL_TOP.get() || PanelTopItem.isEmptyPanelTop(stack)) {
                         return false;
@@ -42,19 +40,11 @@ public record PanelRecipe(
 
     @Nonnull
     @Override
-    public ItemStack assemble(@Nonnull CraftingContainer inv, RegistryAccess access) {
-        final ItemStack middleStack = inv.getItem(inv.getWidth() + 1);
+    public ItemStack assemble(@Nonnull CraftingInput inv, HolderLookup.Provider access) {
+        final ItemStack middleStack = inv.getItem(inv.width() + 1);
         final ItemStack result = getResultItem(access).copy();
-        CompoundTag resultNBT = middleStack.getTag();
-        if (resultNBT == null) {
-            resultNBT = new CompoundTag();
-        } else {
-            resultNBT = resultNBT.copy();
-        }
-        new PanelTransform(
-                0.25F, (float) -Math.toDegrees(Math.atan(0.5)), PanelOrientation.DOWN_NORTH
-        ).addTo(resultNBT);
-        result.setTag(resultNBT);
+        result.copyFrom(middleStack, CEDataComponents.PANEL_COMPONENTS.get());
+        result.set(CEDataComponents.PANEL_TRANSFORM, new PanelTransform.BETransformData());
         return result;
     }
 
@@ -65,30 +55,14 @@ public record PanelRecipe(
 
     @Nonnull
     @Override
-    public ItemStack getResultItem(RegistryAccess access) {
+    public ItemStack getResultItem(HolderLookup.Provider access) {
         return new ItemStack(CEBlocks.CONTROL_PANEL.get());
-    }
-
-    @Nonnull
-    @Override
-    public ResourceLocation getId() {
-        return id;
     }
 
     @Nonnull
     @Override
     public RecipeSerializer<?> getSerializer() {
         return CERecipeSerializers.PANEL_RECIPE.get();
-    }
-
-    @Override
-    public int getRecipeWidth() {
-        return 3;
-    }
-
-    @Override
-    public int getRecipeHeight() {
-        return 3;
     }
 
     @Nonnull

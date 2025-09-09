@@ -1,17 +1,25 @@
 package malte0811.controlengineering.util.energy;
 
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.Tag;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.function.Function;
 
 public class CEEnergyStorage implements IEnergyStorage {
     private final int capacity;
     private final int maxIn;
     private final int maxOut;
     private int energyStored;
+
+    public CEEnergyStorage(int capacity, int maxIO) {
+        this(capacity, maxIO, maxIO);
+    }
 
     public CEEnergyStorage(int capacity, int maxIn, int maxOut) {
         this.capacity = capacity;

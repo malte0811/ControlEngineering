@@ -1,6 +1,7 @@
 package malte0811.controlengineering.blockentity.tape;
 
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.blockentity.BlockCapabilities;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.logic.ClockSlot;
 import malte0811.controlengineering.blocks.shapes.ListShapes;
@@ -25,13 +26,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.capabilities.Capabilities;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -199,21 +196,11 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
         BEUtil.markDirtyAndSync(this);
     }
 
-    private final LazyOptional<IEnergyStorage> energyCap = CapabilityUtils.constantOptional(energy);
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY && (side == Direction.UP || side == null)) {
-            return energyCap.cast();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        energyCap.invalidate();
+    public static void registerCapabilities(BlockCapabilities.BECapabilityRegistrar<SequencerBlockEntity> registrar) {
+        registrar.register(
+                Capabilities.EnergyStorage.BLOCK,
+                (be, side) -> side == Direction.UP || side == null ? be.energy.insertOnlyView() : null
+        );
     }
 
     @Override
