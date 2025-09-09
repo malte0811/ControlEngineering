@@ -96,7 +96,7 @@ public class TapeRender {
         final double vOffset = yStart + TAPE_WIDTH + font.get().lineHeight - 2;
         final float rsSize = 16 + 2 * sideSpace;
         TextureAtlas texture = Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
-        TextureAtlasSprite sprite = texture.getSprite(new ResourceLocation("block/redstone_dust_dot"));
+        TextureAtlasSprite sprite = texture.getSprite(ResourceLocation.withDefaultNamespace("block/redstone_dust_dot"));
         forEachRow(graphics, shownBytes, rsSize, vOffset, (transform, currentByte) -> {
             int strength = RedstoneTapeUtils.getStrength(currentByte);
             int color = RedStoneWireBlock.getColorForPower(strength);

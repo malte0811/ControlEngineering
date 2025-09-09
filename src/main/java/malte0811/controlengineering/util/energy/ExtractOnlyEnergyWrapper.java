@@ -2,12 +2,7 @@ package malte0811.controlengineering.util.energy;
 
 import net.neoforged.neoforge.energy.IEnergyStorage;
 
-public class ExtractOnlyEnergyWrapper implements IEnergyStorage {
-    private final IEnergyStorage wrapped;
-
-    public ExtractOnlyEnergyWrapper(IEnergyStorage wrapped) {
-        this.wrapped = wrapped;
-    }
+public record ExtractOnlyEnergyWrapper(IEnergyStorage wrapped) implements IEnergyStorage {
 
     @Override
     public int receiveEnergy(int maxReceive, boolean simulate) {

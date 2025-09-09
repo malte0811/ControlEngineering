@@ -8,6 +8,7 @@ import malte0811.controlengineering.controlpanels.components.config.ColorAndSign
 import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 
 public class Button extends PanelComponentType<ColorAndSignal, Boolean> {
     public static final Vec2d SIZE = new Vec2d(1, 1);
@@ -27,7 +28,7 @@ public class Button extends PanelComponentType<ColorAndSignal, Boolean> {
     }
 
     @Override
-    public Pair<InteractionResult, Boolean> click(ColorAndSignal config, Boolean oldState, ComponentClickContext ctx) {
-        return Pair.of(InteractionResult.SUCCESS, !oldState);
+    public Pair<ItemInteractionResult, Boolean> click(ColorAndSignal config, Boolean oldState, ComponentClickContext ctx) {
+        return Pair.of(ItemInteractionResult.SUCCESS, !oldState);
     }
 }

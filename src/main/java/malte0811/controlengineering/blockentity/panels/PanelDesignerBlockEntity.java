@@ -1,7 +1,7 @@
 package malte0811.controlengineering.blockentity.panels;
 
 import com.google.common.collect.ImmutableList;
-import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import it.unimi.dsi.fastutil.bytes.ByteList;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchBlockEntity;
 import malte0811.controlengineering.blockentity.tape.KeypunchState;
@@ -26,7 +26,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -51,7 +51,7 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
                 Direction facing = state.getValue(PanelDesignerBlock.FACING);
                 VoxelShape baseShape = PanelDesignerBlock.SHAPE.apply(offset, facing);
                 if (offset == Offset.ORIGIN) {
-                    Function<UseOnContext, InteractionResult> openUI = makeInteraction(
+                    Function<UseOnContext, ItemInteractionResult> openUI = makeInteraction(
                             state, PanelDesignerBlockEntity::openUI
                     );
                     return new ListShapes(
@@ -60,16 +60,16 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
                             ImmutableList.of(
                                     new SingleShape(PanelDesignerBlock.TABLE_TOP, openUI)
                             ),
-                            $ -> InteractionResult.PASS
+                            $ -> ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
                     );
                 } else if (offset == Offset.BACK_TOP) {
-                    Function<UseOnContext, InteractionResult> writeTape = makeInteraction(
+                    Function<UseOnContext, ItemInteractionResult> writeTape = makeInteraction(
                             state, PanelDesignerBlockEntity::writeTape
                     );
-                    Function<UseOnContext, InteractionResult> addTape = makeInteraction(
+                    Function<UseOnContext, ItemInteractionResult> addTape = makeInteraction(
                             state, (t, ctx) -> t.state.removeOrAddClearTape(ctx.getPlayer(), ctx.getItemInHand())
                     );
-                    Function<UseOnContext, InteractionResult> takeTape = makeInteraction(
+                    Function<UseOnContext, ItemInteractionResult> takeTape = makeInteraction(
                             state, (t, ctx) -> t.state.removeWrittenTape(ctx.getPlayer())
                     );
                     return new ListShapes(
@@ -80,10 +80,10 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
                                     new SingleShape(KeypunchBlockEntity.INPUT_SHAPE, addTape),
                                     new SingleShape(KeypunchBlockEntity.OUTPUT_SHAPE, takeTape)
                             ),
-                            $ -> InteractionResult.PASS
+                            $ -> ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
                     ).setAllowTargetThrough(true);
                 } else {
-                    return new SingleShape(baseShape, $ -> InteractionResult.PASS);
+                    return new SingleShape(baseShape, $ -> ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
                 }
             }
     );
@@ -101,8 +101,8 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
         );
     }
 
-    private Function<UseOnContext, InteractionResult> makeInteraction(
-            BlockState state, BiFunction<PanelDesignerBlockEntity, UseOnContext, InteractionResult> handler
+    private Function<UseOnContext, ItemInteractionResult> makeInteraction(
+            BlockState state, BiFunction<PanelDesignerBlockEntity, UseOnContext, ItemInteractionResult> handler
     ) {
         return ctx -> {
             BlockPos origin = CEBlocks.PANEL_DESIGNER.get().getMainBlock(state, this);
@@ -110,7 +110,7 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
             if (atOrigin instanceof PanelDesignerBlockEntity master) {
                 return handler.apply(master, ctx);
             } else {
-                return InteractionResult.FAIL;
+                return ItemInteractionResult.FAIL;
             }
         };
     }
@@ -139,25 +139,25 @@ public class PanelDesignerBlockEntity extends CEBlockEntity implements Selection
         return components;
     }
 
-    private InteractionResult openUI(UseOnContext ctx) {
+    private ItemInteractionResult openUI(UseOnContext ctx) {
         if (ctx.getPlayer() instanceof ServerPlayer serverPlayer) {
-            NetworkHooks.openScreen(serverPlayer, new SimpleMenuProvider(
+            serverPlayer.openMenu(new SimpleMenuProvider(
                     CEContainers.PANEL_DESIGN.argConstructor(this), Component.empty()
             ));
         }
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
     public int getLengthRequired() {
         return requiredLength.get();
     }
 
-    private InteractionResult writeTape(UseOnContext ctx) {
+    private ItemInteractionResult writeTape(UseOnContext ctx) {
         final String instructions = CNCInstructionGenerator.toInstructions(components);
-        final byte[] bytes = BitUtils.toBytesWithParity(instructions);
-        state.tryTypeAll(new ByteArrayList(bytes, 0, bytes.length));
+        final ByteList bytes = BitUtils.toBytesWithParity(instructions);
+        state.tryTypeAll(bytes);
         setChanged();
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
     public KeypunchState getKeypunch() {

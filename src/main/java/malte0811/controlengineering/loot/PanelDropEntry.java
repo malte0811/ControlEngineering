@@ -1,12 +1,10 @@
 package malte0811.controlengineering.loot;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.CEBlocks;
-import net.minecraft.nbt.CompoundTag;
+import malte0811.controlengineering.itemdata.CEDataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
@@ -32,9 +30,9 @@ public class PanelDropEntry extends LootPoolSingletonContainer {
     @Override
     protected void createItemStack(@Nonnull Consumer<ItemStack> stackConsumer, @Nonnull LootContext context) {
         if (CELootFunctions.getMasterBE(context) instanceof ControlPanelBlockEntity panel) {
-            CompoundTag tag = panel.getData().copy(true).toNBT();
             ItemStack toDrop = new ItemStack(CEBlocks.CONTROL_PANEL.get(), 1);
-            toDrop.setTag(tag);
+            toDrop.set(CEDataComponents.PANEL_TRANSFORM, panel.getTransform().getBaseTransform());
+            toDrop.set(CEDataComponents.PANEL_COMPONENTS, panel.getComponents());
             stackConsumer.accept(toDrop);
         }
     }

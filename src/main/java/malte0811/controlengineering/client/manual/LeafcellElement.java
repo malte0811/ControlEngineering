@@ -39,7 +39,7 @@ public class LeafcellElement<State> extends SpecialManualElement {
     }
 
     public static LeafcellElement<?> from(JsonObject obj, ManualInstance manual) {
-        return from(new ResourceLocation(obj.get("cell").getAsString()), manual);
+        return from(ResourceLocation.parse(obj.get("cell").getAsString()), manual);
     }
 
     @Override

@@ -46,7 +46,7 @@ public class SchematicItem extends Item implements ISchematicItem {
     @Override
     public void appendHoverText(
             @Nonnull ItemStack stack,
-            @Nullable Level level,
+            @Nonnull TooltipContext context,
             @Nonnull List<Component> tooltipComponents,
             @Nonnull TooltipFlag isAdvanced
     ) {

@@ -108,17 +108,16 @@ public record LogicWorkbenchModel(
     private record Geometry(BlockModel workbench, BlockModel schematic) implements IUnbakedGeometry<Geometry> {
         @Override
         public BakedModel bake(
-                IGeometryBakingContext owner,
+                IGeometryBakingContext context,
                 ModelBaker baker,
                 Function<Material, TextureAtlasSprite> spriteGetter,
-                ModelState modelTransform,
-                ItemOverrides overrides,
-                ResourceLocation modelLocation
+                ModelState modelState,
+                ItemOverrides overrides
         ) {
             return new LogicWorkbenchModel(
-                    workbench.bake(baker, workbench, spriteGetter, modelTransform, modelLocation, false),
-                    schematic.bake(baker, schematic, spriteGetter, modelTransform, modelLocation, false),
-                    owner.getTransforms()
+                    workbench.bake(baker, workbench, spriteGetter, modelState, false),
+                    schematic.bake(baker, schematic, spriteGetter, modelState, false),
+                    context.getTransforms()
             );
         }
     }

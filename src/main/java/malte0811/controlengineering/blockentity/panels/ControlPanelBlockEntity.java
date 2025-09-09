@@ -89,13 +89,17 @@ public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterf
         readComponentsAndTransform(nbt);
     }
 
-    public void readComponentsAndTransform(CompoundTag nbt) {
-        final PanelData data = new PanelData(nbt, getBlockState().getValue(PanelOrientation.PROPERTY));
-        this.transform = data.getTransform();
-        this.components = data.getComponents();
+    public void setPanel(List<PlacedComponent> components, PanelTransform.BETransformData transform) {
+        this.transform = new PanelTransform(transform, getBlockState().getValue(PanelOrientation.PROPERTY));
+        this.components = components;
         if (level != null && !level.isClientSide) {
             resetStateHandler();
         }
+    }
+
+    public void readComponentsAndTransform(CompoundTag nbt) {
+        final PanelData data = new PanelData(nbt, getBlockState().getValue(PanelOrientation.PROPERTY));
+        setPanel(data.components(), data.transform().getBaseTransform());
     }
 
     @Override
@@ -107,19 +111,19 @@ public class ControlPanelBlockEntity extends CEBlockEntity implements IBusInterf
     }
 
     @Override
-    protected void writeSyncedData(CompoundTag out) {
+    protected void writeSyncedData(CompoundTag out, HolderLookup.Provider provider) {
         out.merge(new PanelData(this).toNBT());
     }
 
     @Override
-    protected void readSyncedData(CompoundTag in) {
+    protected void readSyncedData(CompoundTag in, HolderLookup.Provider provider) {
         readComponentsAndTransform(in);
     }
 
     @Override
     public void saveAdditional(@Nonnull CompoundTag compound, HolderLookup.Provider provider) {
         super.saveAdditional(compound, provider);
-        writeSyncedData(compound);
+        writeSyncedData(compound, provider);
     }
 
     public List<PlacedComponent> getComponents() {

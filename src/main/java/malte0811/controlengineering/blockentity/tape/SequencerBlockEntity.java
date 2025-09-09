@@ -20,7 +20,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -122,8 +122,8 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
     }
 
     @Override
-    protected void readSyncedData(CompoundTag in) {
-        super.readSyncedData(in);
+    protected void readSyncedData(CompoundTag in, HolderLookup.Provider provider) {
+        super.readSyncedData(in, provider);
         final boolean oldCompact = compact;
         final boolean oldAutoreset = autoreset;
         final boolean hadClock = hasClock();
@@ -136,8 +136,8 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
     }
 
     @Override
-    protected void writeSyncedData(CompoundTag out) {
-        super.writeSyncedData(out);
+    protected void writeSyncedData(CompoundTag out, HolderLookup.Provider provider) {
+        super.writeSyncedData(out, provider);
         writeSharedData(out);
         out.put("hasClock", clock.toClientNBT());
         out.put("syncTape", tape.toClientNBT());
@@ -171,21 +171,21 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
                 autoreset = !autoreset;
                 BEUtil.markDirtyAndSync(this);
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }).setTextGetter(() -> Component.translatable(autoreset ? AUTORESET_KEY : MANUAL_RESET_KEY)));
         shapes.add(new SingleShape(createPixelRelative(10, 3, 0, 12, 6, 1), $ -> {
             if (level != null && !level.isClientSide()) {
                 compact = !compact;
                 BEUtil.markDirtyAndSync(this);
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }).setTextGetter(() -> Component.translatable(compact ? COMPACT_KEY : ANALOG_KEY)));
         shapes.add(new SingleShape(
                 ShapeUtils.createPixelRelative(0, 6, 6, 5, 10, 10),
                 ctx -> clock.click(ctx, () -> BEUtil.markDirtyAndSync(this))
         ));
         return new ListShapes(
-                Shapes.block(), MatrixUtils.inverseFacing(d), shapes, $ -> InteractionResult.PASS
+                Shapes.block(), MatrixUtils.inverseFacing(d), shapes, $ -> ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
         );
     }
 
@@ -221,10 +221,10 @@ public class SequencerBlockEntity extends CEBlockEntity implements SelectionShap
 
     @Override
     public BusState getEmittedState() {
-        if (!tape.hasTape() || currentTapePosition >= tape.getTapeContent().length) {
+        if (!tape.hasTape() || currentTapePosition >= tape.getTapeContent().size()) {
             return BusState.EMPTY;
         }
-        final byte toSend = tape.getTapeContent()[currentTapePosition];
+        final byte toSend = tape.getTapeContent().getByte(currentTapePosition);
         if (compact) {
             int[] line = new int[BusLine.LINE_SIZE];
             for (int i = 0; i < Byte.SIZE; ++i) {

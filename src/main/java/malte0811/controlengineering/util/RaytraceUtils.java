@@ -5,7 +5,8 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.ClipContext.Block;
 import net.minecraft.world.level.ClipContext.Fluid;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.ForgeMod;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 public class RaytraceUtils {
     public static ClipContext create(Player e, float partialTicks) {
@@ -13,7 +14,7 @@ public class RaytraceUtils {
     }
 
     public static ClipContext create(Player e, float partialTicks, Vec3 offset) {
-        double rayTraceDistance = e.getAttributeValue(ForgeMod.BLOCK_REACH.get());
+        double rayTraceDistance = e.blockInteractionRange();
         Vec3 startVec = e.getEyePosition(partialTicks).subtract(offset);
         Vec3 lookDirection = e.getViewVector(partialTicks);
         Vec3 endVec = startVec.add(
@@ -21,6 +22,6 @@ public class RaytraceUtils {
                 lookDirection.y * rayTraceDistance,
                 lookDirection.z * rayTraceDistance
         );
-        return new ClipContext(startVec, endVec, Block.VISUAL, Fluid.NONE, null);
+        return new ClipContext(startVec, endVec, Block.VISUAL, Fluid.NONE, CollisionContext.empty());
     }
 }

@@ -23,8 +23,8 @@ public class RSRemapperScreen extends AbstractRemapperScreen {
     }
 
     @Override
-    public void renderBackground(@Nonnull GuiGraphics graphics) {
-        super.renderBackground(graphics);
+    public void renderBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTicks);
         graphics.pose().pushPose();
         graphics.pose().translate(leftPos, topPos, 0);
         POINTS_LEFT.blit(graphics.pose(), WRAP_X_COLOR - 8, FIRST_WRAP_Y - 2);

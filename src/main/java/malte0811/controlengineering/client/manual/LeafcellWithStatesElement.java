@@ -66,7 +66,7 @@ public class LeafcellWithStatesElement extends SpecialManualElement {
     }
 
     public static LeafcellWithStatesElement from(ManualInstance manual, JsonObject obj) {
-        return new LeafcellWithStatesElement(manual, new ResourceLocation(obj.get("cell").getAsString()));
+        return new LeafcellWithStatesElement(manual, ResourceLocation.parse(obj.get("cell").getAsString()));
     }
 
     @Override

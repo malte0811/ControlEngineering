@@ -14,7 +14,7 @@ import malte0811.controlengineering.util.mycodec.MyCodec;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import malte0811.controlengineering.util.mycodec.record.CodecField;
 import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
@@ -33,7 +33,7 @@ public class KeySwitch extends PanelComponentType<BusSignalRef, KeySwitch.State>
     }
 
     @Override
-    public Pair<InteractionResult, State> click(BusSignalRef outSignal, State oldState, ComponentClickContext ctx) {
+    public Pair<ItemInteractionResult, State> click(BusSignalRef outSignal, State oldState, ComponentClickContext ctx) {
         final var heldStack = ctx.getHeldItem();
         switch (oldState.baseState) {
             case EMPTY -> {

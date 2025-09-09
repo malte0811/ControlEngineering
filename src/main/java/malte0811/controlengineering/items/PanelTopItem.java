@@ -7,6 +7,7 @@ import malte0811.controlengineering.client.model.panel.PanelItemRenderer;
 import malte0811.controlengineering.controlpanels.PanelData;
 import malte0811.controlengineering.controlpanels.PanelTransform;
 import malte0811.controlengineering.controlpanels.PlacedComponent;
+import malte0811.controlengineering.itemdata.CEDataComponents;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -47,22 +48,13 @@ public class PanelTopItem extends Item {
         return getComponentsOn(candidate).isEmpty();
     }
 
-    private static final String COMPONENTS_KEY = "components";
-
     public static List<PlacedComponent> getComponentsOn(ItemStack panel) {
-        CompoundTag fullNBT = panel.getTag();
-        if (fullNBT == null) {
-            return ImmutableList.of();
-        }
-        ListTag componentList = fullNBT.getList(COMPONENTS_KEY, Tag.TAG_COMPOUND);
-        return PlacedComponent.readListFromNBT(componentList);
+        return panel.getOrDefault(CEDataComponents.PANEL_COMPONENTS, List.of());
     }
 
     public static ItemStack createWithComponents(List<PlacedComponent> components) {
-        CompoundTag resultTag = new CompoundTag();
-        resultTag.put(COMPONENTS_KEY, PlacedComponent.writeListToNBT(components));
-        ItemStack resultStack = new ItemStack(CEItems.PANEL_TOP.get(), 1);
-        resultStack.setTag(resultTag);
+        ItemStack resultStack = CEItems.PANEL_TOP.toStack();
+        resultStack.set(CEDataComponents.PANEL_COMPONENTS, components);
         return resultStack;
     }
 }

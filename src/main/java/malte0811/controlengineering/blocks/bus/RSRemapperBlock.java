@@ -17,8 +17,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -28,6 +30,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
@@ -62,20 +65,20 @@ public class RSRemapperBlock extends CEBlock<Direction> {
 
     @Nonnull
     @Override
-    public InteractionResult use(
+    public ItemInteractionResult useItemOn(
+            ItemStack held,
             @Nonnull BlockState state, @Nonnull Level worldIn, @Nonnull BlockPos pos,
             @Nonnull Player player, @Nonnull InteractionHand handIn, @Nonnull BlockHitResult hit
     ) {
-        var held = player.getItemInHand(handIn);
         if (held.is(IETags.screwdrivers) && worldIn.getBlockEntity(pos) instanceof RSRemapperBlockEntity remapper) {
             if (player instanceof ServerPlayer serverPlayer) {
-                NetworkHooks.openScreen(serverPlayer, new SimpleMenuProvider(
+                serverPlayer.openMenu(new SimpleMenuProvider(
                         CEContainers.RS_REMAPPER.argConstructor(remapper), Component.empty()
                 ));
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override

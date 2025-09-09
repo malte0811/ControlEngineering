@@ -32,9 +32,9 @@ public class PCBStackItem extends Item implements ISchematicItem {
 
     @Override
     public void appendHoverText(
-            @Nonnull ItemStack stack, @Nullable Level level, @Nonnull List<Component> out, @Nonnull TooltipFlag advanced
+            @Nonnull ItemStack stack, @Nonnull TooltipContext context, @Nonnull List<Component> out, @Nonnull TooltipFlag advanced
     ) {
-        super.appendHoverText(stack, level, out, advanced);
+        super.appendHoverText(stack, context, out, advanced);
         out.add(useIn(CEBlocks.LOGIC_CABINET));
     }
 

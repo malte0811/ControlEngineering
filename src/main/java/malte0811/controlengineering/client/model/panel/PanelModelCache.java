@@ -84,9 +84,9 @@ public class PanelModelCache {
         @Override
         public MixedModel load(@Nonnull PanelData cacheKey) {
             PoseStack transform = new PoseStack();
-            transform.pushTransformation(new Transformation(cacheKey.getTransform().getPanelTopToWorld()));
+            transform.pushTransformation(new Transformation(cacheKey.transform().getPanelTopToWorld()));
             transform.scale(1 / 16f, 1 / 16f, 1 / 16f);
-            return ComponentRenderers.renderAll(cacheKey.getComponents(), transform, staticTypes);
+            return ComponentRenderers.renderAll(cacheKey.components(), transform, staticTypes);
         }
     }
 
@@ -113,7 +113,7 @@ public class PanelModelCache {
             PoseStack transform = new PoseStack();
             TextureAtlasSprite panelTexture = PanelRenderer.PANEL_TEXTURE.get();
             renderPanel(
-                    cacheKey.getTransform(),
+                    cacheKey.transform(),
                     BakedQuadVertexBuilder.makeNonInterpolating(panelTexture, transform, quads)
             );
             // TODO render type
@@ -135,8 +135,8 @@ public class PanelModelCache {
                 .setSprite(texture)
                 .setNormal(new Vec3(0, -1, 0))
                 .writeTo(builder);
-        final double frontHeight = transform.getFrontHeight();
-        final double backHeight = transform.getBackHeight();
+        final double frontHeight = transform.getBaseTransform().getFrontHeight();
+        final double backHeight = transform.getBaseTransform().getBackHeight();
         renderConnections(builder, texture, bottomVertices, topVertices, new double[]{
                 frontHeight, backHeight, backHeight, frontHeight
         });

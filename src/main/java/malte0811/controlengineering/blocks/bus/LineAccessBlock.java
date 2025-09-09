@@ -13,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -58,7 +59,8 @@ public class LineAccessBlock extends CEBlock<Direction> {
 
     @Nonnull
     @Override
-    public InteractionResult use(
+    public ItemInteractionResult useItemOn(
+            ItemStack held,
             @Nonnull BlockState state,
             @Nonnull Level worldIn,
             @Nonnull BlockPos pos,
@@ -66,7 +68,6 @@ public class LineAccessBlock extends CEBlock<Direction> {
             @Nonnull InteractionHand handIn,
             @Nonnull BlockHitResult hit
     ) {
-        ItemStack held = player.getItemInHand(handIn);
         if (held.is(IETags.screwdrivers) && worldIn.getBlockEntity(pos) instanceof LineAccessBlockEntity lineBE) {
 
             lineBE.selectedLine = (lineBE.selectedLine + 1) % BusWireType.NUM_LINES;
@@ -74,8 +75,8 @@ public class LineAccessBlock extends CEBlock<Direction> {
 
             worldIn.sendBlockUpdated(pos, lineBE.getBlockState(), lineBE.getBlockState(), Block.UPDATE_ALL);
 
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 }

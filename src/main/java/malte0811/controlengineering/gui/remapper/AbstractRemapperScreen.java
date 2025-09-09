@@ -51,7 +51,7 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
 
     @Override
     public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTick);
         graphics.pose().pushPose();
         graphics.pose().translate(leftPos, topPos, 0);
         renderConnections(graphics);
@@ -71,8 +71,8 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
     }
 
     @Override
-    public void renderBackground(@Nonnull GuiGraphics graphics) {
-        super.renderBackground(graphics);
+    public void renderBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTicks);
         graphics.pose().pushPose();
         graphics.pose().translate(leftPos, topPos, 0);
         BACKGROUND.blit(graphics.pose(), 0, 0);

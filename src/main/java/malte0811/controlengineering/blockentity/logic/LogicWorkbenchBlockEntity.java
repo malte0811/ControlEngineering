@@ -35,6 +35,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -87,7 +88,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
                 Direction facing = state.getValue(LogicWorkbenchBlock.FACING);
                 VoxelShape baseShape = LogicWorkbenchBlock.SHAPE.apply(offset, facing);
                 if (offset == LogicWorkbenchBlock.Offset.TOP_RIGHT) {
-                    Function<UseOnContext, InteractionResult> create = makeInteraction(
+                    Function<UseOnContext, ItemInteractionResult> create = makeInteraction(
                             state, LogicWorkbenchBlockEntity::handleSolderingClick
                     );
                     SelectionShapes wireDrawer = makeDrawerShape(
@@ -97,7 +98,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
                             baseShape,
                             MatrixUtils.inverseFacing(facing),
                             ImmutableList.of(new SingleShape(LogicWorkbenchBlock.BURNER, create), wireDrawer),
-                            $ -> InteractionResult.PASS
+                            $ -> ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
                     );
                 } else if (offset == LogicWorkbenchBlock.Offset.TOP_LEFT) {
                     SelectionShapes wireDrawer = makeDrawerShape(
@@ -110,7 +111,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
                             baseShape,
                             MatrixUtils.inverseFacing(facing),
                             ImmutableList.of(tubeDrawer, wireDrawer),
-                            $ -> InteractionResult.PASS
+                            $ -> ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
                     );
                 } else {
                     return new SingleShape(baseShape,
@@ -123,15 +124,15 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
         super(type, pos, state);
     }
 
-    private Function<UseOnContext, InteractionResult> makeInteraction(
-            BlockState state, BiFunction<LogicWorkbenchBlockEntity, UseOnContext, InteractionResult> handler
+    private Function<UseOnContext, ItemInteractionResult> makeInteraction(
+            BlockState state, BiFunction<LogicWorkbenchBlockEntity, UseOnContext, ItemInteractionResult> handler
     ) {
         return ctx -> {
             LogicWorkbenchBlockEntity atOrigin = getOrComputeMasterBE(state);
             if (atOrigin != null) {
                 return handler.apply(atOrigin, ctx);
             } else {
-                return InteractionResult.FAIL;
+                return ItemInteractionResult.FAIL;
             }
         };
     }
@@ -157,7 +158,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
     }
 
     @Override
-    protected void writeSyncedData(CompoundTag out) {
+    protected void writeSyncedData(CompoundTag out, HolderLookup.Provider provider) {
         writeCommonData(out);
         out.putBoolean("hasSchematic", schematic != null);
     }
@@ -168,7 +169,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
     }
 
     @Override
-    protected void readSyncedData(CompoundTag in) {
+    protected void readSyncedData(CompoundTag in, HolderLookup.Provider provider) {
         readCommonData(in);
         var hadSchematic = schematic != null;
         var hasSchematic = in.getBoolean("hasSchematic");
@@ -204,9 +205,9 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
         readCommonData(nbt);
     }
 
-    private InteractionResult handleMainClick(UseOnContext ctx) {
+    private ItemInteractionResult handleMainClick(UseOnContext ctx) {
         if (level == null) {
-            return InteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         } else if (schematic != null) {
             if (!level.isClientSide) {
                 if (ctx.getPlayer() != null && ctx.getPlayer().isShiftKeyDown()) {
@@ -219,7 +220,7 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
                     );
                 }
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         } else if (ctx.getItemInHand().is(CEItems.SCHEMATIC.get())) {
             if (!level.isClientSide) {
                 schematic = Objects.requireNonNullElseGet(
@@ -228,34 +229,34 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
                 ctx.getItemInHand().shrink(1);
                 BEUtil.markDirtyAndSync(this);
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         } else {
-            return InteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
     }
 
-    private InteractionResult handleSolderingClick(UseOnContext ctx) {
+    private ItemInteractionResult handleSolderingClick(UseOnContext ctx) {
         if (ctx.getPlayer() == null) {
-            return InteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (ctx.getItemInHand().is(IEItemRefs.CIRCUIT_BOARD.asItem())) {
             return handleCreationClick(ctx.getPlayer(), ctx.getItemInHand());
         } else if (ctx.getItemInHand().is(CEItems.PCB_STACK.get())) {
             return handleDisassemblyClick(ctx.getPlayer(), ctx.getItemInHand());
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
-    private InteractionResult handleCreationClick(Player player, ItemStack heldStack) {
+    private ItemInteractionResult handleCreationClick(Player player, ItemStack heldStack) {
         if (schematic == null) {
-            return InteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (level == null || level.isClientSide) {
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
         Optional<BusConnectedCircuit> circuit = SchematicCircuitConverter.toCircuit(schematic);
         if (circuit.isEmpty()) {
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
         }
         final int numTubes = schematic.getNumLogicTubes();
         final int numBoards = schematic.getNumBoards();
@@ -264,10 +265,10 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
                     Component.translatable(MORE_BOARDS_THAN_MAX, numBoards, LogicCabinetBlockEntity.MAX_NUM_BOARDS),
                     true
             );
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
         } else if (numBoards > heldStack.getCount()) {
             player.displayClientMessage(Component.translatable(TOO_FEW_BOARDS_HELD, numBoards), true);
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
         }
         final int numWires = schematic.getWireLength();
         if (!level.isClientSide) {
@@ -287,25 +288,25 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
                 player.displayClientMessage(Component.translatable(TOO_FEW_WIRES, numWires), true);
             }
         }
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
-    private InteractionResult handleDisassemblyClick(Player player, ItemStack heldStack) {
+    private ItemInteractionResult handleDisassemblyClick(Player player, ItemStack heldStack) {
         if (!player.isShiftKeyDown()) {
-            return InteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         final var heldSchematic = ISchematicItem.getSchematic(heldStack);
         if (heldSchematic == null) {
-            return InteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         } else if (level == null || level.isClientSide) {
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
         heldStack.shrink(1);
         ItemUtil.giveOrDrop(player, ISchematicItem.create(CEItems.SCHEMATIC, heldSchematic));
         ItemUtil.giveOrDrop(player, new ItemStack(IEItemRefs.CIRCUIT_BOARD, heldSchematic.getNumBoards()));
         ItemUtil.giveOrDrop(player, getRecovered(IEItemRefs.TUBE, heldSchematic.getNumLogicTubes(), 50));
         ItemUtil.giveOrDrop(player, getRecovered(IEItemRefs.WIRE, heldSchematic.getWireLength(), 5));
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
     private static ItemStack getRecovered(ItemLike item, int numAvailable, int breakOneIn) {
@@ -329,10 +330,10 @@ public class LogicWorkbenchBlockEntity extends CEBlockEntity implements Selectio
     private SelectionShapes makeDrawerShape(
             BlockState state, VoxelShape shape, Function<LogicWorkbenchBlockEntity, CircuitIngredientDrawer> getDrawer
     ) {
-        Function<UseOnContext, InteractionResult> onClick = makeInteraction(
+        Function<UseOnContext, ItemInteractionResult> onClick = makeInteraction(
                 state,
                 (bEntity, ctx) -> {
-                    InteractionResult ret = getDrawer.apply(bEntity).interact(ctx);
+                    ItemInteractionResult ret = getDrawer.apply(bEntity).interact(ctx);
                     bEntity.level.sendBlockUpdated(
                             bEntity.worldPosition, bEntity.getBlockState(), bEntity.getBlockState(), Block.UPDATE_ALL
                     );

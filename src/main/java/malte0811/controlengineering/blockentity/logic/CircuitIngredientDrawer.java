@@ -5,7 +5,7 @@ import malte0811.controlengineering.util.LambdaMutable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -30,7 +30,7 @@ public class CircuitIngredientDrawer {
         this.emptyKey = emptyKey;
     }
 
-    public InteractionResult interact(UseOnContext ctx) {
+    public ItemInteractionResult interact(UseOnContext ctx) {
         final ItemStack held = ctx.getItemInHand();
         if (held.is(filter) && canCombine(storedType, held)) {
             if (!ctx.getLevel().isClientSide) {
@@ -43,16 +43,16 @@ public class CircuitIngredientDrawer {
                 }
                 held.shrink(toAdd);
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         } else if (!storedType.isEmpty() && ctx.getPlayer() != null) {
             if (!ctx.getLevel().isClientSide) {
                 final int count = Math.min(this.storedCount, this.storedType.getMaxStackSize());
-                ItemUtil.giveOrDrop(ctx.getPlayer(), ItemHandlerHelper.copyStackWithSize(this.storedType, count));
+                ItemUtil.giveOrDrop(ctx.getPlayer(), this.storedType.copyWithCount(count));
                 consume(count);
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     private static boolean canCombine(ItemStack existing, ItemStack added) {
@@ -123,7 +123,7 @@ public class CircuitIngredientDrawer {
     public void drop(Consumer<ItemStack> dropper) {
         while (this.storedCount > 0) {
             final int count = Math.min(this.storedCount, this.storedType.getMaxStackSize());
-            dropper.accept(ItemHandlerHelper.copyStackWithSize(this.storedType, count));
+            dropper.accept(this.storedType.copyWithCount(count));
             consume(count);
         }
         clear();

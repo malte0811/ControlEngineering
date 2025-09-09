@@ -1,7 +1,7 @@
 package malte0811.controlengineering.gui.tape;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import malte0811.controlengineering.ControlEngineering;
+import it.unimi.dsi.fastutil.bytes.ByteList;
 import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.network.CutTapePacket;
 import malte0811.controlengineering.util.RLUtils;
@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -24,13 +25,13 @@ public class ViewTapeScreen extends Screen {
     private static final int FIRST_HOLE_Y = 65;
     private static final int TAPE_MIN_Y = FIRST_HOLE_Y - 2;
     private static final int NUM_VISIBLE_CHARS = 27;
-    private final byte[] fullData;
+    private final ByteList fullData;
     private int offset = 0;
     private final TapeRender tapeRender;
     private final boolean canCut;
     private final InteractionHand tapeHand;
 
-    public ViewTapeScreen(String titleIn, byte[] data, InteractionHand tapeHand) {
+    public ViewTapeScreen(String titleIn, ByteList data, InteractionHand tapeHand) {
         super(Component.literal(titleIn));
         this.fullData = data;
         this.canCut = CutTapePacket.canCut(tapeHand, Objects.requireNonNull(Minecraft.getInstance().player));
@@ -56,7 +57,7 @@ public class ViewTapeScreen extends Screen {
 
     @Override
     public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, BASE_SCREEN);
         int startX = (this.width - WIDTH) / 2;
@@ -87,14 +88,14 @@ public class ViewTapeScreen extends Screen {
             return -1;
         }
         int row = (int) Math.round((mouseX - FIRST_CHAR_X - 1.5) / TapeRender.CHAR_DISTANCE);
-        if (row < 0 || row < -offset || row >= NUM_VISIBLE_CHARS || row >= fullData.length - offset) {
+        if (row < 0 || row < -offset || row >= NUM_VISIBLE_CHARS || row >= fullData.size() - offset) {
             return -1;
         }
         return row;
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta, double unknown) {
         if (delta < 0) {
             incOffset();
         } else {
@@ -110,7 +111,7 @@ public class ViewTapeScreen extends Screen {
         int visualRow = getVisualFocussedRow(mouseX - startX, mouseY - startY);
         if (canCut && visualRow >= 0) {
             onClose();
-            ControlEngineering.NETWORK.sendToServer(new CutTapePacket(tapeHand, visualRow + offset));
+            PacketDistributor.sendToServer(new CutTapePacket(tapeHand, visualRow + offset));
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -120,8 +121,8 @@ public class ViewTapeScreen extends Screen {
         byte[] result = new byte[NUM_VISIBLE_CHARS];
         for (int i = 0; i < NUM_VISIBLE_CHARS; ++i) {
             int actualIndex = i + offset;
-            if (actualIndex < fullData.length && actualIndex >= 0) {
-                result[i] = fullData[actualIndex];
+            if (actualIndex < fullData.size() && actualIndex >= 0) {
+                result[i] = fullData.getByte(actualIndex);
             } else {
                 result[i] = 0;
             }
@@ -135,7 +136,7 @@ public class ViewTapeScreen extends Screen {
     }
 
     private void incOffset() {
-        if (offset < Math.max(fullData.length - NUM_VISIBLE_CHARS / 2, 0)) {
+        if (offset < Math.max(fullData.size() - NUM_VISIBLE_CHARS / 2, 0)) {
             ++offset;
         }
         tapeRender.setData(getShownBytes());

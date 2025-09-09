@@ -22,9 +22,10 @@ public class CachedPanelShape extends CachedShape<PanelTransform> {
     }
 
     public static VoxelShape getPanelShape(PanelTransform transform) {
+        final var baseTransform = transform.getBaseTransform();
         List<AABB> parts = new ArrayList<>();
-        final double frontHeight = Math.max(transform.getCenterHeight(), transform.getFrontHeight());
-        final double backHeight = Math.max(transform.getCenterHeight(), transform.getBackHeight());
+        final double frontHeight = Math.max(baseTransform.centerHeight(), baseTransform.getFrontHeight());
+        final double backHeight = Math.max(baseTransform.centerHeight(), baseTransform.getBackHeight());
         parts.add(new AABB(0, 0, 0, 0.5, frontHeight, 1));
         parts.add(new AABB(0.5, 0, 0, 1, backHeight, 1));
         return ShapeUtils.or(parts.stream().map(ShapeUtils.transformFunc(transform.getPanelBottomToWorld())));

@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import malte0811.controlengineering.util.FastDataResult;
 import malte0811.controlengineering.util.mycodec.serial.SerialStorage;
 
-import java.util.Objects;
 import java.util.function.Function;
 
 public final class DispatchCodec<Type, Instance> implements MyCodec<Instance> {
@@ -23,7 +22,9 @@ public final class DispatchCodec<Type, Instance> implements MyCodec<Instance> {
         this.typeCodec = typeCodec;
         this.type = type;
         this.codec = codec;
-        this.dfuCodec = typeCodec.dispatch(type, t -> codec.apply(t).toDFUCodec(), typeKey, dataKey);
+        this.dfuCodec = typeCodec.toDFUCodec()
+                .<Instance>dispatchMap(typeKey, type, t -> codec.apply(t).toDFUCodec().fieldOf(dataKey))
+                .codec();
     }
 
     @Override

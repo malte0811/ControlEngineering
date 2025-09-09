@@ -1,5 +1,6 @@
 package malte0811.controlengineering.client;
 
+import it.unimi.dsi.fastutil.bytes.ByteList;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.logic.LogicDesignScreen;
 import malte0811.controlengineering.gui.panel.PanelDesignScreen;
@@ -15,7 +16,7 @@ import net.minecraft.world.InteractionHand;
  * Client code called from common code; in a separate class for classloading safety
  */
 public class ClientHooks {
-    public static void openTape(byte[] data, InteractionHand hand) {
+    public static void openTape(ByteList data, InteractionHand hand) {
         Minecraft.getInstance().setScreen(new ViewTapeScreen("Tape", data, hand));
     }
 

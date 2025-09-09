@@ -13,11 +13,6 @@ public record TypeChar(byte typed) implements KeypunchSubPacket {
     );
 
     @Override
-    public void write(FriendlyByteBuf out) {
-        out.writeByte(typed);
-    }
-
-    @Override
     public boolean process(KeypunchState state) {
         return state.tryTypeChar(typed, true);
     }

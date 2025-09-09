@@ -41,8 +41,8 @@ public abstract class StackedScreen extends Screen {
     }
 
     @Override
-    public final void renderBackground(@Nonnull GuiGraphics graphics) {
-        super.renderBackground(graphics);
+    public final void renderBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTicks);
     }
 
     private void renderWithPrevious(
@@ -57,7 +57,7 @@ public abstract class StackedScreen extends Screen {
             graphics.pose().popPose();
         }
         if (isTop) {
-            renderBackground(graphics);
+            renderBackground(graphics, mouseX, mouseY, partialTicks);
         }
         renderCustomBackground(graphics, mouseX, mouseY, partialTicks);
         renderForeground(graphics, mouseX, mouseY, partialTicks);

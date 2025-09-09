@@ -38,6 +38,6 @@ public class PanelItemRenderer extends BlockEntityWithoutLevelRenderer {
         );
         baseRender.setLight(combinedLight);
         baseRender.setOverlay(combinedOverlay);
-        PanelModelCache.renderPanel(data.getTransform(), baseRender);
+        PanelModelCache.renderPanel(data.transform(), baseRender);
     }
 }

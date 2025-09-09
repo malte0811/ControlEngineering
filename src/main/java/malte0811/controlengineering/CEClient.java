@@ -20,7 +20,6 @@ public class CEClient {
     @SubscribeEvent
     public static void clientInit(FMLClientSetupEvent ev) {
         ComponentRenderers.init();
-        ContainerScreenManager.registerScreens();
         CEManual.initManual();
         ClientSymbols.init();
     }

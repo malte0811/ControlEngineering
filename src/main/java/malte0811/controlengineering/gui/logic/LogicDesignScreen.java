@@ -447,7 +447,7 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     }
 
     private void sendToServer(LogicSubPacket data) {
-        ControlEngineering.NETWORK.sendToServer(new LogicPacket(data));
+        PacketDistributor.sendToServer(new LogicPacket(data));
         updateErrors();
     }
 

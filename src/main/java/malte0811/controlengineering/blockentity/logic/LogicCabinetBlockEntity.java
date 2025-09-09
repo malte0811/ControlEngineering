@@ -34,6 +34,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -127,13 +128,13 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
     }
 
     @Override
-    protected void writeSyncedData(CompoundTag result) {
+    protected void writeSyncedData(CompoundTag result, HolderLookup.Provider provider) {
         result.put("hasClock", clock.toClientNBT());
         result.putInt("numTubes", numRenderTubes);
     }
 
     @Override
-    protected void readSyncedData(CompoundTag tag) {
+    protected void readSyncedData(CompoundTag tag, HolderLookup.Provider provider) {
         clock.loadClientNBT(tag.get("hasClock"));
         numRenderTubes = tag.getInt("numTubes");
         requestModelDataUpdate();
@@ -261,7 +262,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         );
     }
 
-    private InteractionResult mainInteraction(UseOnContext ctx) {
+    private ItemInteractionResult mainInteraction(UseOnContext ctx) {
         if (ctx.getItemInHand().is(IETags.hammers)) {
             if (level != null && !level.isClientSide) {
                 var otherPos = isUpper(getBlockState()) ? worldPosition.below() : worldPosition.above();
@@ -273,9 +274,9 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
                     }
                 }
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     private static SelectionShapes makeClockInteraction(LogicCabinetBlockEntity bEntity) {
@@ -293,7 +294,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
         return new SingleShape(
                 fullShape, ctx -> {
             if (ctx.getPlayer() == null) {
-                return InteractionResult.PASS;
+                return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             }
             if (!ctx.getLevel().isClientSide) {
                 final Pair<Schematic, BusConnectedCircuit> oldSchematic = bEntity.circuit;
@@ -310,7 +311,7 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
                 }
                 BEUtil.markDirtyAndSync(bEntity);
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         });
     }
 
@@ -322,11 +323,11 @@ public class LogicCabinetBlockEntity extends CEBlockEntity implements SelectionS
                 shape, ctx -> {
             final Player player = ctx.getPlayer();
             if (player instanceof ServerPlayer serverPlayer && bEntity.circuit != null) {
-                NetworkHooks.openScreen(serverPlayer, new SimpleMenuProvider(
+                serverPlayer.openMenu(new SimpleMenuProvider(
                         (id, $, $2) -> CEContainers.LOGIC_DESIGN_VIEW.makeNew(id, bEntity), Component.empty()
                 ));
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         });
     }
 

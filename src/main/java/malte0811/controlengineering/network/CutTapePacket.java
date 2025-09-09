@@ -1,6 +1,8 @@
 package malte0811.controlengineering.network;
 
 import blusunrize.immersiveengineering.api.utils.codec.IEStreamCodecs;
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import it.unimi.dsi.fastutil.bytes.ByteList;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.util.ItemUtil;
@@ -29,22 +31,20 @@ public record CutTapePacket(InteractionHand hand, int offset) implements IPacket
         if (!canCut(hand, player)) {
             return;
         }
-        byte[] data = PunchedTapeItem.getBytes(player.getItemInHand(hand));
-        if (offset < 0 || offset >= data.length) {
+        ByteList data = PunchedTapeItem.getBytes(player.getItemInHand(hand));
+        if (offset < 0 || offset >= data.size()) {
             return;
         }
-        byte[] startData = new byte[offset];
-        byte[] endData = new byte[data.length - offset - 1];
-        System.arraycopy(data, 0, startData, 0, offset);
-        System.arraycopy(data, offset + 1, endData, 0, endData.length);
+        ByteList startData = new ByteArrayList(data.subList(0, offset));
+        ByteList endData = new ByteArrayList(data.subList(offset, data.size()));
         player.setItemInHand(hand, ItemStack.EMPTY);
         player.getItemInHand(otherHand(hand)).consume(1, player);
         giveTape(player, startData);
         giveTape(player, endData);
     }
 
-    private void giveTape(Player player, byte[] data) {
-        if (data.length > 0) {
+    private void giveTape(Player player, ByteList data) {
+        if (!data.isEmpty()) {
             ItemUtil.giveOrDrop(player, PunchedTapeItem.withBytes(data));
         }
     }

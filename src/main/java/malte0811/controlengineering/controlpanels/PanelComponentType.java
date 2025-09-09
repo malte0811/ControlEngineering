@@ -16,7 +16,7 @@ import malte0811.controlengineering.util.typereg.TypedRegistryEntry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -94,8 +94,8 @@ public abstract class PanelComponentType<Config, State>
         return oldState;
     }
 
-    public Pair<InteractionResult, State> click(Config config, State oldState, ComponentClickContext ctx) {
-        return Pair.of(InteractionResult.PASS, oldState);
+    public Pair<ItemInteractionResult, State> click(Config config, State oldState, ComponentClickContext ctx) {
+        return Pair.of(ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION, oldState);
     }
 
     @Nullable
@@ -122,7 +122,7 @@ public abstract class PanelComponentType<Config, State>
     public final List<IngredientWithSize> getCost(Level level) {
         if (level != null) {
             var recipe = level.getRecipeManager().byKey(getCostLocation()).orElse(null);
-            if (recipe instanceof ComponentCostRecipe componentCost) {
+            if (recipe != null && recipe.value() instanceof ComponentCostRecipe componentCost) {
                 return componentCost.getCost();
             }
         }
@@ -134,15 +134,15 @@ public abstract class PanelComponentType<Config, State>
     }
 
     public ResourceLocation getCostLocation() {
-        return new ResourceLocation(getRegistryName().getNamespace(), "component_cost/" + getRegistryName().getPath());
+        return getRegistryName().withPrefix("component_cost/");
     }
 
-    protected static <T> Pair<InteractionResult, T> success(T newState) {
-        return Pair.of(InteractionResult.SUCCESS, newState);
+    protected static <T> Pair<ItemInteractionResult, T> success(T newState) {
+        return Pair.of(ItemInteractionResult.SUCCESS, newState);
     }
 
-    protected static <T> Pair<InteractionResult, T> pass(T newState) {
-        return Pair.of(InteractionResult.PASS, newState);
+    protected static <T> Pair<ItemInteractionResult, T> pass(T newState) {
+        return Pair.of(ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION, newState);
     }
 
     public record ComponentClickContext(

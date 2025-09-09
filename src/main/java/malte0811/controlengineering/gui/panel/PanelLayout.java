@@ -25,6 +25,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.lwjgl.glfw.GLFW;
@@ -155,7 +156,7 @@ public class PanelLayout extends AbstractWidget {
 
     private boolean processAndSend(PanelSubPacket packet) {
         if (packet.process(Minecraft.getInstance().level, components)) {
-            ControlEngineering.NETWORK.sendToServer(new PanelPacket(packet));
+            PacketDistributor.sendToServer(new PanelPacket(packet));
             return true;
         } else {
             return false;

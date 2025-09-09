@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.CEBlocks;
 import malte0811.controlengineering.blocks.placement.PlacementBehavior;
+import malte0811.controlengineering.items.ControlPanelItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -70,11 +71,7 @@ public class PanelPlacementBehavior implements PlacementBehavior<PanelOrientatio
     @Override
     public void fillBEData(BlockPos offset, BlockEntity bEntity, PanelOrientation data, ItemStack item) {
         if (BlockPos.ZERO.equals(offset) && bEntity instanceof ControlPanelBlockEntity panel) {
-            CompoundTag nbt = item.getTag();
-            if (nbt == null || nbt.isEmpty()) {
-                nbt = panel.saveWithoutMetadata();
-            }
-            panel.readComponentsAndTransform(nbt);
+            panel.setPanel(ControlPanelItem.getComponents(item), ControlPanelItem.getTransform(item));
             panel.setChanged();
         }
     }

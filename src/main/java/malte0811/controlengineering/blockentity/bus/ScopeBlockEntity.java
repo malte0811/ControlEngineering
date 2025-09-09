@@ -36,6 +36,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -146,7 +147,7 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     }
 
     @Override
-    public void load(@Nonnull CompoundTag tag, HolderLookup.Provider provider) {
+    public void loadAdditional(@Nonnull CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
         modules = fixModuleList(MODULES_CODEC.fromNBT(tag.get("modules"), ArrayList::new));
         currentBusState = BusState.CODEC.fromNBT(tag.get("busInput"), () -> BusState.EMPTY);
@@ -166,14 +167,14 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
     }
 
     @Override
-    protected void writeSyncedData(CompoundTag out) {
-        super.writeSyncedData(out);
+    protected void writeSyncedData(CompoundTag out, HolderLookup.Provider provider) {
+        super.writeSyncedData(out, provider);
         out.put("modules", SYNC_MODULES_CODEC.toNBT(this.modules));
     }
 
     @Override
-    protected void readSyncedData(CompoundTag in) {
-        super.readSyncedData(in);
+    protected void readSyncedData(CompoundTag in, HolderLookup.Provider provider) {
+        super.readSyncedData(in, provider);
         final var oldModuleList = getModuleTypes().toList();
         modules = fixModuleList(SYNC_MODULES_CODEC.fromNBT(in.get("modules"), ArrayList::new));
         if (level != null && !oldModuleList.equals(getModuleTypes().toList())) {
@@ -204,8 +205,8 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
         }
     }
 
-    private InteractionResult interactWithModule(int indexOfTarget, UseOnContext ctx) {
-        if (level == null) { return InteractionResult.PASS; }
+    private ItemInteractionResult interactWithModule(int indexOfTarget, UseOnContext ctx) {
+        if (level == null) { return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION; }
         final var scopeModule = modules.get(indexOfTarget);
         final var targetedModule = scopeModule.type();
         final var held = ctx.getItemInHand();
@@ -215,16 +216,16 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
                 sendStatusMessage(ctx, !scopeModule.isLocked() ? MODULE_LOCKED_KEY : MODULE_UNLOCKED_KEY);
                 BEUtil.markDirtyAndSync(this);
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
         if (globalConfig.powered()) {
             sendStatusMessage(ctx, WARN_SCOPE_POWERED_KEY);
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
         }
         if (!targetedModule.isEmpty()) {
             if (scopeModule.isLocked()) {
                 sendStatusMessage(ctx, WARN_MODULE_LOCKED_KEY);
-                return InteractionResult.FAIL;
+                return ItemInteractionResult.FAIL;
             }
             if (!level.isClientSide()) {
                 final var dropped = removeModule(indexOfTarget);
@@ -233,25 +234,25 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
                     ItemUtil.giveOrDrop(player, dropped);
                 }
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
         final var newModule = ScopeModules.getModule(held.getItem());
-        if (newModule == null) { return InteractionResult.PASS; }
+        if (newModule == null) { return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION; }
         final var targetSlot = modules.get(indexOfTarget).firstSlot();
         final var firstSlotAfter = targetSlot + newModule.getWidth();
-        if (firstSlotAfter > NUM_SLOTS) { return InteractionResult.FAIL; }
+        if (firstSlotAfter > NUM_SLOTS) { return ItemInteractionResult.FAIL; }
         for (int i = indexOfTarget; i < modules.size(); ++i) {
             final var existingModule = modules.get(i);
             if (firstSlotAfter <= existingModule.firstSlot()) { break; }
             if (!existingModule.type().isEmpty()) {
-                return InteractionResult.FAIL;
+                return ItemInteractionResult.FAIL;
             }
         }
         if (!level.isClientSide()) {
             insertModule(new ModuleInScope(targetSlot, newModule.newInstance(), false), indexOfTarget);
             held.shrink(1);
         }
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
     private ItemStack removeModule(int indexToRemove) {
@@ -304,11 +305,9 @@ public class ScopeBlockEntity extends CEBlockEntity implements SelectionShapeOwn
                 subShapes,
                 ctx -> {
                     if (ctx.getPlayer() instanceof ServerPlayer serverPlayer) {
-                        NetworkHooks.openScreen(serverPlayer, new SimpleMenuProvider(
-                                CEContainers.SCOPE.argConstructor(bEntity), Component.empty()
-                        ));
+                        serverPlayer.openMenu(new SimpleMenuProvider(CEContainers.SCOPE.argConstructor(bEntity), Component.empty()));
                     }
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
         );
     }

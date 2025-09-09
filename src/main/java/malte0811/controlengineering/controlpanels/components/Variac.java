@@ -10,6 +10,7 @@ import malte0811.controlengineering.util.math.Vec2d;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 
 public class Variac extends PanelComponentType<BusSignalRef, Integer> {
     public static final Vec2d SIZE = new Vec2d(4, 4);
@@ -21,19 +22,19 @@ public class Variac extends PanelComponentType<BusSignalRef, Integer> {
     }
 
     @Override
-    public Pair<InteractionResult, Integer> click(BusSignalRef line, Integer oldState, ComponentClickContext ctx) {
+    public Pair<ItemInteractionResult, Integer> click(BusSignalRef line, Integer oldState, ComponentClickContext ctx) {
         var xRelativeCenter = ctx.relativeHit().x - SIZE.x() / 2;
         var yRelativeCenter = ctx.relativeHit().z - SIZE.y() / 2;
         var angle = Math.atan2(-xRelativeCenter, -yRelativeCenter);
         var target = Mth.clamp(getStrengthForRotation(angle), BusLine.MIN_VALID_VALUE, BusLine.MAX_VALID_VALUE);
         if (target == oldState) {
-            return Pair.of(InteractionResult.PASS, oldState);
+            return Pair.of(ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION, oldState);
         } else if (!ctx.isSneaking()) {
-            return Pair.of(InteractionResult.SUCCESS, target);
+            return Pair.of(ItemInteractionResult.SUCCESS, target);
         } else if (target < oldState) {
-            return Pair.of(InteractionResult.SUCCESS, oldState - 1);
+            return Pair.of(ItemInteractionResult.SUCCESS, oldState - 1);
         } else { // target > oldState
-            return Pair.of(InteractionResult.SUCCESS, oldState + 1);
+            return Pair.of(ItemInteractionResult.SUCCESS, oldState + 1);
         }
     }
 

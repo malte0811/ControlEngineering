@@ -15,7 +15,7 @@ import java.util.Objects;
 
 //All transforms are for the "top" block of the control panel
 public class PanelTransform {
-    private static final MyCodec<BETransformData> CODEC = new RecordCodec2<>(
+    public static final MyCodec<BETransformData> CODEC = new RecordCodec2<>(
             new CodecField<>("height", p -> p.centerHeight, MyCodecs.FLOAT),
             new CodecField<>("angle", p -> p.degrees, MyCodecs.FLOAT),
             BETransformData::new
@@ -35,7 +35,7 @@ public class PanelTransform {
     public PanelTransform(BETransformData bEntityData, PanelOrientation blockData) {
         this.bEntityData = bEntityData;
         final float radians = (float) Math.toRadians(bEntityData.degrees);
-        final float borderHeight = getFrontHeight();
+        final float borderHeight = getBaseTransform().getFrontHeight();
 
         panelBottomToWorld = TransformCaches.makePanelBottomToWorld(blockData);
         panelTopToWorld = new Matrix4f(panelBottomToWorld);
@@ -46,13 +46,11 @@ public class PanelTransform {
     }
 
     public PanelTransform() {
-        this(0.25F, (float) Math.toDegrees(Math.atan(0.5)), PanelOrientation.DOWN_NORTH);
+        this(new BETransformData(), PanelOrientation.DOWN_NORTH);
     }
 
-    public static PanelTransform withHeights(float frontHeight, float backHeight, PanelOrientation orientation) {
-        var centerHeight = (frontHeight + backHeight) / 2;
-        var angle = Math.atan(backHeight - frontHeight);
-        return new PanelTransform(centerHeight, (float) Math.toDegrees(angle), orientation);
+    public BETransformData getBaseTransform() {
+        return bEntityData;
     }
 
     public Matrix4fc getPanelBottomToWorld() {
@@ -73,16 +71,6 @@ public class PanelTransform {
 
     public void addTo(CompoundTag out) {
         out.put("transform", CODEC.toNBT(bEntityData));
-    }
-
-    public float getFrontHeight() {
-        final double radians = Math.toRadians(bEntityData.degrees);
-        return (float) (bEntityData.centerHeight - (Math.tan(radians) / 2));
-    }
-
-    public float getBackHeight() {
-        final double radians = Math.toRadians(bEntityData.degrees);
-        return (float) (bEntityData.centerHeight + (Math.tan(radians) / 2));
     }
 
     public static PanelTransform from(CompoundTag nbt, PanelOrientation orientation) {
@@ -140,9 +128,25 @@ public class PanelTransform {
         return Objects.hash(bEntityData, panelTopToWorld, panelBottomToWorld, worldToPanelTop);
     }
 
-    private record BETransformData(float centerHeight, float degrees) {
-        private BETransformData() {
+    public record BETransformData(float centerHeight, float degrees) {
+        public BETransformData() {
             this(0.25F, (float) -Math.toDegrees(Math.atan(0.5)));
+        }
+
+        public static BETransformData withHeights(float frontHeight, float backHeight) {
+            var centerHeight = (frontHeight + backHeight) / 2;
+            var angle = Math.atan(backHeight - frontHeight);
+            return new BETransformData(centerHeight, (float) Math.toDegrees(angle));
+        }
+
+        public float getFrontHeight() {
+            final double radians = Math.toRadians(degrees);
+            return (float) (centerHeight - (Math.tan(radians) / 2));
+        }
+
+        public float getBackHeight() {
+            final double radians = Math.toRadians(degrees);
+            return (float) (centerHeight + (Math.tan(radians) / 2));
         }
     }
 }

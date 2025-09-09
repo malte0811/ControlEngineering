@@ -7,6 +7,7 @@ import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.components.config.ColorAndSignal;
 import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 
 public class TimedButton extends PanelComponentType<ColorAndSignal, Integer> {
     //TODO config?
@@ -31,13 +32,13 @@ public class TimedButton extends PanelComponentType<ColorAndSignal, Integer> {
     }
 
     @Override
-    public Pair<InteractionResult, Integer> click(
+    public Pair<ItemInteractionResult, Integer> click(
             ColorAndSignal config, Integer remainingOn, ComponentClickContext ctx
     ) {
         if (isActive(remainingOn)) {
-            return Pair.of(InteractionResult.PASS, remainingOn);
+            return Pair.of(ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION, remainingOn);
         } else {
-            return Pair.of(InteractionResult.SUCCESS, DELAY);
+            return Pair.of(ItemInteractionResult.SUCCESS, DELAY);
         }
     }
 

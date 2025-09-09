@@ -37,7 +37,7 @@ public class KeyboardButton extends Button {
     }
 
     @Override
-    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
         RenderSystem.setShaderTexture(0, this.texture.getMainTexture());
         RenderSystem.enableDepthTest();

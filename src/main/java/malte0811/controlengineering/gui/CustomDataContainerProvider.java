@@ -1,6 +1,6 @@
 package malte0811.controlengineering.gui;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -8,25 +8,16 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuConstructor;
-import net.neoforged.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-public class CustomDataContainerProvider implements MenuProvider {
-    private final Component name;
-    private final MenuConstructor inner;
-    private final Consumer<FriendlyByteBuf> writeExtra;
+// TODO unused?
+public record CustomDataContainerProvider(
+        Component name, MenuConstructor inner, Consumer<RegistryFriendlyByteBuf> writeExtra
+) implements MenuProvider {
 
-    public CustomDataContainerProvider(
-            Component name, MenuConstructor inner, Consumer<FriendlyByteBuf> writeExtra
-    ) {
-        this.name = name;
-        this.inner = inner;
-        this.writeExtra = writeExtra;
-    }
-
-    public Consumer<FriendlyByteBuf> extraData() {
+    public Consumer<RegistryFriendlyByteBuf> extraData() {
         return writeExtra;
     }
 
@@ -42,6 +33,6 @@ public class CustomDataContainerProvider implements MenuProvider {
     }
 
     public void open(ServerPlayer player) {
-        NetworkHooks.openScreen(player, this, extraData());
+        player.openMenu(this, extraData());
     }
 }

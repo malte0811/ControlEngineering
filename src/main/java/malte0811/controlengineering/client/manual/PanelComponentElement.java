@@ -39,7 +39,7 @@ public class PanelComponentElement extends SpecialManualElement {
     }
 
     public PanelComponentElement(JsonObject obj) {
-        this(new ResourceLocation(obj.get("component").getAsString()));
+        this(ResourceLocation.parse(obj.get("component").getAsString()));
     }
 
     @Override

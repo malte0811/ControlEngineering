@@ -15,12 +15,14 @@ import java.util.List;
 import java.util.function.Function;
 
 public class SingleShape extends SelectionShapes {
-    public static final SelectionShapes FULL_BLOCK = new SingleShape(Shapes.block(), $ -> InteractionResult.PASS);
+    public static final SelectionShapes FULL_BLOCK = new SingleShape(
+            Shapes.block(), $ -> ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+    );
 
     private final VoxelShape mainShape;
-    private final Function<UseOnContext, InteractionResult> onClick;
+    private final Function<UseOnContext, ItemInteractionResult> onClick;
 
-    public SingleShape(VoxelShape mainShape, Function<UseOnContext, InteractionResult> onClick) {
+    public SingleShape(VoxelShape mainShape, Function<UseOnContext, ItemInteractionResult> onClick) {
         this.mainShape = mainShape;
         this.onClick = onClick;
     }

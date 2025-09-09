@@ -13,6 +13,7 @@ import malte0811.controlengineering.util.mycodec.MyCodecs;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -145,12 +146,12 @@ public class ParallelPort {
         clockLine = BusSignalRef.fromIndex(indices[Byte.SIZE]);
     }
 
-    public Function<UseOnContext, InteractionResult> makeRemapInteraction(BlockEntity be) {
+    public Function<UseOnContext, ItemInteractionResult> makeRemapInteraction(BlockEntity be) {
         return ctx -> {
             if (ctx.getPlayer() instanceof ServerPlayer player) {
-                NetworkHooks.openScreen(player, CEContainers.PORT_REMAPPER.provider(be, this));
+                player.openMenu(CEContainers.PORT_REMAPPER.provider(be, this));
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         };
     }
 

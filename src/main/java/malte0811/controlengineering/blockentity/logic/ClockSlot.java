@@ -7,6 +7,7 @@ import malte0811.controlengineering.util.ItemUtil;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -18,9 +19,9 @@ public class ClockSlot {
     @Nonnull
     private ClockGenerator.ClockInstance<?> clock = ClockTypes.NEVER.newInstance();
 
-    public InteractionResult click(UseOnContext ctx, Runnable onSuccess) {
+    public ItemInteractionResult click(UseOnContext ctx, Runnable onSuccess) {
         if (ctx.getPlayer() == null) {
-            return InteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         ClockGenerator<?> currentClock = clock.getType();
         DeferredItem<?> clockItem = CEItems.CLOCK_GENERATORS.get(currentClock.getRegistryName());
@@ -39,7 +40,7 @@ public class ClockSlot {
                 }
             }
         }
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
     @Nonnull

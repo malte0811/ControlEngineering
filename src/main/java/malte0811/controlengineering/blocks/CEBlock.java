@@ -164,8 +164,8 @@ public abstract class CEBlock<PlacementData> extends Block implements EntityBloc
             MenuProvider container = state.getMenuProvider(worldIn, pos);
             if (container instanceof CustomDataContainerProvider customProvider) {
                 customProvider.open(serverPlayer);
-            } else {
-                NetworkHooks.openScreen(serverPlayer, container, pos);
+            } else if (container != null) {
+                serverPlayer.openMenu(container, pos);
             }
         }
     }

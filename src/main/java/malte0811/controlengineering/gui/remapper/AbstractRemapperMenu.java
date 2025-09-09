@@ -1,6 +1,5 @@
 package malte0811.controlengineering.gui.remapper;
 
-import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.gui.CEContainerMenu;
 import malte0811.controlengineering.network.IPacket;
 import malte0811.controlengineering.network.remapper.FullSync;
@@ -8,6 +7,7 @@ import malte0811.controlengineering.network.remapper.RemapperPacket;
 import malte0811.controlengineering.network.remapper.RemapperSubPacket;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
@@ -58,6 +58,6 @@ public abstract class AbstractRemapperMenu extends CEContainerMenu<RemapperSubPa
     public void processAndSend(RemapperSubPacket packet) {
         var fullPacket = new RemapperPacket(packet);
         fullPacket.updateConnections(this);
-        ControlEngineering.NETWORK.sendToServer(fullPacket);
+        PacketDistributor.sendToServer(fullPacket);
     }
 }

@@ -1,6 +1,8 @@
 package malte0811.controlengineering;
 
 import blusunrize.immersiveengineering.api.IETags;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Transformation;
@@ -8,12 +10,16 @@ import malte0811.controlengineering.blockentity.bus.LineAccessBlockEntity;
 import malte0811.controlengineering.blockentity.bus.RSRemapperBlockEntity;
 import malte0811.controlengineering.blocks.shapes.SelectionShapeOwner;
 import malte0811.controlengineering.blocks.shapes.SelectionShapes;
+import malte0811.controlengineering.client.model.panel.PanelItemRenderer;
 import malte0811.controlengineering.gui.misc.BusSignalSelector;
+import malte0811.controlengineering.items.CEItems;
+import malte0811.controlengineering.items.ControlPanelItem;
 import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.items.PCBStackItem;
 import malte0811.controlengineering.util.RaytraceUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -28,6 +34,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderHighlightEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -116,6 +124,23 @@ public class ClientEvents {
         if (ev.getItemStack().is(IEItemRefs.LOGIC_CIRCUIT.asItem())) {
             ev.getToolTip().add(PCBStackItem.useIn(IEItemRefs.LOGIC_UNIT));
         }
+    }
+
+    @SubscribeEvent
+    public static void registerClientExtension(RegisterClientExtensionsEvent ev) {
+        ev.registerItem(
+                new IClientItemExtensions() {
+                    private final Supplier<BlockEntityWithoutLevelRenderer> renderer = Suppliers.memoize(
+                            () -> new PanelItemRenderer(ControlPanelItem::getPanelData)
+                    );
+
+                    @Override
+                    public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                        return renderer.get();
+                    }
+                },
+                CEItems.CONTROL_PANEL
+        );
     }
 
     private static void renderShape(PoseStack transform, SelectionShapes shape, VertexConsumer builder) {

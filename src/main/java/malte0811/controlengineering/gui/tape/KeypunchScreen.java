@@ -15,6 +15,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -68,7 +69,7 @@ public class KeypunchScreen extends Screen implements MenuAccess<KeypunchMenu> {
 
     @Override
     public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
 
         graphics.pose().pushPose();
         graphics.pose().translate(getXStart(), getYStart(), 0);
@@ -151,7 +152,7 @@ public class KeypunchScreen extends Screen implements MenuAccess<KeypunchMenu> {
     private boolean processAndSend(KeypunchSubPacket packet) {
         if (!container.isLoopback() || packet.process(state)) {
             updateData();
-            ControlEngineering.NETWORK.sendToServer(new KeypunchPacket(packet));
+            PacketDistributor.sendToServer(new KeypunchPacket(packet));
             return true;
         } else {
             return false;

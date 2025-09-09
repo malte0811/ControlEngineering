@@ -1,6 +1,7 @@
 package malte0811.controlengineering.blockentity.tape;
 
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blockentity.MultiblockBEType;
@@ -31,7 +32,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -93,7 +94,7 @@ public class KeypunchBlockEntity extends CEBlockEntity
     @Override
     public void loadAdditional(@Nonnull CompoundTag nbt, HolderLookup.Provider provider) {
         super.loadAdditional(nbt, provider);
-        readSyncedData(nbt);
+        readSyncedData(nbt, provider);
         state = new KeypunchState(this::setChanged, nbt.get("state"));
         openMenus.forEach(KeypunchMenu::resyncFullTape);
         busInterface.readNBT(nbt.getCompound("busInterface"));
@@ -102,14 +103,14 @@ public class KeypunchBlockEntity extends CEBlockEntity
     @Override
     public void saveAdditional(@Nonnull CompoundTag compound, HolderLookup.Provider provider) {
         super.saveAdditional(compound, provider);
-        writeSyncedData(compound);
+        writeSyncedData(compound, provider);
         compound.put("state", state.toNBT());
         compound.put("busInterface", busInterface.toNBT());
     }
 
     @Override
-    protected void readSyncedData(CompoundTag in) {
-        super.readSyncedData(in);
+    protected void readSyncedData(CompoundTag in, HolderLookup.Provider provider) {
+        super.readSyncedData(in, provider);
         final boolean oldLoopback = loopback;
         loopback = in.getBoolean("loopback");
         if (loopback != oldLoopback && level != null) {
@@ -118,8 +119,8 @@ public class KeypunchBlockEntity extends CEBlockEntity
     }
 
     @Override
-    protected void writeSyncedData(CompoundTag out) {
-        super.writeSyncedData(out);
+    protected void writeSyncedData(CompoundTag out, HolderLookup.Provider provider) {
+        super.writeSyncedData(out, provider);
         out.putBoolean("loopback", loopback);
     }
 
@@ -136,7 +137,7 @@ public class KeypunchBlockEntity extends CEBlockEntity
             byte[] bytes = new byte[state.getData().size() + state.getErased()];
             System.arraycopy(state.getData().toByteArray(), 0, bytes, 0, state.getData().size());
             Arrays.fill(bytes, state.getData().size(), bytes.length, BitUtils.fixParity((byte) 0xff));
-            dropper.accept(PunchedTapeItem.withBytes(bytes));
+            dropper.accept(PunchedTapeItem.withBytes(new ByteArrayList(bytes)));
         }
     }
 
@@ -204,7 +205,7 @@ public class KeypunchBlockEntity extends CEBlockEntity
                 bEntity.loopback = !bEntity.loopback;
                 BEUtil.markDirtyAndSync(bEntity);
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }).setTextGetter(() -> Component.translatable(bEntity.isLoopback() ? LOOPBACK_KEY : REMOTE_KEY)));
         subshapes.add(new SingleShape(CONNECTOR_SHAPE, bEntity.getPort().makeRemapInteraction(bEntity)));
         return new ListShapes(
@@ -215,7 +216,7 @@ public class KeypunchBlockEntity extends CEBlockEntity
                     CEBlocks.KEYPUNCH.get().openContainer(
                             ctx.getPlayer(), bEntity.getBlockState(), ctx.getLevel(), ctx.getClickedPos()
                     );
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
         );
     }
@@ -260,7 +261,7 @@ public class KeypunchBlockEntity extends CEBlockEntity
                         CEBlocks.KEYPUNCH.get().openContainer(
                                 ctx.getPlayer(), bEntity.getBlockState(), ctx.getLevel(), ctx.getClickedPos().below()
                         );
-                        return InteractionResult.SUCCESS;
+                        return ItemInteractionResult.SUCCESS;
                     }
             ).setAllowTargetThrough(true);
         }

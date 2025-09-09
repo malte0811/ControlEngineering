@@ -1,6 +1,7 @@
 package malte0811.controlengineering.blockentity.base;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
@@ -30,20 +31,20 @@ public abstract class CEBlockEntity extends BlockEntity implements IHasMasterBas
         return cachedMaster;
     }
 
-    protected void writeSyncedData(CompoundTag out) { }
+    protected void writeSyncedData(CompoundTag out, HolderLookup.Provider provider) { }
 
-    protected void readSyncedData(CompoundTag in) { }
+    protected void readSyncedData(CompoundTag in, HolderLookup.Provider provider) { }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        readSyncedData(tag);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
+        readSyncedData(tag, provider);
     }
 
     @Nonnull
     @Override
-    public CompoundTag getUpdateTag() {
-        var updateTag = super.getUpdateTag();
-        writeSyncedData(updateTag);
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+        var updateTag = super.getUpdateTag(provider);
+        writeSyncedData(updateTag, provider);
         return updateTag;
     }
 
@@ -52,16 +53,16 @@ public abstract class CEBlockEntity extends BlockEntity implements IHasMasterBas
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(
                 this,
-                be -> {
+                (be, lookup) -> {
                     CompoundTag result = new CompoundTag();
-                    ((CEBlockEntity) be).writeSyncedData(result);
+                    ((CEBlockEntity) be).writeSyncedData(result, lookup);
                     return result;
                 }
         );
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        readSyncedData(pkt.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
+        readSyncedData(pkt.getTag(), lookupProvider);
     }
 }

@@ -39,7 +39,7 @@ public class ClockTypes {
             return null;
         }
         final var clockPath = itemName.getPath().substring(ITEM_KEY_PREFIX.length());
-        final var clockName = new ResourceLocation(itemName.getNamespace(), clockPath);
+        final var clockName = itemName.withPath(clockPath);
         return REGISTRY.get(clockName);
     }
 

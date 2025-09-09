@@ -1,6 +1,8 @@
 package malte0811.controlengineering.util;
 
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import it.unimi.dsi.fastutil.bytes.ByteList;
 
 public class BitUtils {
     public static int getBits(int value, int offset, int bits) {
@@ -32,7 +34,7 @@ public class BitUtils {
         return Integer.bitCount(v);
     }
 
-    public static byte[] toBytesWithParity(String in) {
+    public static ByteList toBytesWithParity(String in) {
         for (int i = 0; i < in.length(); ++i) {
             Preconditions.checkArgument(isASCIICharacter(in.codePointAt(i)));
         }
@@ -40,7 +42,7 @@ public class BitUtils {
         for (int i = 0; i < result.length; ++i) {
             result[i] = fixParity(result[i]);
         }
-        return result;
+        return new ByteArrayList(result);
     }
 
     public static byte clearParity(byte withParity) {
@@ -59,11 +61,11 @@ public class BitUtils {
         return noBitsAbove(in, 6);
     }
 
-    public static String toString(byte[] withParity) {
-        byte[] copyWithoutParity = new byte[withParity.length];
-        for (int i = 0; i < withParity.length; ++i) {
-            if ((withParity[i] & 0xff) != 0xff) {
-                copyWithoutParity[i] = clearParity(withParity[i]);
+    public static String toString(ByteList withParity) {
+        byte[] copyWithoutParity = new byte[withParity.size()];
+        for (int i = 0; i < withParity.size(); ++i) {
+            if ((withParity.getByte(i) & 0xff) != 0xff) {
+                copyWithoutParity[i] = clearParity(withParity.getByte(i));
             }
         }
         return new String(copyWithoutParity);

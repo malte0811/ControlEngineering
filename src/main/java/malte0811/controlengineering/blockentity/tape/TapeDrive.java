@@ -1,5 +1,7 @@
 package malte0811.controlengineering.blockentity.tape;
 
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import it.unimi.dsi.fastutil.bytes.ByteList;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.PunchedTapeItem;
 import malte0811.controlengineering.util.ItemUtil;
@@ -7,7 +9,7 @@ import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 
@@ -20,7 +22,7 @@ public class TapeDrive {
     private final Runnable onRemove;
     private final BooleanSupplier canTake;
     @Nullable
-    private byte[] insertedTape = null;
+    private ByteList insertedTape = null;
 
     public TapeDrive(Runnable onAdd, Runnable onRemove, BooleanSupplier canTake) {
         this.onAdd = onAdd;
@@ -28,7 +30,7 @@ public class TapeDrive {
         this.canTake = canTake;
     }
 
-    public InteractionResult click(UseOnContext ctx) {
+    public ItemInteractionResult click(UseOnContext ctx) {
         final ItemStack held = ctx.getItemInHand();
         var level = ctx.getLevel();
         if (insertedTape == null) {
@@ -38,7 +40,7 @@ public class TapeDrive {
                     onAdd.run();
                     held.shrink(1);
                 }
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.SUCCESS;
             }
         } else if (canTake.getAsBoolean()) {
             if (!level.isClientSide) {
@@ -47,17 +49,17 @@ public class TapeDrive {
                 onRemove.run();
                 ItemUtil.giveOrDrop(ctx.getPlayer(), result);
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
-        return InteractionResult.FAIL;
+        return ItemInteractionResult.FAIL;
     }
 
-    public byte[] getTapeContent() {
+    public ByteList getTapeContent() {
         return Objects.requireNonNull(insertedTape);
     }
 
     @Nullable
-    public byte[] getNullableTapeContent() {
+    public ByteList getNullableTapeContent() {
         return insertedTape;
     }
 
@@ -66,7 +68,7 @@ public class TapeDrive {
     }
 
     public int getTapeLength() {
-        return hasTape() ? getTapeContent().length : 0;
+        return hasTape() ? getTapeContent().size() : 0;
     }
 
     public Tag toNBT() {
@@ -79,7 +81,7 @@ public class TapeDrive {
 
     public void loadNBT(Tag data) {
         if (data instanceof ByteArrayTag bat && bat.getAsByteArray().length > 0) {
-            this.insertedTape = bat.getAsByteArray();
+            this.insertedTape = new ByteArrayList(bat.getAsByteArray());
         } else {
             this.insertedTape = null;
         }
@@ -87,7 +89,7 @@ public class TapeDrive {
 
     public void loadClientNBT(Tag syncTape) {
         if (syncTape instanceof NumericTag numeric && numeric.getAsInt() > 0) {
-            this.insertedTape = new byte[numeric.getAsInt()];
+            this.insertedTape = new ByteArrayList(new byte[numeric.getAsInt()]);
         } else {
             this.insertedTape = null;
         }

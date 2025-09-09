@@ -1,7 +1,8 @@
 package malte0811.controlengineering.blockentity.panels;
 
-import blusunrize.immersiveengineering.api.utils.CapabilityReference;
 import com.google.common.collect.ImmutableList;
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import it.unimi.dsi.fastutil.bytes.ByteList;
 import malte0811.controlengineering.blockentity.MultiblockBEType;
 import malte0811.controlengineering.blockentity.base.CEBlockEntity;
 import malte0811.controlengineering.blockentity.base.IExtraDropBE;
@@ -28,7 +29,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -49,6 +50,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static malte0811.controlengineering.util.ShapeUtils.createPixelRelative;
@@ -60,7 +62,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
     private final TapeDrive tape = new TapeDrive(
             () -> setState(state.addTape()), () -> setState(state.removeTape()), () -> state.canTakeTape()
     );
-    private final CachedValue<byte[], CNCJob> currentJob = new CachedValue<>(
+    private final CachedValue<ByteList, CNCJob> currentJob = new CachedValue<>(
             tape::getNullableTapeContent,
             tape -> {
                 if (tape != null) {
@@ -69,8 +71,8 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
                     return null;
                 }
             },
-            Arrays::equals,
-            b -> b == null ? null : Arrays.copyOf(b, b.length)
+            Objects::equals,
+            b -> b == null ? null : new ByteArrayList(b)
     );
     private int currentTicksInJob;
     private final List<PlacedComponent> currentPlacedComponents = new ArrayList<>();
@@ -101,21 +103,21 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
                                     dataOutput.makeRemapInteraction(this)
                             )
                     ),
-                    ctx -> InteractionResult.PASS
+                    ctx -> ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
             )
     );
 
     private static final SelectionShapes topSelectionShapes = new SingleShape(
-            PanelCNCBlock.UPPER_SHAPE, $ -> InteractionResult.PASS
+            PanelCNCBlock.UPPER_SHAPE, $ -> ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
     );
 
     public PanelCNCBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
-    private InteractionResult panelClick(UseOnContext ctx) {
+    private ItemInteractionResult panelClick(UseOnContext ctx) {
         if (level == null) {
-            return InteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (state.canTakePanel()) {
             if (!level.isClientSide && ctx.getPlayer() != null) {
@@ -125,7 +127,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
                 currentTicksInJob = 0;
                 setState(state.removePanel());
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         } else if (!state.hasPanel()) {
             ItemStack heldItem = ctx.getItemInHand();
             if (PanelTopItem.isEmptyPanelTop(heldItem)) {
@@ -133,10 +135,10 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
                     setState(state.addPanel());
                     heldItem.shrink(1);
                 }
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.SUCCESS;
             }
         }
-        return InteractionResult.FAIL;
+        return ItemInteractionResult.FAIL;
     }
 
     public void clientTick() {
@@ -217,7 +219,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
     @Override
     public void saveAdditional(@Nonnull CompoundTag compound, HolderLookup.Provider provider) {
         super.saveAdditional(compound, provider);
-        writeSyncedData(compound);
+        writeSyncedData(compound, provider);
         compound.put("energy", energy.serializeNBT(provider));
         compound.put("dataOutput", dataOutput.toNBT());
     }
@@ -225,13 +227,13 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
     @Override
     public void loadAdditional(@Nonnull CompoundTag nbt, HolderLookup.Provider provider) {
         super.loadAdditional(nbt, provider);
-        readSyncedData(nbt);
+        readSyncedData(nbt, provider);
         energy.deserializeNBT(provider, nbt.get("energy"));
         dataOutput.readNBT(nbt.getCompound("dataOutput"));
     }
 
     @Override
-    protected void readSyncedData(CompoundTag compound) {
+    protected void readSyncedData(CompoundTag compound, HolderLookup.Provider provider) {
         tape.loadNBT(compound.get("tape"));
         currentTicksInJob = compound.getInt("currentTick");
         state = State.VALUES[compound.getInt("state")];
@@ -243,7 +245,7 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
     }
 
     @Override
-    protected void writeSyncedData(CompoundTag in) {
+    protected void writeSyncedData(CompoundTag in, HolderLookup.Provider provider) {
         in.put("tape", tape.toNBT());
         in.putInt("currentTick", currentTicksInJob);
         in.putInt("state", state.ordinal());

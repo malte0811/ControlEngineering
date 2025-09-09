@@ -8,7 +8,7 @@ import malte0811.controlengineering.util.mycodec.serial.PacketBufferStorage;
 import malte0811.controlengineering.util.typereg.TypedInstance;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 
@@ -42,8 +42,8 @@ public final class PanelComponentInstance<Config, State> extends TypedInstance<P
         return type.newInstance(buffer);
     }
 
-    public InteractionResult onClick(PanelComponentType.ComponentClickContext ctx, boolean isClient) {
-        Pair<InteractionResult, State> clickResult = getType().click(getConfig(), getState(), ctx);
+    public ItemInteractionResult onClick(PanelComponentType.ComponentClickContext ctx, boolean isClient) {
+        Pair<ItemInteractionResult, State> clickResult = getType().click(getConfig(), getState(), ctx);
         if (!isClient) {
             currentState = Pair.of(getConfig(), clickResult.getSecond());
         }

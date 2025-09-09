@@ -32,7 +32,7 @@ public class PageSelector extends NestedWidget {
     }
 
     @Override
-    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
         if (numPages > 1) {
             var font = Minecraft.getInstance().font;

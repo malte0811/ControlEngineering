@@ -29,7 +29,7 @@ public class ScopeModelLoader implements IGeometryLoader<ScopeModelLoader.Unbake
         final var moduleModelsJSON = json.getAsJsonObject(MODULES_KEY);
         Map<ResourceLocation, BlockModel> moduleModels = new HashMap<>();
         for (final var subModel : moduleModelsJSON.entrySet()) {
-            final var key = new ResourceLocation(subModel.getKey());
+            final var key = ResourceLocation.parse(subModel.getKey());
             final BlockModel model = ctx.deserialize(subModel.getValue(), BlockModel.class);
             moduleModels.put(key, model);
         }
@@ -42,8 +42,11 @@ public class ScopeModelLoader implements IGeometryLoader<ScopeModelLoader.Unbake
     ) implements IUnbakedGeometry<Unbaked> {
         @Override
         public BakedModel bake(
-                IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter,
-                ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation
+                IGeometryBakingContext context,
+                ModelBaker baker,
+                Function<Material, TextureAtlasSprite> spriteGetter,
+                ModelState modelState,
+                ItemOverrides overrides
         ) {
             var rootTransform = context.getRootTransform();
             if (!rootTransform.isIdentity()) {
@@ -54,12 +57,12 @@ public class ScopeModelLoader implements IGeometryLoader<ScopeModelLoader.Unbake
             Map<ResourceLocation, BakedModel> modules = new HashMap<>();
             for (final var entry : moduleModels.entrySet()) {
                 final var baked = entry.getValue().bake(
-                        baker, entry.getValue(), spriteGetter, modelState, modelLocation, true
+                        baker, entry.getValue(), spriteGetter, modelState, true
                 );
                 modules.put(entry.getKey(), baked);
             }
             return new ScopeModel(
-                    mainModel.bake(baker, mainModel, spriteGetter, modelState, modelLocation, true),
+                    mainModel.bake(baker, mainModel, spriteGetter, modelState, true),
                     modules,
                     modelState.getRotation(),
                     context.getTransforms()

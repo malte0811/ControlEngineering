@@ -17,14 +17,14 @@ public class ListShapes extends SelectionShapes {
     private final VoxelShape mainShape;
     private final Matrix4f outerToInner;
     private final List<? extends SelectionShapes> shapes;
-    private final Function<UseOnContext, InteractionResult> onClick;
+    private final Function<UseOnContext, ItemInteractionResult> onClick;
     private boolean allowTargetThrough = false;
 
     public ListShapes(
             VoxelShape mainShape,
             Matrix4f outerToInner,
             List<? extends SelectionShapes> shapes,
-            Function<UseOnContext, InteractionResult> onClick
+            Function<UseOnContext, ItemInteractionResult> onClick
     ) {
         this.mainShape = mainShape;
         this.outerToInner = outerToInner;
@@ -52,7 +52,7 @@ public class ListShapes extends SelectionShapes {
 
     @Override
     public ItemInteractionResult onUse(UseOnContext ctx, ItemInteractionResult defaultType, Vec3 relativeHit) {
-        if (defaultType == InteractionResult.PASS) {
+        if (defaultType == ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION) {
             return onClick.apply(ctx);
         } else {
             return defaultType;

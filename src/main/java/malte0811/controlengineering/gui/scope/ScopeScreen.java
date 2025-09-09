@@ -23,6 +23,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -203,7 +204,7 @@ public class ScopeScreen extends StackedScreen implements MenuAccess<ScopeMenu> 
 
     private void runAndSendToServer(IScopeSubPacket data) {
         if (ScopeSubPacket.processFull(data, menu)) {
-            ControlEngineering.NETWORK.sendToServer(new ScopePacket(data));
+            PacketDistributor.sendToServer(new ScopePacket(data));
         }
     }
 }

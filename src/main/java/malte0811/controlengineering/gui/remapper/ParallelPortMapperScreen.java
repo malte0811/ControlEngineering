@@ -36,8 +36,8 @@ public class ParallelPortMapperScreen extends AbstractRemapperScreen {
     }
 
     @Override
-    public void renderBackground(@Nonnull GuiGraphics graphics) {
-        super.renderBackground(graphics);
+    public void renderBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTicks);
         graphics.pose().pushPose();
         graphics.pose().translate(leftPos, topPos, 0);
         OPEN_DOOR.blit(graphics.pose(), -38, -31);

@@ -3,21 +3,17 @@ package malte0811.controlengineering.controlpanels;
 import com.google.common.collect.ImmutableList;
 import malte0811.controlengineering.blockentity.panels.ControlPanelBlockEntity;
 import malte0811.controlengineering.blocks.panels.PanelOrientation;
+import malte0811.controlengineering.util.mycodec.MyCodec;
+import malte0811.controlengineering.util.mycodec.MyCodecs;
+import malte0811.controlengineering.util.mycodec.record.CodecField;
+import malte0811.controlengineering.util.mycodec.record.RecordCodec2;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public class PanelData {
-    private final List<PlacedComponent> components;
-    private final PanelTransform transform;
-
-    public PanelData(List<PlacedComponent> components, PanelTransform transform) {
-        this.components = components;
-        this.transform = transform;
-    }
+public record PanelData(List<PlacedComponent> components, PanelTransform transform) {
 
     public PanelData() {
         this(ImmutableList.of(), new PanelTransform());
@@ -30,19 +26,19 @@ public class PanelData {
         );
     }
 
+    public PanelData(List<PlacedComponent> components, PanelTransform.BETransformData transform, PanelOrientation orientation) {
+        this(components, new PanelTransform(transform, orientation));
+    }
+
     public PanelData(ControlPanelBlockEntity bEntity) {
         this(bEntity.getComponents(), bEntity.getTransform());
     }
 
     public CompoundTag toNBT() {
         CompoundTag result = new CompoundTag();
-        result.put("components", PlacedComponent.writeListToNBT(getComponents()));
-        getTransform().addTo(result);
+        result.put("components", PlacedComponent.writeListToNBT(components()));
+        transform().addTo(result);
         return result;
-    }
-
-    public List<PlacedComponent> getComponents() {
-        return components;
     }
 
     public PanelData copy(boolean clearState) {
@@ -50,25 +46,6 @@ public class PanelData {
         for (PlacedComponent component : components) {
             copiedComponents.add(component.copy(clearState));
         }
-        return new PanelData(copiedComponents, getTransform());
-    }
-
-    public PanelTransform getTransform() {
-        return transform;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        PanelData panelData = (PanelData) o;
-        return Objects.equals(components, panelData.components) && Objects.equals(transform, panelData.transform);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(components, transform);
+        return new PanelData(copiedComponents, transform());
     }
 }
