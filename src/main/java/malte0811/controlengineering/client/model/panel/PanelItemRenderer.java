@@ -34,7 +34,7 @@ public class PanelItemRenderer extends BlockEntityWithoutLevelRenderer {
         PanelData data = getData.apply(stack);
         CACHE.getMixedModel(data).renderTo(buffer, matrixStack, combinedLight, combinedOverlay);
         TransformingVertexBuilder baseRender = new TransformingVertexBuilder(
-                buffer.getBuffer(RenderType.solid()), matrixStack, DefaultVertexFormat.BLOCK
+                buffer.getBuffer(RenderType.solid()), matrixStack
         );
         baseRender.setLight(combinedLight);
         baseRender.setOverlay(combinedOverlay);

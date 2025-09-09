@@ -54,7 +54,7 @@ public class PanelSelectionShapes extends SelectionShapes {
 
     @Override
     public ItemInteractionResult onUse(UseOnContext ctx, ItemInteractionResult defaultType, Vec3 relativeHit) {
-        if (defaultType.shouldSwing() && !bEntity.getLevel().isClientSide) {
+        if (defaultType.consumesAction() && !bEntity.getLevel().isClientSide) {
             bEntity.updateBusState();
             bEntity.setChanged();
             BEUtil.markDirtyAndSync(bEntity);

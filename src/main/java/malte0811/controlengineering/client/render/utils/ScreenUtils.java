@@ -24,11 +24,11 @@ public class ScreenUtils {
         float red = (float) (color >> 16 & 255) / 255.0F;
         float green = (float) (color >> 8 & 255) / 255.0F;
         float blue = (float) (color & 255) / 255.0F;
-        final var bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.vertex(matrix, (float) minX, (float) maxY, 0.0F).color(red, green, blue, alpha).endVertex();
-        bufferbuilder.vertex(matrix, (float) maxX, (float) maxY, 0.0F).color(red, green, blue, alpha).endVertex();
-        bufferbuilder.vertex(matrix, (float) maxX, (float) minY, 0.0F).color(red, green, blue, alpha).endVertex();
-        bufferbuilder.vertex(matrix, (float) minX, (float) minY, 0.0F).color(red, green, blue, alpha).endVertex();
+        final VertexConsumer bufferbuilder = Tesselator.getInstance().getBuilder();
+        bufferbuilder.addVertex(matrix, (float) minX, (float) maxY, 0.0F).setColor(red, green, blue, alpha);
+        bufferbuilder.addVertex(matrix, (float) maxX, (float) maxY, 0.0F).setColor(red, green, blue, alpha);
+        bufferbuilder.addVertex(matrix, (float) maxX, (float) minY, 0.0F).setColor(red, green, blue, alpha);
+        bufferbuilder.addVertex(matrix, (float) minX, (float) minY, 0.0F).setColor(red, green, blue, alpha);
     }
 
     public static void endPositionColorDraw() {

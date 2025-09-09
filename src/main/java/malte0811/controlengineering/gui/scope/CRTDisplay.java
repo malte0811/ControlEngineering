@@ -90,7 +90,7 @@ public class CRTDisplay {
             VertexConsumer out, Matrix4f mat, double x, double y, int rgIndex, float scaledDelay, float alpha
     ) {
         final var rg = RG_SEQUENCE[rgIndex % RG_SEQUENCE.length];
-        out.vertex(mat, (float) x, (float) y, 0.0F).color(rg[0], rg[1], scaledDelay, alpha).endVertex();
+        out.addVertex(mat, (float) x, (float) y, 0.0F).setColor(rg[0], rg[1], scaledDelay, alpha);
     }
 
     private static void fillTrace(

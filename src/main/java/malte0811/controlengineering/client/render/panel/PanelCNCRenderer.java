@@ -32,6 +32,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 
@@ -100,18 +101,16 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
         VertexConsumer builder = buffers.getBuffer(RenderType.solid());
         if (cnc.getState().hasPanel()) {
             VertexConsumer forTexture = MODEL_TEXTURE.get().wrap(builder);
-            TransformingVertexBuilder finalWrapped = new TransformingVertexBuilder(
-                    forTexture, transform, DefaultVertexFormat.BLOCK
-            );
+            TransformingVertexBuilder finalWrapped = new TransformingVertexBuilder(forTexture, transform);
             finalWrapped.setColor(-1).setLight(light).setNormal(0, 1, 0).setOverlay(overlay);
             final float minU = 17 / 64f;
             final float maxU = 31 / 64f;
             final float minV = 31 / 32f;
             final float maxV = 17 / 32f;
-            finalWrapped.vertex(0, 0, 0).uv(minU, minV).endVertex();
-            finalWrapped.vertex(0, 0, 16).uv(minU, maxV).endVertex();
-            finalWrapped.vertex(16, 0, 16).uv(maxU, maxV).endVertex();
-            finalWrapped.vertex(16, 0, 0).uv(maxU, minV).endVertex();
+            finalWrapped.addVertex(0, 0, 0).setUv(minU, minV);
+            finalWrapped.addVertex(0, 0, 16).setUv(minU, maxV);
+            finalWrapped.addVertex(16, 0, 16).setUv(maxU, maxV);
+            finalWrapped.addVertex(16, 0, 0).setUv(maxU, minV);
         }
         MODEL_CACHE.getUnchecked(cnc.getCurrentPlacedComponents()).renderTo(buffers, transform, light, overlay);
     }
@@ -155,9 +154,7 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
         transform.translate(currentPos.x, 0, currentPos.z);
         VertexConsumer solidBuffer = buffer.getBuffer(RenderType.solid());
         VertexConsumer forTexture = MODEL_TEXTURE.get().wrap(solidBuffer);
-        TransformingVertexBuilder innerBuilder = new TransformingVertexBuilder(
-                forTexture, transform, DefaultVertexFormat.BLOCK
-        );
+        TransformingVertexBuilder innerBuilder = new TransformingVertexBuilder(forTexture, transform);
         innerBuilder.setOverlay(overlay)
                 .setLight(light)
                 .setColor(-1);
@@ -210,5 +207,10 @@ public class PanelCNCRenderer implements BlockEntityRenderer<PanelCNCBlockEntity
         }
         nodes.add(new Node<>(HEAD_IDLE, job.totalTicks()));
         return new PiecewiseAffinePath<>(nodes, Vec3::scale, Vec3::add);
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(PanelCNCBlockEntity blockEntity) {
+        return blockEntity.renderBB.get();
     }
 }

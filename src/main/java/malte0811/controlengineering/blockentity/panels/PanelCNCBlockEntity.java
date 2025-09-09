@@ -260,16 +260,11 @@ public class PanelCNCBlockEntity extends CEBlockEntity implements SelectionShape
         }
     }
 
-    private final CachedValue<BlockPos, AABB> renderBB = new CachedValue<>(
+    public final CachedValue<BlockPos, AABB> renderBB = new CachedValue<>(
             () -> worldPosition, pos -> new AABB(
             pos.getX(), pos.getY(), pos.getZ(),
             pos.getX() + 1, pos.getY() + 2, pos.getZ() + 2
     ));
-
-    @Override
-    public AABB getRenderBoundingBox() {
-        return renderBB.get();
-    }
 
     public static MultiblockBEType<PanelCNCBlockEntity, Dummy> register(DeferredRegister<BlockEntityType<?>> register) {
         return MultiblockBEType.makeType(

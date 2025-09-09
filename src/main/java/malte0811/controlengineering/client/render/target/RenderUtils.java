@@ -50,9 +50,7 @@ public class RenderUtils {
             final boolean positive = side.getAxisDirection() == Direction.AxisDirection.POSITIVE;
             Vec3 posA = positive ? max : min;
             Vec3 posB = positive ? min : max;
-            TransformingVertexBuilder out = new TransformingVertexBuilder(
-                    output.getBuffer(targets.get(side)), transform, DefaultVertexFormat.BLOCK
-            );
+            TransformingVertexBuilder out = new TransformingVertexBuilder(output.getBuffer(targets.get(side)), transform);
             Vec3[] vertices = {
                     posA, withValueFrom(posA, positive ? orthA : orthB, posB),
                     withValueFrom(posB, normal, posA), withValueFrom(posA, positive ? orthB : orthA, posB)

@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -136,18 +135,17 @@ public record CacheableCompositeModel(
     private record Geometry(List<BlockModel> subModels) implements IUnbakedGeometry<Geometry> {
         @Override
         public BakedModel bake(
-                IGeometryBakingContext owner,
+                IGeometryBakingContext context,
                 ModelBaker baker,
                 Function<Material, TextureAtlasSprite> spriteGetter,
-                ModelState modelTransform,
-                ItemOverrides overrides,
-                ResourceLocation modelLocation
+                ModelState modelState,
+                ItemOverrides overrides
         ) {
             var quads = new ArrayList<BakedQuad>();
             var renderTypes = new ArrayList<ChunkRenderTypeSet>();
             var bakedSubModels = new ArrayList<ICacheKeyProvider<?>>();
             for (var model : subModels) {
-                var baked = model.bake(baker, model, spriteGetter, modelTransform, modelLocation, true);
+                var baked = model.bake(baker, model, spriteGetter, modelState, true);
                 if (baked instanceof SimpleBakedModel simple) {
                     quads.addAll(simple.getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null));
                     for (var side : DirectionUtils.VALUES) {
@@ -163,7 +161,7 @@ public record CacheableCompositeModel(
                 }
             }
             return new CacheableCompositeModel(
-                    bakedSubModels, quads, ChunkRenderTypeSet.union(renderTypes), owner.getTransforms()
+                    bakedSubModels, quads, ChunkRenderTypeSet.union(renderTypes), context.getTransforms()
             );
         }
     }

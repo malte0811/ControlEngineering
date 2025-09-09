@@ -57,9 +57,7 @@ public class MixedModel implements MultiBufferSource {
 
     public void renderTo(MultiBufferSource out, PoseStack transform, int combinedLight, int combinedOverlay) {
         for (Map.Entry<RenderType, List<DynamicVertex>> vertices : dynamicQuads.entrySet()) {
-            VertexConsumer buffer = new TransformingVertexBuilder(
-                    out.getBuffer(vertices.getKey()), transform, DefaultVertexFormat.BLOCK
-            );
+            VertexConsumer buffer = new TransformingVertexBuilder(out.getBuffer(vertices.getKey()), transform);
             for (DynamicVertex v : vertices.getValue()) {
                 v.accept(buffer, combinedLight, combinedOverlay);
             }

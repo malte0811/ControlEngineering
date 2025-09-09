@@ -3,6 +3,7 @@ package malte0811.controlengineering.util;
 import blusunrize.immersiveengineering.api.utils.FastEither;
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.DataResult;
+import net.minecraft.client.renderer.entity.FireworkEntityRenderer;
 import org.jetbrains.annotations.Contract;
 
 import java.util.function.Function;
@@ -24,9 +25,15 @@ public class FastDataResult<T> {
 
     // TODO remove this class entirely, or stay with conversions? Probably doesn't do much, but is easier at times
     public static <T> FastDataResult<T> fromDFU(DataResult<T> dfuResult) {
+        return dfuResult.mapOrElse(FastDataResult::success, (e) -> error(e.message()));
     }
 
     public DataResult<T> toDFU() {
+        if (isError()) {
+            return DataResult.error(this::getErrorMessage);
+        } else {
+            return DataResult.success(get());
+        }
     }
 
     public boolean isError() {

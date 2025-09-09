@@ -33,7 +33,7 @@ public class CircuitIngredientDrawer {
 
     public ItemInteractionResult interact(UseOnContext ctx) {
         final ItemStack held = ctx.getItemInHand();
-        if (held.is(filter) && canCombine(storedType, held)) {
+        if (held.is(filter) && ItemStack.isSameItemSameComponents(storedType, held)) {
             if (!ctx.getLevel().isClientSide) {
                 final int toAdd = Math.min(held.getCount(), CAPACITY - storedCount);
                 if (storedType.isEmpty()) {
@@ -54,18 +54,6 @@ public class CircuitIngredientDrawer {
             return ItemInteractionResult.SUCCESS;
         }
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-    }
-
-    private static boolean canCombine(ItemStack existing, ItemStack added) {
-        if (existing.isEmpty()) {
-            return true;
-        } else if (added.getItem() != existing.getItem()) {
-            return false;
-        } else if (!existing.areCapsCompatible(added)) {
-            return false;
-        } else {
-            return Objects.equals(added.getTag(), existing.getTag());
-        }
     }
 
     public boolean canConsume(int required) {

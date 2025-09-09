@@ -1,6 +1,7 @@
 package malte0811.controlengineering;
 
 import blusunrize.immersiveengineering.api.IETags;
+import blusunrize.immersiveengineering.api.Lib;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -17,6 +18,7 @@ import malte0811.controlengineering.items.ControlPanelItem;
 import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.items.PCBStackItem;
 import malte0811.controlengineering.util.RaytraceUtils;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -33,9 +35,11 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -77,7 +81,12 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
-    public static void onRenderOverlayPost(RenderGuiOverlayEvent.Post event) {
+    public static void register(RegisterGuiLayersEvent ev)
+    {
+        ev.registerBelow(VanillaGuiLayers.DEBUG_OVERLAY, Lib.GuiLayers.ITEMS, ClientEvents::onRenderOverlayPost);
+    }
+
+    private static void onRenderOverlayPost(GuiGraphics graphics, DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) {
             return;
@@ -105,9 +114,7 @@ public class ClientEvents {
                 }
             }
         }
-        GuiGraphics graphics = event.getGuiGraphics();
         for (int i = 0; i < lines.size(); ++i) {
-
             graphics.drawString(
                     mc.font,
                     lines.get(i),
@@ -146,20 +153,17 @@ public class ClientEvents {
     private static void renderShape(PoseStack transform, SelectionShapes shape, VertexConsumer builder) {
         shape.plotBox((v1, v2) -> {
             Vec3 normal = v2.subtract(v1);
-            var poseMatrix = transform.last().pose();
-            var normalMatrix = transform.last().normal();
-            addPoint(builder, poseMatrix, normalMatrix, v1, normal);
-            addPoint(builder, poseMatrix, normalMatrix, v2, normal);
+            addPoint(builder, transform.last(), v1, normal);
+            addPoint(builder, transform.last(), v2, normal);
         });
     }
 
     private static void addPoint(
-            VertexConsumer builder, Matrix4f transform, Matrix3f normalTransform, Vec3 pos, Vec3 normal
+            VertexConsumer builder, PoseStack.Pose pose, Vec3 pos, Vec3 normal
     ) {
-        builder.vertex(transform, (float) pos.x, (float) pos.y, (float) pos.z)
-                .color(0, 0, 0, 0.4F)
-                .normal(normalTransform, (float) normal.x, (float) normal.y, (float) normal.z)
-                .endVertex();
+        builder.addVertex(pose, (float) pos.x, (float) pos.y, (float) pos.z)
+                .setColor(0, 0, 0, 0.4F)
+                .setNormal(pose, (float) normal.x, (float) normal.y, (float) normal.z);
     }
 
     @Nullable
@@ -177,7 +181,7 @@ public class ClientEvents {
         }
         if (world.getBlockEntity(highlighted) instanceof SelectionShapeOwner shapeOwner) {
             List<? extends SelectionShapes> selectedStack = shapeOwner.getShape()
-                    .getTargeted(RaytraceUtils.create(player, mc.getFrameTime(), Vec3.atLowerCornerOf(highlighted)))
+                    .getTargeted(RaytraceUtils.create(player, mc.getTimer().getGameTimeDeltaTicks(), Vec3.atLowerCornerOf(highlighted)))
                     .getFirst();
             if (!selectedStack.isEmpty()) {
                 return selectedStack;

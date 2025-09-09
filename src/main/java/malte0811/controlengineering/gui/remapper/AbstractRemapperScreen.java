@@ -211,10 +211,10 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         var matrix = graphics.pose().last().pose();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferbuilder.vertex(matrix, x1, y1, 1.0F).color(color).endVertex();
-        bufferbuilder.vertex(matrix, x2, y2, 1.0F).color(color).endVertex();
-        bufferbuilder.vertex(matrix, x3, y3, 1.0F).color(color).endVertex();
-        bufferbuilder.vertex(matrix, x4, y4, 1.0F).color(color).endVertex();
+        bufferbuilder.addVertex(matrix, x1, y1, 1.0F).setColor(color);
+        bufferbuilder.addVertex(matrix, x2, y2, 1.0F).setColor(color);
+        bufferbuilder.addVertex(matrix, x3, y3, 1.0F).setColor(color);
+        bufferbuilder.addVertex(matrix, x4, y4, 1.0F).setColor(color);
         BufferUploader.drawWithShader(bufferbuilder.end());
         RenderSystem.disableBlend();
     }

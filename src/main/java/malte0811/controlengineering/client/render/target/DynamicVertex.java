@@ -10,7 +10,6 @@ public record DynamicVertex(List<Step> steps) {
         for (Step step : steps) {
             step.apply(out, combinedLight, combinedOverlay);
         }
-        out.endVertex();
     }
 
     public interface Step {

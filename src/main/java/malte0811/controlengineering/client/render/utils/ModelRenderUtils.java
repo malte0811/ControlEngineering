@@ -1,6 +1,8 @@
 package malte0811.controlengineering.client.render.utils;
 
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public class ModelRenderUtils {
     private static final int NUM_TUBE_FACES = 4;
@@ -14,27 +16,26 @@ public class ModelRenderUtils {
         final double lowerOffset = (diameterHigh - diameterLow) / 2;
         final float deltaV = (maxUV.v - minUV.v) / NUM_TUBE_FACES;
         for (int leftVertex = 0; leftVertex < NUM_TUBE_FACES; ++leftVertex) {
-            final Vec3 normal = tubeNormal(leftVertex);
-            out.setNormal(normal);
+            out.setNormal(tubeNormal(leftVertex));
 
             final int rightVertex = leftVertex + 1;
             final float leftV = deltaV * leftVertex + minUV.v;
             final float rightV = deltaV * rightVertex + minUV.v;
-            out.pos(tubeVertex(rightVertex, diameterLow, lowerOffset, yMin))
-                    .uv(minUV.u, rightV).endVertex();
-            out.pos(tubeVertex(rightVertex, diameterHigh, 0, yMax))
-                    .uv(maxUV.u, rightV).endVertex();
-            out.pos(tubeVertex(leftVertex, diameterHigh, 0, yMax))
-                    .uv(maxUV.u, leftV).endVertex();
-            out.pos(tubeVertex(leftVertex, diameterLow, lowerOffset, yMin))
-                    .uv(minUV.u, leftV).endVertex();
+            out.addVertex(tubeVertex(rightVertex, diameterLow, lowerOffset, yMin))
+                    .setUv(minUV.u, rightV);
+            out.addVertex(tubeVertex(rightVertex, diameterHigh, 0, yMax))
+                    .setUv(maxUV.u, rightV);
+            out.addVertex(tubeVertex(leftVertex, diameterHigh, 0, yMax))
+                    .setUv(maxUV.u, leftV);
+            out.addVertex(tubeVertex(leftVertex, diameterLow, lowerOffset, yMin))
+                    .setUv(minUV.u, leftV);
         }
     }
 
-    private static Vec3 tubeNormal(int vertex) {
+    private static Vector3f tubeNormal(int vertex) {
         //Not 100% accurate (ignores lower/upper diameter), but good enough
         //TODO actually implement
-        return new Vec3(0, 1, 0);
+        return new Vector3f(0, 1, 0);
     }
 
     private static Vec3 tubeVertex(int vertex, double diameter, double offset, double y) {

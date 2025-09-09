@@ -41,6 +41,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -369,8 +370,8 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        if (!super.mouseScrolled(mouseX, mouseY, delta)) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta, double otherDelta) {
+        if (!super.mouseScrolled(mouseX, mouseY, delta, otherDelta)) {
             visibleArea.onScroll(delta);
         }
         return true;

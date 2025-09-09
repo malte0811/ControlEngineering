@@ -78,22 +78,18 @@ public class SubTexture {
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
         final var matrix = transform.last().pose();
-        bufferbuilder.vertex(matrix, x, y + getHeight(), 0)
-                .color(255, 255, 255, alpha)
-                .uv(getMinU() / (float) mainSize, getMaxV() / (float) mainSize)
-                .endVertex();
-        bufferbuilder.vertex(matrix, x + getWidth(), y + getHeight(), 0)
-                .color(255, 255, 255, alpha)
-                .uv(getMaxU() / (float) mainSize, getMaxV() / (float) mainSize)
-                .endVertex();
-        bufferbuilder.vertex(matrix, x + getWidth(), y, 0)
-                .color(255, 255, 255, alpha)
-                .uv(getMaxU() / (float) mainSize, getMinV() / (float) mainSize)
-                .endVertex();
-        bufferbuilder.vertex(matrix, x, y, 0)
-                .color(255, 255, 255, alpha)
-                .uv(getMinU() / (float) mainSize, getMinV() / (float) mainSize)
-                .endVertex();
+        bufferbuilder.addVertex(matrix, x, y + getHeight(), 0)
+                .setColor(255, 255, 255, alpha)
+                .setUv(getMinU() / (float) mainSize, getMaxV() / (float) mainSize);
+        bufferbuilder.addVertex(matrix, x + getWidth(), y + getHeight(), 0)
+                .setColor(255, 255, 255, alpha)
+                .setUv(getMaxU() / (float) mainSize, getMaxV() / (float) mainSize);
+        bufferbuilder.addVertex(matrix, x + getWidth(), y, 0)
+                .setColor(255, 255, 255, alpha)
+                .setUv(getMaxU() / (float) mainSize, getMinV() / (float) mainSize);
+        bufferbuilder.addVertex(matrix, x, y, 0)
+                .setColor(255, 255, 255, alpha)
+                .setUv(getMinU() / (float) mainSize, getMinV() / (float) mainSize);
         BufferUploader.drawWithShader(bufferbuilder.end());
         RenderSystem.disableBlend();
     }
