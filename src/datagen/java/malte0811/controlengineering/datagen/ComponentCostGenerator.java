@@ -2,29 +2,22 @@ package malte0811.controlengineering.datagen;
 
 import blusunrize.immersiveengineering.api.IETags;
 import blusunrize.immersiveengineering.api.crafting.IngredientWithSize;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import malte0811.controlengineering.controlpanels.PanelComponentType;
 import malte0811.controlengineering.controlpanels.PanelComponents;
-import malte0811.controlengineering.crafting.CERecipeSerializers;
 import malte0811.controlengineering.crafting.noncrafting.ComponentCostRecipe;
 import malte0811.controlengineering.items.IEItemRefs;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ComponentCostGenerator {
 
-    public static void buildComponentCosts(@NotNull Consumer<FinishedRecipe> out) {
+    public static void buildComponentCosts(@NotNull RecipeOutput out) {
         var anyDye = new IngredientWithSize(Tags.Items.DYES);
         //TODO tag?
         var paper = new IngredientWithSize(Ingredient.of(Items.PAPER));
@@ -50,41 +43,8 @@ public class ComponentCostGenerator {
     }
 
     private static void addCosts(
-            Consumer<FinishedRecipe> out, PanelComponentType<?, ?> component, IngredientWithSize... cost
+            RecipeOutput out, PanelComponentType<?, ?> component, IngredientWithSize... cost
     ) {
-        out.accept(new FinishedRecipe() {
-            @Override
-            public void serializeRecipeData(@Nonnull JsonObject fullJson) {
-                var costJson = new JsonArray();
-                for (var ingredient : cost) {
-                    costJson.add(ingredient.serialize());
-                }
-                fullJson.add(ComponentCostRecipe.Serializer.COST_ARRAY_KEY, costJson);
-            }
-
-            @Nonnull
-            @Override
-            public ResourceLocation getId() {
-                return component.getCostLocation();
-            }
-
-            @Nonnull
-            @Override
-            public RecipeSerializer<?> getType() {
-                return CERecipeSerializers.COMPONENT_COST.get();
-            }
-
-            @Nullable
-            @Override
-            public JsonObject serializeAdvancement() {
-                return null;
-            }
-
-            @Nullable
-            @Override
-            public ResourceLocation getAdvancementId() {
-                return null;
-            }
-        });
+        out.accept(component.getCostLocation(), new ComponentCostRecipe(Arrays.asList(cost)), null);
     }
 }

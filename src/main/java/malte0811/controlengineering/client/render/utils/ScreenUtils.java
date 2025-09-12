@@ -7,6 +7,7 @@ import malte0811.controlengineering.util.math.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.renderer.GameRenderer;
+import org.apache.commons.lang3.NotImplementedException;
 import org.joml.Matrix4f;
 
 public class ScreenUtils {
@@ -24,25 +25,31 @@ public class ScreenUtils {
         float red = (float) (color >> 16 & 255) / 255.0F;
         float green = (float) (color >> 8 & 255) / 255.0F;
         float blue = (float) (color & 255) / 255.0F;
-        final VertexConsumer bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.addVertex(matrix, (float) minX, (float) maxY, 0.0F).setColor(red, green, blue, alpha);
-        bufferbuilder.addVertex(matrix, (float) maxX, (float) maxY, 0.0F).setColor(red, green, blue, alpha);
-        bufferbuilder.addVertex(matrix, (float) maxX, (float) minY, 0.0F).setColor(red, green, blue, alpha);
-        bufferbuilder.addVertex(matrix, (float) minX, (float) minY, 0.0F).setColor(red, green, blue, alpha);
+        // TODO
+        throw new NotImplementedException();
+        //final VertexConsumer bufferbuilder = Tesselator.getInstance().getBuilder();
+        //bufferbuilder.addVertex(matrix, (float) minX, (float) maxY, 0.0F).setColor(red, green, blue, alpha);
+        //bufferbuilder.addVertex(matrix, (float) maxX, (float) maxY, 0.0F).setColor(red, green, blue, alpha);
+        //bufferbuilder.addVertex(matrix, (float) maxX, (float) minY, 0.0F).setColor(red, green, blue, alpha);
+        //bufferbuilder.addVertex(matrix, (float) minX, (float) minY, 0.0F).setColor(red, green, blue, alpha);
     }
 
     public static void endPositionColorDraw() {
-        Tesselator.getInstance().end();
-        RenderSystem.disableBlend();
+        // TODO
+        throw new NotImplementedException();
+        //Tesselator.getInstance().end();
+        //RenderSystem.disableBlend();
     }
 
     public static void startPositionColorDraw() {
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder = tesselator.getBuilder();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        // TODO
+        throw new NotImplementedException();
+        //Tesselator tesselator = Tesselator.getInstance();
+        //BufferBuilder bufferbuilder = tesselator.getBuilder();
+        //RenderSystem.enableBlend();
+        //RenderSystem.defaultBlendFunc();
+        //RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        //bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
     }
 
     public static Vec2d getMousePosition() {

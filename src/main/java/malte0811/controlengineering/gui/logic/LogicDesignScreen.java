@@ -12,7 +12,6 @@ import malte0811.controlengineering.client.render.utils.ScreenUtils;
 import malte0811.controlengineering.gui.StackedScreen;
 import malte0811.controlengineering.gui.misc.ConfirmScreen;
 import malte0811.controlengineering.gui.misc.DataProviderScreen;
-import malte0811.controlengineering.gui.widget.SmallCheckbox;
 import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.logic.cells.SignalType;
 import malte0811.controlengineering.logic.schematic.ConnectedPin;
@@ -42,6 +41,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.apache.commons.lang3.NotImplementedException;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -115,14 +115,16 @@ public class LogicDesignScreen extends StackedScreen implements MenuAccess<Logic
                     .size(40, 20)
                     .tooltip(Tooltip.create(Component.translatable(CLEAR_ALL_TOOLTIP)))
                     .build());
-            addRenderableWidget(new SmallCheckbox(
-                    TOTAL_BORDER, TOTAL_BORDER + 60, 20, 20, Component.literal("DRC"), errorsShown,
-                    newState -> {
-                        errorsShown = newState;
-                        updateErrors();
-                    },
-                    Tooltip.create(Component.translatable(DRC_INFO_KEY))
-            ));
+            // TODO
+            throw new NotImplementedException();
+            //addRenderableWidget(new SmallCheckbox(
+            //        TOTAL_BORDER, TOTAL_BORDER + 60, 20, 20, Component.literal("DRC"), errorsShown,
+            //        newState -> {
+            //            errorsShown = newState;
+            //            updateErrors();
+            //        },
+            //        Tooltip.create(Component.translatable(DRC_INFO_KEY))
+            //));
         }
         visibleArea.onSizeChanged(width, height);
     }

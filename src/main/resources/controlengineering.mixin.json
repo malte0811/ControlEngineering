@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "malte0811.controlengineering.mixin.access",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ShapedRecipeAccess"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

@@ -2,11 +2,11 @@ package malte0811.controlengineering.datagen;
 
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.datagen.manual.CEManualDataGenerator;
-import net.neoforged.data.event.GatherDataEvent;
-import net.neoforged.eventbus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
-@EventBusSubscriber(modid = ControlEngineering.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber
 public class CEDataGen {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent ev) {
@@ -15,11 +15,11 @@ public class CEDataGen {
         final var exHelper = ev.getExistingFileHelper();
         generator.addProvider(true, new BlockstateGenerator(output, exHelper));
         generator.addProvider(true, new ItemModels(output, exHelper));
-        generator.addProvider(true, new Recipes(output, exHelper));
+        generator.addProvider(true, new Recipes(output, ev.getLookupProvider(), exHelper));
         generator.addProvider(true, new LangGenerator(output));
-        generator.addProvider(true, new LootGenerator(output));
+        generator.addProvider(true, new LootGenerator(output, ev.getLookupProvider()));
         generator.addProvider(true, new BlockTagGenerator(output, ev.getLookupProvider(), exHelper));
-        generator.addProvider(true, new LootModifierGenerator(output));
+        generator.addProvider(true, new LootModifierGenerator(output, ev.getLookupProvider()));
         CEManualDataGenerator.addProviders(generator, exHelper);
     }
 }

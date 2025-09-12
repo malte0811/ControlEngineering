@@ -3,14 +3,17 @@ package malte0811.controlengineering.datagen;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.loot.BlueprintChestModifier;
 import malte0811.controlengineering.util.RLUtils;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
 
+import java.util.concurrent.CompletableFuture;
+
 public class LootModifierGenerator extends GlobalLootModifierProvider {
-    public LootModifierGenerator(PackOutput output) {
-        super(output, ControlEngineering.MODID);
+    public LootModifierGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> provider) {
+        super(output, provider, ControlEngineering.MODID);
     }
 
     @Override

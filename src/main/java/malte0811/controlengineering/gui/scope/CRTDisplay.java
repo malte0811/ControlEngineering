@@ -10,6 +10,7 @@ import malte0811.controlengineering.scope.trace.Trace;
 import malte0811.controlengineering.scope.trace.TraceId;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
+import org.apache.commons.lang3.NotImplementedException;
 import org.joml.Matrix4f;
 
 import javax.annotation.Nullable;
@@ -99,14 +100,16 @@ public class CRTDisplay {
             float alpha, double delayLeft, double delayRight, boolean vertical
     ) {
         Matrix4f matrix = transform.last().pose();
-        final var bufferbuilder = Tesselator.getInstance().getBuilder();
-        final float scaledDLeft = Math.min(1, (float) (delayLeft / 1e4));
-        final float scaledDRight = Math.min(1, (float) (delayRight / 1e4));
-        final int indexOff = vertical ? 1 : 0;
-        putTraceVertex(bufferbuilder, matrix, minX, maxY, indexOff, scaledDLeft, alpha);
-        putTraceVertex(bufferbuilder, matrix, maxX, maxY, indexOff + 1, scaledDRight, alpha);
-        putTraceVertex(bufferbuilder, matrix, maxX, minY, indexOff + 2, scaledDRight, alpha);
-        putTraceVertex(bufferbuilder, matrix, minX, minY, indexOff + 3, scaledDLeft, alpha);
+        //TODO
+        throw new NotImplementedException();
+        //final var bufferbuilder = Tesselator.getInstance().getBuilder();
+        //final float scaledDLeft = Math.min(1, (float) (delayLeft / 1e4));
+        //final float scaledDRight = Math.min(1, (float) (delayRight / 1e4));
+        //final int indexOff = vertical ? 1 : 0;
+        //putTraceVertex(bufferbuilder, matrix, minX, maxY, indexOff, scaledDLeft, alpha);
+        //putTraceVertex(bufferbuilder, matrix, maxX, maxY, indexOff + 1, scaledDRight, alpha);
+        //putTraceVertex(bufferbuilder, matrix, maxX, minY, indexOff + 2, scaledDRight, alpha);
+        //putTraceVertex(bufferbuilder, matrix, minX, minY, indexOff + 3, scaledDLeft, alpha);
     }
 
     private void drawTrace(GuiGraphics graphics, Trace trace, boolean highlight) {

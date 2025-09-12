@@ -23,7 +23,7 @@ public class ScopeModelBuilder<T extends ModelBuilder<T>> extends CustomLoaderBu
     private final Map<ResourceLocation, ModelBuilder<?>> modules = new HashMap<>();
 
     private ScopeModelBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(ModelLoaders.SCOPE, parent, existingFileHelper);
+        super(ModelLoaders.SCOPE, parent, existingFileHelper, false);
     }
 
     public ScopeModelBuilder<T> main(ModelBuilder<?> mainModel) {

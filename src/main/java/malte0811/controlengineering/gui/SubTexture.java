@@ -1,11 +1,10 @@
 package malte0811.controlengineering.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
+import org.apache.commons.lang3.NotImplementedException;
 
 public class SubTexture {
     private final ResourceLocation mainTexture;
@@ -57,12 +56,14 @@ public class SubTexture {
     }
 
     public ImageButton createButton(int x, int y, Button.OnPress onPress) {
-        return new ImageButton(
-                x, y,
-                getWidth(), getHeight(), getMinU(), getMinV(),
-                0, getMainTexture(),
-                onPress
-        );
+        //TODO
+        throw new NotImplementedException();
+        //return new ImageButton(
+        //        x, y,
+        //        getWidth(), getHeight(), getMinU(), getMinV(),
+        //        0, getMainTexture(),
+        //        onPress
+        //);
     }
 
     public void blit(PoseStack transform, int x, int y) {
@@ -70,27 +71,29 @@ public class SubTexture {
     }
 
     public void blit(PoseStack transform, int x, int y, int alpha) {
-        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha / 255F);
-        RenderSystem.setShaderTexture(0, getMainTexture());
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
-        final var matrix = transform.last().pose();
-        bufferbuilder.addVertex(matrix, x, y + getHeight(), 0)
-                .setColor(255, 255, 255, alpha)
-                .setUv(getMinU() / (float) mainSize, getMaxV() / (float) mainSize);
-        bufferbuilder.addVertex(matrix, x + getWidth(), y + getHeight(), 0)
-                .setColor(255, 255, 255, alpha)
-                .setUv(getMaxU() / (float) mainSize, getMaxV() / (float) mainSize);
-        bufferbuilder.addVertex(matrix, x + getWidth(), y, 0)
-                .setColor(255, 255, 255, alpha)
-                .setUv(getMaxU() / (float) mainSize, getMinV() / (float) mainSize);
-        bufferbuilder.addVertex(matrix, x, y, 0)
-                .setColor(255, 255, 255, alpha)
-                .setUv(getMinU() / (float) mainSize, getMinV() / (float) mainSize);
-        BufferUploader.drawWithShader(bufferbuilder.end());
-        RenderSystem.disableBlend();
+        //TODO
+        throw new NotImplementedException();
+        //RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
+        //RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha / 255F);
+        //RenderSystem.setShaderTexture(0, getMainTexture());
+        //RenderSystem.enableBlend();
+        //RenderSystem.defaultBlendFunc();
+        //BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+        //bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+        //final var matrix = transform.last().pose();
+        //bufferbuilder.addVertex(matrix, x, y + getHeight(), 0)
+        //        .setColor(255, 255, 255, alpha)
+        //        .setUv(getMinU() / (float) mainSize, getMaxV() / (float) mainSize);
+        //bufferbuilder.addVertex(matrix, x + getWidth(), y + getHeight(), 0)
+        //        .setColor(255, 255, 255, alpha)
+        //        .setUv(getMaxU() / (float) mainSize, getMaxV() / (float) mainSize);
+        //bufferbuilder.addVertex(matrix, x + getWidth(), y, 0)
+        //        .setColor(255, 255, 255, alpha)
+        //        .setUv(getMaxU() / (float) mainSize, getMinV() / (float) mainSize);
+        //bufferbuilder.addVertex(matrix, x, y, 0)
+        //        .setColor(255, 255, 255, alpha)
+        //        .setUv(getMinU() / (float) mainSize, getMinV() / (float) mainSize);
+        //BufferUploader.drawWithShader(bufferbuilder.end());
+        //RenderSystem.disableBlend();
     }
 }

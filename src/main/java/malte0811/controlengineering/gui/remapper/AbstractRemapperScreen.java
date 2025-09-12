@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
@@ -204,19 +205,21 @@ public abstract class AbstractRemapperScreen extends Screen implements MenuAcces
             float x4, float y4,
             int color
     ) {
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        var matrix = graphics.pose().last().pose();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferbuilder.addVertex(matrix, x1, y1, 1.0F).setColor(color);
-        bufferbuilder.addVertex(matrix, x2, y2, 1.0F).setColor(color);
-        bufferbuilder.addVertex(matrix, x3, y3, 1.0F).setColor(color);
-        bufferbuilder.addVertex(matrix, x4, y4, 1.0F).setColor(color);
-        BufferUploader.drawWithShader(bufferbuilder.end());
-        RenderSystem.disableBlend();
+        // TODO
+        throw new NotImplementedException();
+        //BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+        //RenderSystem.enableBlend();
+        //RenderSystem.defaultBlendFunc();
+        //RenderSystem.enableDepthTest();
+        //RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        //var matrix = graphics.pose().last().pose();
+        //bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        //bufferbuilder.addVertex(matrix, x1, y1, 1.0F).setColor(color);
+        //bufferbuilder.addVertex(matrix, x2, y2, 1.0F).setColor(color);
+        //bufferbuilder.addVertex(matrix, x3, y3, 1.0F).setColor(color);
+        //bufferbuilder.addVertex(matrix, x4, y4, 1.0F).setColor(color);
+        //BufferUploader.drawWithShader(bufferbuilder.end());
+        //RenderSystem.disableBlend();
     }
 
     @Nonnull

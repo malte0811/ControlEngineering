@@ -13,7 +13,7 @@ public class LogicWorkbenchBuilder<T extends ModelBuilder<T>> extends CustomLoad
     private NongeneratedModel schematic;
 
     public LogicWorkbenchBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(ModelLoaders.LOGIC_WORKBENCH, parent, existingFileHelper);
+        super(ModelLoaders.LOGIC_WORKBENCH, parent, existingFileHelper, false);
     }
 
     public LogicWorkbenchBuilder<T> workbenchModel(NongeneratedModel model) {

@@ -3,6 +3,7 @@ package malte0811.controlengineering.crafting;
 import com.google.common.base.Preconditions;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.ItemWithKeyID;
+import malte0811.controlengineering.mixin.access.ShapedRecipeAccess;
 import malte0811.dualcodecs.DualCodecs;
 import malte0811.dualcodecs.DualCompositeMapCodecs;
 import malte0811.dualcodecs.DualMapCodec;
@@ -40,8 +41,7 @@ public class OptionalKeyCopyRecipe extends ShapedRecipe {
     public OptionalKeyCopyRecipe(ShapedRecipe baseRecipe, boolean isIdOptional) {
         super(
                 baseRecipe.getGroup(), CraftingBookCategory.MISC,
-                baseRecipe.getWidth(), baseRecipe.getHeight(),
-                baseRecipe.getIngredients(), baseRecipe.getResultItem(null)
+                ((ShapedRecipeAccess)baseRecipe).getPattern(), baseRecipe.getResultItem(null)
         );
         Preconditions.checkArgument(getResultItem(null).getItem() instanceof ItemWithKeyID);
         this.isIdOptional = isIdOptional;

@@ -22,7 +22,7 @@ public class CacheableCompositeBuilder<T extends ModelBuilder<T>> extends Custom
     private final List<NongeneratedModels.NongeneratedModel> submodels = new ArrayList<>();
 
     private CacheableCompositeBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(ModelLoaders.CACHED_COMPOSITE, parent, existingFileHelper);
+        super(ModelLoaders.CACHED_COMPOSITE, parent, existingFileHelper, false);
     }
 
     public CacheableCompositeBuilder<T> submodel(NongeneratedModels.NongeneratedModel model) {

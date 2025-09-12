@@ -34,7 +34,6 @@ import net.neoforged.neoforge.client.model.generators.VariantBlockStateBuilder.P
 import net.neoforged.neoforge.client.model.generators.loaders.CompositeModelBuilder;
 import net.neoforged.neoforge.client.model.generators.loaders.ObjModelBuilder;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -202,7 +201,7 @@ public class BlockstateGenerator extends BlockStateProvider {
     }
 
     private <T extends Comparable<T>> void rotatedWithOffset(
-            RegistryObject<? extends Block> b,
+            Supplier<? extends Block> b,
             ModelFile mainModel,
             T baseOffset, Property<T> offsetProp,
             Property<Direction> facing
@@ -278,12 +277,12 @@ public class BlockstateGenerator extends BlockStateProvider {
         return (int) dir.toYRot();
     }
 
-    private void horizontalRotated(RegistryObject<? extends Block> b, Property<Direction> facing, ModelFile model) {
+    private void horizontalRotated(Supplier<? extends Block> b, Property<Direction> facing, ModelFile model) {
         horizontalRotated(b, facing, model, ImmutableMap.of());
     }
 
     private void horizontalRotated(
-            RegistryObject<? extends Block> b,
+            Supplier<? extends Block> b,
             Property<Direction> facing,
             ModelFile model,
             Map<Property<?>, Comparable<?>> additional
@@ -303,7 +302,7 @@ public class BlockstateGenerator extends BlockStateProvider {
         itemModels().getBuilder(ItemModels.name(b)).parent(model);
     }
 
-    private void emptyModel(RegistryObject<? extends Block> b, Map<Property<?>, Comparable<?>> additional) {
+    private void emptyModel(Supplier<? extends Block> b, Map<Property<?>, Comparable<?>> additional) {
         var partialState = getVariantBuilder(b.get()).partialState();
         for (var fixedProperty : additional.entrySet()) {
             partialState = withUnchecked(partialState, fixedProperty.getKey(), fixedProperty.getValue());
@@ -319,7 +318,7 @@ public class BlockstateGenerator extends BlockStateProvider {
     }
 
     private ResourceLocation addModelsPrefix(ResourceLocation in) {
-        return new ResourceLocation(in.getNamespace(), "models/" + in.getPath());
+        return in.withPrefix("models/");
     }
 
 }

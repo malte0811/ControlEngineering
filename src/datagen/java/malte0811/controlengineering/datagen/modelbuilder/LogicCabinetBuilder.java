@@ -21,7 +21,7 @@ public class LogicCabinetBuilder<T extends ModelBuilder<T>> extends CustomLoader
     private ModelFile board;
 
     private LogicCabinetBuilder(T parent, ExistingFileHelper existingFileHelper) {
-        super(ModelLoaders.LOGIC_CABINET, parent, existingFileHelper);
+        super(ModelLoaders.LOGIC_CABINET, parent, existingFileHelper, false);
     }
 
     public LogicCabinetBuilder<T> tube(ModelFile tubeModel) {

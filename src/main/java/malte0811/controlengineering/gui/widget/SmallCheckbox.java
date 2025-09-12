@@ -9,6 +9,8 @@ import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnull;
 
+// TODO
+/*
 public class SmallCheckbox extends Checkbox {
     private final BooleanConsumer onChange;
 
@@ -44,4 +46,4 @@ public class SmallCheckbox extends Checkbox {
                 0xffe0e0e0
         );
     }
-}
+}*/

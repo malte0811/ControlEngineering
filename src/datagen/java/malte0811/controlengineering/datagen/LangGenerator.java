@@ -44,8 +44,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
@@ -317,7 +317,7 @@ public class LangGenerator extends LanguageProvider {
 
     private void assertAllLocalized(Set<ResourceLocation> localized, DeferredRegister<?> register) {
         var allRLs = register.getEntries().stream()
-                .map(RegistryObject::getId)
+                .map(DeferredHolder::getId)
                 .collect(Collectors.toSet());
         var unregistered = Sets.difference(allRLs, localized);
         if (!unregistered.isEmpty()) {

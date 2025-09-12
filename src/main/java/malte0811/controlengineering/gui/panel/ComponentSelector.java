@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.util.Mth;
+import org.apache.commons.lang3.NotImplementedException;
 import org.joml.Quaternionf;
 
 import javax.annotation.Nonnull;
@@ -112,10 +113,12 @@ public class ComponentSelector extends NestedWidget {
         //TODO cache?
         var model = new MixedModel();
         ComponentRenderers.render(model, component, graphics.pose());
-        var buffers = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        model.renderTo(buffers, new PoseStack(), LightTexture.pack(15, 15), OverlayTexture.NO_OVERLAY);
-        buffers.endBatch();
-        graphics.pose().popPose();
+        // TODO
+        throw new NotImplementedException();
+        //var buffers = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        //model.renderTo(buffers, new PoseStack(), LightTexture.pack(15, 15), OverlayTexture.NO_OVERLAY);
+        //buffers.endBatch();
+        //graphics.pose().popPose();
     }
 
     @Override

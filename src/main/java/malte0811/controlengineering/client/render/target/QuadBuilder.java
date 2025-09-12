@@ -100,13 +100,12 @@ public class QuadBuilder {
         Vec3 normalD = this.normal == null ? automaticNormal() : this.normal;
         Vector3f normal = normalD.toVector3f();
         for (Vertex v : vertices) {
-            target.vertex(
-                    (float) v.position.x, (float) v.position.y, (float) v.position.z,
-                    red, green, blue, alpha,
-                    sprite.getU(16 * v.spriteU), sprite.getV(16 * v.spriteV),
-                    OverlayTexture.NO_OVERLAY, blockLightOverride.orElse(0),
-                    normal.x(), normal.y(), normal.z()
-            );
+            target.addVertex((float) v.position.x, (float) v.position.y, (float) v.position.z)
+                    .setColor(red, green, blue, alpha)
+                    .setUv(sprite.getU(16 * v.spriteU), sprite.getV(16 * v.spriteV))
+                    .setOverlay(OverlayTexture.NO_OVERLAY)
+                    .setLight(blockLightOverride.orElse(0))
+                    .setNormal(normal.x(), normal.y(), normal.z());
         }
     }
 

@@ -26,6 +26,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.lwjgl.glfw.GLFW;
@@ -68,10 +69,12 @@ public class PanelLayout extends AbstractWidget {
             ComponentRenderers.render(model, placing.component(), graphics.pose());
             graphics.pose().popPose();
         }
-        MultiBufferSource.BufferSource impl = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        model.renderTo(impl, new PoseStack(), LightTexture.pack(15, 15), OverlayTexture.NO_OVERLAY);
-        impl.endBatch();
-        graphics.pose().popPose();
+        //TODO
+        throw new NotImplementedException();
+        //MultiBufferSource.BufferSource impl = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        //model.renderTo(impl, new PoseStack(), LightTexture.pack(15, 15), OverlayTexture.NO_OVERLAY);
+        //impl.endBatch();
+        //graphics.pose().popPose();
     }
 
     @Override
