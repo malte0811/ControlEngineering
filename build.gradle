@@ -6,37 +6,6 @@ version = project.ce_version+makeVersionSuffix()
 group = "malte0811.controlengineering"
 archivesBaseName = "ControlEngineering"
 
-String makeVersionSuffix() {
-    return System.getenv("GITHUB_ACTIONS") != null ? "-GH-" + System.getenv("GITHUB_RUN_NUMBER") : ""
-}
-
-sourceSets {
-    main {
-        resources {
-            srcDirs = [
-                    "$rootDir/src/main/resources",
-                    "$rootDir/src/generated/resources"
-            ]
-        }
-    }
-    datagen {
-        compileClasspath += main.output + main.compileClasspath
-        runtimeClasspath += main.output + main.runtimeClasspath
-    }
-}
-
-def setupSourceSet(SourceSet sourceSet, String name) {
-    sourceSet.java {
-        srcDir 'src/' + name + '/java'
-    }
-    sourceSet.resources {
-        //Add the generated module resources
-        srcDirs += 'src/generated/resources'
-        //But exclude the cache of the generated data from what gets built
-        exclude '.cache'
-    }
-}
-
 def version_replacements = [
         'mc_version': minecraft_version,
         'ie_version': ie_version,
@@ -44,13 +13,31 @@ def version_replacements = [
         'neoforge_version': neoforge_version,
 ]
 
-processResources {
-    // TODO generateModMetadata task
-    inputs.properties(version_replacements)
-    filesMatching("META-INF/mods.toml") {
-        expand version_replacements
+String makeVersionSuffix() {
+    return System.getenv("GITHUB_ACTIONS") != null ? "-GH-" + System.getenv("GITHUB_RUN_NUMBER") : ""
+}
+
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    inputs.properties version_replacements
+    expand version_replacements
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+
+// Generate mods.toml on IDE import
+neoForge.ideSyncTask generateModMetadata
+
+sourceSets {
+    main {
+        resources {
+            srcDir "$rootDir/src/generated/resources"
+            srcDir generateModMetadata
+        }
     }
-    exclude ".cache"
+    datagen {
+        compileClasspath += main.output + main.compileClasspath
+        runtimeClasspath += main.output + main.runtimeClasspath
+    }
 }
 
 neoForge {

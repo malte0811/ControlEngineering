@@ -1,6 +1,8 @@
-modLoader = "javafml" #mandatory
-loaderVersion = "[32,)"
+modLoader = "javafml"
+loaderVersion = "[1,)"
+issueTrackerURL = "https://github.com/malte0811/ControlEngineering/issues"
 license = "MIT"
+
 [[mods]]
 modId = "controlengineering"
 version = "${ce_version}"
@@ -23,8 +25,20 @@ mandatory = true
 versionRange = "[${ie_version},)"
 ordering = "AFTER"
 side = "BOTH"
+
 [[dependencies.controlengineering]]
-modId = "forge"
-mandatory = true
-versionRange = "[${neoforge_version},)"
-side = "BOTH"
+  modId="neoforge"
+  type = "required"
+  versionRange="[${neoforge_version},)"
+  ordering="NONE"
+  side="BOTH"
+
+[[dependencies.controlengineering]]
+  modId="minecraft"
+  type = "required"
+  versionRange="[${mc_version}]"
+  ordering="NONE"
+  side="BOTH"
+
+[[mixins]]
+  config="controlengineering.mixin.json"
