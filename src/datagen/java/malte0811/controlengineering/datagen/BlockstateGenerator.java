@@ -7,10 +7,7 @@ import blusunrize.immersiveengineering.data.models.SpecialModelBuilder;
 import com.google.common.collect.ImmutableMap;
 import malte0811.controlengineering.ControlEngineering;
 import malte0811.controlengineering.blocks.CEBlocks;
-import malte0811.controlengineering.blocks.bus.BusInterfaceBlock;
-import malte0811.controlengineering.blocks.bus.BusRelayBlock;
-import malte0811.controlengineering.blocks.bus.LineAccessBlock;
-import malte0811.controlengineering.blocks.bus.ScopeBlock;
+import malte0811.controlengineering.blocks.bus.*;
 import malte0811.controlengineering.blocks.logic.LogicCabinetBlock;
 import malte0811.controlengineering.blocks.logic.LogicWorkbenchBlock;
 import malte0811.controlengineering.blocks.panels.PanelBlock;
@@ -53,7 +50,7 @@ public class BlockstateGenerator extends BlockStateProvider {
     protected void registerStatesAndModels() {
         createRotatedBlock(CEBlocks.BUS_RELAY, obj("bus_relay.obj"), BusRelayBlock.FACING, 90);
         createRotatedBlock(CEBlocks.LINE_ACCESS, cutoutObj("line_access.obj"), LineAccessBlock.FACING, 0);
-        createRotatedBlock(CEBlocks.RS_REMAPPER, cutoutObj("rs_remapper.obj"), LineAccessBlock.FACING, 0);
+        createRotatedBlock(CEBlocks.RS_REMAPPER, cutoutObj("rs_remapper.obj"), RSRemapperBlock.FACING, 0);
         createRotatedBlock(CEBlocks.BUS_INTERFACE, obj("bus_interface.obj"), BusInterfaceBlock.FACING, 90);
 
         panelModel();

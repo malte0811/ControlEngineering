@@ -17,11 +17,11 @@ import java.util.function.Supplier;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = ControlEngineering.MODID)
 public class CECreativeTab {
-    public static final DeferredRegister<CreativeModeTab> REGISTRER = DeferredRegister.create(
+    public static final DeferredRegister<CreativeModeTab> REGISTER = DeferredRegister.create(
             Registries.CREATIVE_MODE_TAB, ControlEngineering.MODID
     );
 
-    public static final Supplier<CreativeModeTab> CE_TAB = REGISTRER.register(ControlEngineering.MODID,
+    public static final Supplier<CreativeModeTab> CE_TAB = REGISTER.register(ControlEngineering.MODID,
             () -> CreativeModeTab.builder()
                     // Set name of tab to display
                     .title(Component.literal(ControlEngineering.MODNAME))

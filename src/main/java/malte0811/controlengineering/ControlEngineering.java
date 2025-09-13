@@ -8,6 +8,7 @@ import malte0811.controlengineering.bus.LocalBusHandler;
 import malte0811.controlengineering.crafting.CERecipeSerializers;
 import malte0811.controlengineering.crafting.CERecipeTypes;
 import malte0811.controlengineering.gui.CEContainers;
+import malte0811.controlengineering.itemdata.CEDataComponents;
 import malte0811.controlengineering.items.CECreativeTab;
 import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.IEItemRefs;
@@ -25,6 +26,7 @@ import malte0811.controlengineering.network.remapper.RemapperSubPacket;
 import malte0811.controlengineering.network.scope.ScopePacket;
 import malte0811.controlengineering.network.scope.ScopeSubPacket;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -33,7 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(ControlEngineering.MODID)
-@EventBusSubscriber(modid = ControlEngineering.MODID)
+@EventBusSubscriber
 public class ControlEngineering {
     public static final String MODID = "controlengineering";
     public static final String MODNAME = "Control Engineering";
@@ -48,18 +50,19 @@ public class ControlEngineering {
         CELootFunctions.REGISTER.register(modBus);
         CERecipeTypes.REGISTER.register(modBus);
         BlueprintChestModifier.REGISTER.register(modBus);
-        CECreativeTab.REGISTRER.register(modBus);
-        modBus.addListener(this::setup);
-        modBus.addListener(this::setupNetwork);
+        CECreativeTab.REGISTER.register(modBus);
+        CEDataComponents.REGISTER.register(modBus);
         IEItemRefs.init();
     }
 
-    public void setup(FMLCommonSetupEvent ev) {
+    @SubscribeEvent
+    public static void setup(FMLCommonSetupEvent ev) {
         LocalNetworkHandler.register(LocalBusHandler.NAME, LocalBusHandler::new);
         BusWireType.init();
     }
 
-    private void setupNetwork(RegisterPayloadHandlersEvent ev) {
+    @SubscribeEvent
+    public static void setupNetwork(RegisterPayloadHandlersEvent ev) {
         final var registrar = ev.registrar(MODID);
         KeypunchSubpackets.init();
         LogicSubPackets.init();

@@ -20,7 +20,6 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.OptionalInt;
 
-@EventBusSubscriber(value = Dist.CLIENT, modid = ControlEngineering.MODID)
 public class QuadBuilder {
     public static final ResourceLocation WHITE_WITH_BORDER = RLUtils.ceLoc("block/white_with_border");
 

@@ -55,7 +55,8 @@ neoForge {
                     '--all',
                     '--output', file('src/generated/resources/').toString(),
                     '--validate',
-                    '--existing', sourceSets.main.resources.srcDirs[0].toString()
+                    '--existing', sourceSets.main.resources.srcDirs[0].toString(),
+                    '--existing-mod', 'immersiveengineering'
             ]
         }
         server {

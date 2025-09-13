@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public class CEDataComponents {
-    private static final DeferredRegister<DataComponentType<?>> REGISTER = DeferredRegister.create(
+    public static final DeferredRegister<DataComponentType<?>> REGISTER = DeferredRegister.create(
             Registries.DATA_COMPONENT_TYPE, ControlEngineering.MODID
     );
 

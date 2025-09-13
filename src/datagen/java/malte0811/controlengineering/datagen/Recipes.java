@@ -66,13 +66,15 @@ public class Recipes extends RecipeProvider {
                 .pattern("pcp")
                 .define('p', IETags.getTagsFor(EnumMetals.ALUMINUM).plate)
                 .define('c', IEItemRefs.REDSTONE_WIRE_COIL)
-                        .save(output);
+                .unlockedBy("has_redstone_wire", has(IEItemRefs.REDSTONE_WIRE_COIL))
+                .save(output);
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEBlocks.BUS_RELAY, 4)
                 .pattern("prp")
                 .pattern("bbb")
                 .define('p', IETags.getTagsFor(EnumMetals.ALUMINUM).plate)
                 .define('b', Blocks.TERRACOTTA)
                 .define('r', Tags.Items.DUSTS_REDSTONE)
+                .unlockedBy("has_redstone_wire", has(IEItemRefs.REDSTONE_WIRE_COIL))
                 .save(output);
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEBlocks.BUS_INTERFACE)
                 .pattern("prp")
@@ -81,6 +83,7 @@ public class Recipes extends RecipeProvider {
                 .define('b', Blocks.TERRACOTTA)
                 .define('r', Tags.Items.DUSTS_REDSTONE)
                 .define('c', CEItems.BUS_WIRE_COIL)
+                .unlockedBy("has_redstone_wire", has(IEItemRefs.REDSTONE_WIRE_COIL))
                 .save(output);
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEBlocks.LINE_ACCESS)
                 .pattern("r b")
@@ -90,6 +93,7 @@ public class Recipes extends RecipeProvider {
                 .define('c', Items.COMPARATOR)
                 .define('b', CEBlocks.BUS_RELAY)
                 .define('B', CEItems.BUS_WIRE_COIL)
+                .unlockedBy("has_redstone_connector", has(IEItemRefs.REDSTONE_CONNECTOR))
                 .save(output);
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEBlocks.RS_REMAPPER)
                 .pattern("r r")
@@ -99,6 +103,7 @@ public class Recipes extends RecipeProvider {
                 .define('R', IEItemRefs.REDSTONE_WIRE_COIL)
                 .define('b', Items.COMPARATOR)
                 .define('c', IETags.copperWire)
+                .unlockedBy("has_redstone_connector", has(IEItemRefs.REDSTONE_CONNECTOR))
                 .save(output);
     }
 
@@ -112,6 +117,7 @@ public class Recipes extends RecipeProvider {
                 .define('p', IETags.getTagsFor(EnumMetals.STEEL).plate)
                 .define('C', Items.CHAIN)
                 .define('B', Items.IRON_BARS)
+                .unlockedBy("has_bus_relay", has(CEBlocks.BUS_RELAY))
                 .save(output);
         output.accept(RLUtils.ceLoc("glue_tape"), new GlueTapeRecipe(Ingredient.of(Tags.Items.SLIMEBALLS)), null);
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, EmptyTapeItem.withLength(256))
@@ -120,6 +126,7 @@ public class Recipes extends RecipeProvider {
                 .pattern("ppp")
                 .define('p', Items.PAPER)
                 .define('d', Tags.Items.DYES_PINK)
+                .unlockedBy("has_paper", has(Items.PAPER))
                 .save(output);
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEBlocks.SEQUENCER)
                 .pattern("www")
@@ -129,20 +136,23 @@ public class Recipes extends RecipeProvider {
                 .define('b', IEItemRefs.CIRCUIT_BOARD)
                 .define('r', Items.REDSTONE)
                 .define('w', IETags.getItemTag(IETags.treatedWood))
+                .unlockedBy("has_bus_relay", has(CEBlocks.BUS_RELAY))
                 .save(output);
     }
 
     private void panelRecipes(RecipeOutput output) {
+        final var steelPlate = IETags.getTagsFor(EnumMetals.STEEL).plate;
         output.accept(
                 RLUtils.ceLoc("panel"),
-                new PanelRecipe(Ingredient.of(IETags.getTagsFor(EnumMetals.STEEL).plate)),
+                new PanelRecipe(Ingredient.of(steelPlate)),
                 null
         );
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEItems.PANEL_TOP)
                 .pattern("ppp")
                 .pattern("pwp")
-                .define('p', IETags.getTagsFor(EnumMetals.STEEL).plate)
+                .define('p', steelPlate)
                 .define('w', IETags.copperWire)
+                .unlockedBy("has_plate", has(steelPlate))
                 .save(output);
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEBlocks.PANEL_DESIGNER)
                 .pattern("pge")
@@ -152,11 +162,17 @@ public class Recipes extends RecipeProvider {
                 .define('g', Tags.Items.DUSTS_GLOWSTONE)
                 .define('e', Items.ENDER_EYE)
                 .define('p', Blocks.PISTON)
+                .unlockedBy("has_keypunch", has(CEBlocks.KEYPUNCH))
                 .save(output);
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEBlocks.PANEL_CNC)
                 .pattern("sds")
                 .pattern("wSw")
                 .pattern("www")
+                .define('s', IETags.steelRod)
+                .define('d', IEItemRefs.DRILL_HEAD_IRON)
+                .define('S', CEBlocks.SEQUENCER)
+                .define('w', IETags.getItemTag(IETags.treatedWood))
+                .unlockedBy("has_drill_head", has(IEItemRefs.DRILL_HEAD_IRON))
                 .save(output);
         var keyBaseRecipe = new ShapedRecipe("misc", CraftingBookCategory.MISC, ShapedRecipePattern.of(
                 Map.of(
@@ -175,26 +191,31 @@ public class Recipes extends RecipeProvider {
     }
 
     private void clockRecipes(RecipeOutput output) {
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ClockTypes.getItem(ClockTypes.ALWAYS_ON))
+        final var aluPlate = IETags.getTagsFor(EnumMetals.ALUMINUM).plate;
+        final var alwaysClock = ClockTypes.getItem(ClockTypes.ALWAYS_ON);
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, alwaysClock)
                 .pattern("tpt")
                 .pattern("rrr")
                 .pattern("tpt")
                 .define('t', Items.REDSTONE_TORCH)
                 .define('r', Tags.Items.DUSTS_REDSTONE)
-                .define('p', IETags.getTagsFor(EnumMetals.ALUMINUM).plate)
+                .define('p', aluPlate)
+                .unlockedBy("has_plate", has(IEItemRefs.DRILL_HEAD_IRON))
                 .save(output);
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ClockTypes.getItem(ClockTypes.WHILE_RS_ON))
-                .requires(ClockTypes.getItem(ClockTypes.ALWAYS_ON))
+                .requires(alwaysClock)
                 .requires(Tags.Items.DUSTS_REDSTONE)
+                .unlockedBy("has_base_clock", has(alwaysClock))
                 .save(output);
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ClockTypes.getItem(ClockTypes.RISING_EDGE))
                 .pattern("ppp")
                 .pattern("dPr")
                 .pattern("ppp")
-                .define('p', IETags.getTagsFor(EnumMetals.ALUMINUM).plate)
+                .define('p', aluPlate)
                 .define('r', Items.REPEATER)
                 .define('P', Items.PISTON)
                 .define('d', Tags.Items.DUSTS_REDSTONE)
+                .unlockedBy("has_alu_plate", has(aluPlate))
                 .save(output);
     }
 
@@ -207,6 +228,7 @@ public class Recipes extends RecipeProvider {
                 .define('b', CEBlocks.BUS_RELAY)
                 .define('L', IEItemRefs.LOGIC_UNIT.get())
                 .define('r', IEItemRefs.RADIATOR.get())
+                .unlockedBy("has_logic_unit", has(IEItemRefs.LOGIC_UNIT.get()))
                 .save(output);
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, CEBlocks.LOGIC_WORKBENCH)
                 .pattern("bsf")
@@ -216,6 +238,7 @@ public class Recipes extends RecipeProvider {
                 .define('c', IEItemRefs.CRATE.get())
                 .define('b', IEItemRefs.BLUEPRINT)
                 .define('e', IEItemRefs.LIGHT_ENGINEERING.get())
+                .unlockedBy("has_blueprint", has(IEItemRefs.BLUEPRINT))
                 .save(output);
         output.accept(RLUtils.ceLoc("schematic_copy"), new SchematicCopyRecipe(), null);
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, CEItems.SCHEMATIC)
@@ -223,6 +246,7 @@ public class Recipes extends RecipeProvider {
                 .requires(Tags.Items.DYES_RED)
                 .requires(Tags.Items.DYES_GREEN)
                 .requires(IETags.hopGraphiteDust)
+                .unlockedBy("has_hop", has(IETags.hopGraphiteDust))
                 .save(output);
     }
 
@@ -252,6 +276,7 @@ public class Recipes extends RecipeProvider {
                 .define('T', CEItems.CRT_TUBE)
                 .define('a', IEItemRefs.COMPONENT_ADVANCED)
                 .define('c', CEBlocks.BUS_RELAY)
+                .unlockedBy("has_tube", has(CEItems.CRT_TUBE))
                 .save(output);
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ScopeModules.ANALOG.item())
                 .pattern("cCw")
@@ -262,6 +287,7 @@ public class Recipes extends RecipeProvider {
                 .define('w', IETags.copperWire)
                 .define('M', CEItems.SCOPE_MODULE_CASE)
                 .define('B', IEItemRefs.CIRCUIT_BOARD)
+                .unlockedBy("has_case", has(CEItems.SCOPE_MODULE_CASE))
                 .save(output);
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ScopeModules.DIGITAL.item())
                 .pattern("ACM")
@@ -272,6 +298,7 @@ public class Recipes extends RecipeProvider {
                 .define('B', IEItemRefs.CIRCUIT_BOARD)
                 .define('M', CEItems.SCOPE_MODULE_CASE)
                 .define('w', IETags.copperWire)
+                .unlockedBy("has_case", has(CEItems.SCOPE_MODULE_CASE))
                 .save(output);
         // TODO remove in 1.20? This is mostly so existing worlds can get access to the blueprint
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, BlueprintCraftingRecipe.getTypedBlueprint(SCOPE_COMPONENTS_BLUEPRINT))
@@ -283,6 +310,7 @@ public class Recipes extends RecipeProvider {
                 .define('a', Items.REPEATER)
                 .define('d', Tags.Items.DYES_BLUE)
                 .define('p', Items.PAPER)
+                .unlockedBy("has_relay", has(CEItems.BUS_RELAY))
                 .save(output, RLUtils.ceLoc("scope_blueprint"));
     }
 }
