@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "b": {
+      "item": "minecraft:terracotta"
+    },
+    "c": {
+      "item": "controlengineering:bus_wire_coil"
+    },
+    "p": {
+      "tag": "c:plates/aluminum"
+    },
+    "r": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "pattern": [
+    "prp",
+    "bcb"
+  ],
+  "result": {
+    "count": 1,
+    "id": "controlengineering:bus_interface"
+  }
+}

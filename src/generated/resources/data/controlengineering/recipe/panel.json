@@ -1,0 +1,6 @@
+{
+  "type": "controlengineering:panel",
+  "cover": {
+    "tag": "c:plates/steel"
+  }
+}

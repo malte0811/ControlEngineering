@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "p": {
+      "tag": "c:plates/steel"
+    },
+    "w": {
+      "tag": "c:wires/copper"
+    }
+  },
+  "pattern": [
+    "ppp",
+    "pwp"
+  ],
+  "result": {
+    "count": 1,
+    "id": "controlengineering:panel_top"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "misc",
+  "key": {
+    "a": {
+      "tag": "c:plates/aluminum"
+    },
+    "c": {
+      "item": "immersiveengineering:component_iron"
+    },
+    "h": {
+      "tag": "immersiveengineering:treated_wood"
+    },
+    "w": {
+      "tag": "c:wires/copper"
+    }
+  },
+  "pattern": [
+    " cw",
+    "haa",
+    " cw"
+  ],
+  "result": {
+    "count": 1,
+    "id": "controlengineering:lock"
+  }
+}

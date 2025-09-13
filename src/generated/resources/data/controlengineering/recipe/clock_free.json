@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "p": {
+      "tag": "c:plates/aluminum"
+    },
+    "r": {
+      "tag": "c:dusts/redstone"
+    },
+    "t": {
+      "item": "minecraft:redstone_torch"
+    }
+  },
+  "pattern": [
+    "tpt",
+    "rrr",
+    "tpt"
+  ],
+  "result": {
+    "count": 1,
+    "id": "controlengineering:clock_free"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "b": {
+      "item": "immersiveengineering:circuit_board"
+    },
+    "c": {
+      "item": "controlengineering:bus_relay"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    },
+    "w": {
+      "tag": "immersiveengineering:treated_wood"
+    }
+  },
+  "pattern": [
+    "www",
+    "cbr",
+    "www"
+  ],
+  "result": {
+    "count": 1,
+    "id": "controlengineering:sequencer"
+  }
+}

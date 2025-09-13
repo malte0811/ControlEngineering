@@ -8,7 +8,7 @@
       "parent": "controlengineering:transform/block_half_size",
       "automatic_culling": false,
       "flip_v": true,
-      "loader": "forge:obj",
+      "loader": "neoforge:obj",
       "model": "controlengineering:models/keypunch.obj",
       "render_type": "minecraft:cutout"
     }
@@ -17,5 +17,5 @@
     "static",
     "dynamic"
   ],
-  "loader": "forge:composite"
+  "loader": "neoforge:composite"
 }

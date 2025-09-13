@@ -1,8 +1,0 @@
-{
-  "type": "controlengineering:component_cost",
-  "costs": [
-    {
-      "tag": "forge:wires/copper"
-    }
-  ]
-}

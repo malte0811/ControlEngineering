@@ -2,6 +2,6 @@
   "parent": "minecraft:block/block",
   "automatic_culling": false,
   "flip_v": true,
-  "loader": "forge:obj",
+  "loader": "neoforge:obj",
   "model": "controlengineering:models/logic_cabinet/tube.obj"
 }

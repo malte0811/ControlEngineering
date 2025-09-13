@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "e": {
+      "item": "minecraft:ender_eye"
+    },
+    "g": {
+      "tag": "c:dusts/glowstone"
+    },
+    "k": {
+      "item": "controlengineering:keypunch"
+    },
+    "p": {
+      "item": "minecraft:piston"
+    },
+    "w": {
+      "tag": "immersiveengineering:treated_wood"
+    }
+  },
+  "pattern": [
+    "pge",
+    "kww"
+  ],
+  "result": {
+    "count": 1,
+    "id": "controlengineering:panel_designer"
+  }
+}

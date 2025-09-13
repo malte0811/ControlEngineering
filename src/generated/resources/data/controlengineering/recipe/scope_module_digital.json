@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:repeater"
+    },
+    "B": {
+      "item": "immersiveengineering:circuit_board"
+    },
+    "C": {
+      "item": "immersiveengineering:component_electronic"
+    },
+    "M": {
+      "item": "controlengineering:scope_module_case"
+    },
+    "w": {
+      "tag": "c:wires/copper"
+    }
+  },
+  "pattern": [
+    "ACM",
+    "ABw",
+    "ACM"
+  ],
+  "result": {
+    "count": 1,
+    "id": "controlengineering:scope_module_digital"
+  }
+}

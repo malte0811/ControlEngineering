@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_drill_head": {
+      "conditions": {
+        "items": [
+          {
+            "items": "immersiveengineering:drillhead_iron"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "controlengineering:panel_cnc"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_drill_head"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "controlengineering:panel_cnc"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "controlengineering:bus_relay"
+    },
+    "a": {
+      "item": "minecraft:repeater"
+    },
+    "c": {
+      "item": "minecraft:comparator"
+    },
+    "d": {
+      "tag": "c:dyes/blue"
+    },
+    "p": {
+      "item": "minecraft:paper"
+    }
+  },
+  "pattern": [
+    "cBa",
+    "ddd",
+    "ppp"
+  ],
+  "result": {
+    "components": {
+      "immersiveengineering:blueprint": "controlengineering:scope_components"
+    },
+    "count": 1,
+    "id": "immersiveengineering:blueprint"
+  }
+}

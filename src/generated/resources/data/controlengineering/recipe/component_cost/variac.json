@@ -1,0 +1,14 @@
+{
+  "type": "controlengineering:component_cost",
+  "costs": [
+    {
+      "tag": "c:dyes/black"
+    },
+    {
+      "item": "immersiveengineering:wirecoil_copper"
+    },
+    {
+      "tag": "c:ingots/hop_graphite"
+    }
+  ]
+}

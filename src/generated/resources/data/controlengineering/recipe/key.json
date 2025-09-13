@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "misc",
+  "key": {
+    "a": {
+      "tag": "c:plates/aluminum"
+    },
+    "h": {
+      "tag": "immersiveengineering:treated_wood"
+    }
+  },
+  "pattern": [
+    "haa",
+    " aa"
+  ],
+  "result": {
+    "count": 1,
+    "id": "controlengineering:key"
+  }
+}

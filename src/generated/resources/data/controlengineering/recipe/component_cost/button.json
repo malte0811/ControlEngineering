@@ -1,0 +1,14 @@
+{
+  "type": "controlengineering:component_cost",
+  "costs": [
+    {
+      "tag": "c:dyes"
+    },
+    {
+      "tag": "c:dusts/glowstone"
+    },
+    {
+      "item": "minecraft:stone_button"
+    }
+  ]
+}

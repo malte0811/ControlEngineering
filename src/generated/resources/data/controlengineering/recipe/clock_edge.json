@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": {
+      "item": "minecraft:piston"
+    },
+    "d": {
+      "tag": "c:dusts/redstone"
+    },
+    "p": {
+      "tag": "c:plates/aluminum"
+    },
+    "r": {
+      "item": "minecraft:repeater"
+    }
+  },
+  "pattern": [
+    "ppp",
+    "dPr",
+    "ppp"
+  ],
+  "result": {
+    "count": 1,
+    "id": "controlengineering:clock_edge"
+  }
+}

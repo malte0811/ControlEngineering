@@ -5,7 +5,7 @@
     "parent": "minecraft:block/block",
     "automatic_culling": false,
     "flip_v": true,
-    "loader": "forge:obj",
+    "loader": "neoforge:obj",
     "model": "controlengineering:models/scope/main.obj"
   },
   "modules": {
@@ -13,14 +13,14 @@
       "parent": "minecraft:block/block",
       "automatic_culling": false,
       "flip_v": true,
-      "loader": "forge:obj",
+      "loader": "neoforge:obj",
       "model": "controlengineering:models/scope/analog.obj"
     },
     "controlengineering:digital": {
       "parent": "minecraft:block/block",
       "automatic_culling": false,
       "flip_v": true,
-      "loader": "forge:obj",
+      "loader": "neoforge:obj",
       "model": "controlengineering:models/scope/digital.obj"
     },
     "controlengineering:none": {

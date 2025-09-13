@@ -1,0 +1,21 @@
+{
+  "type": "immersiveengineering:blueprint",
+  "category": "controlengineering:scope_components",
+  "inputs": [
+    {
+      "basePredicate": {
+        "tag": "c:plates/aluminum"
+      },
+      "count": 2
+    },
+    {
+      "tag": "c:wires/copper"
+    },
+    {
+      "tag": "c:plates/plastic"
+    }
+  ],
+  "result": {
+    "id": "controlengineering:scope_module_case"
+  }
+}

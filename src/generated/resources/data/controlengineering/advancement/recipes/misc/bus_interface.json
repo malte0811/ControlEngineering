@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_redstone_wire": {
+      "conditions": {
+        "items": [
+          {
+            "items": "immersiveengineering:wirecoil_redstone"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "controlengineering:bus_interface"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_redstone_wire"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "controlengineering:bus_interface"
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "b": {
+      "item": "minecraft:terracotta"
+    },
+    "p": {
+      "tag": "c:plates/aluminum"
+    },
+    "r": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "pattern": [
+    "prp",
+    "bbb"
+  ],
+  "result": {
+    "count": 4,
+    "id": "controlengineering:bus_relay"
+  }
+}

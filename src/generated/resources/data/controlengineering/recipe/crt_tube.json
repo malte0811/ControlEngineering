@@ -1,0 +1,27 @@
+{
+  "type": "immersiveengineering:blueprint",
+  "category": "controlengineering:scope_components",
+  "inputs": [
+    {
+      "tag": "c:dusts/glowstone"
+    },
+    {
+      "tag": "c:dusts/redstone"
+    },
+    {
+      "tag": "c:glass_blocks"
+    },
+    {
+      "basePredicate": {
+        "tag": "c:plates/copper"
+      },
+      "count": 4
+    },
+    {
+      "tag": "c:plates/nickel"
+    }
+  ],
+  "result": {
+    "id": "controlengineering:crt_tube"
+  }
+}
