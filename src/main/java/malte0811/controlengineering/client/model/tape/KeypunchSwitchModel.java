@@ -50,9 +50,8 @@ public class KeypunchSwitchModel implements CEBakedModel {
     }
 
     private BakedQuad makeQuad(double xMin, PoseStack transform) {
-        List<BakedQuad> quads = new ArrayList<>();
         final double epsilon = 5e-4;
-        new QuadBuilder(
+        return new QuadBuilder(
                 new Vec3(xMin / 16, 13 / 16., 1 + epsilon),
                 new Vec3((xMin + 1) / 16, 13 / 16., 1 + epsilon),
                 new Vec3((xMin + 1) / 16, 16 / 16., 1 + epsilon),
@@ -60,8 +59,7 @@ public class KeypunchSwitchModel implements CEBakedModel {
         ).setSprite(texture.get())
                 .setUCoords(44 / 64f, 44 / 64f, 47 / 64f, 47 / 64f)
                 .setVCoords(16 / 32f, 15 / 32f, 15 / 32f, 16 / 32f)
-                .writeTo(BakedQuadVertexBuilder.makeNonInterpolating(texture.get(), transform, quads));
-        return quads.get(0);
+                .buildQuad(texture.get(), transform);
     }
 
     @Nonnull

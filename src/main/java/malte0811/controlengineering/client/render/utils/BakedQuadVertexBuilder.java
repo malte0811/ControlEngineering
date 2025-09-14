@@ -13,30 +13,59 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class BakedQuadVertexBuilder {
-    public static VertexConsumer makeNonInterpolating(
-            TextureAtlasSprite sprite, PoseStack transform, List<BakedQuad> quads
+    public static WrappedConsumer makeMaybeInterpolating(
+            TextureAtlasSprite sprite, PoseStack transform, List<BakedQuad> quads, boolean interpolating
     ) {
-        final var baker = new ExtendedQuadVertexConsumer(quads::add);
-        baker.setSprite(sprite);
-        baker.setHasAmbientOcclusion(true);
-        baker.setShade(true);
-        return new TransformingVertexBuilder(baker, transform);
+        if (interpolating) {
+            return makeInterpolating(sprite, transform, quads);
+        } else {
+            return makeNonInterpolating(sprite, transform, quads);
+        }
     }
 
-    public static VertexConsumer makeInterpolating(
+    public static WrappedConsumer makeNonInterpolating(
             TextureAtlasSprite sprite, PoseStack transform, List<BakedQuad> quads
     ) {
         final var baker = new ExtendedQuadVertexConsumer(quads::add);
         baker.setSprite(sprite);
         baker.setHasAmbientOcclusion(true);
         baker.setShade(true);
-        return new TransformingVertexBuilder(baker, transform) {
+        return new WrappedConsumer(new TransformingVertexBuilder(baker, transform), baker);
+    }
+
+    public static WrappedConsumer makeInterpolating(
+            TextureAtlasSprite sprite, PoseStack transform, List<BakedQuad> quads
+    ) {
+        final var baker = new ExtendedQuadVertexConsumer(quads::add);
+        baker.setSprite(sprite);
+        baker.setHasAmbientOcclusion(true);
+        baker.setShade(true);
+        return new WrappedConsumer(new TransformingVertexBuilder(baker, transform) {
             @Nonnull
             @Override
             public VertexConsumer setUv(float u, float v) {
                 return super.setUv(sprite.getU(u), sprite.getV(v));
             }
-        };
+        }, baker);
+    }
+
+    public static class WrappedConsumer implements AutoCloseable {
+        private final VertexConsumer visibleConsumer;
+        private final ExtendedQuadVertexConsumer quadBuilder;
+
+        private WrappedConsumer(VertexConsumer visibleConsumer, ExtendedQuadVertexConsumer quadBuilder) {
+            this.visibleConsumer = visibleConsumer;
+            this.quadBuilder = quadBuilder;
+        }
+
+        public VertexConsumer consumer() {
+            return visibleConsumer;
+        }
+
+        @Override
+        public void close() {
+            quadBuilder.finishVertex();
+        }
     }
 
     private static class ExtendedQuadVertexConsumer extends QuadBakingVertexConsumer {
@@ -46,13 +75,17 @@ public class BakedQuadVertexBuilder {
         private ExtendedQuadVertexConsumer(Consumer<BakedQuad> onQuad) { this.onQuad = onQuad; }
 
         @Override
-        public VertexConsumer addVertex(Vector3f p_350685_) {
+        public VertexConsumer addVertex(float x, float y, float z) {
+            finishVertex();
+            return super.addVertex(x, y, z);
+        }
+
+        private void finishVertex() {
             if (vertices == 4) {
                 onQuad.accept(bakeQuad());
                 vertices = 0;
             }
             ++vertices;
-            return super.addVertex(p_350685_);
         }
     }
 }

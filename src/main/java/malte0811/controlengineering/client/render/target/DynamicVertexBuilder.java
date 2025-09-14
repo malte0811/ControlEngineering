@@ -8,17 +8,12 @@ import java.util.List;
 
 public class DynamicVertexBuilder implements VertexConsumer {
     private List<DynamicVertex.Step> inVertex = new ArrayList<>();
-    private final List<DynamicVertex> finishedVertices;
-
-    public DynamicVertexBuilder(List<DynamicVertex> finishedVertices) {
-        this.finishedVertices = finishedVertices;
-    }
+    private final List<DynamicVertex> finishedVertices = new ArrayList<>();
 
     @Nonnull
     @Override
     public VertexConsumer addVertex(float x, float y, float z) {
-            finishedVertices.add(new DynamicVertex(inVertex));
-            inVertex = new ArrayList<>();
+            finishVertex();
         inVertex.add((v, $1, $2) -> v.addVertex(x, y, z));
         return this;
     }
@@ -67,5 +62,17 @@ public class DynamicVertexBuilder implements VertexConsumer {
     public VertexConsumer setNormal(float x, float y, float z) {
         inVertex.add((v, $1, $2) -> v.setNormal(x, y, z));
         return this;
+    }
+
+    public void finishVertex() {
+        if (!inVertex.isEmpty()) {
+            finishedVertices.add(new DynamicVertex(inVertex));
+            inVertex = new ArrayList<>();
+        }
+    }
+
+    public List<DynamicVertex> getFinishedVertices() {
+        finishVertex();
+        return finishedVertices;
     }
 }

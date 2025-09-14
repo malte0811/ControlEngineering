@@ -18,7 +18,7 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record CutTapePacket(InteractionHand hand, int offset) implements IPacket {
-    public static final CustomPacketPayload.Type<CutTapePacket> ID = IPacket.createType("scope");
+    public static final CustomPacketPayload.Type<CutTapePacket> ID = IPacket.createType("cut_tape");
     public static final StreamCodec<FriendlyByteBuf, CutTapePacket> CODEC = StreamCodec.composite(
             IEStreamCodecs.enumStreamCodec(InteractionHand.values()), CutTapePacket::hand,
             ByteBufCodecs.VAR_INT, CutTapePacket::offset,

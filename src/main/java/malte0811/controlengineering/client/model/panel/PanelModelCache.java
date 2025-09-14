@@ -112,10 +112,9 @@ public class PanelModelCache {
             List<BakedQuad> quads = new ArrayList<>(mixed.getStaticQuads());
             PoseStack transform = new PoseStack();
             TextureAtlasSprite panelTexture = PanelRenderer.PANEL_TEXTURE.get();
-            renderPanel(
-                    cacheKey.transform(),
-                    BakedQuadVertexBuilder.makeNonInterpolating(panelTexture, transform, quads)
-            );
+            try (final var consumer = BakedQuadVertexBuilder.makeNonInterpolating(panelTexture, transform, quads)) {
+                renderPanel(cacheKey.transform(), consumer.consumer());
+            }
             // TODO render type
             return new SimpleBakedModel(
                     quads, EMPTY_LISTS_ON_ALL_SIDES, true, true, true,

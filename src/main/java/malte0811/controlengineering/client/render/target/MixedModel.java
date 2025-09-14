@@ -1,6 +1,5 @@
 package malte0811.controlengineering.client.render.target;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -16,10 +15,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.inventory.InventoryMenu;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.annotation.Nullable;
+import java.util.*;
 
 public class MixedModel implements MultiBufferSource {
     public static final RenderType SOLID_STATIC = RenderType.solid();
@@ -28,7 +25,9 @@ public class MixedModel implements MultiBufferSource {
     private final Set<RenderType> staticTypes;
 
     private final List<BakedQuad> staticQuads = new ArrayList<>();
-    private final Map<RenderType, List<DynamicVertex>> dynamicQuads = new Object2ObjectArrayMap<>();
+    private final Map<RenderType, DynamicVertexBuilder> dynamicQuads = new Object2ObjectArrayMap<>();
+    @Nullable
+    private BakedQuadVertexBuilder.WrappedConsumer activeStaticBuilder;
     private TextureAtlasSprite staticSprite = Minecraft.getInstance().getModelManager()
             .getAtlas(InventoryMenu.BLOCK_ATLAS)
             .getSprite(MissingTextureAtlasSprite.getLocation());
@@ -40,10 +39,14 @@ public class MixedModel implements MultiBufferSource {
     @Nonnull
     @Override
     public VertexConsumer getBuffer(@Nonnull RenderType type) {
+        // TODO both of these need RAII!
         if (staticTypes.contains(type)) {
-            return BakedQuadVertexBuilder.makeInterpolating(staticSprite, new PoseStack(), staticQuads);
+            if (activeStaticBuilder == null) {
+                this.activeStaticBuilder = BakedQuadVertexBuilder.makeInterpolating(staticSprite, new PoseStack(), staticQuads);
+            }
+            return this.activeStaticBuilder.consumer();
         } else {
-            return new DynamicVertexBuilder(dynamicQuads.computeIfAbsent(type, $ -> new ArrayList<>()));
+            return dynamicQuads.computeIfAbsent(type, $ -> new DynamicVertexBuilder());
         }
     }
 
@@ -52,13 +55,17 @@ public class MixedModel implements MultiBufferSource {
     }
 
     public List<BakedQuad> getStaticQuads() {
+        if (activeStaticBuilder != null) {
+            activeStaticBuilder.close();
+            activeStaticBuilder = null;
+        }
         return staticQuads;
     }
 
     public void renderTo(MultiBufferSource out, PoseStack transform, int combinedLight, int combinedOverlay) {
-        for (Map.Entry<RenderType, List<DynamicVertex>> vertices : dynamicQuads.entrySet()) {
+        for (var vertices : dynamicQuads.entrySet()) {
             VertexConsumer buffer = new TransformingVertexBuilder(out.getBuffer(vertices.getKey()), transform);
-            for (DynamicVertex v : vertices.getValue()) {
+            for (DynamicVertex v : vertices.getValue().getFinishedVertices()) {
                 v.accept(buffer, combinedLight, combinedOverlay);
             }
         }

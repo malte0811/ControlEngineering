@@ -50,9 +50,7 @@ public class SequencerSwitchModel implements CEBakedModel {
         transform.pushTransformation(modelTransform.getRotation().blockCenterToCorner());
         this.compactSwitch = makeSwitchQuads(4.5, transform);
         this.autoresetSwitch = makeSwitchQuads(10.5, transform);
-        this.clockQuad = Suppliers.memoize(() -> {
-            List<BakedQuad> quads = new ArrayList<>();
-            new QuadBuilder(
+        this.clockQuad = Suppliers.memoize(() -> new QuadBuilder(
                     new Vec3(1, 10 / 16., 6 / 16.),
                     new Vec3(1, 10 / 16., 10 / 16.),
                     new Vec3(1, 6 / 16., 10 / 16.),
@@ -60,9 +58,7 @@ public class SequencerSwitchModel implements CEBakedModel {
             ).setSprite(texture.get())
                     .setUCoords(24 / 64f, 28 / 64f, 28 / 64f, 24 / 64f)
                     .setVCoords(2 / 32f, 2 / 32f, 6 / 32f, 6 / 32f)
-                    .writeTo(BakedQuadVertexBuilder.makeNonInterpolating(texture.get(), transform, quads));
-            return quads.get(0);
-        });
+                    .buildQuad(texture.get(), transform));
     }
 
     private Supplier<Bool2ObjectMap<BakedQuad>> makeSwitchQuads(double xMin, PoseStack transform) {
@@ -75,9 +71,8 @@ public class SequencerSwitchModel implements CEBakedModel {
     }
 
     private BakedQuad makeSwitchQuad(double xMin, float uMin, PoseStack transform) {
-        List<BakedQuad> quads = new ArrayList<>();
         final double epsilon = 5e-4;
-        new QuadBuilder(
+        return new QuadBuilder(
                 new Vec3(xMin / 16, 3.5 / 16., 1 + epsilon),
                 new Vec3((xMin + 1) / 16, 3.5 / 16., 1 + epsilon),
                 new Vec3((xMin + 1) / 16, 5.5 / 16., 1 + epsilon),
@@ -85,8 +80,7 @@ public class SequencerSwitchModel implements CEBakedModel {
         ).setSprite(texture.get())
                 .setUCoords(uMin / 64f, (uMin + 1) / 64f, (uMin + 1) / 64f, uMin / 64f)
                 .setVCoords(2 / 32f, 2 / 32f, 4 / 32f, 4 / 32f)
-                .writeTo(BakedQuadVertexBuilder.makeNonInterpolating(texture.get(), transform, quads));
-        return quads.get(0);
+                .buildQuad(texture.get(), transform);
     }
 
     @Nonnull

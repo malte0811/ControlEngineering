@@ -81,12 +81,11 @@ public class ScopeModel implements CEBakedModel {
     }
 
     private BakedQuad makeEndQuad(boolean right, TextureAtlasSprite texture) {
-        List<BakedQuad> quads = new ArrayList<>();
         int offset = right ? 0 : 3;
         int step = right ? 1 : -1;
         PoseStack transform = new PoseStack();
         transform.pushTransformation(this.modelTransform.blockCenterToCorner());
-        new QuadBuilder(
+        return new QuadBuilder(
                 END_QUAD_VERTICES[offset],
                 END_QUAD_VERTICES[offset + step],
                 END_QUAD_VERTICES[offset + 2 * step],
@@ -94,8 +93,7 @@ public class ScopeModel implements CEBakedModel {
         ).setSprite(texture)
                 .setUCoords(53 / 64f, 53 / 64f, 46 / 64f, 46 / 64f)
                 .setVCoords(8 / 32f, 16 / 32f, 16 / 32f, 8 / 32f)
-                .writeTo(BakedQuadVertexBuilder.makeNonInterpolating(texture, transform, quads));
-        return quads.get(0);
+                .buildQuad(texture, transform);
     }
 
     private static List<BakedQuad> getDefaultQuads(BakedModel model) {

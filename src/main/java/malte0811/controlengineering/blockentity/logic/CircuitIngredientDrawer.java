@@ -90,7 +90,7 @@ public class CircuitIngredientDrawer {
 
     public CompoundTag write(HolderLookup.Provider provider) {
         var result = new CompoundTag();
-        result.put(ITEM_KEY, storedType.save(provider));
+        result.put(ITEM_KEY, storedType.saveOptional(provider));
         result.putInt(COUNT_KEY, storedCount);
         return result;
     }

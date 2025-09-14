@@ -17,6 +17,7 @@ import malte0811.controlengineering.items.CEItems;
 import malte0811.controlengineering.items.ControlPanelItem;
 import malte0811.controlengineering.items.IEItemRefs;
 import malte0811.controlengineering.items.PCBStackItem;
+import malte0811.controlengineering.util.RLUtils;
 import malte0811.controlengineering.util.RaytraceUtils;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -81,9 +82,8 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
-    public static void register(RegisterGuiLayersEvent ev)
-    {
-        ev.registerBelow(VanillaGuiLayers.DEBUG_OVERLAY, Lib.GuiLayers.ITEMS, ClientEvents::onRenderOverlayPost);
+    public static void register(RegisterGuiLayersEvent ev) {
+        ev.registerBelow(VanillaGuiLayers.DEBUG_OVERLAY, RLUtils.ceLoc("overlay"), ClientEvents::onRenderOverlayPost);
     }
 
     private static void onRenderOverlayPost(GuiGraphics graphics, DeltaTracker deltaTracker) {

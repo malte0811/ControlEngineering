@@ -78,7 +78,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLog
         PoseStack transform = new PoseStack();
         transform.pushTransformation(modelTransform.getRotation().blockCenterToCorner());
         List<BakedQuad> quads = new ArrayList<>();
-        new QuadBuilder(
+        this.clockQuad = new QuadBuilder(
                 new Vec3(1, 0.375, 0.625),
                 new Vec3(1, 0.375, 0.375),
                 new Vec3(1, 0.625, 0.375),
@@ -86,8 +86,7 @@ public class DynamicLogicModel implements CEBakedModel.Cacheable<Pair<DynamicLog
         ).setSprite(particles)
                 .setUCoords(15 / 16f, 15 / 16f, 1, 1)
                 .setVCoords(0, 1 / 16f, 1 / 16f, 0)
-                .writeTo(BakedQuadVertexBuilder.makeNonInterpolating(particles, transform, quads));
-        this.clockQuad = quads.get(0);
+                .buildQuad(particles, transform);
     }
 
     @Override

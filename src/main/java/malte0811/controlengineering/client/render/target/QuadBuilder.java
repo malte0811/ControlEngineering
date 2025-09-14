@@ -1,10 +1,13 @@
 package malte0811.controlengineering.client.render.target;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import malte0811.controlengineering.ControlEngineering;
+import malte0811.controlengineering.client.render.utils.BakedQuadVertexBuilder;
 import malte0811.controlengineering.util.BitUtils;
 import malte0811.controlengineering.util.RLUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +20,8 @@ import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.OptionalInt;
 
@@ -92,6 +97,14 @@ public class QuadBuilder {
     public QuadBuilder setBlockLightOverride(int blockLightOverride) {
         this.blockLightOverride = OptionalInt.of(blockLightOverride);
         return this;
+    }
+
+    public BakedQuad buildQuad(TextureAtlasSprite sprite, PoseStack transform) {
+        List<BakedQuad> quads = new ArrayList<>();
+        try (var quadBuilder = BakedQuadVertexBuilder.makeNonInterpolating(sprite, transform, quads)) {
+            writeTo(quadBuilder.consumer());
+        }
+        return quads.get(0);
     }
 
     public void writeTo(VertexConsumer target) {
